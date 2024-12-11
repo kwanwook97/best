@@ -18,5 +18,11 @@ public class MainController {
 	public String pageMove(@PathVariable String root, @PathVariable String page) {
 		return root+"/"+page;
 	}
-	
+
+	/*
+	 * @GetMapping(value="/{root}/{sub}/{page}.go") public String
+	 * pageMove(@PathVariable String root, @PathVariable String sub, @PathVariable
+	 * String page) { return root+"/"+sub+"/"+page; }
+	 */
+
 }
