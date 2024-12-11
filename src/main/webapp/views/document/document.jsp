@@ -19,6 +19,7 @@
 	    margin-top: 7vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
+	    color: var(--primary-color);
 	    height: 92%;
 	    display: flex;
 	    flex-direction: column;
@@ -28,54 +29,47 @@
 	}
 	.maintext{
 		display: flex;
-		margin-left: 0.625rem;
+		margin-left: 10px;
 	}
 	.document{
 		color: var(--secondary-color);
-		margin-right: 1.875rem;
-	    margin-bottom: 1.75rem;
+		margin-right: 30px;
+	    margin-bottom: 40px;
 	}
 	.docbox{
 		border: 2px solid var(--primary-color);
 	    width: -webkit-fill-available;
-		height: 90%;
-	    border-radius: 0.625rem;
+		height: 80%;
+	    border: 2px solid var(--primary-color);
+	    border-radius: 10px;
 	}
 	.docnav{
 		display: flex;
     	justify-content: space-between;
 		align-items: center;
-		margin: 0 3rem;
-		padding: 0 0.3125rem;
+		margin: 0 48px;
+		padding: 0 5px;
 	}
 	.opt{
 		width: 30%;
 		display: flex;
 		justify-content: space-between;
-		color: var(--secondary-color);
 	}
 	.opt div{
 		display: flex;
 		align-content: center;
 	    align-items: center;
-		font-size: 1.25rem;
+		font-size: 20px;
 		font-weight: bold;
-		height: 3.75rem; 
-	}
-	.opt div:first-child{
-		color: var(--primary-color);
-		font-weight: bold;
-		border-bottom: 0.1875rem solid var(--accent-color);
+		height: 60px;
 	}
 	.opt div:hover{
 		cursor: pointer;
-		color: var(--primary-color);
-		font-weight: bold;
-		border-bottom: 0.1875rem  solid var(--accent-color);
+		border-bottom: 3px solid var(--accent-color);
 	}
 	.opt div span{
 	    color: var(--accent-color);
-    	margin-left: 0.3125rem;
+    	margin-left: 5px;
 	}
 	.searchbox{
 		width: 20%;
@@ -88,33 +82,37 @@
     	display: inline-block;
 	}
 	.search input{
-		border-radius: 0.625rem;
-		padding-left: 0.625rem;
+		border-radius: 10px;
+		padding-left: 10px;
 		border: 1px solid var(--primary-color);
 	}
 	.search i{
 		position: absolute;
-		right: 0.625rem;
+		right: 10px;
 		top: 50%;
 		transform: translateY(-50%);
-		font-size: 1.125rem;
+		font-size: 18px;
 		pointer-events: none;
 		color: var(--accent-color);
 	}
 	.editbtn{
 		color: white;
 		background-color: var(--accent-color);
-		border-radius: 0.625rem;
-		width: 4.375rem;
+		border-radius: 10px;
+		width: 70px;
 	}
 	table{
 		width: -webkit-fill-available;
 		border: 1px solid var(--primary-color);
-		border-radius: 0.625rem;
-		margin: 0 3rem 3.4375rem 3rem;
+		border-radius: 10px;
+		margin: 0 48px 30px 48px;
+	}
+	tr{
+		border-bottom: 1px solid var(--primary-color);
+		height: 35px;
 	}
 	th, td{
-		padding-left: 0.625rem;
+		padding-left: 10px;
    		text-align: inherit;
 	}
 	.fa-arrow-alt-circle-left{
@@ -178,42 +176,10 @@
 	  background-color: var(--secondary-color);
 	  color: white;
 	}
-	table.my-table{
-		border-collapse: separate !important;
-        border-spacing: 0;
-	}
-	table.my-table tr:not(:last-child) td, table.my-table th {
-        border-bottom: 1px solid var(--primary-color) !important;
-    }
-    table.my-table tr{
-		height: 36px;
-	}
 	hr {
 	  border-top: 1px solid rgba(0, 0, 0, .1) !important;
 	  margin: 10px 0;
 	}
-
-  @media (max-width: 960px) {
-    .dashboard-body {
-      transform: scale(0.8);
-      margin-left: 17vw;
-      width: 93vw;
-    }
-    .opt {
-      width: 60%;
-      flex-wrap: wrap;
-    }
-    .searchbox {
-      width: 40%;
-    }
-    .editbtn {
-      width: 100%;
-      margin-top: 10px;
-    }
-    table {
-      margin: 0 10px 55px 10px;
-    }
-  }
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -262,19 +228,21 @@
 			    </ul>
 			  </div>
 			</div>
-			<table class="table1 my-table">
+			<table class="table1">
 				<thead>
 					<tr>
 						<th colspan="4">내 승인을 기다리는 문서 (3)</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
+					<!-- 읽지 않은 메일 -->
+					<tr class="unread">
 						<td>example1@example.com</td>
 						<td>읽지 않은 메일 제목</td>
 						<td>이메일 내용 미리보기...</td>
 						<td>2024-12-07 10:30</td>
 					</tr>
+					<!-- 읽은 메일 -->
 					<tr>
 						<td>example2@example.com</td>
 						<td>읽은 메일 제목</td>
@@ -307,10 +275,10 @@
 					</tr>
 				</tbody>
 			</table>
-			<table class="table2 my-table">
+			<table class="table2">
 				<thead>
 					<tr>
-						<th colspan="4">진행 중인 문서 (8)</th>
+						<th>진행 중인 문서 (8)</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -382,20 +350,6 @@
 		$("#customModal").fadeOut();  // 뒤로가기 기능 실행
 	  });
 	});
-	
-	$('.opt div').click(function(){
-		$('.maintext').find(':last-child').html('>&nbsp;&nbsp;' + $(this).clone().children('span').remove().end().text());
-		$(this).css({
-			"color": "var(--primary-color)",
-			"font-weight": "bold",
-			"border-bottom": "3px solid var(--accent-color)"
-		});
-		$(this).siblings().css({
-			"color": "var(--secondary-color)",
-			"border-bottom": "none"
-		});
-	});
-
 
 </script>
 </html>

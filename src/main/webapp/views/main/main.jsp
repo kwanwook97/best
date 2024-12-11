@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <link href="css/dashBoard.css" rel="stylesheet"/>
+  <link href="resources/css/dashBoard.css" rel="stylesheet"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <style>

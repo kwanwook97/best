@@ -188,7 +188,7 @@
   </style>
 </head>
 <body class="bg-theme bg-theme1">
-  <jsp:include page="../header.jsp"></jsp:include>
+  <jsp:include page="../main/header.jsp"></jsp:include>
   <div class="body">
     <!-- 페이지 제목 -->
     <div class="naviPath">

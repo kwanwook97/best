@@ -5,25 +5,26 @@
 <head>
 <meta charset="UTF-8">
 <title>BEST</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- side-bar CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link href="css/simplebar.css" rel="stylesheet"/>
-<link href="css/bootstrap.min.css" rel="stylesheet"/>
-<link href="css/app-style.css" rel="stylesheet"/>
-<link href="css/sidebar-menu.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/simplebar.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/app-style.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/sidebar-menu.css" rel="stylesheet"/>
 <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
 <!-- side-bar JS -->
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
-<script src="js/sidebar-menu.js"></script>
-<script src="js/simplebar.js"></script>
-<script src="js/app-script.js"></script>
-<script src="js/bootstrap.min.js"></script>
+<script src="/BEST/resources/js/sidebar-menu.js"></script>
+<script src="/BEST/resources/js/simplebar.js"></script>
+<script src="/BEST/resources/js/app-script.js"></script>
+<script src="/BEST/resources/js/bootstrap.min.js"></script>
 </head>
 
 <body>
    <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
      <div class="brand-logo">
-      <a href="#">
+      <a href="../main/main.go">
        <h4><span style="color:#E9396B;">BEST</span></h4>
        <h5 class="logo-text"><span style="color:#E9396B;">B</span>us <span style="color:E9396B;">E</span>mployee 
        <span style="color:#E9396B;">S</span>ervice <span style="color:#E9396B;">T</span>ool</h5>
@@ -38,98 +39,206 @@
    			</li>
    		</ul>
    	</div>
-   	<div class="work-time">
-   		<i class="bi bi-clock-history"></i>
-   		<button>출근</button>
-   	</div>
    <ul class="sidebar-menu do-nicescrol">
       <li class="sidebar-header"></li>
       <li>
-        <a href="test.go">
+        <a href="../main/main.go">
           <i class="mdi mdi-view-dashboard"></i> <span>대쉬보드</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
       <li>
-        <a href="attendance.go">
+        <a href="../emp/attendance.go">
           <i class="bi bi-clock-fill"></i> <span>근태관리</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
       <li>
-        <a href="calendar.go">
+        <a href="../calendar/calendar.go">
           <i class="fa-regular fa-calendar-check"></i> <span>캘린더</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
-      <li>
-        <a href="driveInfo.go">
-          <i class="bi bi-bus-front-fill"></i> <span>운행정보</span>
+      <li class="dropD">
+        <a href="javaScript:void();">
+          <i class="bi bi-bus-front-fill"></i> <span>버스정보</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
+        
+        <ul class="dropD-menu">
+    		<li class="dropD-item">
+      			<a href="../bus/driveInfo.go">
+        			<i class="fa-solid fa-road"></i> <span>운행현황</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="fa-solid fa-user-tie"></i> <span>배차현황</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-bus-front"></i> <span>버스관리</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+        </ul>
       </li>
       
       <li>
-        <a href="chat.go">
+        <a href="javaScript:void();">
           <i class="bi bi-chat-left-text-fill"></i> <span>메신져</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
-      <li>
-        <a href="mail.go">
-          <i class="bi bi-envelope-fill"></i> <span>메일함</span>
-          <i class="fa-solid fa-angle-right"></i>
-        </a>
-      </li>
-
-      <li>
-        <a href="board2.go">
+	  <li class="dropD">
+  		<a href="javaScript:void();">
+    		<i class="bi bi-envelope-fill"></i> <span>메일함</span>
+    		<i class="fa-solid fa-angle-right"></i>
+  		</a>
+  		<ul class="dropD-menu">
+    		<li class="dropD-item">
+      			<a href="../mail/mail.go">
+        			<i class="bi bi-envelope-paper-fill"></i> <span>받은 메일함</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-send"></i> <span>보낸 메일함</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-envelope-exclamation-fill"></i> <span>임시저장</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+    		<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-trash-fill"></i> <span>휴지통</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+  		</ul>
+	</li>
+      
+      
+      <li class="dropD">
+  		<a href="javaScript:void();">
           <i class="fa-regular fa-clipboard"></i> <span>결재문서</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
+        
+        <ul class="dropD-menu">
+    		<li class="dropD-item">
+      			<a href="../document/document.go">
+        			<i class="bi bi-file-text-fill"></i> <span>진행 중</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-file-earmark-check-fill"></i> <span>완료</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>임시저장</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+    		<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-file-earmark-break-fill"></i> <span>반려 문서</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+  		</ul>
+  		
       </li>
 
       <li>
-        <a href="#" target="_blank">
+        <a href="../emp/yaquza.go">
           <i class="bi bi-diagram-3-fill"></i> <span>조직도</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
 
-       <li>
-        <a href="board.go" target="">
+       <li class="dropD">
+        <a href="javaScript:void();">
           <i class="bi bi-layout-text-window-reverse"></i> <span>게시판</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
+        
+        <ul class="dropD-menu">
+    		<li class="dropD-item">
+      			<a href="../board/board.go">
+        			<i class="bi bi-megaphone-fill"></i> <span>공지사항</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
+      			<a href="../board/board2.go">
+        			<i class="bi bi-window-stack"></i> <span>자유 게시판</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+          </ul>
       </li>
       
        <li>
-        <a href="#" target="_blank">
-          <i class="bi bi-person-video2"></i> <span>사원관리</span>
+        <a href="javaScript:void();">
+          <i class="bi bi-person-vcard"></i> <span>사원관리</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
-       <li>
-        <a href="#" target="_blank">
+       <li class="dropD">
+        <a href="javaScript:void();">
           <i class="bi bi-bar-chart-fill"></i> <span>매출현황</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
+        
+        <ul class="dropD-menu">
+    		<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-bar-chart-fill"></i> <span>월별현황</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-graph-up"></i> <span>연별현황</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="javaScript:void();">
+        			<i class="bi bi-file-earmark-bar-graph-fill"></i> <span>매출등록</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+        </ul>
       </li>
       
        <li>
-        <a href="#" target="_blank">
+        <a href="javaScript:void();">
           <i class="bi bi-wallet-fill"></i> <span>지출정산</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
        <li>
-        <a href="#" target="_blank">
+        <a href="javaScript:void();">
           <i class="fa-solid fa-video"></i> <span>CCTV</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
@@ -149,11 +258,6 @@
       	</a>
       </li>
       <li>
-      	<a href="javaScript:void();"><i class="bi bi-gear-fill"></i> <span>환경설정</span>
-      	<i class="fa-solid fa-angle-right"></i>
-      	</a>
-      </li>
-      <li>
       	<a href="javaScript:void();"><i class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
@@ -166,17 +270,12 @@
 <header class="topbar-nav">
  <nav class="navbar navbar-expand fixed-top">
   <ul class="navbar-nav mr-auto align-items-center">
-    <li class="nav-item">
-      <!-- <a class="nav-link toggle-menu" href="javascript:void();">
-       <i class="icon-menu menu-icon"></i>
-     </a> -->
+    <li>
+		<div class="work-time">
+   			<i class="bi bi-clock-history"></i>
+   			<button>출근</button>
+   		</div>
     </li>
-    <!-- <li class="nav-item">
-       <form class="search-bar">
-        <input type="text" class="form-control" placeholder="Enter keywords">
-         <a href="javascript:void();"><i class="icon-magnifier"></i></a>
-      </form>
-    </li> -->
   </ul>
      
   <ul class="navbar-nav align-items-center right-nav-link">
