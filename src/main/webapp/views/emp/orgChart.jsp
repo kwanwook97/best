@@ -231,7 +231,7 @@
 </style>
 </head>
 <body class="bg-theme bg-theme1">
-	<jsp:include page="../header.jsp"></jsp:include>
+	<jsp:include page="../main/header.jsp"></jsp:include>
 	<div class="dashboard-body">
 		<div class="textbox">
 			<div class="maintext">

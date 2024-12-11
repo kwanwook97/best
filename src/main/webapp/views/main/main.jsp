@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <link href="css/dashBoard.css" rel="stylesheet"/>
+  <link href="resources/css/dashBoard.css" rel="stylesheet"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <style>
@@ -11,7 +11,7 @@
   </style>
 </head>
 <body class="bg-theme bg-theme1">
- <jsp:include page="header.jsp"></jsp:include>
+ <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="dash-profile">
  		<div class="user-profile"></div>
