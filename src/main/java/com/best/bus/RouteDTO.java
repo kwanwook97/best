@@ -1,0 +1,78 @@
+package com.best.bus;
+
+import java.time.LocalDateTime;
+
+public class RouteDTO {
+	private int route_idx; // 노선 ID (Primary Key, AUTO_INCREMENT)
+	private String route_name; // 노선 이름
+	private String start_area; // 출발 지역
+	private String end_area; // 도착 지역
+	private int operate_time; // 운행 시간 (정수형, NOT NULL)
+	private int drive_distance; // 운행 거리 (정수형, NOT NULL)
+	private LocalDateTime first_time; // 첫차 시간 (TIMESTAMP)
+	private LocalDateTime last_time; // 막차 시간 (TIMESTAMP)
+	private int oper_bus_count; // 운영 중인 버스 수 (정수형, NOT NULL)
+	private int oper_run_count; // 일일 운행 횟수 (정수형, NOT NULL)
+	public int getRoute_idx() {
+		return route_idx;
+	}
+	public void setRoute_idx(int route_idx) {
+		this.route_idx = route_idx;
+	}
+	public String getRoute_name() {
+		return route_name;
+	}
+	public void setRoute_name(String route_name) {
+		this.route_name = route_name;
+	}
+	public String getStart_area() {
+		return start_area;
+	}
+	public void setStart_area(String start_area) {
+		this.start_area = start_area;
+	}
+	public String getEnd_area() {
+		return end_area;
+	}
+	public void setEnd_area(String end_area) {
+		this.end_area = end_area;
+	}
+	public int getOperate_time() {
+		return operate_time;
+	}
+	public void setOperate_time(int operate_time) {
+		this.operate_time = operate_time;
+	}
+	public int getDrive_distance() {
+		return drive_distance;
+	}
+	public void setDrive_distance(int drive_distance) {
+		this.drive_distance = drive_distance;
+	}
+	public LocalDateTime getFirst_time() {
+		return first_time;
+	}
+	public void setFirst_time(LocalDateTime first_time) {
+		this.first_time = first_time;
+	}
+	public LocalDateTime getLast_time() {
+		return last_time;
+	}
+	public void setLast_time(LocalDateTime last_time) {
+		this.last_time = last_time;
+	}
+	public int getOper_bus_count() {
+		return oper_bus_count;
+	}
+	public void setOper_bus_count(int oper_bus_count) {
+		this.oper_bus_count = oper_bus_count;
+	}
+	public int getOper_run_count() {
+		return oper_run_count;
+	}
+	public void setOper_run_count(int oper_run_count) {
+		this.oper_run_count = oper_run_count;
+	}
+
+
+}
