@@ -5,7 +5,6 @@
 <head>
 <meta charset="UTF-8">
 <title>BEST</title>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- side-bar CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="/BEST/resources/css/simplebar.css" rel="stylesheet"/>
@@ -17,14 +16,14 @@
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 <script src="/BEST/resources/js/sidebar-menu.js"></script>
 <script src="/BEST/resources/js/simplebar.js"></script>
-<script src="/BEST/resources/js/app-script.js"></script>
-<script src="/BEST/resources/js/bootstrap.min.js"></script>
+<!-- <script src="/BEST/resources/js/app-script.js"></script>
+<script src="/BEST/resources/js/bootstrap.min.js"></script> -->
 </head>
 
 <body>
    <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
      <div class="brand-logo">
-      <a href="../main/main.go">
+      <a href="main.go">
        <h4><span style="color:#E9396B;">BEST</span></h4>
        <h5 class="logo-text"><span style="color:#E9396B;">B</span>us <span style="color:E9396B;">E</span>mployee 
        <span style="color:#E9396B;">S</span>ervice <span style="color:#E9396B;">T</span>ool</h5>
@@ -42,47 +41,47 @@
    <ul class="sidebar-menu do-nicescrol">
       <li class="sidebar-header"></li>
       <li>
-        <a href="../main/main.go">
+        <a href="main.go">
           <i class="mdi mdi-view-dashboard"></i> <span>대쉬보드</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
       <li>
-        <a href="../emp/attendance.go">
+        <a href="attendance.go">
           <i class="bi bi-clock-fill"></i> <span>근태관리</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
-      <li>
-        <a href="../calendar/calendar.go">
+      <li class="dropD">
+        <a href="calendar.go">
           <i class="fa-regular fa-calendar-check"></i> <span>캘린더</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
       <li class="dropD">
-        <a href="javaScript:void();">
+        <a href="javaScript:void(0);">
           <i class="bi bi-bus-front-fill"></i> <span>버스정보</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="../bus/driveInfo.go">
+      			<a href="driveInfo.go">
         			<i class="fa-solid fa-road"></i> <span>운행현황</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="fa-solid fa-user-tie"></i> <span>배차현황</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
    			<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="bi bi-bus-front"></i> <span>버스관리</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -91,38 +90,38 @@
       </li>
       
       <li>
-        <a href="javaScript:void();">
+        <a href="javaScript:void(0);">
           <i class="bi bi-chat-left-text-fill"></i> <span>메신져</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
 	  <li class="dropD">
-  		<a href="javaScript:void();">
+  		<a href="javaScript:void(0);">
     		<i class="bi bi-envelope-fill"></i> <span>메일함</span>
     		<i class="fa-solid fa-angle-right"></i>
   		</a>
   		<ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="../mail/mail.go">
+      			<a href="mail.go">
         			<i class="bi bi-envelope-paper-fill"></i> <span>받은 메일함</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="bi bi-send"></i> <span>보낸 메일함</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
    			<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="bi bi-envelope-exclamation-fill"></i> <span>임시저장</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="bi bi-trash-fill"></i> <span>휴지통</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -167,7 +166,7 @@
       </li>
 
       <li>
-        <a href="../emp/yaquza.go">
+        <a href="orgChart.go">
           <i class="bi bi-diagram-3-fill"></i> <span>조직도</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
@@ -200,7 +199,35 @@
           <i class="bi bi-person-vcard"></i> <span>사원관리</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
-      </li>
+
+      
+     <li class="dropD">
+        <a href="javaScript:void(0);">
+          <i class="fa-regular fa-calendar-check"></i> <span>회의실</span>
+          <i class="fa-solid fa-angle-right"></i>
+        </a>
+     
+        <ul class="dropD-menu">
+    		<li class="dropD-item">
+      			<a href="meetingRoomCalendar.do">
+        			<i class="bi bi-file-text-fill"></i> <span>회의실 예약</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
+      			<a href="myReserve.go">
+        			<i class="bi bi-file-earmark-check-fill"></i> <span>내 예약 현황</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="roomInfo.go">
+        			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>회의실 정보</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+  		</ul>
+	</li>
       
        <li class="dropD">
         <a href="javaScript:void();">
@@ -246,19 +273,19 @@
 
       <li class="sidebar-header"></li>
       <li>
-      <a href="javaScript:void();">
+      <a href="javaScript:void(0);">
       	<i class="fa-regular fa-bell"></i> <span>알림</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>
       <li>
-      <a href="javaScript:void();">
+      <a href="javaScript:void(0);">
       	<i class="bi bi-person-fill-gear"></i> <span>내 정보관리</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>
       <li>
-      	<a href="javaScript:void();"><i class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span>
+      	<a href="javaScript:void(0);"><i class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>
@@ -295,6 +322,10 @@
   </ul>
 </nav>
 </header>
+<script>
+	
+</script>
+
 </body>
 
 </html>
