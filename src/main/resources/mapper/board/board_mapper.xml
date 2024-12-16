@@ -3,5 +3,61 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="com.best.board.BoardDAO">
-
+	
+	
+	<!-- 공지 토탈 페이지 -->
+	<select id="allCount" resultType="int">
+		SELECT CEIL(COUNT(board_idx) / #{cnt}) AS pages 
+	    FROM board
+	    WHERE importance = #{importance}
+	</select>
+	<!-- 공지 리스트 -->
+	<select id="noticeList" resultType="com.best.board.BoardDTO">
+	    SELECT board_idx, subject, name, date, bhit FROM board
+	    WHERE importance = #{importance}
+	    ORDER BY board_idx DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	
+	<!-- 공지 작성 -->
+	<insert id="noticeWrite" 
+    useGeneratedKeys="true"
+    keyColumn="board_idx"
+    keyProperty="board_idx"
+    parameterType="com.best.board.BoardDTO">
+	    INSERT INTO board(board_category, subject, content, emp_idx, name, importance)
+	    VALUES(1, #{subject}, #{content}, #{emp_idx}, #{name}, #{importance})
+	</insert>
+		
+	
+	<!-- 공지 상세보기 -->
+	<select id="noticeDetail" resultType="map">
+		SELECT * FROM board WHERE board_idx = #{param1}
+	</select>
+	
+	
+	<!-- 공지 수정 -->
+	<update id="noticeUpdate" parameterType="map">
+	    UPDATE board SET subject = #{subject}, content = #{content}, importance = #{importance}, `date` = NOW() 
+	    WHERE board_idx = #{board_idx}
+	</update>
+		
+	
+	<!-- 검색 토탈 페이지 -->
+	<select id="searchCount" resultType="int">
+		SELECT CEIL(COUNT(board_idx) / #{cnt}) AS pages 
+	    FROM board
+	    WHERE importance = #{importance}
+	    AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
+	</select>
+	<!-- 검색 리스트 -->
+	<select id="noticeSearch" resultType="com.best.board.BoardDTO">
+	    SELECT board_idx, subject, name, date, bhit FROM board
+	    WHERE importance = #{importance}
+	    AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
+	    ORDER BY board_idx DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
 </mapper>  
