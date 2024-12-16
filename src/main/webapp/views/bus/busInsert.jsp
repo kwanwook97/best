@@ -18,14 +18,11 @@
 
     .bus-info-card {
       border: 2px solid #30005A;
-      border-radius: 10px;
-      padding: 20px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      height: 200px;
-      width: 61%;
-    margin-top: -5vh;
+      border-radius:  0 0 10px 10px;
+      padding: 3px;
+      height: auto;
+      width: 50%;
+    margin-top: 6vh;
       
     }
 
@@ -36,7 +33,9 @@
       margin-right: 20px;
       flex: 0 0 10%;
     }
-
+	span{
+		width: 50%;
+	}
     .purple {
       color: #30005A; /* 보라색 */
     }
@@ -46,17 +45,20 @@
 	.blue{
 		color: #2A33DD;
 	}
-
+	select{
+	    width: 13.1vw;
+	    border-radius: 10px;
+   	    padding: 3 10px;
+	}
 
     .bus-details {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 3열 형식 */
-      gap: 10px 20px;
       font-size: 16px;
       color: #8B6AA7; /* 연보라색 */
-      flex: 1;
       margin: auto 0;
       margin-right: 15%;
+      width: 100%;
+      display: flex;
+   	  justify-content: center;
     }
 
     .bus-details p {
@@ -101,7 +103,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
-    margin-top: -3vh;
 }
 .docnav{
 	    width: 100%;
@@ -121,9 +122,13 @@
 	    border-radius: 4px;
 	    color: #30005A;
 	}
+	select{
+		color: #30005A;
+	}
 	select option{
 		background-color: white !important;
 		border-radius: 5px;
+		color: #30005A;
 	}
 	.search{
 		position: relative;
@@ -146,16 +151,60 @@
 	.editbtn{
 		color: #FFFBF2;
 		background-color: #E9396B;
-		border-radius: 10px;
-		width: 70px;
+		border-radius: 5px;
+		width: 100%;
+	    height: 5vh;
 	}
 	.bus-info-subject{
-	    margin-bottom: -8vh;
-    	margin-right: 45vw;
+		background-color: #30005A;
+		color: #FFFBF2;
+	    margin-bottom:-6vh;
+   	    width: 50%;
     	font-size: 24px;
-    	margin-top: -8vh;
-    	
+    	margin-top: 1vh;
+    	border-radius: 10px 10px 0 0;
+   	    padding: 4px;
+   	    text-align: center;
     }
+    .bus-insert-btn{
+        margin-top: 1vh;
+        width: 50%;
+    	display: flex;
+    	flex-direction: column;
+    	align-items: center;
+    }
+    .bus-details ul{
+    	width: 80%;
+   	    display: flex;
+    	flex-direction: column;
+    	align-items: center;
+    	margin: 0px;
+    	padding: 0px;
+    }
+    .bus-details li{
+    	list-style: none;
+    	width: 80%;
+    	display: flex;
+    	justify-content: space-between;
+    	align-items: center;
+    	margin: 4px;
+    	border-bottom: 1px solid #8B6AA7;
+   	    padding-bottom: 5px;
+    }
+    .bus-details input{
+   	    width: 100%;
+   	    border-radius: 10px;
+   	    padding: 3 10px;
+   	    color: #30005A;
+    }
+    .naviPath i{
+    	margin-right: 1vw;
+    }
+    input[readonly] {
+    border: none; /* 테두리 제거 */
+    background: transparent; /* 배경 투명 */
+    pointer-events: none; /* 마우스 클릭 막기 */
+}
   </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -176,39 +225,43 @@
       <div class="bus-info-subject bold purple"><span>버스 정보</span></div>
       <div class="bus-info-card">
        	<div class="bus-details">
-      		<p><strong>노선 번호:</strong> <span class="purple"><input type="text" name="bus_route_name"/></span></p>
-      		<p><strong>차량 번호:</strong> <span class="purple"><input type="text" name="bus_license_plate"/></span></p>
-          	<p><strong>연비:</strong> <span class="purple"><input type="text" name="bus_fuel_efficiency"/></span></p>
-          	<p><strong>구입일:</strong> <span class="purple"><input type="text" name="bus_buy_date"/></span></p>
-        	<p><strong>제조사:</strong> <span class="purple"><input type="text" name="bus_bus_company"/></span></p>
-        	<p><strong>좌석 수:</strong> <span class="purple"><input type="text" name="bus_seat_number"/></span></p>
-        	<p><strong>버스 종류:</strong> <span class="purple"><input type="text" name="bus_bus_type"/></span></p>
+       		<ul>
+       			<li><strong>노선 번호:</strong> <span><input type="text" name="bus_route_name"/></span></li>
+       			<li><strong>차량 번호:</strong> <span><input type="text" name="bus_license_plate"/></span></li>
+       			<li><strong>연비:</strong> <span><input type="text" name="bus_fuel_efficiency"/></span></li>
+       			<li><strong>구입일:</strong> <span><input type="text" name="bus_buy_date"/></span></li>
+       			<li><strong>제조사:</strong> <span><input type="text" name="bus_bus_company"/></span></li>
+       			<li><strong>좌석 수:</strong> <span><input type="text" name="bus_seat_number"/></span></li>
+       			<li><strong>버스 종류:</strong> <span><input type="text" name="bus_bus_type"/></span></li>
+       		</ul>
         </div>
        </div>
        <div class="bus-info-subject bold purple"><span>정비 사항</span></div>
        <div class="bus-info-card">
         <div class="bus-details">
-        	<p><strong>버스 상태:</strong> 
-        		<span class="purple">
-        			<select name="bus_manage_status">
-        				<option value="정상" selected>정상</option>
-        				<option value="정비 중">정비 중</option>
-        			</select>
-        		</span>
-        	</p>
-        	<p><strong>운행거리:</strong> <span class="purple"><input type="text" name="bus_manage_distance"/></span></p>
-        	<p><strong>점검 일:</strong> <span class="purple"><input type="text" name="bus_manage_inspect_date"/></span></p>
-        	<p><strong>다음 점검일:</strong> <span class="purple"><input type="text" name="bus_manage_next_inspect_date"/></span></p>
-        	<p><strong>담당 정비사:</strong> <span class="purple"><input type="text" name="bus_manage_emp_idx" value="21" readonly/></span></p>
-    		<p><strong>정비 내용:</strong> <span class="purple"><input type="text" name="bus_manage_content"/></span></p>
-    		<p><strong>정비 비용:</strong> <span class="purple"><input type="text" name="bus_manage_amount"/></span></p>
+        	<ul>
+        		<li>
+        			<strong>버스 상태:</strong> 
+        			<span>
+        				<select name="bus_manage_status">
+        					<option value="정상" selected>정상</option>
+        					<option value="정비 중">정비 중</option>
+        				</select>
+        			</span>
+        		</li>
+        		<li><strong>운행거리:</strong> <span><input type="text" name="bus_manage_distance"/></span></li>
+        		<li><strong>점검 일:</strong> <span><input type="text" name="bus_manage_inspect_date"/></span></li>
+        		<li><strong>다음 점검일:</strong> <span><input type="text" name="bus_manage_next_inspect_date"/></span></li>
+        		<li><strong>담당 정비사:</strong> <span><input type="text" name="bus_manage_emp_idx" value="21" readonly/></span></li>
+        		<li><strong>정비 내용:</strong> <span><input type="text" name="bus_manage_content"/></span></li>
+        		<li><strong>정비 비용:</strong> <span><input type="text" name="bus_manage_amount"/></span></li>
+        	</ul>
     	</div>
       </div>
-      <div class="docnav">
-			<div>
+			<div class="bus-insert-btn">
 				<button class="editbtn" type="submit"><i class="far fa-edit"></i>&nbsp;등록</button>
+				<button class="editbtn" style="background-color:#8B6AA7;" type="button" onclick="location.href='busDetail.go'"><i class="bi bi-x-square"></i>&nbsp;취소</button>
 			</div>
-		</div>
     </div>
   </div>
 </form>

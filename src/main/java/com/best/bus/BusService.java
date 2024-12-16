@@ -103,6 +103,9 @@ public class BusService {
 	public List<Map<String, Object>> busDetail() {
 		return busDao.busDetail();
 	}
+	public List<Map<String, Object>> busSum() {
+		return busDao.busSum();
+	}
 
 	/* 버스 등록 */
 	public void busInsert(Map<String, String> param) {
@@ -147,6 +150,40 @@ public class BusService {
 	        }
 	    }
 	    return null;
+	}
+
+	public void busUpdate(int bus_idx, Model model) {
+        BusDTO bus = busDao.busUpdate(bus_idx);
+        BusManageDTO busMan = busDao.busManUpdate(bus_idx);
+        
+        model.addAttribute("bus", bus);
+        model.addAttribute("busMan", busMan);
+	}
+
+	public void busUpdateDo(Map<String, String> param) {
+		BusDTO bus = new BusDTO();	
+		int bus_idx = Integer.parseInt(param.get("bus_idx"));
+		bus.setBus_idx(bus_idx);
+	    bus.setRoute_name(param.get("bus_route_name"));
+	    bus.setFuel_efficiency(Double.parseDouble(param.get("bus_fuel_efficiency")));
+	    bus.setSeat_number(Integer.parseInt(param.get("bus_seat_number")));
+	    bus.setBus_type(param.get("bus_bus_type"));
+	    log.info("ser busDTO:{}",bus);
+	    busDao.busUpdateDo(bus);
+
+	    BusManageDTO busMan = new BusManageDTO();   
+	    String inspectDateStr = param.get("bus_manage_inspect_date");
+		String nextInspectDateStr = param.get("bus_manage_next_inspect_date");
+		busMan.setBus_idx(bus_idx);
+	    busMan.setStatus(param.get("bus_manage_status"));
+	    busMan.setDistance(Double.parseDouble(param.get("bus_manage_distance")));
+	    busMan.setInspect_date(parseLocalDate(inspectDateStr));
+		busMan.setNext_inspect_date(parseLocalDate(nextInspectDateStr));
+	    busMan.setEmp_idx(Integer.parseInt(param.get("bus_manage_emp_idx")));
+	    busMan.setContent(param.get("bus_manage_content"));
+	    busMan.setAmount(Double.parseDouble(param.get("bus_manage_amount")));
+	    log.info("ser busManageDTO:{}",busMan);
+	    busDao.busManUdateDo(busMan);
 	}
 }
 

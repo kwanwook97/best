@@ -40,6 +40,8 @@ public class BusController {
 	public ModelAndView busDetail(Model model) {
 		ModelAndView mav = new ModelAndView("bus/busDetail");
 		List<Map<String, Object>> busData = busService.busDetail();
+		List<Map<String, Object>> busSum = busService.busSum();
+		mav.addObject("busSum", busSum);
         mav.addObject("busData", busData);
 		return mav;
 	}
@@ -58,9 +60,17 @@ public class BusController {
 	
 
 	@RequestMapping(value="/busUpdate.go")
-	public ModelAndView busUpdate() {
-		ModelAndView mav = new ModelAndView("bus/busUpdate");
-		return mav;
+	public String busUpdate(@RequestParam("bus_idx") String busIdx, Model model) {
+		int bus_idx = Integer.parseInt(busIdx);
+		busService.busUpdate(bus_idx, model);
+		return "bus/busUpdate";
+	}
+	
+	@RequestMapping(value="/busUpdate.do")
+	public String busUpdate(@RequestParam Map<String, String> param) {
+		busService.busUpdateDo(param); 
+		log.info("contrl param:{}",param);
+	    return "redirect:/busDetail";
 	}
 	
 	

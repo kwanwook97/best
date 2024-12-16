@@ -16,4 +16,14 @@ public interface BusDAO {
 
 	void busManInsert(BusManageDTO busMan);
 
+	BusDTO busUpdate(int bus_idx);
+
+	BusManageDTO busManUpdate(int bus_idx);
+
+	List<Map<String, Object>> busSum();
+
+	void busUpdateDo(BusDTO bus);
+
+	void busManUdateDo(BusManageDTO busMan);
+
 }

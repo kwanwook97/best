@@ -17,6 +17,15 @@
         ON 
             b.bus_idx = bm.bus_idx;
     </select>
+    <select id="busSum" resultType="map">
+    	SELECT b.route_name,
+           COUNT(*) AS total_buses,
+           SUM(CASE WHEN bm.status = '정상' THEN 1 ELSE 0 END) AS normal_count,
+           SUM(CASE WHEN bm.status = '정비 중' THEN 1 ELSE 0 END) AS maintenance_count
+    	FROM bus b
+    	LEFT JOIN bus_manage bm ON b.bus_idx = bm.bus_idx
+    	GROUP BY b.route_name;
+	</select>
     
     <insert id="busInsert" 
     parameterType="com.best.bus.BusDTO" useGeneratedKeys="true" keyProperty="bus_idx">
@@ -28,4 +37,18 @@
         INSERT INTO bus_manage (bus_idx, inspect_date, next_inspect_date, status, distance, emp_idx, content, amount)
         	VALUES (#{bus_idx}, #{inspect_date}, #{next_inspect_date}, #{status}, #{distance}, #{emp_idx}, #{content}, #{amount})
     </insert>
+    
+    <select id="busUpdate" parameterType="int" resultType="com.best.bus.BusDTO">
+    	SELECT * FROM bus WHERE bus_idx = #{bus_idx}
+	</select>
+    <select id="busManUpdate" parameterType="int" resultType="com.best.bus.BusManageDTO">
+    	SELECT * FROM bus_manage WHERE bus_idx = #{bus_idx}
+	</select>
+	
+	<update id="busUpdateDo" parameterType="com.best.bus.BusDTO">
+	
+	</update>
+	<update id="busManUpdateDo" parameterType="com.best.bus.BusManageDTO">
+	
+	</update>
 </mapper>  
