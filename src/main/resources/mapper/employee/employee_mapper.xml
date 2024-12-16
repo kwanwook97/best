@@ -2,6 +2,156 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
-<mapper namespace="com.best.employee.EmployeeDAO">
+<mapper namespace="com.best.emp.EmployeeDAO">
 
-</mapper>  
+    <select id="empList" resultType="map" parameterType="map">
+        SELECT 
+            ee.emp_idx, 
+            ee.name, 
+            ee.email, 
+            ee.phone, 
+            ee.mobile, 
+            ee.photo, 
+            ee.enable, 
+            ee.state, 
+            dt.depart_name, 
+            rp.rank_name
+        FROM
+            employee ee 
+        INNER JOIN 
+            department dt 
+            ON ee.depart_idx = dt.depart_idx
+        INNER JOIN 
+            rank_emp rp 
+            ON ee.rank_idx = rp.rank_idx
+        WHERE state = #{state}
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchFilter == 'name'">
+                    AND ee.name LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <when test="searchFilter == 'department'">
+                    AND dt.depart_name LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+            </choose>
+        </if>
+        ORDER BY ee.emp_idx DESC 
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="allCount" resultType="int" parameterType="map">
+        SELECT 
+            CEIL(COUNT(ee.emp_idx)/#{cnt}) AS pages 
+        FROM 
+            employee ee
+        INNER JOIN 
+            department dt 
+            ON ee.depart_idx = dt.depart_idx
+        WHERE state = #{state} 
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchFilter == 'name'">
+                    AND ee.name LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <when test="searchFilter == 'department'">
+                    AND dt.depart_name LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+            </choose>
+        </if>
+    </select>
+
+	<!-- 사원정보 상세보기 : 개인정보 -->
+	<select id="empDetail" resultType="map" parameterType="int">
+		SELECT 
+            ee.photo, 
+            ee.name,
+            ee.resident_number,
+            ee.gender,
+            ee.start_date,
+            ee.end_date,
+            ee.email,
+            ee.address,
+            ee.emp_idx,
+            dt.depart_name,
+            rp.rank_name,
+            ee.salary,
+			ee.account_number,
+            ee.phone, 
+            ee.mobile, 
+            dr.license,
+            dr.license_period,
+            ee.enable, <!-- 계정 활성화여부 -->
+            ee.state   <!-- 근무상태 -->
+        FROM
+            employee ee 
+        INNER JOIN 
+            department dt 
+            ON ee.depart_idx = dt.depart_idx
+        INNER JOIN 
+            rank_emp rp 
+            ON ee.rank_idx = rp.rank_idx
+        LEFT JOIN
+        	driver dr
+        	ON ee.emp_idx = dr.emp_idx
+        WHERE ee.emp_idx = #{emp_idx}
+	</select>	
+
+
+
+	<!-- 사원정보 상세보기 : 최근 6건의 변경내역 -->
+	<select id="empHistory" resultType="map" parameterType="int">
+		SELECT 
+            emp_idx,
+            category,
+            before_update,
+            after_update,
+            date,
+            emp_manage_idx
+        FROM
+            emp_history
+        WHERE emp_idx = #{emp_idx}
+        ORDER BY date DESC LIMIT 6
+	</select>
+
+	<!-- 사원정보 상세보기 : 이번 달 근태정보 -->
+	<select id="empAttend" resultType="map" parameterType="int">
+		SELECT
+			COUNT(attend_idx) AS work_cnt <!-- 이번달 근무일수 --> 
+        FROM
+            attendance 
+        WHERE emp_idx = #{emp_idx}
+	</select>
+
+
+	<!-- 사원정보 상세보기 : 연차정보 -->
+	<select id="empLeave" resultType="map" parameterType="int">
+		SELECT 
+		    lv.total_leave,
+		    lv.remain_leave,
+		    lh.start_date AS lv_start_date,
+		    lh.end_date AS lv_end_date
+		FROM leave_emp lv
+		LEFT JOIN leave_history lh 
+		    ON lv.leave_idx = lh.leave_idx
+		WHERE lv.emp_idx = #{emp_idx}
+		ORDER BY lh.end_date DESC
+		LIMIT 1
+	</select>
+
+
+	<!-- 사원정보 상세보기 : 첨부파일 -->
+	<select id="empAttach" resultType="map" parameterType="int">
+		SELECT
+			file_name 
+		FROM attachment
+		WHERE
+			attach_category = 'emp_idx'
+		AND 
+			idx_num = #{emp_idx}
+		ORDER BY date DESC
+		LIMIT 5
+	</select>
+	
+	
+	
+</mapper>
