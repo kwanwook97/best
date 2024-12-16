@@ -17,8 +17,10 @@
 	%line] : 로그가 찍힌 소스의 라인수
 	 - %msg : 메시지
 	%n : 개행(줄바꿈)	
+	%C : 해당 클래스의 풀 경로
+	%M : 실행한 메서드명
 	 -->
-	<property name="LOG_PATTERN" value="%-5level %d{yy-MM-dd HH:mm:ss} [%logger{0}:%line] - %msg%n"/>
+	<property name="LOG_PATTERN" value="%-5level %d{yy-MM-dd HH:mm:ss} [%thread]  [%logger{0}:%line] - %msg%n"/>
 
 	<!-- Appenders :  CONSOLE -->
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">	
@@ -57,11 +59,12 @@
 	<!-- select 수행시 결과인 resultSet 을 보여준다. -->
 	<logger name="jdbc.resultset" level="OFF"/>
 	<!-- 결과값을 테이블(표) 형식으로 보여준다. -->
-	<logger name="jdbc.resultsettable" level="INFO"/>	
+	<logger name="jdbc.resultsettable" level="OFF"/>	
 
    	<!-- Root Logger -->
-	<root>
-		<appender-ref ref="console" />
+   	<!-- TRACE > DEBUG > INFO > WARN > FATAL -->
+	<root level="INFO">
+		<appender-ref ref="console"/>
 		<appender-ref ref="file" />
 	</root>
     

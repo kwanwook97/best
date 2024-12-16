@@ -3,11 +3,11 @@ package com.best.emp;
 import java.sql.Date;
 
 public class EmployeeDTO {
-    private Integer emp_idx; // 직원 ID (Primary Key)
-    private Integer parent_emp_idx; // 상위 직원 ID
+    private int emp_idx; // 직원 ID (Primary Key)
+    private int parent_emp_idx; // 상위 직원 ID
     private String photo; // 사진 URL 또는 경로
     private String name; // 직원 이름
-    private Character gender; // 성별 ('M', 'F')
+    private char gender; // 성별 ('M', 'F')
     private String resident_number; // 주민등록번호
     private String address; // 주소
     private String account_number; // 계좌번호
@@ -19,19 +19,20 @@ public class EmployeeDTO {
     private Boolean enable; // 활성화 상태
     private Boolean state; // 상태
     private String mobile; // 휴대폰 번호
-    private Integer rank_idx; // 직급 ID
-    private Integer depart_idx; // 부서 ID
+    private int rank_idx; // 직급 ID
+    private int depart_idx; // 부서 ID
     private String sign; // 서명
-	public Integer getEmp_idx() {
+    
+	public int getEmp_idx() {
 		return emp_idx;
 	}
-	public void setEmp_idx(Integer emp_idx) {
+	public void setEmp_idx(int emp_idx) {
 		this.emp_idx = emp_idx;
 	}
-	public Integer getParent_emp_idx() {
+	public int getParent_emp_idx() {
 		return parent_emp_idx;
 	}
-	public void setParent_emp_idx(Integer parent_emp_idx) {
+	public void setParent_emp_idx(int parent_emp_idx) {
 		this.parent_emp_idx = parent_emp_idx;
 	}
 	public String getPhoto() {
@@ -46,10 +47,10 @@ public class EmployeeDTO {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Character getGender() {
+	public char getGender() {
 		return gender;
 	}
-	public void setGender(Character gender) {
+	public void setGender(char gender) {
 		this.gender = gender;
 	}
 	public String getResident_number() {
@@ -118,16 +119,16 @@ public class EmployeeDTO {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public Integer getRank_idx() {
+	public int getRank_idx() {
 		return rank_idx;
 	}
-	public void setRank_idx(Integer rank_idx) {
+	public void setRank_idx(int rank_idx) {
 		this.rank_idx = rank_idx;
 	}
-	public Integer getDepart_idx() {
+	public int getDepart_idx() {
 		return depart_idx;
 	}
-	public void setDepart_idx(Integer depart_idx) {
+	public void setDepart_idx(int depart_idx) {
 		this.depart_idx = depart_idx;
 	}
 	public String getSign() {
