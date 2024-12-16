@@ -112,6 +112,7 @@
 	    border: 1px solid #30005A;
 	    border-radius: 4px;
 	    color: #30005A;
+        padding: 3 10 3 10px;
 	}
 	select option{
 		background-color: white !important;

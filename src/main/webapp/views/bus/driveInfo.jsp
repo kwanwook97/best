@@ -45,9 +45,6 @@
 										<c:when test="${fn:length(route.route_name) == 4}">
       										<span class="bus-number f48 cGreen">${route.route_name}</span>
   										</c:when>
-  										<c:otherwise>
-                							<span class="bus-number f48 cRed">Invalid Data: ${route.route_name}</span>
-            							</c:otherwise>
 									</c:choose>
 								</div>
 								<input type="hidden" value="${route.bus_id}" />
@@ -71,6 +68,7 @@
 			
 			</div>
 		</div>
+	</div>
 	</div>
 </body>
 <script>

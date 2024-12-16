@@ -24,6 +24,9 @@
       align-items: flex-start;
       justify-content: space-between;
       height: 200px;
+      width: 61%;
+    margin-top: -5vh;
+      
     }
 
     .bus-number {
@@ -93,7 +96,12 @@
 }
 .content {
 	width: 100%;
-	height: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: -3vh;
 }
 .docnav{
 	    width: 100%;
@@ -141,6 +149,13 @@
 		border-radius: 10px;
 		width: 70px;
 	}
+	.bus-info-subject{
+	    margin-bottom: -8vh;
+    	margin-right: 45vw;
+    	font-size: 24px;
+    	margin-top: -8vh;
+    	
+    }
   </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -163,6 +178,7 @@
 			</div>
 		</div>
     <div class="content">
+      <div class="bus-info-subject bold purple"><span>버스 정보</span></div>
       <div class="bus-info-card">
        	<div class="bus-details">
       		<p><strong>노선 번호:</strong> <span class="purple"><input type="text" name="bus_route_name"/></span></p>
@@ -174,6 +190,7 @@
         	<p><strong>버스 종류:</strong> <span class="purple"><input type="text" name="bus_bus_type"/></span></p>
         </div>
        </div>
+       <div class="bus-info-subject bold purple"><span>정비 사항</span></div>
        <div class="bus-info-card">
         <div class="bus-details">
         	<p><strong>버스 상태:</strong> 
@@ -187,7 +204,7 @@
         	<p><strong>운행거리:</strong> <span class="purple"><input type="text" name="bus_manage_distance"/></span></p>
         	<p><strong>점검 일:</strong> <span class="purple"><input type="text" name="bus_manage_inspect_date"/></span></p>
         	<p><strong>다음 점검일:</strong> <span class="purple"><input type="text" name="bus_manage_next_inspect_date"/></span></p>
-        	<p><strong>담당 정비사:</strong> <span class="purple"><input type="text" name="bus_manage_emp_idx" value="21"/></span></p>
+        	<p><strong>담당 정비사:</strong> <span class="purple"><input type="text" name="bus_manage_emp_idx" value="21" readonly/></span></p>
     		<p><strong>정비 내용:</strong> <span class="purple"><input type="text" name="bus_manage_content"/></span></p>
     		<p><strong>정비 비용:</strong> <span class="purple"><input type="text" name="bus_manage_amount"/></span></p>
     	</div>
