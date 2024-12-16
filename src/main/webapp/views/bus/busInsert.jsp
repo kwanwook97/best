@@ -172,11 +172,6 @@
 				
 		</div>
 	</div>
-		<div class="docnav">
-			<div>
-				<button class="editbtn" type="submit"><i class="far fa-edit"></i>&nbsp;등록</button>
-			</div>
-		</div>
     <div class="content">
       <div class="bus-info-subject bold purple"><span>버스 정보</span></div>
       <div class="bus-info-card">
@@ -209,6 +204,11 @@
     		<p><strong>정비 비용:</strong> <span class="purple"><input type="text" name="bus_manage_amount"/></span></p>
     	</div>
       </div>
+      <div class="docnav">
+			<div>
+				<button class="editbtn" type="submit"><i class="far fa-edit"></i>&nbsp;등록</button>
+			</div>
+		</div>
     </div>
   </div>
 </form>
