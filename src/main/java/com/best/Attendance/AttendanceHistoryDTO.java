@@ -1,4 +1,4 @@
-package com.best.Attendance;
+package com.best.attendance;
 
 import java.time.LocalDateTime;
 

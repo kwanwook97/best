@@ -53,7 +53,7 @@
         </a>
       </li>
       
-      <li>
+      <li class="dropD">
         <a href="calendar.go">
           <i class="fa-regular fa-calendar-check"></i> <span>캘린더</span>
           <i class="fa-solid fa-angle-right"></i>
@@ -61,7 +61,7 @@
       </li>
       
       <li class="dropD">
-        <a href="javaScript:void();">
+        <a href="javaScript:void(0);">
           <i class="bi bi-bus-front-fill"></i> <span>버스정보</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
@@ -89,14 +89,14 @@
       </li>
       
       <li>
-        <a href="javaScript:void();">
+        <a href="javaScript:void(0);">
           <i class="bi bi-chat-left-text-fill"></i> <span>메신져</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
 	  <li class="dropD">
-  		<a href="javaScript:void();">
+  		<a href="javaScript:void(0);">
     		<i class="bi bi-envelope-fill"></i> <span>메일함</span>
     		<i class="fa-solid fa-angle-right"></i>
   		</a>
@@ -108,19 +108,19 @@
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="bi bi-send"></i> <span>보낸 메일함</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
    			<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="bi bi-envelope-exclamation-fill"></i> <span>임시저장</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="javaScript:void(0);">
         			<i class="bi bi-trash-fill"></i> <span>휴지통</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -193,6 +193,36 @@
           </ul>
       </li>
       
+      
+    <li class="dropD">
+        <a href="javaScript:void(0);">
+          <i class="fa-regular fa-calendar-check"></i> <span>회의실</span>
+          <i class="fa-solid fa-angle-right"></i>
+        </a>
+     
+        <ul class="dropD-menu">
+    		<li class="dropD-item">
+      			<a href="meetingRoomCalendar.do">
+        			<i class="bi bi-file-text-fill"></i> <span>회의실 예약</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
+      			<a href="myReserve.go">
+        			<i class="bi bi-file-earmark-check-fill"></i> <span>내 예약 현황</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="roomInfo.go">
+        			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>회의실 정보</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+  		</ul>
+	</li>
+	
+	
       <!-- 관욱수정 2024.12.12 시작 -->
       <li class="dropD">
       	  <a href="javaScript:void();">
@@ -215,8 +245,8 @@
 	   			</li>
 	        </ul>
       	</li>
+      	
       	<!-- 관욱수정 2024.12.12 끝 -->
-      
        <li class="dropD">
         <a href="javaScript:void();">
           <i class="bi bi-bar-chart-fill"></i> <span>매출현황</span>
@@ -261,19 +291,19 @@
 
       <li class="sidebar-header"></li>
       <li>
-      <a href="javaScript:void();">
+      <a href="javaScript:void(0);">
       	<i class="fa-regular fa-bell"></i> <span>알림</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>
       <li>
-      <a href="javaScript:void();">
+      <a href="javaScript:void(0);">
       	<i class="bi bi-person-fill-gear"></i> <span>내 정보관리</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>
       <li>
-      	<a href="javaScript:void();"><i class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span>
+      	<a href="javaScript:void(0);"><i class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>
@@ -310,6 +340,10 @@
   </ul>
 </nav>
 </header>
+<script>
+	
+</script>
+
 </body>
 
 </html>

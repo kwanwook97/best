@@ -8,7 +8,6 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
   <script src="/BEST/resources/js/index.global.js"></script>
-
   <style>
   :root{
       --primary-color: #30005A;
@@ -155,6 +154,7 @@
 
 	
   </style>
+  
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>

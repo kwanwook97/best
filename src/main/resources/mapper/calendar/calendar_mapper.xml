@@ -4,4 +4,92 @@
 >
 <mapper namespace="com.best.calendar.CalendarDAO">
 
+	<insert id="saveCalendar" parameterType="map">
+        INSERT INTO reserve (emp_idx,start_datetime, end_datetime,subject,room_idx)
+        VALUES (#{emp_idx},#{startDateTime}, #{endDateTime},#{subject},#{room_idx})
+	</insert>
+	
+<!-- 	<select id="getEvents" resultType="map" >
+        SELECT 
+        	reserve_idx AS id,
+        	subject AS title,
+            start_datetime AS start,
+            end_datetime AS end
+            
+        FROM reserve
+        WHERE start_datetime >= #{startDate}
+          AND end_datetime &lt; #{endDate}
+	</select> -->
+	<select id="getEvents" resultType="map" >
+        SELECT 
+		    r.reserve_idx as id,
+		    r.start_datetime as start,
+		    r.end_datetime as end,
+		    r.subject as title,
+		    r.room_idx as room_idx,
+		    rm.name as room_name,
+		    e.emp_idx as emp_idx,
+		    e.name as name,
+		    e.depart_idx as depart_idx,
+		    e.rank_idx as rank_idx,
+		    d.depart_name as depart_name,
+		    p.rank_name as rank_name
+			FROM 
+			    reserve r
+			JOIN 
+			    employee e ON r.emp_idx = e.emp_idx
+			JOIN 
+			    department d ON e.depart_idx = d.depart_idx
+			JOIN 
+			    rank_emp p ON e.rank_idx = p.rank_idx
+			JOIN 
+				room rm ON r.room_idx = rm.room_idx
+	        WHERE r.start_datetime >= #{startDate}
+	          AND r.end_datetime &lt; #{endDate}
+	</select>
+	
+	<select id="getRoomList" resultType="com.best.calendar.RoomDTO">
+		select * from room order by room_idx ASC
+	</select>
+	
+	<select id="myReserveList" parameterType="map" resultType="map">
+	    SELECT 
+	        r.reserve_idx,
+	        r.start_datetime,
+	        r.end_datetime,
+	        r.subject,
+	        r.room_idx,
+	        rm.name as room_name,
+			CASE 
+			    WHEN CONVERT_TZ(CURRENT_TIMESTAMP, '+00:00', '+09:00') > r.end_datetime THEN '이용 완료' 
+			    WHEN CONVERT_TZ(CURRENT_TIMESTAMP, '+00:00', '+09:00') BETWEEN r.start_datetime AND r.end_datetime THEN '이용중' 
+			    ELSE '변경 가능' 
+			END AS status
+	    FROM reserve r
+	    JOIN room rm ON r.room_idx = rm.room_idx
+	    WHERE r.emp_idx = #{loginId}
+	    ORDER BY r.reserve_idx DESC 
+	    LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	
+	<select id="getTotalPages" parameterType="map" resultType="int">
+	    SELECT CEIL(COUNT(*) / #{limit}) 
+	    FROM reserve 
+	    WHERE emp_idx = #{loginId}
+	</select>
+	
+	
+	<update id="myReserveUpdate" parameterType="map">
+	    UPDATE reserve
+	    SET start_datetime = #{startDateTime},
+	        end_datetime = #{endDateTime},
+	        subject = #{subject}
+	    WHERE reserve_idx = #{reserveIdx}
+	</update>
+	
+	<delete id="cancelReserve" parameterType="map">
+	    DELETE FROM reserve WHERE reserve_idx = #{reserveIdx}
+	</delete>
+
 </mapper>  
