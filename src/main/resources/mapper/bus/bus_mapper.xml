@@ -3,5 +3,29 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="com.best.bus.BusDAO">
+	<select id="driveInfo" resultType="com.best.bus.RouteDTO">
+		SELECT * FROM route
+	</select>
+	<select id="busDetail" resultType="map">
+        SELECT 
+            b.*, 
+            bm.* 
+        FROM 
+            bus b
+        JOIN 
+            bus_manage bm 
+        ON 
+            b.bus_idx = bm.bus_idx;
+    </select>
+    
+    <insert id="busInsert" 
+    parameterType="com.best.bus.BusDTO" useGeneratedKeys="true" keyProperty="bus_idx">
+        INSERT INTO bus (route_name, license_plate, fuel_efficiency, buy_date, bus_company, seat_number, bus_type)
+        	VALUES (#{route_name}, #{license_plate}, #{fuel_efficiency}, #{buy_date}, #{bus_company}, #{seat_number}, #{bus_type})
+    </insert>
 
+    <insert id="busManInsert" parameterType="com.best.bus.BusManageDTO">
+        INSERT INTO bus_manage (bus_idx, inspect_date, next_inspect_date, status, distance, emp_idx, content, amount)
+        	VALUES (#{bus_idx}, #{inspect_date}, #{next_inspect_date}, #{status}, #{distance}, #{emp_idx}, #{content}, #{amount})
+    </insert>
 </mapper>  
