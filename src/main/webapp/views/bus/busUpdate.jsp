@@ -78,7 +78,7 @@
 }
 .tm2 {
 	margin-top: 2%;
-	width: 21%;
+	width: 29%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -149,56 +149,39 @@
      <div class="naviPath bold f32 w100 tm2">
 		<span class="lPurple">버스정보</span>
 			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
-		<span class="purple">버스관리</span>
+		<span class="lPurple">버스관리</span>
+			<i class="fa-solid fa-angle-right" style="color:#30005A;"></i>
+		<span class="purple">버스수정</span>
 		<div class="bus-drive-info">
 				
 		</div>
 	</div>
 		<div class="docnav">
 			<div>
-				<button class="editbtn" onclick="location.href='busInsert.go'"><i class="far fa-edit"></i>&nbsp;등록</button>
 				<button class="editbtn" onclick="location.href='busUpdate.go'"><i class="far fa-edit"></i>&nbsp;수정</button>
-			</div>
-			<div class="searchbox">
-				<select class="drop">
-				  <option value="busPlateNo">차량 번호</option>
-				  <option value="busNo">노선 번호</option>
-				</select>
-				<div class="search">
-					<input type="text" name="">
-					<i class="fas fa-search"></i>
-				</div>
 			</div>
 		</div>
     <!-- 버스 정보 리스트 -->
     <div class="content">
       <!-- 버스 정보 카드 -->
-      	<c:forEach var="bus" items="${busData}">
       <div class="bus-info-card">
-        		<c:choose>
-					<c:when test="${fn:length(bus.route_name) == 3}">
-						<div class="bus-number blue">${bus.route_name}</div>
-					</c:when>
-					<c:when test="${fn:length(bus.route_name) == 4}">
-  						<div class="bus-number green">${bus.route_name}</div>
-  					</c:when>
-				</c:choose>
-        		<div class="bus-details">
-       				<p><strong>차량 번호:</strong> <span class="purple">${bus.license_plate}</span></p>
-          			<p><strong>운행 상태:</strong> <span class="purple">운행 중</span></p>
-          			<p><strong>버스 상태:</strong> <span class="purple">${bus.status}</span></p>
-          			<p><strong>연비:</strong> <span class="purple">${bus.fuel_efficiency} km/L</span></p>
-          			<p><strong>점검 일:</strong> <span class="purple">${bus.inspect_date}</span></p>
-          			<p><strong>구입일:</strong> <span class="purple">${bus.buy_date}</span></p>
-          			<p><strong>다음 점검일:</strong> <span class="purple">${bus.next_inspect_date}</span></p>
-          			<p><strong>제조사:</strong> <span class="purple">${bus.bus_company}</span></p>
-          			<p><strong>운행거리:</strong> <span class="purple">${bus.distance}km</span></p>
-          			<p><strong>좌석 수:</strong> <span class="purple">${bus.seat_number} 석</span></p>
-          			<p><strong>담당 정비사:</strong> <span class="purple">${bus.emp_idx}</span></p>
-          			<p><strong>정비 내용:</strong> <span class="purple">${bus.content}</span></p>
-        	</div>
+       	<div class="bus-details">
+      		<p><strong>차량 번호:</strong> <span class="purple"><input type="text"/></span></p>
+          	<p><strong>운행 상태:</strong> <span class="purple"><input type="text"/></span></p>
+          	<p><strong>버스 상태:</strong> <span class="purple"><input type="text"/></span></p>
+          	<p><strong>연비:</strong> <span class="purple"><input type="text"/></span></p>
+          	<p><strong>구입일:</strong> <span class="purple"><input type="text"/></span></p>
+        	<p><strong>제조사:</strong> <span class="purple"><input type="text"/></span></p>
+        	<p><strong>운행거리:</strong> <span class="purple"><input type="text"/></span></p>
+        	<p><strong>좌석 수:</strong> <span class="purple"><input type="text"/></span></p>
+        </div>
+        <div class="bus-details">
+        	<p><strong>점검 일:</strong> <span class="purple"><input type="text"/></span></p>
+        	<p><strong>다음 점검일:</strong> <span class="purple"><input type="text"/></span></p>
+        	<p><strong>담당 정비사:</strong> <span class="purple"><input type="text"/></span></p>
+    		<p><strong>정비 내용:</strong> <span class="purple"><input type="text"/></span></p>
+    	</div>
       </div>
-        </c:forEach>
     </div>
   </div>
 </body>

@@ -1,6 +1,6 @@
 package com.best.bus;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class RouteDTO {
 	private int route_idx; // 노선 ID (Primary Key, AUTO_INCREMENT)
@@ -9,10 +9,18 @@ public class RouteDTO {
 	private String end_area; // 도착 지역
 	private int operate_time; // 운행 시간 (정수형, NOT NULL)
 	private int drive_distance; // 운행 거리 (정수형, NOT NULL)
-	private LocalDateTime first_time; // 첫차 시간 (TIMESTAMP)
-	private LocalDateTime last_time; // 막차 시간 (TIMESTAMP)
-	private int oper_bus_count; // 운영 중인 버스 수 (정수형, NOT NULL)
-	private int oper_run_count; // 일일 운행 횟수 (정수형, NOT NULL)
+	private LocalTime first_time; // 첫차 시간 (TIMESTAMP)
+	private LocalTime last_time; // 막차 시간 (TIMESTAMP)
+	private String bus_id;
+	private int oper_count;
+	
+	
+	public int getOper_count() {
+		return oper_count;
+	}
+	public void setOper_count(int oper_count) {
+		this.oper_count = oper_count;
+	}
 	public int getRoute_idx() {
 		return route_idx;
 	}
@@ -49,30 +57,25 @@ public class RouteDTO {
 	public void setDrive_distance(int drive_distance) {
 		this.drive_distance = drive_distance;
 	}
-	public LocalDateTime getFirst_time() {
+	public LocalTime getFirst_time() {
 		return first_time;
 	}
-	public void setFirst_time(LocalDateTime first_time) {
+	public void setFirst_time(LocalTime first_time) {
 		this.first_time = first_time;
 	}
-	public LocalDateTime getLast_time() {
+	public LocalTime getLast_time() {
 		return last_time;
 	}
-	public void setLast_time(LocalDateTime last_time) {
+	public void setLast_time(LocalTime last_time) {
 		this.last_time = last_time;
 	}
-	public int getOper_bus_count() {
-		return oper_bus_count;
+	public String getBus_id() {
+		return bus_id;
 	}
-	public void setOper_bus_count(int oper_bus_count) {
-		this.oper_bus_count = oper_bus_count;
+	public void setBus_id(String bus_id) {
+		this.bus_id = bus_id;
 	}
-	public int getOper_run_count() {
-		return oper_run_count;
-	}
-	public void setOper_run_count(int oper_run_count) {
-		this.oper_run_count = oper_run_count;
-	}
+	
 
 
 }

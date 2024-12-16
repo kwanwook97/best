@@ -1,0 +1,474 @@
+@charset "UTF-8";
+.body {
+	height: auto;
+	width: 83%;
+	margin-top: 80px;
+    margin-left: 300px;
+	margin-right: 100%;
+}
+
+/* 보라색 배경 */
+.purple {
+	background-color: #30005A;
+	border: 2px solid #30005A;
+	color: white;
+}
+
+.cPurple {
+	color: #30005A;
+}
+.bus-drive-info {
+	color: #30005A;
+	margin-left: 1vw;
+}
+.bus-drive-info i{
+    margin-right: 1vw;
+}
+
+/* 보라색 선 + 보라색 글씨 */
+.pLine {
+	border: 2px solid #30005A;
+	color: #30005A;
+	height: 100%;
+}
+
+/* 기본 굵은 글씨 */
+.bold {
+	font-weight: bold;
+}
+
+/* inline-block */
+.inBlock {
+	display: inline-block;
+	border: 2px solid #30005A;
+	vertical-align: top; /* 상단 정렬 */
+	text-align: center;
+	margin: 10px;
+	border-radius: 10px;
+}
+
+.p25 {
+	width: 23%;
+}
+
+.p18 {
+	width: 18%;
+}
+
+.m20 {
+	margin-right: 15%;
+	margin-top: 15%;
+	margin-bottom: 15%;
+}
+
+.content {
+	width: 100%;
+	height: 80%;
+}
+
+
+.rContent {
+	position: relative;
+	width: 25%; 
+	height: 100%;
+	border : 2px solid #30005A;
+	border-radius: 10px;
+    overflow-y: auto; /* 세로 스크롤 생성 */
+    overflow-x: hidden; /* 가로 스크롤 제거 */
+    padding: 10px; /* 내부 여백 */
+}
+
+
+/* 가운데 정렬 */
+.center {
+	display: flex; /* Flexbox 활성화 */
+	flex-direction: column; /* 세로 방향 정렬 */
+	justify-content: center; /* 세로 기준 가운데 정렬 */
+	align-items: center; /* 가로 기준 중앙 정렬 */
+	height: 100%; /* 부모 높이에 맞게 */
+	text-align: center; /* 텍스트 중앙 정렬 */
+	box-sizing: border-box; /* 패딩 포함 크기 계산 */
+}
+
+.w100 {
+	width: 100%;
+}
+
+/* 위아래 마진 10% */
+.m10 {
+	margin: 10% 0;
+}
+
+/* 패딩 1% */
+.p1 {
+	padding: 1%;
+}
+
+/* 위 마진 2% */
+.tm2 {
+	margin-top: 2%;
+	width: 21%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.h28 {
+	height: 28%;
+}
+
+.h72 {
+	height: 72%;
+}
+
+
+.navbus-info{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    margin-top: 2%;
+}
+/* 연한 보라색 */
+.lPurple {
+	color: #8B6AA7;
+}
+
+.wr50 {
+	display: inline-block;
+	width: 50%;
+	text-align: right;
+	padding-right: 10%;
+}
+
+.wl50 {
+	display: inline-block;
+	width: 50%;
+	text-align: left;
+	padding-left: 10%;
+}
+
+/* 폰트사이즈 24 */
+.f24 {
+	font-size: 24px;
+}
+
+/* 폰트사이즈 48 */
+.f48 {
+	font-size: 48px;
+}
+
+/* 폰트사이즈 32 */
+.f32 {
+	font-size: 32px;
+}
+
+/* 폰트사이즈 16 */
+.f16 {
+	font-size: 16px;
+}
+
+/* 배경색(베이지) */
+.bgColor {
+	background-color: #FFFBF2;
+	border-bottom-left-radius: 10px;
+	overflow: hidden;
+}
+
+/* 높이 */
+.h10 {
+	height: 10%;
+}
+/* 높이 */
+.h90 {
+	height: 90%;
+}
+
+table {
+	width: 100%;
+	height: 100%;
+	border-collapse: collapse;
+	text-align: center;
+	font-size: 24px;
+}
+
+thead {
+	height: 15%;
+}
+
+th, td {
+	/* padding: 5px; */
+	border-bottom: 1px solid #30005A; /* 보라색 선 */
+}
+
+th {
+	color: #30005A; /* 보라색 글씨 */
+	font-weight: bold;
+}
+
+td {
+	color: #8B6AA7; /* 연 보라색 글씨 */
+	font-weight: bold;
+}
+
+.bus-info-container {
+   display: flex;
+    flex-direction: row;
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    width: 100%;
+    justify-content: space-between;
+}
+
+/* 버스 카드 스타일 */
+.bus-info {
+	width: 18%;
+}
+
+/* 상단 정보 섹션 */
+.bus-header {
+	width: 100%;
+	height: 11vh;
+	border: 2px solid #6a1b9a;
+	border-radius: 10px;
+    padding: 0.4rem;
+	margin-bottom: 15px;
+	background-color: white;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	overflow: hidden; /* 넘치는 텍스트 숨기기 */
+	text-overflow: ellipsis; /* ...으로 표시 (옵션) */
+}
+
+.bus-main-info {
+	display: flex;
+	justify-content: space-between;
+}
+.bus-main-info div:first-child{
+	width: 77%;
+}
+
+.bus-number {
+	font-size: 2rem;
+	font-weight: bold;
+	width: 20%
+}
+
+/* 초록색 글씨 */
+.cGreen {
+	color: #1DD20C;
+}
+
+/* 파란색 글씨 */
+.cBlue {
+	color: #2A33DD;
+}
+
+.bus-details {
+	font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+	width: 80%
+}
+
+
+.drivers-title {
+	font-size: 1rem;
+	margin-bottom: 10px;
+}
+
+p {
+	display: inline-block;
+}
+
+
+
+
+
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  gap: 10px; /* 버튼 사이 간격 */
+  margin: 1% 0;
+  width: 100%;
+  height: 2%;
+  text-align: center;
+  
+}
+.start-button, .end-button {
+  font-weight: bold;
+  padding: 0 1%;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+}
+.start-button {
+  background-color: #5e178e; /* 보라색 */
+}
+.end-button {
+  background-color: #e73959; /* 분홍색 */
+}
+.start-button:hover {
+  background-color: #7a2aa9; /* 보라색 hover 효과 */
+}
+.end-button:hover {
+  background-color: #f05b75; /* 분홍색 hover 효과 */
+}
+
+
+
+
+
+
+
+
+
+
+.route-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .route-summary {
+        font-size: 14px;
+    }
+	.route-summary p{
+		margin: 0px;
+	}
+	
+	
+    .station-container {
+        display: flex;
+    }
+
+    .upward-stations, .downward-stations {
+        width: 48%; /* 각각 50% 차지 */
+    }
+
+    .station-list {
+        display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    }
+
+    .station-item {
+        display: flex;
+        align-items: center;
+        position: relative; /* 선 연결을 위한 relative */
+        width: 100%;
+        height: 5vh;
+    }
+
+    .station-item i {
+    	color: #30005A;
+        z-index: 2; /* 선 위로 아이콘을 표시 */
+    	font-weight: bold; /* 굵게 표시 */
+   		font-size: 22px;
+    }
+	p.station-name{
+		margin: 0px;
+	}
+	
+	.station-item {
+    position: relative;
+    display: flex;
+    justify-content: space-between; /* 좌우 정렬 */
+    align-items: center; /* 세로 가운데 정렬 */
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd; /* 구분선 */
+}
+
+.station-info {
+    flex: 1; /* 남은 공간 사용 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    width: 100%
+}
+
+
+    .station-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .station-id {
+        font-size: 12px;
+        color: #777;
+        margin: 0px;
+    }
+
+/* 연결선 스타일 */
+.station-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 5px; /* 연결선을 오른쪽으로 이동 */
+    top: 69%;
+    width: 7px; /* 선 두께 */
+    height: 31px; /* 선 길이 */
+    background-color: #6a1b9a; /* 선 색상 */
+    z-index: 1; /* 아이콘 아래 표시 */
+}
+.bus-tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8); /* 반투명 검은색 배경 */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none; /* 마우스 이벤트 무시 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+.bus-tooltip2 {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8); /* 반투명 검은색 배경 */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none; /* 마우스 이벤트 무시 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    transform: translateY(-40px);
+}
+
+.bus-icon{
+	position: absolute;
+    width: 27px;
+    height: 25px;
+	z-index: 1000 !important;
+    display: block !important;
+    cursor: pointer;
+}
+.green{
+	background: url('https://ssl.pstatic.net/sstatic/keypage/outside/scui/bus/img/ico_bus_set_v5.png') no-repeat;
+	background-position: 0 -56px;
+}
+.blue{
+	background: url('https://ssl.pstatic.net/sstatic/keypage/outside/scui/bus/img/ico_bus_set_v5.png') no-repeat;
+	background-position: 0 0px;
+}
+.station-name {
+    display: inline-block;
+    width: 40ch; /* 최대 10글자 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+.bus-map{
+	width: 55%; 
+	height: 100%;
+	border : 2px solid #30005A;
+	border-radius: 10px;
+    padding: 10px; /* 내부 여백 */
+}

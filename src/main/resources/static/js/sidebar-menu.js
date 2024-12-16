@@ -1,126 +1,153 @@
-$(function () {
+document.addEventListener("DOMContentLoaded", function () {
     "use strict";
 
-$('a').on('click', function (e) {
-    e.preventDefault(); // 기본 동작 방지 (필요 시)
-    const link = $(this).closest('a'); // 항상 상위 <a> 태그를 가져옴
-    console.log(link.attr('href')); // 링크 주소 확인
-    window.location.href = link.attr('href'); // 페이지 이동
-});
+    // 모든 <a> 태그 클릭 이벤트 처리
+    document.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function (e) {
+            e.preventDefault(); // 기본 동작 방지
+            const href = link.getAttribute("href");
+            console.log(href); // 링크 주소 확인
+            if (href) window.location.href = href; // 페이지 이동
+        });
+    });
 
-    $(document).ready(function () {
-        // URL에서 드롭다운 상태 읽기
-        const urlParams = new URLSearchParams(window.location.search);
-        const dropdownIndex = urlParams.get('dropdownIndex'); // URL에서 dropdownIndex 값 가져오기
-        const selectedIndex = urlParams.get('selectedIndex'); // URL에서 selectedIndex 값 가져오기
+    // URL에서 드롭다운 상태 읽기
+    const urlParams = new URLSearchParams(window.location.search);
+    const dropdownIndex = urlParams.get("dropdownIndex");
+    const selectedIndex = urlParams.get("selectedIndex");
 
-        // 페이지 로드 시 드롭다운 상태 복원
-        if (dropdownIndex !== null) {
-            const $dropD = $('.dropD').eq(parseInt(dropdownIndex, 10)); // 인덱스로 드롭다운 선택
-            const $dropMenu = $dropD.find('.dropD-menu');
-            const $icon = $dropD.find('> a > .fa-solid');
+    // 페이지 로드 시 드롭다운 상태 복원
+    if (dropdownIndex !== null) {
+        const dropD = document.querySelectorAll(".dropD")[parseInt(dropdownIndex, 10)];
+        if (dropD) {
+            const dropMenu = dropD.querySelector(".dropD-menu");
+            const icon = dropD.querySelector("a > .fa-solid");
 
-            // 드롭다운 열기 및 아이콘 변경
-            $dropMenu.addClass('show');
-            $icon.removeClass('fa-angle-right').addClass('fa-angle-down');
+            if (dropMenu) dropMenu.classList.add("show");
+            if (icon) {
+                icon.classList.remove("fa-angle-right");
+                icon.classList.add("fa-angle-down");
+            }
         }
+    }
 
-        // 페이지 로드 시 선택된 항목 복원
-        if (selectedIndex !== null) {
-            const $selectedItem = $('.dropD-menu > li').eq(parseInt(selectedIndex, 10));
-            $selectedItem.addClass('selected');
-        }
+    // 페이지 로드 시 선택된 항목 복원
+    if (selectedIndex !== null) {
+        const selectedItem = document.querySelectorAll(".dropD-menu > li")[parseInt(selectedIndex, 10)];
+        if (selectedItem) selectedItem.classList.add("selected");
+    }
 
-        // 드롭다운 클릭 시 상태 저장
-        $('.dropD').on('click', function (e) {
+    // 드롭다운 클릭 이벤트
+    document.querySelectorAll(".dropD").forEach(function (dropD, index) {
+        dropD.addEventListener("click", function (e) {
             e.stopPropagation(); // 이벤트 전파 방지
 
-            const $this = $(this);
-            const $dropMenu = $this.find('.dropD-menu');
-            const $icon = $this.find('.fa-solid');
-            const index = $('.dropD').index(this); // 현재 드롭다운의 인덱스 계산
+            const dropMenu = dropD.querySelector(".dropD-menu");
+            const icon = dropD.querySelector(".fa-solid");
+            const isOpen = dropMenu && dropMenu.classList.contains("show");
 
-            // 열림/닫힘 상태 토글
-            const isOpen = $dropMenu.hasClass('show');
-            $('.dropD-menu').removeClass('show'); // 다른 드롭다운 닫기
-            $('.fa-solid').removeClass('fa-angle-down').addClass('fa-angle-right'); // 아이콘 초기화
+            // 다른 드롭다운 초기화
+            document.querySelectorAll(".dropD-menu").forEach(function (menu) {
+                menu.classList.remove("show");
+            });
+            document.querySelectorAll(".fa-solid").forEach(function (icon) {
+                icon.classList.remove("fa-angle-down");
+                icon.classList.add("fa-angle-right");
+            });
 
-            if (!isOpen) {
-                $dropMenu.addClass('show'); // 현재 드롭다운 열기
-                $icon.removeClass('fa-angle-right').addClass('fa-angle-down'); // 아이콘 변경
+            // 현재 드롭다운 열기
+            if (!isOpen && dropMenu) {
+                dropMenu.classList.add("show");
+                if (icon) {
+                    icon.classList.remove("fa-angle-right");
+                    icon.classList.add("fa-angle-down");
+                }
             }
 
             // URL 쿼리 파라미터에 상태 저장
             const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('dropdownIndex', index);
-            window.history.replaceState({}, '', currentUrl); // URL 갱신
-        });
-
-        // 드롭다운 내부 링크 클릭 시 상태 유지 및 이동
-        $('.dropD-menu > li a').on('click', function (e) {
-            const $this = $(this).closest('li'); // 클릭된 항목
-            const dropdownIndex = $('.dropD').index($this.closest('.dropD'));
-            const selectedIndex = $('.dropD-menu > li').index($this); // 현재 항목의 인덱스 계산
-
-            // 모든 항목에서 selected 클래스 제거
-            $('.dropD-menu > li').removeClass('selected');
-
-            // 현재 클릭된 항목에 selected 클래스 추가
-            $this.addClass('selected');
-
-            // URL에 상태 저장
-            const currentUrl = new URL($(this).attr('href'), window.location.href);
-            currentUrl.searchParams.set('dropdownIndex', dropdownIndex);
-            currentUrl.searchParams.set('selectedIndex', selectedIndex);
-
-            // 링크 이동
-            window.location.href = currentUrl.toString();
-
-            // 기본 클릭 동작 중단
-            e.preventDefault();
-        });
-
-        // 외부 클릭 시 모든 드롭다운 닫기
-        $(document).on('click', function () {
-            $('.dropD-menu').removeClass('show');
-            $('.fa-solid').removeClass('fa-angle-down').addClass('fa-angle-right');
+            currentUrl.searchParams.set("dropdownIndex", index);
+            window.history.replaceState({}, "", currentUrl); // URL 갱신
         });
     });
 
-    $.sidebarMenu = function (menu) {
-        var animationSpeed = 300,
-            subMenuSelector = '.sidebar-submenu';
-        $(menu).on('click', 'li a', function (e) {
-            var $this = $(this);
-            var checkElement = $this.next();
-            if (checkElement.is(subMenuSelector) && checkElement.is(':visible')) {
-                checkElement.slideUp(animationSpeed, function () {
-                    checkElement.removeClass('menu-open');
-                });
-                checkElement.parent("li").removeClass("active");
-            }
-            //If the menu is not visible
-            else if ((checkElement.is(subMenuSelector)) && (!checkElement.is(':visible'))) {
-                //Get the parent menu
-                var parent = $this.parents('ul').first();
-                //Close all open menus within the parent
-                var ul = parent.find('ul:visible').slideUp(animationSpeed);
-                //Remove the menu-open class from the parent
-                ul.removeClass('menu-open');
-                //Get the parent li
-                var parent_li = $this.parent("li");
-                //Open the target menu and add the menu-open class
-                checkElement.slideDown(animationSpeed, function () {
-                    //Add the class active to the parent li
-                    checkElement.addClass('menu-open');
-                    parent.find('li.active').removeClass('active');
-                    parent_li.addClass('active');
-                });
-            }
-            //if this isn't a link, prevent the page from being redirected
-            if (checkElement.is(subMenuSelector)) {
-                e.preventDefault();
-            }
+    // 드롭다운 내부 링크 클릭 이벤트
+    document.querySelectorAll(".dropD-menu > li > a").forEach(function (link) {
+        link.addEventListener("click", function (e) {
+            e.preventDefault(); // 기본 동작 방지
+            const listItem = link.closest("li");
+            const dropdownIndex = Array.from(document.querySelectorAll(".dropD")).indexOf(listItem.closest(".dropD"));
+            const selectedIndex = Array.from(document.querySelectorAll(".dropD-menu > li")).indexOf(listItem);
+
+            // 모든 항목에서 selected 클래스 제거
+            document.querySelectorAll(".dropD-menu > li").forEach(function (item) {
+                item.classList.remove("selected");
+            });
+
+            // 현재 항목에 selected 클래스 추가
+            if (listItem) listItem.classList.add("selected");
+
+            // URL에 상태 저장
+            const currentUrl = new URL(link.getAttribute("href"), window.location.href);
+            currentUrl.searchParams.set("dropdownIndex", dropdownIndex);
+            currentUrl.searchParams.set("selectedIndex", selectedIndex);
+            window.location.href = currentUrl.toString(); // 페이지 이동
         });
-    };
+    });
+
+    // 외부 클릭 시 모든 드롭다운 닫기
+    document.addEventListener("click", function () {
+        document.querySelectorAll(".dropD-menu").forEach(function (menu) {
+            menu.classList.remove("show");
+        });
+        document.querySelectorAll(".fa-solid").forEach(function (icon) {
+            icon.classList.remove("fa-angle-down");
+            icon.classList.add("fa-angle-right");
+        });
+    });
+
+    // 사이드바 메뉴 초기화 함수
+    function sidebarMenu(menu) {
+        const animationSpeed = 300; // 애니메이션 속도
+        const subMenuSelector = ".sidebar-submenu";
+
+        menu.querySelectorAll("li > a").forEach(function (link) {
+            link.addEventListener("click", function (e) {
+                const checkElement = link.nextElementSibling;
+
+                if (checkElement && checkElement.matches(subMenuSelector)) {
+                    e.preventDefault(); // 기본 동작 방지
+
+                    if (checkElement.style.display === "block") {
+                        checkElement.style.display = "none";
+                        checkElement.classList.remove("menu-open");
+                        link.closest("li").classList.remove("active");
+                    } else {
+                        const parent = link.closest("ul");
+
+                        // 다른 서브메뉴 닫기
+                        parent.querySelectorAll(subMenuSelector).forEach(function (submenu) {
+                            submenu.style.display = "none";
+                            submenu.classList.remove("menu-open");
+                        });
+
+                        parent.querySelectorAll("li.active").forEach(function (activeLi) {
+                            activeLi.classList.remove("active");
+                        });
+
+                        // 현재 서브메뉴 열기
+                        checkElement.style.display = "block";
+                        checkElement.classList.add("menu-open");
+                        link.closest("li").classList.add("active");
+                    }
+                }
+            });
+        });
+    }
+
+    // 사이드바 메뉴 초기화
+    const sidebar = document.querySelector(".sidebar-menu");
+    if (sidebar) {
+        sidebarMenu(sidebar);
+    }
 });
