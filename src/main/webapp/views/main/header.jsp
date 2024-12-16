@@ -193,14 +193,8 @@
           </ul>
       </li>
       
-       <li>
-        <a href="javaScript:void();">
-          <i class="bi bi-person-vcard"></i> <span>사원관리</span>
-          <i class="fa-solid fa-angle-right"></i>
-        </a>
-
       
-     <li class="dropD">
+    <li class="dropD">
         <a href="javaScript:void(0);">
           <i class="fa-regular fa-calendar-check"></i> <span>회의실</span>
           <i class="fa-solid fa-angle-right"></i>
@@ -227,7 +221,32 @@
    			</li>
   		</ul>
 	</li>
+	
+	
+      <!-- 관욱수정 2024.12.12 시작 -->
+      <li class="dropD">
+      	  <a href="javaScript:void();">
+            <i class="bi bi-person-vcard"></i> <span>사원관리</span>
+            <i class="fa-solid fa-angle-right"></i>
+          </a>
       
+	      <ul class="dropD-menu">
+	    		<li class="dropD-item">
+	      			<a href="empList.go">
+			          <i class="bi bi-person-vcard"></i> <span>사원목록</span>
+			          <i class="fa-solid fa-angle-right"></i>
+			        </a>
+	   			</li>
+	    		<li class="dropD-item">
+	      			<a href="empCreate.go">
+			          <i class="bi bi-person-vcard"></i> <span>사원등록</span>
+			          <i class="fa-solid fa-angle-right"></i>
+			        </a>
+	   			</li>
+	        </ul>
+      	</li>
+      	
+      	<!-- 관욱수정 2024.12.12 끝 -->
        <li class="dropD">
         <a href="javaScript:void();">
           <i class="bi bi-bar-chart-fill"></i> <span>매출현황</span>

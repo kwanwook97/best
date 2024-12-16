@@ -244,6 +244,7 @@ td {
 .bus-main-info {
 	display: flex;
 	justify-content: space-between;
+	cursor: pointer;
 }
 .bus-main-info div:first-child{
 	width: 77%;
@@ -252,7 +253,7 @@ td {
 .bus-number {
 	font-size: 2rem;
 	font-weight: bold;
-	width: 20%
+	width: 20%;
 }
 
 /* 초록색 글씨 */

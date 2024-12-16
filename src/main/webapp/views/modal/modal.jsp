@@ -5,10 +5,8 @@
   <meta charset="utf-8"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
-  <title>Modal Example</title>
-  <style>
-
-  </style>
+  <!-- modal CSS -->
+  <link rel="stylesheet" href="resources/css/common.css">
 </head>
 <body>
 
@@ -32,53 +30,55 @@
       </div>
     </div>
   </div>
-</body>
-</html>
 
 <script>
-  const alertCont = document.querySelector('.modal_alert');
-  const confirmCont = document.querySelector('.modal_confirm');
+(function () {
+    function hideModal() {
+        var alertModal = document.querySelector('.modal_alert');
+        var confirmModal = document.querySelector('.modal_confirm');
+        if (alertModal) alertModal.style.display = 'none';
+        if (confirmModal) confirmModal.style.display = 'none';
+    }
 
-  const modal = {
-    hide: function () {
-      alertCont.style.display = 'none';
-      confirmCont.style.display = 'none';
-    },
-    show: function (modalElement, message) {
-      const modalBody = modalElement.querySelector('.modal_body');
-      if (!modalBody) {
-        console.error('modal_body element not found in', modalElement);
-        return;
-      }
-      // 로그 추가
-      console.log('Updating modal_body content:', message);
+    function showModal(modalElement, message) {
+        var modalBody = modalElement.querySelector('.modal_body');
+        if (!modalBody) {
+            console.error('modal_body element not found in', modalElement);
+            return;
+        }
 
-      // 내용 업데이트
-      modalBody.innerHTML = `<p>message</p>`;
-      modalElement.style.display = 'flex';
+        modalBody.innerHTML = '<p>' + message + '</p>';
+        modalElement.style.display = 'flex';
 
-      // 버튼 이벤트 추가
-      const closeButtons = modalElement.querySelectorAll('.btn_cancel, .btn_confirm');
-      closeButtons.forEach(button => {
-        button.addEventListener('click', modal.hide, { once: true });
-      });
-    },
-    showAlert: function (msg) {
-      this.show(alertCont, msg);
-    },
-    showConfirm: function (msg, loc) {
-      this.show(confirmCont, msg);
-      const confirmButton = confirmCont.querySelector('.btn_confirm');
-      if (confirmButton) {
-        confirmButton.addEventListener(
-          'click',
-          function () {
-            location.href = loc;
-          },
-          { once: true }
-        );
-      }
-    },
-  };
+        var closeButtons = modalElement.querySelectorAll('.btn_cancel, .btn_confirm');
+        for (var i = 0; i < closeButtons.length; i++) {
+            closeButtons[i].onclick = hideModal;
+        }
+    }
 
+    function showAlert(message) {
+        var alertModal = document.querySelector('.modal_alert');
+        showModal(alertModal, message);
+    }
+
+    function showConfirm(message, location) {
+        var confirmModal = document.querySelector('.modal_confirm');
+        showModal(confirmModal, message);
+
+        var confirmButton = confirmModal.querySelector('.btn_confirm');
+        if (confirmButton) {
+            confirmButton.onclick = function () {
+                window.location.href = location;
+            };
+        }
+    }
+
+    window.modal = {
+        showAlert: showAlert,
+        showConfirm: showConfirm
+    };
+})();
 </script>
+
+</body>
+</html>
