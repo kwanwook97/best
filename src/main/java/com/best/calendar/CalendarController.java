@@ -22,6 +22,7 @@ public class CalendarController {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired CalendarService calendarService;
 	
+	
 	@RequestMapping(value="/meetingRoomCalendar.do")
 	public String meetingRoomCalendarDo(Model model) {
 		//List<String> departName = calendarService.meetingRoomCalendarDo();

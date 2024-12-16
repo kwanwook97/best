@@ -213,7 +213,12 @@ label {
                 </tr>
                 <tr>
                     <td class="align-top"><label>회의실 기본 장비</label></td>
-                   	
+                   	<td>
+                   		<select>
+                   			<option>없음</option>
+                   			<option></option>
+                   		</select>
+                   	</td>
                 </tr>
             </table>
             <div class="button-area">
@@ -255,10 +260,10 @@ function roomCard() {
 function addRoom() {
     document.querySelector('#roomModal').style.display = 'block';
 }
+
 function closeModal() {
     document.querySelector('.meetingmodal').style.display = 'none';
 }
-
 
 </script>
 </html>
