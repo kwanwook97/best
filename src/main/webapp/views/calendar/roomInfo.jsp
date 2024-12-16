@@ -60,6 +60,8 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 515px;
+            height: 361px;
 
         }
         .room-card img {
@@ -192,7 +194,13 @@ label {
 	</div>
  	<div class="dashboard-body">
 	    <div class="room-container">
-
+			<div class="room-card">
+			    <img src="회의실 이미지 URL" alt="회의실 이미지">
+			    <div class="room-info">
+			        <h3>회의실 이름</h3>
+			        <span class="delete-btn" onclick="deleteRoom(roomId)">삭제</span>
+			    </div>
+			</div>
 	    </div>
 
  	</div>
