@@ -7,17 +7,16 @@
 <title>BEST</title>
 <!-- side-bar CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link href="/BEST/resources/css/simplebar.css" rel="stylesheet"/>
-<link href="/BEST/resources/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="/BEST/resources/css/app-style.css" rel="stylesheet"/>
-<link href="/BEST/resources/css/sidebar-menu.css" rel="stylesheet"/>
+<link href="resources/css/simplebar.css" rel="stylesheet"/>
+<link href="resources/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="resources/css/app-style.css" rel="stylesheet"/>
+<link href="resources/css/sidebar-menu.css" rel="stylesheet"/>
 <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
 <!-- side-bar JS -->
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
-<script src="/BEST/resources/js/sidebar-menu.js"></script>
-<script src="/BEST/resources/js/simplebar.js"></script>
-<!-- <script src="/BEST/resources/js/app-script.js"></script>
-<script src="/BEST/resources/js/bootstrap.min.js"></script> -->
+<script src="resources/js/sidebar-menu.js"></script>
+<script src="resources/js/simplebar.js"></script>
+<script src="resources/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -75,13 +74,13 @@
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void(0);">
+      			<a href="busDispatch.go">
         			<i class="fa-solid fa-user-tie"></i> <span>배차현황</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
    			<li class="dropD-item">
-      			<a href="javaScript:void(0);">
+      			<a href="busDetail.go">
         			<i class="bi bi-bus-front"></i> <span>버스관리</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -138,7 +137,7 @@
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="../document/document.go">
+      			<a href="document.go">
         			<i class="bi bi-file-text-fill"></i> <span>진행 중</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -180,13 +179,13 @@
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="../board/board.go">
+      			<a href="noticeBoard.go">
         			<i class="bi bi-megaphone-fill"></i> <span>공지사항</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="../board/board2.go">
+      			<a href="freeBoard.go">
         			<i class="bi bi-window-stack"></i> <span>자유 게시판</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
