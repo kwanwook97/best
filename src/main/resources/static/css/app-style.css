@@ -161,14 +161,14 @@ p {
   outline: 0!important
 }
 a {
-    color: #30005A;
+    color: #ffffff;
 }
 a {
   outline: none!important
 }
 
 a:hover{
-  color: #30005A;
+  color: #ffffff;
   text-decoration: none;
 }
 

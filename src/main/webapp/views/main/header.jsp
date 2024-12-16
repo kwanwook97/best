@@ -5,24 +5,26 @@
 <head>
 <meta charset="UTF-8">
 <title>BEST</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- side-bar CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link href="resources/css/simplebar.css" rel="stylesheet"/>
-<link href="resources/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="resources/css/app-style.css" rel="stylesheet"/>
-<link href="resources/css/sidebar-menu.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/simplebar.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/app-style.css" rel="stylesheet"/>
+<link href="/BEST/resources/css/sidebar-menu.css" rel="stylesheet"/>
 <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
 <!-- side-bar JS -->
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
-<script src="resources/js/sidebar-menu.js"></script>
-<script src="resources/js/simplebar.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<script src="/BEST/resources/js/sidebar-menu.js"></script>
+<script src="/BEST/resources/js/simplebar.js"></script>
+<script src="/BEST/resources/js/app-script.js"></script>
+<script src="/BEST/resources/js/bootstrap.min.js"></script>
 </head>
 
 <body>
    <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
      <div class="brand-logo">
-      <a href="main.go">
+      <a href="../main/main.go">
        <h4><span style="color:#E9396B;">BEST</span></h4>
        <h5 class="logo-text"><span style="color:#E9396B;">B</span>us <span style="color:E9396B;">E</span>mployee 
        <span style="color:#E9396B;">S</span>ervice <span style="color:#E9396B;">T</span>ool</h5>
@@ -40,21 +42,21 @@
    <ul class="sidebar-menu do-nicescrol">
       <li class="sidebar-header"></li>
       <li>
-        <a href="main.go">
+        <a href="../main/main.go">
           <i class="mdi mdi-view-dashboard"></i> <span>대쉬보드</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
       <li>
-        <a href="attendance.go">
+        <a href="../emp/attendance.go">
           <i class="bi bi-clock-fill"></i> <span>근태관리</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
       </li>
       
       <li>
-        <a href="calendar.go">
+        <a href="../calendar/calendar.go">
           <i class="fa-regular fa-calendar-check"></i> <span>캘린더</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
@@ -68,19 +70,19 @@
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="driveInfo.go">
+      			<a href="../bus/driveInfo.go">
         			<i class="fa-solid fa-road"></i> <span>운행현황</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="busDispatch.go">
+      			<a href="javaScript:void();">
         			<i class="fa-solid fa-user-tie"></i> <span>배차현황</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
    			<li class="dropD-item">
-      			<a href="busDetail.go">
+      			<a href="javaScript:void();">
         			<i class="bi bi-bus-front"></i> <span>버스관리</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -102,7 +104,7 @@
   		</a>
   		<ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="mail.go">
+      			<a href="../mail/mail.go">
         			<i class="bi bi-envelope-paper-fill"></i> <span>받은 메일함</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -137,7 +139,7 @@
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="document.go">
+      			<a href="../document/document.go">
         			<i class="bi bi-file-text-fill"></i> <span>진행 중</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -165,7 +167,7 @@
       </li>
 
       <li>
-        <a href="orgChart.go">
+        <a href="../emp/yaquza.go">
           <i class="bi bi-diagram-3-fill"></i> <span>조직도</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
@@ -179,13 +181,13 @@
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="noticeBoard.go">
+      			<a href="../board/board.go">
         			<i class="bi bi-megaphone-fill"></i> <span>공지사항</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="freeBoard.go">
+      			<a href="../board/board2.go">
         			<i class="bi bi-window-stack"></i> <span>자유 게시판</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
