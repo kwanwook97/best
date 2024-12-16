@@ -17,11 +17,11 @@ import org.springframework.web.servlet.ModelAndView;
 public class BoardController {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-	@Autowired BoardService board_service;
+	@Autowired BoardService boardService;
 	
 	// 공지 게시판 리스트
 	@GetMapping(value="/noticeBoard.go")
-	public String main() {
+	public String noticeBoard() {
 		return "board/noticeBoard";
 	}
 	@GetMapping (value="/noticeList.ajax")
@@ -30,7 +30,7 @@ public class BoardController {
 		int page_ = Integer.parseInt(page);
 		int cnt_ = Integer.parseInt(cnt);
 		
-		return board_service.noticeList(page_, cnt_);
+		return boardService.noticeList(page_, cnt_);
 	}
 	
 	
@@ -42,7 +42,7 @@ public class BoardController {
 	@PostMapping(value="/noticeWrite.do")
 	public ModelAndView noticeWrite(@RequestParam Map<String, String> param) {
 		int emp_idx = 1;
-		String board_idx = board_service.noticeWrite(param, emp_idx);
+		String board_idx = boardService.noticeWrite(param, emp_idx);
 		
 		return new ModelAndView("redirect:/noticeDetail.go?idx="+board_idx);
 	}
@@ -50,23 +50,23 @@ public class BoardController {
 	// 공지 상세보기
 	@GetMapping(value="/noticeDetail.go")
 	public ModelAndView noticeDetail(String idx) {
-		return board_service.noticeDetail(idx, "board/noticeDetail");
+		return boardService.noticeDetail(idx, "board/noticeDetail");
 	}
 	
 	
 	// 공지 수정하기
 	@GetMapping(value="/noticeUpdate.go")
 	public ModelAndView noticeUpdate(String idx) {
-		return board_service.noticeDetail(idx,"board/noticeUpdate");
+		return boardService.noticeDetail(idx,"board/noticeUpdate");
 	}
 	@PostMapping(value="/noticeUpdate.do")
 	public ModelAndView noticeUpdate(@RequestParam Map<String, String> param) {
-		board_service.noticeUpdate(param);
+		boardService.noticeUpdate(param);
 		return new ModelAndView("redirect:/noticeDetail.go?idx="+param.get("board_idx"));
 	}
 	
 	
-	// 검색
+	// 공지 검색
 	@GetMapping(value="/noticeSearch.ajax")
 	@ResponseBody
 	public Map<String, Object> noticeSearch(@RequestParam Map<String, String> param) {
@@ -75,7 +75,14 @@ public class BoardController {
 		String searchText = param.get("searchText");
 		String searchOption = param.get("searchOption");
 		
-		return board_service.noticeSearch(page_, cnt_,searchText,searchOption);
+		return boardService.noticeSearch(page_, cnt_,searchText,searchOption);
 	}
 	
+	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+	// 자유 게시판 리스트
+		@GetMapping(value="/freeBoard.go")
+		public String freeBoard() {
+			return "board/freeBoard";
+		}
 }
