@@ -6,7 +6,6 @@
 <meta charset="UTF-8" />
 <title>Insert title here</title>
 <link rel="stylesheet" href="resources/css/root.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="resources/js/document-modal.js"></script>
 <style>
 .docnav {
@@ -18,9 +17,13 @@
 }
 
 .opt {
-	width: 30%;
+    width: 35%;
 	display: flex;
 	justify-content: space-between;
+}
+
+.opt a{
+	color: var(--secondary-color);
 }
 
 .opt div {
@@ -38,7 +41,7 @@
 }
 
 .searchbox {
-	width: 22%;
+	width: 25%;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -95,10 +98,6 @@
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 	padding: 10px 0 0 10px;
 }
-/* 모달 내부 요소 */
-.modal-header {
-	margin-bottom: 20px;
-}
 
 .docSearch input {
 	color: var(--primary-color);
@@ -126,6 +125,59 @@
 	background-color: var(--secondary-color);
 	color: white;
 }
+
+/* 모달 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+}
+.modal div,
+.modal table{
+    pointer-events: none;
+}
+/* 모달 내용 */
+.modal-content {
+    border: 2px solid var(--primary-color);
+	transform: scale(0.9) !important;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    width: 44vw;
+    position: relative;
+}
+.modal-content input, 
+.modal-content textarea, 
+.modal-content button,
+.close-btn {
+	pointer-events: auto;
+}
+.modal-box{
+	margin-bottom: 20px;
+}
+input[name="doc_subject"]{
+    width: 360px;
+}
+.modal-btn{
+    margin-right: 5px;
+}
+/* 닫기 버튼 */
+.close-btn {
+    position: absolute;
+    top: 5px; /* 위치 조정 */
+    right: 5px; /* 위치 조정 */
+    cursor: pointer;
+    font-size: 14px; /* 글자 크기 줄이기 */
+}
+
 </style>
 </head>
 <body>
@@ -135,7 +187,7 @@
 				<a href="documentBoard.go">진행중<span>12</span></a>
 			</div>
 			<div>
-				<a href="documentApproved.go"> 완료</a>
+				<a href="documentApproved.go">완료</a>
 			</div>
 			<div>
 				<a href="documentDraft.go">임시저장<span>3</span></a>
@@ -165,19 +217,16 @@
 			<hr />
 			<!-- 항목 리스트 -->
 			<ul class="modal-list">
-				<li class="modal-item" onclick="documentForm('vacation')">휴가신청서</li>
-				<li class="modal-item" onclick="documentForm('annual')">연차신청서</li>
-				<li class="modal-item" onclick="documentForm('half')">반차신청서</li>
-				<li class="modal-item" onclick="documentForm('sick')">병가신청서</li>
-				<li class="modal-item" onclick="documentForm('incident')">경위서</li>
-				<li class="modal-item" onclick="documentForm('statement')">시말서</li>
-				<li class="modal-item" onclick="documentForm('reason')">사유서</li>
-				<li class="modal-item" onclick="documentForm('report')">업무 보고서</li>
+				<li class="modal-item" onclick="documentForm('연차신청서')">연차신청서</li>
+				<li class="modal-item" onclick="documentForm('시말서')">시말서</li>
+				<li class="modal-item" onclick="documentForm('사유서')">사유서</li>
+				<li class="modal-item" onclick="documentForm('업무')">업무 보고서</li>
 			</ul>
 		</div>
 	</div>
 </body>
 <script>
+
 $(document).ready(function() {
 	// 작성 버튼 클릭 시 모달 열기
 	$(".editbtn").click(function() {
@@ -189,34 +238,109 @@ $(document).ready(function() {
 		$("#customModal").fadeOut(); // 뒤로가기 기능 실행
 	});
 
-	
-	// 양식 불러오기
-	function documentForm(documentType) {
-	    // AJAX 요청
-	    $.ajax({
-	        type: 'GET',
-	        url: 'getForm.ajax',
-	        data: { documentType: documentType }, 
-	        dataType: 'JSON',
-	        success: function(response) {
-	            // 서버에서 응답 받은 문서 데이터를 처리
-	            console.log(response);
-	            // 예시: 서버에서 받아온 문서 내용으로 모달에 내용 채우기
-	            openModal(response); 
-	        },
-	        error: function(xhr, status, error) {
-	            console.error('문서 요청 실패:', error);
-	        }
-	    });
-	}
-
-	// 모달에 양식 내용을 표시하는 함수
-	function displayFormInModal(data) {
-		var modal = $('#formModal'); // 모달 요소
-		modal.find('.modal-content').html(data.formContent); // 서버에서 받은 양식 내용을 모달에 삽입
-		modal.show(); // 모달을 표시
-	}
-
 });
+
+function documentForm(form_subject) {
+	
+    $.ajax({
+        type: 'GET',
+        url: 'getForm.ajax',
+        data: { form_subject: form_subject },
+        dataType: 'text',
+        success: function(response) {
+        	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
+            openModal(response); 
+        },
+        error: function(xhr, status, error) {
+            console.error('문서 요청 실패:', error);
+        }
+    });
+}
+//모달 열기
+function openModal(content) {
+    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+
+    // 모달 HTML 생성
+    var modalHtml = 
+        '<div id="' + modalId + '" class="modal" style="display: none;">' +
+        '  <div class="modal-content">' +
+        '    <div class="modal-box">' +
+        '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
+        '      <button class="modal-btn save" onclick="btnAction(\'임시저장\')">임시저장</button>' +
+        '      <button class="modal-btn append" onclick="button3Action(\'결재선\')">결재선 추가</button>' +
+        '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
+        '    </div>' +
+        '    <div class="content" contenteditable="true">' + content + '</div>' +
+        '  </div>' +
+        '</div>';
+
+    // body에 추가
+    $('body').append(modalHtml);
+
+    // 모달 표시
+    $('#' + modalId).show();
+
+    // 닫기 버튼 이벤트 등록 (이벤트 위임)
+    $(document).on('click', '.close-btn', function() {
+        var targetModalId = $(this).data('modal-id');
+        $('#' + targetModalId).remove();
+    });
+}
+
+// 결재 기안, 임시저장
+function btnAction(actionType) {
+
+	console.log("봐라 "+actionType);
+	var doc_subject = $('input[name="doc_subject"]').val();
+	console.log("제목 "+doc_subject);
+	
+	// textarea에 입력된 값을 가져옵니다
+	var textareaValue = $('.modal-content:last-child textarea').val(); 
+
+	// modal-content의 HTML을 가져옵니다
+	var updatedHtml = $('.modal-content:last-child').html();
+
+	// HTML에서 <input name="doc_subject"> 부분 찾아서 그 안의 값을 doc_subject로 변경
+	updatedHtml = updatedHtml.replace(
+	    /<input([^>]*name=["']doc_subject["'][^>]*)>/,
+	    '<input$1 value="' + doc_subject + '">'
+	);
+
+	// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경합니다
+	updatedHtml = updatedHtml.replace(
+	    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
+	    '<textarea>' + textareaValue + '</textarea>'  // textarea 값을 새로 덮어씌움
+	);
+
+	// 수정된 HTML을 다시 modal-content에 적용
+	$('.modal-content:last-child').html(updatedHtml);
+	var doc_content = $('.modal-content:last-child .content').html();
+	console.log("최종"+ doc_content);
+	$.ajax({
+        url: 'formType.ajax',
+        method: 'POST',
+        data: { 
+        	action: actionType,
+        	doc_subject: doc_subject,
+        	doc_content: doc_content	
+        },
+        success: function(response) {
+        	alert(response.message);  // 예: "기안 완료" 메시지
+            closeModal();  // 모달 닫기
+            if (response.success) {
+                // 성공 처리
+            } else {
+                // 실패 처리
+            }
+        }
+    });
+}
+
+function closeModal() {
+    // 모달을 닫는 로직
+    $('.modal').hide(); // 예시: modal 클래스를 가진 요소 숨기기
+    $('.modal-content').empty(); // 모달 내용을 비우기
+}
+
 </script>
 </html>

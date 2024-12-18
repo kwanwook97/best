@@ -144,7 +144,6 @@
 					</tr>
 				</thead>
 				<tbody>
-					<!-- 읽지 않은 메일 -->
 					<tr class="unread">
 						<td>example1@example.com</td>
 						<td>읽지 않은 메일 제목</td>
