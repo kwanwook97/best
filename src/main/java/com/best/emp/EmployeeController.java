@@ -73,7 +73,7 @@ public class EmployeeController {
 	
 	// 파일업로드
 	@PostMapping("/fileUpload.do")
-	public String fileUpload(MultipartFile[] files , String emp_idx) {
+	public String fileUpload(MultipartFile[] files, String emp_idx) {
 		
 		int row = empService.fileUpload(emp_idx, files);
 		
@@ -115,10 +115,30 @@ public class EmployeeController {
 	}
 	
 	
-	// 사원등록
+	// 사원등록 페이지로 이동
 	@RequestMapping(value="/empCreate.go")
 	public String empCreate() {
 		return "empManage/empCreate";
+	}
+	
+	// 사원등록 
+	@RequestMapping(value="/empCreate.do")
+	public String empCreate(
+	        @RequestParam(value = "photo", required = false) MultipartFile photo, // 파일 처리
+	        @RequestParam("files") MultipartFile[] files,            // 첨부 파일
+	        EmployeeDTO employeeDTO) { // 폼 데이터를 EmployeeDTO로 매핑
+		
+		String page = "redirect:/empList.go";
+		
+		// 사원등록에 성공하면, 사번 받아오기.
+		/*
+		 * int emp_idx = empService.empCreate(photo, files, employeeDTO);
+		 * 
+		 * // 사원등록에 성공했다면 if(emp_idx > 0) { page = "redirect:/empDetail.go?emp_idx=" +
+		 * emp_idx; }
+		 */
+		
+		return page; 
 	}
 	
 	

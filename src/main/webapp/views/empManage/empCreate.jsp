@@ -320,163 +320,165 @@ input[type="radio"] {
       <span class="lPurple">사원관리</span> <span class="cPurple">&gt; 사원등록</span>
     </div>
 
-    <div class="btn_area">
-      <button class="registerBtn">등록 하기</button>
-    </div>
-
-    <div class="content">
-      <div class="top-section">
-      	<div class="photo-container">
-		    <div class="photo">
-		        <img id="profilePreview" src="#" alt="프로필 사진" style="display: none;" />
-		        <span class="photo_add" id="photoText">
-		            <i class="bi bi-plus-square"></i>
-		            <p>프로필 사진을 등록하세요.</p>
-		        </span>
-		    </div>
-		    <input type="file" id="profileUpload" accept="image/*" style="display: none;" />
-		</div>
-
-        <div class="personal-info">
-          <h2>개인 정보</h2>
-          <table>
-            <colgroup>
-              <col>
-              <col>
-              <col>
-              <col>
-            </colgroup>
-            <tr>
-              <th>이름</th>
-              <td>
-              	<input type="text" class="input_field" name="name" value="" placeholder="이름을 입력하세요." />
-              </td>
-              <th>이메일</th>
-              <td>
-              	<input type="text" class="input_field" name="email" value="" placeholder="이메일을 입력하세요." />
-              </td>
-            </tr>
-            <tr>
-              <th>주민번호</th>
-              <td>
-              	<input type="text" class="input_field" name="resident_number" value="" placeholder="주민번호를 입력하세요." />
-              </td>
-              <th>계좌번호</th>
-              <td>
-              	<input type="text" class="input_field" name="account_number" value="" placeholder="계좌번호를 입력하세요." />
-              </td>
-            </tr>
-            <tr>
-              <th>성별</th>
-              <td class="gender">
-              	<label class="gender_label">
-			      <input type="radio" name="gender" value="남" checked /> 남
-			    </label>
-			    <label class="gender_label">
-			      <input type="radio" name="gender" value="여" /> 여
-			    </label>
-              </td>
-              <th>전화번호</th>
-              <td>
-              	<input type="text" class="input_field" name="phone" value="" placeholder="전화번호를 입력하세요." />
-              </td>
-            </tr>
-            <tr>
-              <th>입사일</th>
-              <td>
-              	<input type="date" class="input_field" id="new" class="input_field" name="start_date">
-              </td>
-              <th>휴대폰번호</th>
-              <td>
-              	<input type="text" class="input_field" name="mobile" value="" placeholder="휴대폰번호를 입력하세요." />
-              </td>
-            </tr>
-            <tr>
-              <th>주소</th>
-              <td colspan="3">
-              	<textarea class="input_field" name="address" placeholder="주소를 입력하세요."></textarea>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
-      <div class="bottom-section">
-        <div class="attachment-info">
-		  <h2>첨부 파일</h2>
-	      <table id="fileTable">
-	          <tr>
-	              <th>파일명</th>
-	              <th>업로드 날짜</th>
-	          </tr>
-	          <!-- 5개의 빈 행 -->
-	          <c:forEach begin="1" end="5">
-	              <tr>
-	                  <td></td>
-	                  <td></td>
-	              </tr>
-	          </c:forEach>
-	          <tr class="file-upload">
-	              <td colspan="3">
-	                  <input type="file" id="fileUpload" multiple />
-	              </td>
-	          </tr>
-	      </table>
-		</div>
-		
-	    <!-- 소속 및 직책 -->
-	    <div class="personal-info">
-	      <h2>소속 및 직책</h2>
-	      <table>
-	        <colgroup>
-	          <col style="width: 30%">
-	          <col style="width: 70%">
-	        </colgroup>
-	        <tr>
-	          <th>부서</th>
-	          <td id="depart">
-	          	<input type="text" value="미발령" readonly/>
-	          	<input type="hidden" name="depart_name" value="1"/>
-	          </td>
-	        </tr>
-	        <tr>
-	          <th>직급</th>
-	          <td id="rank">
-	          </td>
-	        </tr>
-	        <tr>
-	          <th>연봉</th>
-	          <td>
-	          	<input type="text" class="input_field" name="salary" value="" placeholder="연봉을 입력하세요." />
-	          </td>
-	        </tr>
-	      </table>
+	<form action="empCreate.do" method="post">
+	    <div class="btn_area">
+	      <button class="registerBtn">등록 하기</button>
 	    </div>
 	
-	    <!-- 계정 정보 -->
-	    <div class="personal-info">
-	      <h2>계정 정보</h2>
-	      <table>
-	        <colgroup>
-	          <col style="width: 30%">
-	          <col style="width: 70%">
-	        </colgroup>
-	        <tr>
-	          <th>비밀번호</th>
-	          <td>
-	            <input type="password" class="input_field" value="" placeholder="비밀번호를 입력하세요."/>
-	          </td>
-	        </tr>
-	        <tr>
-	          <th>비밀번호 확인</th>
-	          <td>
-	            <input type="password" class="input_field" value="" placeholder="비밀번호를 입력하세요."/>
-	          </td>
-	        </tr>
-	      </table>
+	    <div class="content">
+	      <div class="top-section">
+	      	<div class="photo-container">
+			    <div class="photo">
+			        <img id="profilePreview" src="#" alt="프로필 사진" style="display: none;" />
+			        <span class="photo_add" id="photoText">
+			            <i class="bi bi-plus-square"></i>
+			            <p>프로필 사진을 등록하세요.</p>
+			        </span>
+			    </div>
+			    <input type="file" id="profileUpload" name="photo" accept="image/*" style="display: none;" />
+			</div>
+	
+	        <div class="personal-info">
+	          <h2>개인 정보</h2>
+	          <table>
+	            <colgroup>
+	              <col>
+	              <col>
+	              <col>
+	              <col>
+	            </colgroup>
+	            <tr>
+	              <th>이름</th>
+	              <td>
+	              	<input type="text" class="input_field" name="name" value="" placeholder="이름을 입력하세요." />
+	              </td>
+	              <th>이메일</th>
+	              <td>
+	              	<input type="text" class="input_field" name="email" value="" placeholder="이메일을 입력하세요." />
+	              </td>
+	            </tr>
+	            <tr>
+	              <th>주민번호</th>
+	              <td>
+	              	<input type="text" class="input_field" name="resident_number" value="" placeholder="주민번호를 입력하세요." />
+	              </td>
+	              <th>계좌번호</th>
+	              <td>
+	              	<input type="text" class="input_field" name="account_number" value="" placeholder="계좌번호를 입력하세요." />
+	              </td>
+	            </tr>
+	            <tr>
+	              <th>성별</th>
+	              <td class="gender">
+	              	<label class="gender_label">
+				      <input type="radio" name="gender" value="남" checked /> 남
+				    </label>
+				    <label class="gender_label">
+				      <input type="radio" name="gender" value="여" /> 여
+				    </label>
+	              </td>
+	              <th>전화번호</th>
+	              <td>
+	              	<input type="text" class="input_field" name="phone" value="" placeholder="전화번호를 입력하세요." />
+	              </td>
+	            </tr>
+	            <tr>
+	              <th>입사일</th>
+	              <td>
+	              	<input type="date" class="input_field" id="new" class="input_field" name="start_date">
+	              </td>
+	              <th>휴대폰번호</th>
+	              <td>
+	              	<input type="text" class="input_field" name="mobile" value="" placeholder="휴대폰번호를 입력하세요." />
+	              </td>
+	            </tr>
+	            <tr>
+	              <th>주소</th>
+	              <td colspan="3">
+	              	<textarea class="input_field" name="address" placeholder="주소를 입력하세요."></textarea>
+	              </td>
+	            </tr>
+	          </table>
+	        </div>
+	      </div>
+	
+	      <div class="bottom-section">
+	        <div class="attachment-info">
+			  <h2>첨부 파일</h2>
+		      <table id="fileTable">
+		          <tr>
+		              <th>파일명</th>
+		              <th>업로드 날짜</th>
+		          </tr>
+		          <!-- 5개의 빈 행 -->
+		          <c:forEach begin="1" end="5">
+		              <tr>
+		                  <td></td>
+		                  <td></td>
+		              </tr>
+		          </c:forEach>
+		          <tr class="file-upload">
+		              <td colspan="3">
+		                  <input type="file" id="fileUpload" name="files" multiple />
+		              </td>
+		          </tr>
+		      </table>
+			</div>
+			
+		    <!-- 소속 및 직책 -->
+		    <div class="personal-info">
+		      <h2>소속 및 직책</h2>
+		      <table>
+		        <colgroup>
+		          <col style="width: 30%">
+		          <col style="width: 70%">
+		        </colgroup>
+		        <tr>
+		          <th>부서</th>
+		          <td id="depart">
+		          	<input type="text" value="미발령" readonly/>
+		          	<input type="hidden" name="depart_name" value="1"/>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th>직급</th>
+		          <td id="rank">
+		          </td>
+		        </tr>
+		        <tr>
+		          <th>연봉</th>
+		          <td>
+		          	<input type="text" class="input_field" name="salary" value="" placeholder="연봉을 입력하세요." />
+		          </td>
+		        </tr>
+		      </table>
+		    </div>
+		
+		    <!-- 계정 정보 -->
+		    <div class="personal-info">
+		      <h2>계정 정보</h2>
+		      <table>
+		        <colgroup>
+		          <col style="width: 30%">
+		          <col style="width: 70%">
+		        </colgroup>
+		        <tr>
+		          <th>비밀번호</th>
+		          <td>
+		            <input type="password" class="input_field" value="" placeholder="비밀번호를 입력하세요."/>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th>비밀번호 확인</th>
+		          <td>
+		            <input type="password" class="input_field" name="password" value="" placeholder="비밀번호를 입력하세요."/>
+		          </td>
+		        </tr>
+		      </table>
+		    </div>
+	      </div>
 	    </div>
-      </div>
-    </div>
+    </form>
   </div>
 </body>
 

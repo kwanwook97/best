@@ -249,6 +249,25 @@ public class EmployeeService {
 		return empDAO.driverUpsert(params);
 	}
 
+	// 사원등록
+	@Transactional
+	public int empCreate(MultipartFile photo, MultipartFile[] files, Map<String, String> params) {
+		
+		// emp_idx값 가져오기
+		EmployeeDTO empDTO = new EmployeeDTO();
+		
+		empDTO.setAccount_number(null);
+		
+		/*
+		 * empDAO.empCreate(empDTO); // 사원등록에 성공한다면, DTO에서 idx값 꺼내오기 int emp_idx =
+		 * fileUpload(emp_idx, files);
+		 */
+		
+		
+		return 1;
+		
+	}
+
 
 
 }
