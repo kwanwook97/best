@@ -45,7 +45,7 @@ public class BusDTO {
 	public void setBuy_date(LocalDate buy_date) {
 		this.buy_date = buy_date;
 	}
-	public String getBus_conmany() {
+	public String getBus_company() {
 		return bus_company;
 	}
 	public void setBus_conpany(String bus_company) {
