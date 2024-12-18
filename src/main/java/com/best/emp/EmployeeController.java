@@ -1,16 +1,22 @@
 package com.best.emp;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class EmployeeController {
@@ -48,10 +54,89 @@ public class EmployeeController {
 	}
 	
 	
+	// 사원정보 업데이트
+	@PostMapping(value = "/empUpdate.ajax")
+	@ResponseBody
+	public Map<String, Object> empUpdate(@RequestParam Map<String, String> params){
+		
+		int row = empService.empUpdate(params);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		// 성공했다면
+		if(row > 0) {
+			map.put("success", "성공");
+		}
+		
+		return map; 
+	}
+	
+	// 파일업로드
+	@PostMapping("/fileUpload.do")
+	public String fileUpload(MultipartFile[] files , String emp_idx) {
+		
+		int row = empService.fileUpload(emp_idx, files);
+		
+	    return "redirect:/empDetail.go?emp_idx=" + emp_idx; 
+	}
+	
+	// 파일삭제
+	@PostMapping(value = "/fileDel.ajax")
+	@ResponseBody
+	public Map<String, Object> fileDel(@RequestParam Map<String, String> params){
+		
+		int row = empService.fileDel(params);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		// 성공했다면
+		if(row > 0) {
+			map.put("success", "성공");
+		}
+		
+		return map; 
+	}
+	
+	// 파일 다운로드
+	@GetMapping(value = "/fileDownload.do")
+	public ResponseEntity<Resource> fileDownload(String file_name) {
+		
+		return empService.fileDownload(file_name);
+	}
+	
+	// 부서 및 직급 드롭다운 메뉴 가져오기
+	@PostMapping(value = "/empDrop.ajax")
+	@ResponseBody
+	public List<Map<String, Object>> empDropdown(String table){
+		
+		List<Map<String, Object>> dropdown = empService.empDropdown(table);
+		
+		return dropdown; 
+	}
+	
+	
 	// 사원등록
 	@RequestMapping(value="/empCreate.go")
 	public String empCreate() {
 		return "empManage/empCreate";
+	}
+	
+	
+	// 기사정보 관리
+	@PostMapping(value = "/driverUpsert.ajax")
+	@ResponseBody
+	public Map<String, Object> driverUpsert(@RequestParam Map<String, String> params){
+		
+		int row = empService.driverUpsert(params);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		// 성공했다면
+		if(row > 0) {
+			map.put("success", "성공");
+		}
+		
+		return map; 
 	}
 	
 }
