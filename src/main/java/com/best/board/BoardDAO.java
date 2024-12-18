@@ -14,7 +14,7 @@ public interface BoardDAO {
 	List<BoardDTO> noticeList(int importance, int limit, int offset);
 
 	// 공지 작성
-	int noticeWrite(int importance, Map<String, String> param, int emp_idx);
+	int noticeWrite(BoardDTO boardDTO);
 
 	// 공지 상세보기
 	Map<String, Object> noticeDetail(String idx);
