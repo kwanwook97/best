@@ -157,9 +157,8 @@ public class CalendarController {
 	
 	@PostMapping(value = "/getRoomMaterial.ajax")
 	@ResponseBody
-	public List<Map<String, Object>> getRoomMaterial(){
-		
-		return null;
+	public Map<String, Object> getRoomMaterial(int roomIdx){
+		return calendarService.getRoomMaterialList(roomIdx);
 	}
     	
 	

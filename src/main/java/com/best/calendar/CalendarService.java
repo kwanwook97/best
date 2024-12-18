@@ -185,6 +185,13 @@ public class CalendarService {
 		}
 		return map;
 	}
+
+	public Map<String, Object> getRoomMaterialList(int roomIdx) {
+		
+		
+		
+		return null;
+	}
 	
 	
 	
