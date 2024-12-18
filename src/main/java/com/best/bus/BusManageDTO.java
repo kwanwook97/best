@@ -10,11 +10,17 @@ public class BusManageDTO {
 	private String content; // 내용
 	private LocalDate inspect_date; // 점검 날짜
 	private LocalDate next_inspect_date; // 다음 점검 날짜
-	private double amount; // 비용
+	private int amount; // 비용
 	private String status; // 상태
+
 	
 	
-	
+	public int getAmount() {
+		return amount;
+	}
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
 	public int getBus_manage_idx() {
 		return bus_manage_idx;
 	}
@@ -57,12 +63,7 @@ public class BusManageDTO {
 	public void setNext_inspect_date(LocalDate next_inspect_date) {
 		this.next_inspect_date = next_inspect_date;
 	}
-	public double getAmount() {
-		return amount;
-	}
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
+
 	public String getStatus() {
 		return status;
 	}
