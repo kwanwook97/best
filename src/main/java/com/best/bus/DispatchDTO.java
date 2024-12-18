@@ -2,10 +2,16 @@ package com.best.bus;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class DispatchDTO {
 
 	private int dispatch_idx;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
+	
+	
 	private int driver_idx;
 	private int bus_idx;
 	private int shift_idx;

@@ -186,5 +186,38 @@ public class BusService {
 	    busDao.busManUdateDo(busMan);
 	}
 
+	public List<String> busDispatch() {
+		return busDao.busDispatch();
+	}
+
+	public List<Map<String, Object>> license(String routeName) {
+		return busDao.license(routeName);
+	}
+
+	public List<Map<String, Object>> driver(String routeName) {
+		return busDao.driver(routeName);
+	}
+
+	public List<Map<String, Object>> shift() {
+		return busDao.shift();
+	}
+	
+	public boolean dispatchInsert(DispatchDTO dispatch) {
+	    int rowsAffected = busDao.dispatchInsert(dispatch); // 반환 값이 영향 받은 행 수
+	    return rowsAffected > 0; // 삽입 성공 여부 반환
+	}
+
+	public List<Map<String, Object>> dispatchList(String date) {
+	    return busDao.dispatchList(date);
+	}
+
+	public int dispatchUpdate(Map<String, Object> updateData) {
+		return busDao.dispatchUpdate(updateData);
+	}
+
+	public Map<String, Object> getDispatchByIdx(int dispatchIdx) {
+		return busDao.getDispatchByIdx(dispatchIdx);
+	}
+
 }
 

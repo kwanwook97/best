@@ -7,6 +7,7 @@
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="resources/css/busDispatch.css" rel="stylesheet"/>
+  <script src="resources/js/busDispatch.js"></script>
   <style>
 
   </style>
@@ -27,7 +28,7 @@
       <div class="date-content">
         <button class="date-button"><i class="fas fa-angle-double-left"></i></button>
         <button class="date-button"><i class="fas fa-angle-left"></i></button>
-        <span class="current-date">2024-12-05</span>
+        <span class="current-date"></span>
         <button class="date-button"><i class="fas fa-angle-right"></i></button>
         <button class="date-button"><i class="fas fa-angle-double-right"></i></button>
       </div>
@@ -38,37 +39,54 @@
     </div>
     <div class="body-content">
     <div class="dispatch-insert">
-    	<form action="dispatchInsert.do">
+    	<form id="dispatchForm">
   <div class="body2">
     <div class="content">
       <div class="bus-info-subject bold purple"><span>배차 등록</span></div>
       <div class="bus-info-card">
        	<div class="bus-details">
        	<input type="hidden" name="bus_idx" value="" />
+       	<input type="hidden" id="dispatchIdx" name="dispatch_idx" value="" />
        		<ul>
        			<li><strong>노선 번호:</strong> 
-       			<span><input type="text" name="bus_route_name" value=""/></span></li>
+       			<span>
+        			<select id="routeSelect" name="bus_route_name">
+		
+        			</select>
+    			</span></li>
+       			
        			<li><strong>차량 번호:</strong> 
-       			<span><input type="text" name="bus_license_plate" value="" readonly/></span></li>
+    			<span>
+        			<select id="licensePlateSelect" name="bus_license_plate">
+        				<option value="">선택</option>
+        			</select>
+    			</span></li>
+       			
        			<li><strong>운행 기사:</strong> 
-       			<span><input type="text" name="bus_fuel_efficiency" value=""/></span></li>
+    			<span>
+        			<select id="driverSelect" name="bus_driver_name">
+            			<option value="">선택</option>
+        			</select>
+    			</span>
+				</li>
+        		
         		<li><strong>운행 날짜:</strong>
     				<span>
         				<input type="date" id="operation_date" name="operation_date"/>
     				</span>
 				</li>
+				
        			<li><strong>운행 시간:</strong> 
        				<span>
         				<select class="shift" name="shift">
-        					<option value="정상"></option>
-        					<option value="정비 중"></option>
-        				</select>
+    						<option value="">선택</option>
+						</select>
         			</span></li>
        		</ul>
         </div>
         <div class="bus-insert-btn">
 				<button class="editbtn" type="submit"><i class="far fa-edit"></i>&nbsp;등록</button>
-				<button class="editbtn" type="button"><i class="fas fa-eraser"></i>&nbsp;수정</button>
+				<button class="updatebtn" type="submit"><i class="fas fa-eraser"></i>&nbsp;수정</button>
 			</div>
        </div>
     </div>
@@ -78,22 +96,17 @@
 
     <!-- 버스 목록 -->
     <div class="bus-list">
-      <div class="bus-card">
-        <div class="bus-number cGreen">5714</div>
-        <div class="bus-details">
-          <p><strong>현재 운행:</strong> 27</p>
-          <p><strong>배차 기사:</strong> 32</p>
-        </div>
-        <div class="driver-list">
-          <span>장희재 기사</span>
-        </div>
-      </div>
+      
 	</div>
+	
+	
+	
     </div>
   </div>
 </body>
 
 <script>
+
 
 </script>
 </html>

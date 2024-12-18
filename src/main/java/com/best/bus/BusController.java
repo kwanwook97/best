@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -98,9 +100,92 @@ public class BusController {
 	
 	
 	@RequestMapping(value="/busDispatch.go")
-	public String busDispatch() {
+	public String busDispatchGo() {
 		return "bus/busDispatch";
 	}
+	
+	@GetMapping(value="/busDispatch.ajax")
+    @ResponseBody
+    public List<String> busDispatch() {
+        return busService.busDispatch();
+    }
+	
+	@GetMapping("/shift.ajax")
+	@ResponseBody
+	public List<Map<String, Object>> shift() {
+	    return busService.shift();
+	}
+	
+	@GetMapping("/license.ajax")
+	@ResponseBody
+	public List<Map<String, Object>> license(@RequestParam("route_name") String routeName) {
+	    return busService.license(routeName);
+	}
+	
+	@GetMapping("/driver.ajax")
+	@ResponseBody
+	public List<Map<String, Object>> driver(@RequestParam("route_name") String routeName) {
+	    return busService.driver(routeName);
+	}
+	
+	
+	@GetMapping("/dispatchList.ajax")
+	@ResponseBody
+	public Map<String, Object> dispatchList(@RequestParam(required = false) String date) {
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        // 날짜를 기준으로 필터링 (date가 null이면 전체 데이터를 가져옴)
+	        List<Map<String, Object>> dispatchList = busService.dispatchList(date);
+	        result.put("success", true);
+	        result.put("result", dispatchList);
+	    } catch (Exception e) {
+	        result.put("success", false);
+	        e.printStackTrace();
+	    }
+	    return result;
+	}
+	
+	@PostMapping(value="/dispatchInsert.ajax")
+	@ResponseBody
+	public Map<String, Object> dispatchInsert(@RequestBody DispatchDTO dispatch) {
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        boolean isInserted = busService.dispatchInsert(dispatch);
+
+	        if (isInserted) {
+	            result.put("success", true); // 삽입 성공
+	        } else {
+	            result.put("success", false); // 중복으로 삽입 실패
+	            result.put("message", "중복된 데이터가 존재합니다."); // 클라이언트에 알림 메시지
+	        }
+	    } catch (Exception e) {
+	        result.put("success", false); // 기타 오류
+	        result.put("message", "서버 오류가 발생했습니다.");
+	        e.printStackTrace();
+	    }
+	    return result;
+	}
+	
+	@PostMapping(value = "/dispatchUpdate.ajax")
+    @ResponseBody
+    public Map<String, Object> dispatchUpdate(@RequestBody Map<String, Object> updateData) {
+        int result = busService.dispatchUpdate(updateData); // DAO 호출
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", result > 0);
+        return response;
+    }
+	
+	@GetMapping(value = "/getDispatchByIdx.ajax")
+	@ResponseBody
+	public Map<String, Object> getDispatchByIdx(@RequestParam("dispatch_idx") int dispatchIdx) {
+	    Map<String, Object> dispatchData = busService.getDispatchByIdx(dispatchIdx);
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("success", dispatchData != null);
+	    response.put("data", dispatchData);
+	    return response;
+	}
+	
+	
 	@RequestMapping(value="/busManage.go")
 	public String busManage() {
 		return "bus/busManage";

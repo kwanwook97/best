@@ -26,4 +26,20 @@ public interface BusDAO {
 
 	void busManUdateDo(BusManageDTO busMan);
 
+	List<String> busDispatch();
+
+	List<Map<String, Object>> license(String routeName);
+
+	List<Map<String, Object>> driver(String routeName);
+
+	List<Map<String, Object>> shift();
+
+	int dispatchInsert(DispatchDTO dispatch);
+
+	List<Map<String, Object>> dispatchList(String date);
+
+	int dispatchUpdate(Map<String, Object> updateData);
+
+	Map<String, Object> getDispatchByIdx(int dispatchIdx);
+
 }

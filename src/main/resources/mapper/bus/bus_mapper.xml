@@ -6,54 +6,6 @@
 	<select id="driveInfo" resultType="com.best.bus.RouteDTO">
 		SELECT * FROM route
 	</select>
-	<!-- <select id="busDetail" resultType="map">
-        SELECT 
-            b.*, 
-            bm.* 
-        FROM 
-            bus b
-        JOIN 
-            bus_manage bm 
-        ON 
-            b.bus_idx = bm.bus_idx;
-    </select>
-    <select id="busFilter" resultType="map">
-    	SELECT 
-        	b.bus_idx AS bus_idx,
-        	b.route_name AS route_name,
-        	b.license_plate AS license_plate,
-        	b.fuel_efficiency AS fuel_efficiency,
-        	b.buy_date AS buy_date,
-        	b.bus_company AS bus_company,
-        	b.seat_number AS seat_number,
-       	 	bm.status AS manage_status,
-        	bm.distance AS manage_distance,
-        	bm.inspect_date AS manage_inspect_date,
-        	bm.next_inspect_date AS manage_next_inspect_date,
-       	 	bm.emp_idx AS manage_emp_idx,
-        	bm.content AS manage_content,
-        	bm.amount AS manage_amount
-    	FROM 
-        	bus b
-    	LEFT JOIN 
-        	bus_manage bm 
-    	ON 
-        	b.bus_idx = bm.bus_idx
-    	WHERE 
-        	b.route_name = #{route_name}
-	</select>
-    
-    
-    <select id="busSum" resultType="map">
-    	SELECT b.route_name,
-           COUNT(*) AS total_buses,
-           SUM(CASE WHEN bm.status = '정상' THEN 1 ELSE 0 END) AS normal_count,
-           SUM(CASE WHEN bm.status = '정비 중' THEN 1 ELSE 0 END) AS maintenance_count
-    	FROM bus b
-    	LEFT JOIN bus_manage bm ON b.bus_idx = bm.bus_idx
-    	GROUP BY b.route_name;
-	</select> -->
-	
 	<select id="busDetail" resultType="map">
     SELECT 
         b.*,
@@ -103,6 +55,36 @@
         INSERT INTO bus_manage (bus_idx, inspect_date, next_inspect_date, status, distance, emp_idx, content, amount)
         	VALUES (#{bus_idx}, #{inspect_date}, #{next_inspect_date}, #{status}, #{distance}, #{emp_idx}, #{content}, #{amount})
     </insert>
+    
+    <update id="dispatchUpdate" parameterType="map">
+    	UPDATE dispatch
+    	SET 
+        	bus_idx = #{bus_idx},
+        	driver_idx = #{driver_idx},
+       	 	date = #{date},
+        	shift_idx = #{shift_idx}
+   	 	WHERE dispatch_idx = #{dispatch_idx}
+	</update>
+	
+	<select id="getDispatchByIdx" parameterType="int" resultType="map">
+    	SELECT 
+    		d.bus_idx,
+    		d.driver_idx,
+        	d.dispatch_idx,                -- dispatch 테이블의 기본 키
+        	b.license_plate,               -- 차량 번호
+        	e.name AS driver_name,         -- 기사 이름
+        	s.shift,                       -- 운행 시간
+        	s.shift_idx,                   -- Shift 번호
+        	d.date,                        -- 운행 날짜
+        	b.route_name                   -- 노선 이름
+    	FROM dispatch d
+    	JOIN bus b ON d.bus_idx = b.bus_idx
+    	JOIN driver dr ON d.driver_idx = dr.driver_idx
+    	JOIN employee e ON dr.emp_idx = e.emp_idx
+    	JOIN shift s ON d.shift_idx = s.shift_idx
+    	WHERE d.dispatch_idx = #{dispatch_idx}
+	</select>
+    
     
     <select id="busUpdate" parameterType="int" resultType="com.best.bus.BusDTO">
     	SELECT * FROM bus WHERE bus_idx = #{bus_idx}
@@ -154,5 +136,56 @@
     		</set>
     	WHERE bus_idx = #{bus_idx}
 	</update>
+	
+	<select id="busDispatch" resultType="string">
+    	SELECT route_name FROM route
+	</select>
+	<select id="shift" resultType="map">
+    	SELECT shift_idx, shift FROM shift
+	</select>
+	<select id="license" parameterType="string" resultType="map">
+    	SELECT license_plate, bus_idx
+    	FROM bus
+    	WHERE route_name = #{routeName}
+	</select>
+	<select id="driver" parameterType="string" resultType="map">
+    	SELECT d.emp_idx, e.name
+    	FROM driver d
+    	JOIN employee e ON d.emp_idx = e.emp_idx
+    	WHERE d.route_name = #{routeName}
+	</select>
+	
+	<insert id="dispatchInsert" parameterType="com.best.bus.DispatchDTO"
+    	useGeneratedKeys="true" keyProperty="dispatch_idx">
+    	INSERT INTO dispatch (bus_idx, driver_idx, date, shift_idx)
+    		SELECT #{bus_idx}, #{driver_idx}, #{date}, #{shift_idx}
+    	FROM DUAL
+    	WHERE NOT EXISTS (
+        	SELECT 1
+        	FROM dispatch
+        	WHERE bus_idx = #{bus_idx}
+          	AND shift_idx = #{shift_idx}
+          	AND date = #{date}
+    	)
+	</insert>
 
+	<select id="dispatchList" parameterType="int" resultType="map">
+    	SELECT 
+        	d.dispatch_idx,                -- dispatch 테이블의 기본 키
+        	b.license_plate,               -- bus 테이블에서 차량 번호
+        	e.name AS driver_name,         -- employee 테이블에서 운전기사 이름
+        	s.shift,                       -- shift 테이블에서 운행 시간
+        	s.shift_idx,                       -- shift 테이블에서 운행 시간
+        	d.date,                        -- dispatch 테이블의 운행 날짜
+        	b.route_name,                   -- bus 테이블에서 노선 이름
+        	e.emp_idx
+    	FROM dispatch d
+    	JOIN bus b ON d.bus_idx = b.bus_idx            -- dispatch 테이블과 bus 테이블 조인
+    	JOIN driver dr ON d.driver_idx = dr.driver_idx -- dispatch 테이블과 driver 테이블 조인
+    	JOIN employee e ON dr.emp_idx = e.emp_idx      -- driver 테이블과 employee 테이블 조인
+    	JOIN shift s ON d.shift_idx = s.shift_idx      -- dispatch 테이블과 shift 테이블 조인
+    	<if test="date != null and date != ''">
+        	WHERE d.date = #{date}        -- 날짜 조건 추가
+    	</if>
+	</select>
 </mapper>  

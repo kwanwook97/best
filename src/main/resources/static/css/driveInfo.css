@@ -408,9 +408,9 @@ p {
     content: '';
     position: absolute;
     right: 5px; /* 연결선을 오른쪽으로 이동 */
-    top: 69%;
+    top: 74%;
     width: 7px; /* 선 두께 */
-    height: 31px; /* 선 길이 */
+    height: 25px; /* 선 길이 */
     background-color: #6a1b9a; /* 선 색상 */
     z-index: 1; /* 아이콘 아래 표시 */
 }
