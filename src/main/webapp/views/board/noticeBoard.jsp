@@ -19,7 +19,7 @@
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
-	    height: 92%;
+	    height: 83%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -164,6 +164,7 @@
 		border: var(--background-color) !important; /* 테두리 */
 		font-family: 'Arial', sans-serif; /* 폰트 */
 		font-size: 16px; /* 글자 크기 */
+		box-shadow: none;
 	}
 	/* 호버 시 스타일 */
 	.pagination .page-link:hover {
