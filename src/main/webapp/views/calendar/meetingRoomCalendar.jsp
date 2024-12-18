@@ -21,15 +21,15 @@
     .dashboard-body{
        margin-left: 14vw;
        width: 85vw;
-       margin-top: -1vh;
+       margin-top: 7vh;
        flex-wrap: wrap;
        padding: 2vh;
        color: var(--primary-color);
-       height: 92%;
+       border: 1px solid #00000000;
+       height: 857px;
        display: flex;
        flex-direction: column;
-       align-content: center;
-       align-items: flex-start;
+       align-content:center;
        justify-content: center;
    }
   /* 시계 스타일 */
@@ -39,11 +39,11 @@
     margin-bottom: 20px;
     text-align: center; 
   }
-    .container {
+    .container-meetingRoom {
       display: flex;
-      width: 90%;
-      max-width: 1200px;
-      gap: 20px;
+      width: 46%;
+      height: 73%;
+      margin: 4% 1% 0 0;
     }
 
     #calendar-container {
@@ -53,10 +53,9 @@
       padding: 20px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       border:2px solid #30005A;
-      max-height: 64%;
-      margin: 31% 0 0 0;
+      margin: 0 0 0 0;
     }
-    #calendar {
+    #calendar-room {
     	height: 100%;
     	max-height: 84%;
     	width: 100%;
@@ -93,8 +92,8 @@
 .btninfo{
 	margin: 0 0 50px 0;
 }	
-.btnadd{
-	margin: 0 0 50px 50px;
+.btnadd {
+	margin: 0 0 13px 1px;
 }	
 
 /* 회의실 예약 모달 */
@@ -109,11 +108,19 @@
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    max-height: 700px;
+    overflow-y:auto;
+    width: 22%;
 }
 
-.modal-content {
+.roomModal-content {
     width: 100%;
     max-width: 500px;
+    height: 100%;
+    border: 1px solid black;
+    border: 1px solid #00000030;
+    padding: 10px;
+    border-radius: 10px;
 }
 .la {
 	color: black;
@@ -130,11 +137,12 @@
 }
 /* 미팅룸 img */
 #room-image {
-	width: 100%;
+	width: 335px;
 	margin: 0 0 0 0;
 	border-radius: 10px;
 	display: none; 
-	height: auto;
+	height: 228px;
+	padding: 16px;
 }
 .form-group{
 	margin: 2% 0 0 0;
@@ -155,10 +163,12 @@
 }
 .room-btn-container {
     display: flex; /* 버튼 정렬을 위해 flex 사용 */
+    flex-wrap: wrap;
     gap: 10px; /* 버튼 간격 */
     margin: 10px;
 }
 .room-btn {
+	width: calc(30% - 10px); /* 5개씩 나열 (100% / 5개 - 간격값) */
 	border-radius: 10px;
 }
 #room-name {
@@ -202,10 +212,26 @@
 	color: black !important;
 }
 .event-box {
-	background-color: #3788d8;
-	border-radius: 10px;
-	padding: 4px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    background-color: #688eec;
+    border-radius: 10px;
+    text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
+    overflow: hidden; /* 넘치는 부분 숨김 */
+    white-space: nowrap; /* 한 줄로 표시 */
+    
 }
+
+.event-box span {
+    display: block; /* 인라인 요소를 블록 요소처럼 만듦 */
+    margin: 5px 0;
+}
+.fc-event.fc-event-draggable.fc-event-resizable.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygrid-dot-event {
+	width: 100%;
+}
+
 
 /* 회의실 예약 현황  */
         .table-container {
@@ -213,24 +239,24 @@
             border-radius: 10px;
             padding: 20px;
             background-color: #fdf8fc00;
-            width: 628px;
-            height: 466px;
+            width: 28%;
+            height: 34%;
             position: relative;
-            top:92px;
+            top:21px;
             overflow-y: auto;
         }
         .table-container h2 {
             text-align: center;
             margin-bottom: 20px;
             color: white;
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
             background-color: #30005A;
             border-radius: 10px;
         }
         .table-row {
             display: flex;
-            padding: 10px;
+            padding: 0px;
             border-bottom: 1px solid #8B6AA7;
         }
         .table-row.header {
@@ -256,16 +282,16 @@
             border-radius: 10px;
             padding: 10px;
             background-color: #fdf8fc00;
-            width: 628px;
+            width: 28%;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             position: relative;
-            top: 120px;
+            top: 44px;
         }
         .detail-table-container h2 {
             text-align: center;
             margin-bottom: 20px;
             color: #30005A;
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
             background-color: #30005A;
             color: white;
@@ -276,12 +302,12 @@
             border-collapse: collapse;
         }
         .detail-table th, .detail-table td {
-            padding: 10px;
+            padding: 4px;
             text-align: left;
             border-bottom: 1px solid #8B6AA7;
         }
         .detail-table th {
-            width: 30%;
+            width: 25%;
             background-color: #8B6AA7;
             color: #30005A;
             font-weight: bold;
@@ -306,28 +332,34 @@
 		height: 1px;
 		background-color: #100f0f4a;
 	}
+	
+/* 회의실 모달 기자재 css */
+#room-material {
+	border: 2px solid #30005A;
+	padding: 3px;
+	border-radius: 10px;
+}	
+	
   </style>
   
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
   	<div class="title-name">
-	    <h1>회의실 예약</h1>
+	    <h3>회의실 예약</h3>
 	    <div class="title-line"></div>
 	</div>
  	<div class="dashboard-body">
-		  <div class="container">
+		  <div class="container-meetingRoom">
 				<!-- <h2 class="meeting-add">회의실 예약</h2> -->
 		    <div id="calendar-container">
-				<button class="btninfo btn-primary" onclick="getInfo()">회의실정보</button>
 				<button class="btnadd btn-primary" onclick="openModal()">예약하기</button>
-				<div id='calendar'></div>
+				<div id='calendar-room'></div>
 		    </div>
 		  </div>
 		    <div class="table-container" id="table-container">
 		        <h2>회의실 예약 현황</h2>
 		        <!-- Header Row -->
-
 			        <div class="table-row header">
 			            <div>시간</div>
 			            <div>회의실</div>
@@ -381,8 +413,8 @@
  	
  	
 <div class="meetingmodal">
-  <div class="modal-content">
-	<h2>회의실 예약</h2>
+  <div class="roomModal-content">
+	<h3>회의실 예약</h3>
 	<div class="box-line"></div>
 	<div class="room-btn-container">
 		<c:forEach var="room" items="${roomList}">
@@ -393,12 +425,44 @@
 		    <img id="room-image" src="" alt="회의실 이미지"/>
 		</div>
     <form>
-	<input type="hidden" id="emp_idx" value="1" >    
+	<input type="hidden" id="emp_idx" value="1" >
+	
+    
       <div class="form-group">
         <label class="la" for="room">회의실:</label>
 		<p id="room-name"></p>
  		<input id="hidden-room-idx" value="" name="room_idx" type="hidden">
       </div>
+      
+      <div class="form-group">
+        <label class="la">회의실 기자재:</label>
+		<span id="room-material">뭐뭐</span>
+      </div>
+
+	<div class="equipment-section">
+	    <div class="equipment-title">
+	        <label>기자재 리스트</label>
+	    </div>
+	    <div id="equipment-list" class="equipment-list">
+	        <c:forEach var="material" items="${materialList}">
+	            <div class="equipment-item">
+	                <!-- 체크박스 -->
+	                <label class="equipment-label">
+	                    <input type="checkbox" name="selectedMaterials" value="${material.material_idx}" class="material-checkbox">
+	                    ${material.material_name} (전체 수량: ${material.quantity})
+	                </label>
+	                <!-- 수량 입력 -->
+	                <input type="number" name="quantity_${material.material_idx}" 
+	                       min="1" max="${material.remain_quantity}" 
+	                       placeholder="수량 입력" class="quantity-input">
+	            </div>
+	        </c:forEach>
+	    </div>
+	</div>
+      
+      
+      
+      
       <div class="form-group">
         <label class="la" for="date">예약자:</label>
         <p class="emp-name">사원 이름 부서</p> 
@@ -481,7 +545,7 @@
 </body> 
 <script>
 document.addEventListener('DOMContentLoaded', function loadEvt() {
-    var calendarEl = document.getElementById('calendar');
+    var calendarEl = document.getElementById('calendar-room');
     
 
 
@@ -490,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            right: 'dayGridMonth,listMonth'
         },
         initialView: 'dayGridMonth',
         initialDate: new Date(),
@@ -509,12 +573,12 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
             console.log("클릭된 날짜:", info.dateStr);
 
             // 해당 날짜에 있는 이벤트 필터링
-const events = calendar.getEvents();
-console.log("캘린더에 로드된 이벤트:", events);
-
-if (events.length === 0) {
-    console.error("캘린더에 로드된 이벤트가 없습니다.");
-}
+			const events = calendar.getEvents();
+			console.log("캘린더에 로드된 이벤트:", events);
+			
+			if (events.length === 0) {
+			    console.error("캘린더에 로드된 이벤트가 없습니다.");
+			}
             const filteredEvents = calendar.getEvents().filter(event => {
                 console.log("이벤트 시작 날짜 (event.start):", event.start);
                 console.log("event.start instanceof Date:", event.start instanceof Date); // 출력: true
@@ -632,7 +696,7 @@ if (events.length === 0) {
                 listContainer.appendChild(row);
             }
         },
-        eventClick: function(arg) {
+/*         eventClick: function(arg) {
             if (confirm('일정을 삭제하시겠습니까?')) {
                 const reserveIdx = arg.event.id; // FullCalendar 이벤트의 ID (reserve_idx)
                 
@@ -653,7 +717,7 @@ if (events.length === 0) {
                     }
                 });
             }
-        },
+        }, */
         events: function(info, successCallback, failureCallback) {
             $.ajax({
                 url: 'getCalendarEvents.ajax',
@@ -726,10 +790,10 @@ if (events.length === 0) {
             return {
                 html: 
                     '<div class="event-box">' +
-                        '<b>회의실: ' + roomName + '</b><br>' +
-                        '<b>시간: ' + startTime + ' - ' + endTime + '</b><br>' +
-                        '<b>예약자: ' + reserverName + ' (' + rankName + ')</b><br>' +
-                        '<b>회의 제목:' + (arg.event.title || '제목 없음') + '</b>' +
+                        '<span>회의실: ' + roomName + '</span>' +
+                        '<span>시간: ' + startTime + ' - ' + endTime + '</span>' +
+                        '<span>예약자: ' + reserverName + ' (' + rankName + ')</span>' +
+                        '<span>회의 제목:' + (arg.event.title || '제목 없음') + '</span>' +
                     '</div>'
             };
         }
@@ -878,13 +942,33 @@ document.querySelectorAll('.room-btn').forEach(button => {
         if (photoUrl) {
         	ptagElement.textContent = roomName;
             // 이미지 URL 설정
-            imageElement.src = "/photo/"+photoUrl;
+            imageElement.src ="/photo/"+photoUrl;
             imageElement.style.display = 'block'; // 이미지 표시
             
         } else {
             // 이미지 숨기기
             imageElement.style.display = 'none';
         }
+
+        
+	    $.ajax({
+		      method: "POST",
+		      url: "getRoomMaterial.ajax", 
+		      data: {
+		    	  "roomIdx" : roomIdx
+		      },
+		      dataType: 'json',
+		      success: function (response) {
+		        alert(response.msg);
+		      },
+		      error: function (error) {
+		        alert("저장 중 오류가 발생했습니다: " + error);
+		      }
+		    });
+        
+        
+        
+        
     });
 });
 </script>

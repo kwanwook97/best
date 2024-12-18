@@ -4,6 +4,8 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="resources/css/app-style.css" rel="stylesheet"/>
@@ -11,9 +13,6 @@
     .body {
 	height: auto;
 	width: 83%;
-	margin-top: 80px;
-    margin-left: 300px;
-	margin-right: 100%;
     }
 
     .bus-info-card {
@@ -21,7 +20,7 @@
       border-radius:  0 0 10px 10px;
       padding: 3px;
       height: auto;
-      width: 50%;
+      width: 100%;
     margin-top: 6vh;
       
     }
@@ -46,9 +45,10 @@
 		color: #2A33DD;
 	}
 	select{
-	    width: 13.1vw;
+	    width: 26.1vw;
 	    border-radius: 10px;
    	    padding: 3 10px;
+   	    color: #30005A;
 	}
 
     .bus-details {
@@ -83,7 +83,7 @@
 }
 .tm2 {
 	margin-top: 2%;
-	width: 29%;
+	width: 82%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -122,9 +122,6 @@
 	    border-radius: 4px;
 	    color: #30005A;
 	}
-	select{
-		color: #30005A;
-	}
 	select option{
 		background-color: white !important;
 		border-radius: 5px;
@@ -153,13 +150,13 @@
 		background-color: #E9396B;
 		border-radius: 5px;
 		width: 100%;
-	    height: 5vh;
+	    height: 9vh;
 	}
 	.bus-info-subject{
 		background-color: #30005A;
 		color: #FFFBF2;
 	    margin-bottom:-6vh;
-   	    width: 50%;
+   	    width: 100%;
     	font-size: 24px;
     	margin-top: 1vh;
     	border-radius: 10px 10px 0 0;
@@ -168,7 +165,7 @@
     }
     .bus-insert-btn{
         margin-top: 1vh;
-        width: 50%;
+        width: 100%;
     	display: flex;
     	flex-direction: column;
     	align-items: center;
@@ -198,69 +195,49 @@
    	    color: #30005A;
     }
     .naviPath i{
-    	margin-right: 1vw;
+    	margin-right: 2vw;
     }
     input[readonly] {
     border: none; /* 테두리 제거 */
     background: transparent; /* 배경 투명 */
     pointer-events: none; /* 마우스 클릭 막기 */
 }
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
   </style>
 </head>
 <body class="bg-theme bg-theme1">
-  <jsp:include page="../main/header.jsp"></jsp:include>
-  <form action="busInsert.do">
+  <form action="dispatchInsert.do">
   <div class="body">
-     <div class="naviPath bold f32 w100 tm2">
-		<span class="lPurple">버스정보</span>
-			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
-		<span class="lPurple">버스관리</span>
-			<i class="fa-solid fa-angle-right" style="color:#30005A;"></i>
-		<span class="purple">버스등록</span>
-		<div class="bus-drive-info">
-				
-		</div>
-	</div>
     <div class="content">
-      <div class="bus-info-subject bold purple"><span>버스 정보</span></div>
+      <div class="bus-info-subject bold purple"><span>배차 등록</span></div>
       <div class="bus-info-card">
        	<div class="bus-details">
+       	<input type="hidden" name="bus_idx" value="" />
        		<ul>
-       			<li><strong>노선 번호:</strong> <span><input type="text" name="bus_route_name"/></span></li>
-       			<li><strong>차량 번호:</strong> <span><input type="text" name="bus_license_plate"/></span></li>
-       			<li><strong>연비:</strong> <span><input type="text" name="bus_fuel_efficiency"/></span></li>
-       			<li><strong>구입일:</strong> <span><input type="text" name="bus_buy_date"/></span></li>
-       			<li><strong>제조사:</strong> <span><input type="text" name="bus_bus_company"/></span></li>
-       			<li><strong>좌석 수:</strong> <span><input type="text" name="bus_seat_number"/></span></li>
-       			<li><strong>버스 종류:</strong> <span><input type="text" name="bus_bus_type"/></span></li>
+       			<li><strong>노선 번호:</strong> 
+       			<span><input type="text" name="bus_route_name" value=""/></span></li>
+       			<li><strong>차량 번호:</strong> 
+       			<span><input type="text" name="bus_license_plate" value="" readonly/></span></li>
+       			<li><strong>운행 기사:</strong> 
+       			<span><input type="text" name="bus_fuel_efficiency" value=""/></span></li>
+       			<li><strong>운행 시간:</strong> 
+       			<span>
+        				<select name="shift">
+        					<option value="정상"></option>
+        					<option value="정비 중"></option>
+        				</select>
+        			</span>
        		</ul>
         </div>
        </div>
-       <div class="bus-info-subject bold purple"><span>정비 사항</span></div>
-       <div class="bus-info-card">
-        <div class="bus-details">
-        	<ul>
-        		<li>
-        			<strong>버스 상태:</strong> 
-        			<span>
-        				<select name="bus_manage_status">
-        					<option value="정상" selected>정상</option>
-        					<option value="정비 중">정비 중</option>
-        				</select>
-        			</span>
-        		</li>
-        		<li><strong>운행거리:</strong> <span><input type="text" name="bus_manage_distance"/></span></li>
-        		<li><strong>점검 일:</strong> <span><input type="text" name="bus_manage_inspect_date"/></span></li>
-        		<li><strong>다음 점검일:</strong> <span><input type="text" name="bus_manage_next_inspect_date"/></span></li>
-        		<li><strong>담당 정비사:</strong> <span><input type="text" name="bus_manage_emp_idx" value="21" readonly/></span></li>
-        		<li><strong>정비 내용:</strong> <span><input type="text" name="bus_manage_content"/></span></li>
-        		<li><strong>정비 비용:</strong> <span><input type="text" name="bus_manage_amount"/></span></li>
-        	</ul>
-    	</div>
-      </div>
 			<div class="bus-insert-btn">
 				<button class="editbtn" type="submit"><i class="far fa-edit"></i>&nbsp;등록</button>
-				<button class="editbtn" style="background-color:#8B6AA7;" type="button" onclick="location.href='busDetail.go'"><i class="bi bi-x-square"></i>&nbsp;취소</button>
+				<button class="editbtn" style="background-color:#8B6AA7;" type="button">
+				<i class="bi bi-x-square"></i>&nbsp;취소</button>
 			</div>
     </div>
   </div>

@@ -10,8 +10,7 @@ public class ReserveDTO {
     private String subject;    // 주제
     private int emp_idx;        // 직원 ID
     private int room_idx;       // 방 ID
-
-    
+    private LocalDateTime created_at;
     
 	public int getReserve_idx() {
 		return reserve_idx;
@@ -19,16 +18,16 @@ public class ReserveDTO {
 	public void setReserve_idx(int reserve_idx) {
 		this.reserve_idx = reserve_idx;
 	}
-	public LocalDateTime getStart_time() {
+	public LocalDateTime getStart_datetime() {
 		return start_datetime;
 	}
-	public void setStart_time(LocalDateTime start_datetime) {
+	public void setStart_datetime(LocalDateTime start_datetime) {
 		this.start_datetime = start_datetime;
 	}
-	public LocalDateTime getEnd_time() {
+	public LocalDateTime getEnd_datetime() {
 		return end_datetime;
 	}
-	public void setEnd_time(LocalDateTime end_datetime) {
+	public void setEnd_datetime(LocalDateTime end_datetime) {
 		this.end_datetime = end_datetime;
 	}
 	public String getSubject() {
@@ -49,5 +48,11 @@ public class ReserveDTO {
 	public void setRoom_idx(int room_idx) {
 		this.room_idx = room_idx;
 	}
-
+	public LocalDateTime getCreated_at() {
+		return created_at;
+	}
+	public void setCreated_at(LocalDateTime created_at) {
+		this.created_at = created_at;
+	}
+    
 }

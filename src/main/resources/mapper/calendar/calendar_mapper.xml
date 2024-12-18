@@ -91,5 +91,89 @@
 	<delete id="cancelReserve" parameterType="map">
 	    DELETE FROM reserve WHERE reserve_idx = #{reserveIdx}
 	</delete>
+	
+	<!-- 회의실 등록에 사용하는 쿼리문 -->
+	
+	<select id="getAllMaterials" resultType="map">
+	    SELECT * 
+	    FROM material 
+	    ORDER BY material_idx ASC
+	</select>
 
+	<!-- 등록된 회의실 전부 가져오기 -->
+	<select id="allRoomList" resultType="map">
+	    SELECT * 
+	    FROM room
+	    ORDER BY room_idx ASC
+	</select>
+	
+	<!-- 회의실 저장 -->
+	<insert id="insertRoomInfo" parameterType="map" useGeneratedKeys="true" keyProperty="roomIdx">
+	    INSERT INTO room (name, photo, max_capacity) 
+	    VALUES (#{name}, #{photo}, #{maxCapacity})
+	</insert>
+
+	
+	<!-- 기자재 회의실 매핑 테이블 저장 -->
+	<insert id="insertRoomMaterial" parameterType="map">
+	    INSERT INTO room_material (room_idx, material_idx, quantity)
+	    VALUES (#{roomIdx}, #{materialIdx}, #{quantity});
+	</insert>
+	
+	<!-- 기자재 잔여수량 뺴기 -->
+	<update id="updateMaterial" parameterType="map">
+	    UPDATE material
+	    SET remain_quantity = remain_quantity - #{quantity}
+	    WHERE material_idx = #{materialIdx}
+	      AND remain_quantity >= #{quantity}
+	</update>
+	
+	<!-- 회의실 삭제전 회의실 사용 예약 있는지 확인 쿼리 -->
+	<select id="selectReserveData" parameterType="integer" resultType="com.best.calendar.ReserveDTO">
+	    SELECT * 
+	    FROM reserve 
+	    WHERE room_idx = #{roomIdx}
+	      AND end_datetime &lt;= NOW()
+	</select>
+	
+	<!-- 회의실 삭제 -->
+	<delete id="delRoomInfo" parameterType="integer">
+	    DELETE FROM room
+	    WHERE room_idx = #{roomIdx}
+	</delete>
+
+	<!-- 삭제시 기자재 수량 업데이트 -->
+	<update id="updateMaterialBecauseRoomInfo" parameterType="integer">
+	    UPDATE material AS m
+	    JOIN room_material AS rm ON m.material_idx = rm.material_idx
+	    SET m.remain_quantity = m.remain_quantity + rm.quantity
+	    WHERE rm.room_idx = #{roomIdx}
+	</update>
 </mapper>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

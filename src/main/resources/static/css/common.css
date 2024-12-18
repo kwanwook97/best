@@ -137,3 +137,224 @@ body {
 .btn_cancel:hover {
 	background-color: #FF527D;
 }
+
+
+
+
+/* Change 모달 스타일 */
+.change_modal {
+  display: none; /* 실제 사용 시 display: flex */
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+
+.change_modal_container {
+  background-color: #FFF5E2;
+  border-radius: 20px;
+  padding: 2%;
+  border: 5px solid #30005A;
+  width: 570px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* 모달 제목 */
+.change_modal_title {
+  background-color: #30005A;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+  padding: 15px 0;
+}
+
+/* 테이블 스타일 */
+.modal_table {
+  width: 100%;
+  height: auto;
+  border-collapse: collapse;
+  color: #30005A; /* 글자색: 진한 보라색 */
+}
+
+.modal_table th {
+  background-color: #8B6AA7;
+  color: #30005A;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 15px;
+  text-align: left;
+  border-right: 2px solid #FFF5E2;
+}
+
+.modal_table td {
+  text-align: left;
+  background-color: #FFF5E2;
+  border: 2px solid #8B6AA7;
+  color: #30005A; /* 글자색: 진한 보라색 */
+}
+
+.input_field {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  color: #30005A; /* 글자색: 진한 보라색 */
+  font-size: 18px;
+  border: none;
+  background-color: transparent;
+  /* border: 2px solid #8B6AA7;
+  box-sizing: border-box; */
+}
+
+/* 버튼 영역 */
+.change_modal_footer {
+  border: 1px solid #8B6AA7;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.change_modal_footer .full_btn_change {
+  background-color: #E9396B;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 0 !important;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.change_modal_footer .full_btn_cancel {
+  background-color: #30005A;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 0 !important;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.change_modal_footer .full_btn_change:hover {
+  background-color: #FF527D;
+}
+
+.change_modal_footer .full_btn_cancel:hover {
+  background-color: #4A0073;
+}
+
+
+/* 기사정보 관리 모달 */
+.driver_modal {
+  display: none; /* 실제 사용 시 display: flex */
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+
+.driver_modal_container {
+  background-color: #FFF5E2;
+  border-radius: 20px;
+  padding: 2%;
+  border: 5px solid #30005A;
+  width: 570px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* 모달 제목 */
+.driver_modal_title {
+  background-color: #30005A;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+  padding: 15px 0;
+}
+
+/* 테이블 스타일 */
+.modal_table {
+  width: 100%;
+  height: auto;
+  border-collapse: collapse;
+  color: #30005A; /* 글자색: 진한 보라색 */
+}
+
+.modal_table th {
+  background-color: #8B6AA7;
+  color: #30005A;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 15px;
+  text-align: left;
+  border-right: 2px solid #FFF5E2;
+}
+
+.modal_table td {
+  text-align: left;
+  background-color: #FFF5E2;
+  border: 2px solid #8B6AA7;
+  color: #30005A; /* 글자색: 진한 보라색 */
+}
+
+.input_field {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  color: #30005A; /* 글자색: 진한 보라색 */
+  font-size: 18px;
+  border: none;
+  background-color: transparent;
+  /* border: 2px solid #8B6AA7;
+  box-sizing: border-box; */
+}
+
+/* 버튼 영역 */
+.driver_modal_footer {
+  border: 1px solid #8B6AA7;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.driver_modal_footer .full_btn_regist {
+  background-color: #E9396B;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 0 !important;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.driver_modal_footer .full_btn_cancel {
+  background-color: #30005A;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 0 !important;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.driver_modal_footer .full_btn_regist:hover {
+  background-color: #FF527D;
+}
+
+.driver_modal_footer .full_btn_cancel:hover {
+  background-color: #4A0073;
+}
+
+
+

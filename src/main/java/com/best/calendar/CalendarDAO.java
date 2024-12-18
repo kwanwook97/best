@@ -23,5 +23,21 @@ public interface CalendarDAO {
 
 	int cancelReserve(Map<String, Object> params);
 
+	List<Map<String, Object>> getAllMaterials();
+
+	List<Map<String, Object>> allRoomList();
+
+	int insertRoomInfo(Map<String, Object> params);
+
+	void insertRoomMaterial(Map<String, Object> params);
+
+	int updateMaterial(Map<String, Object> params);
+
+	int delRoomInfo(int roomIdx);
+
+	List<ReserveDTO> selectReserveData(int roomIdx);
+
+	int updateMaterialBecauseRoomInfo(int roomIdx);
+
 
 }
