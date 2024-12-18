@@ -7,7 +7,7 @@
   <!-- 페이지네이션 -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
-  <script src="resources/js/jquery.twbsPagination.js" type="text/javascript"></script>
+  <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
   <!-- 페이지네이션 CSS -->
   <link rel="stylesheet" href="resources/css/pagination.css">
   
@@ -324,7 +324,6 @@
 	var pagination = '';       // 페이지네이션 선택자 변수
 	var searchFilter = 'name'; // 검색 필터 값 담을 변수
 	var searchKeyword = '';    // 검색 값 담을 변수
-	
 	
 
     // select 태그의 change 이벤트
