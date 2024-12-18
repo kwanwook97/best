@@ -6,7 +6,7 @@
 <meta charset="UTF-8" />
 <title>Insert title here</title>
 <link rel="stylesheet" href="resources/css/root.css" />
-<script src="resources/js/document-modal.js"></script>
+
 <style>
 .docnav {
 	display: flex;
@@ -73,6 +73,12 @@
 	background-color: var(--accent-color);
 	border-radius: 10px;
 	width: 70px;
+}
+a.button{
+    text-align: center;
+    width: 60px;
+    margin-right: 10px;
+    display: inline-block;
 }
 /* 모달 기본 스타일 */
 .custom-modal {
@@ -177,7 +183,19 @@ input[name="doc_subject"]{
     cursor: pointer;
     font-size: 14px; /* 글자 크기 줄이기 */
 }
-
+/* 모달 종류 */
+.one div.modal-content{
+    left: 6%;
+    transform: scale(1) !important;
+}
+.two div.modal-content{
+    left: 6%;
+}
+.thr div.modal-content{
+    left: 6%;
+    transform: scale(1) !important;
+    color: black !important;
+}
 </style>
 </head>
 <body>
@@ -219,8 +237,7 @@ input[name="doc_subject"]{
 			<ul class="modal-list">
 				<li class="modal-item" onclick="documentForm('연차신청서')">연차신청서</li>
 				<li class="modal-item" onclick="documentForm('시말서')">시말서</li>
-				<li class="modal-item" onclick="documentForm('사유서')">사유서</li>
-				<li class="modal-item" onclick="documentForm('업무')">업무 보고서</li>
+				<li class="modal-item" onclick="documentForm('구매요청서')">구매요청서</li>
 			</ul>
 		</div>
 	</div>
@@ -237,11 +254,14 @@ $(document).ready(function() {
 	$(".far.fa-arrow-alt-circle-left").click(function() {
 		$("#customModal").fadeOut(); // 뒤로가기 기능 실행
 	});
-
+	
+   var inputValue = $('input[data-index="1"]').val();
+   console.log(inputValue);  // 해당 input의 value를 콘솔에 출력
+	
 });
 
+
 function documentForm(form_subject) {
-	
     $.ajax({
         type: 'GET',
         url: 'getForm.ajax',
@@ -249,7 +269,7 @@ function documentForm(form_subject) {
         dataType: 'text',
         success: function(response) {
         	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
-            openModal(response); 
+            openModal(response, form_subject); 
         },
         error: function(xhr, status, error) {
             console.error('문서 요청 실패:', error);
@@ -257,12 +277,27 @@ function documentForm(form_subject) {
     });
 }
 //모달 열기
-function openModal(content) {
+function openModal(content, form_subject) {
     var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+	var modalClass = '';
 
+    console.log("누른LI "+form_subject);
+
+    // switch 문을 사용하여 텍스트 값에 따라 변수 이름을 설정합니다.
+    switch (form_subject) {
+        case "연차신청서":
+            modalClass = 'one';
+            break;
+        case "시말서":
+            modalClass = 'two';
+            break;
+        case "구매요청서":
+            modalClass = 'thr';
+            break;
+    }
     // 모달 HTML 생성
     var modalHtml = 
-        '<div id="' + modalId + '" class="modal" style="display: none;">' +
+        '<div id="' + modalId + '" class="modal '+modalClass+'" style="display: none;">' +
         '  <div class="modal-content">' +
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
@@ -285,19 +320,20 @@ function openModal(content) {
         var targetModalId = $(this).data('modal-id');
         $('#' + targetModalId).remove();
     });
+    
+    var script = document.createElement('script');
+    script.src = 'resources/js/document-call.js';
+    script.type = 'text/javascript';
+    document.body.appendChild(script);
 }
 
 // 결재 기안, 임시저장
 function btnAction(actionType) {
-
-	console.log("봐라 "+actionType);
-	var doc_subject = $('input[name="doc_subject"]').val();
-	console.log("제목 "+doc_subject);
 	
-	// textarea에 입력된 값을 가져옵니다
+	var form_idx = $('input[name="form_idx"]').val();
+	console.log("폼idx "+form_idx);
+	var doc_subject = $('input[name="doc_subject"]').val();
 	var textareaValue = $('.modal-content:last-child textarea').val(); 
-
-	// modal-content의 HTML을 가져옵니다
 	var updatedHtml = $('.modal-content:last-child').html();
 
 	// HTML에서 <input name="doc_subject"> 부분 찾아서 그 안의 값을 doc_subject로 변경
@@ -305,28 +341,98 @@ function btnAction(actionType) {
 	    /<input([^>]*name=["']doc_subject["'][^>]*)>/,
 	    '<input$1 value="' + doc_subject + '">'
 	);
-
 	// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경합니다
 	updatedHtml = updatedHtml.replace(
 	    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
 	    '<textarea>' + textareaValue + '</textarea>'  // textarea 값을 새로 덮어씌움
 	);
-
 	// 수정된 HTML을 다시 modal-content에 적용
 	$('.modal-content:last-child').html(updatedHtml);
 	var doc_content = $('.modal-content:last-child .content').html();
 	console.log("최종"+ doc_content);
+	
+	var data = {
+	    form_idx: form_idx,
+	    action: actionType,
+	    doc_subject: doc_subject,
+        doc_content: doc_content
+	};
+	
+	
+	switch (form_idx) {
+	    case '1':
+	        var start_date = $('input[name="start_date"]').val();
+	        var end_date = $('input[name="end_date"]').val();
+	        // start_date 값 삽입
+	        updatedHtml = updatedHtml.replace(
+	            /<input([^>]*name=["']start_date["'][^>]*)>/,
+	            '<input$1 value="' + start_date + '">'
+	        );
+
+	        // end_date 값 삽입
+	        updatedHtml = updatedHtml.replace(
+	            /<input([^>]*name=["']end_date["'][^>]*)>/,
+	            '<input$1 value="' + end_date + '">'
+	        );
+	    	// 수정된 HTML을 다시 modal-content에 적용
+	    	$('.modal-content:last-child').html(updatedHtml);
+	    	var doc_content = $('.modal-content:last-child .content').html();
+	    	console.log("최종"+ doc_content);
+	    	
+        	data.start_date = start_date;
+            data.end_date = end_date;
+            data.doc_content = doc_content;
+	        break;
+	    case '2':
+	        break;
+	    case '3':
+	        // input[data-index]의 값들을 values 배열에 저장
+//	        var values = [];
+//	        $('input[data-index]').each(function() {
+//	            values.push($(this).val());
+//	        });
+
+	        // 기존 modal-content HTML을 가져오기
+	        var updatedHtml = $('.modal-content:last-child').html();
+
+	        // 동적으로 추가된 행을 modal-content에 반영
+	        var rowsHtml = '';
+	        $('#dynamic_table1 tr').each(function() {
+	            rowsHtml += $(this).prop('outerHTML');
+	        });
+
+//	        for (var i = 0; i < $('input[data-index]').length; i++) {
+//	            updatedHtml = updatedHtml.replace(
+//	                new RegExp('<input([^>]*data-index=["\']' + (i + 1) + '["\'][^>]*)>', 'g'),
+//	                '<input$1 value="' + $('input[data-index="' + (i + 1) + '"]').val() + '">'
+//	            );
+//	        }
+			updatedHtml = updatedHtml.replace(
+			    new RegExp('<input([^>]*data-index=["\']1["\'][^>]*)>', 'g'),
+			    '<input$1 value="' + $('input[data-index="1"]').val() + '">'
+			);
+	
+	        // 수정된 HTML을 마지막 modal-content에 적용
+	        $('.modal-content:last-child').html(updatedHtml);
+
+	        // modal-content에 추가된 행 HTML 반영
+	        updatedHtml += rowsHtml;
+
+	        // 수정된 modal-content에서 내용을 가져오기
+	        var doc_content = $('.modal-content:last-child .content').html();
+
+            data.doc_subject = doc_subject;
+            data.doc_content = doc_content;
+	        break;
+	}
+	
 	$.ajax({
+        type: 'GET',
         url: 'formType.ajax',
-        method: 'POST',
-        data: { 
-        	action: actionType,
-        	doc_subject: doc_subject,
-        	doc_content: doc_content	
-        },
+        data: data,
         success: function(response) {
-        	alert(response.message);  // 예: "기안 완료" 메시지
-            closeModal();  // 모달 닫기
+        	alert(response.message);
+            closeModal();
             if (response.success) {
                 // 성공 처리
             } else {

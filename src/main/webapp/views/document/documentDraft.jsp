@@ -5,7 +5,7 @@
   <meta charset="utf-8"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script> <!-- bootstrap.bundle.min.js만 사용 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
 <style>
 	.dashboard-body{
@@ -69,10 +69,10 @@
 		padding-left: 10px;
    		text-align: inherit;
 	}
-	.saveList tr:last-child td {
-	    cursor: pointer;
+	.saveList tr td:hover :nth-child(3) {
 	    color: var(--accent-color);
-	}	
+	    cursor: pointer;
+	}
 	table.myTable th{
 		background-color: var(--primary-color);
 		border-radius: 9px 9px 0 0;
@@ -189,6 +189,7 @@ function pageCall(page){
         dataType: 'JSON',
         success: function(data) {
             console.log(data);
+            $('.saveList').html('');
             Print(data.saveList);
 
             // 페이징
@@ -219,21 +220,93 @@ function Print(document) {
 	var i = 1;
 	for(var item of document){
 		content += '<tr>';
-		content += '<td>'+ i++ +'</td>';
-		content += '<td>'+ item.form_subject +'</td>';
-		content += "<td onclick=\"window.location.href='documentDetail.go?idx=" + item.doc_idx + "'\">" + item.doc_subject + "</td>";
+		content += '<td>' + i++ + '</td>';
+		content += '<td>' + item.form_subject + '</td>';
+		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
 
 		var date = new Date(item.date);
 		var formattedDate = date.toISOString().split('T')[0];
+
+		content += '<td>' + formattedDate + '</td>';
+		content += '<td>' + item.status + '</td>';
 		
-		content += '<td>'+formattedDate+'</td>';
-		content += '<td>'+item.status+'</td>';
-		content += '<td><a href="documentDelete.do?idx=' + item.doc_idx + '"><i class="fas fa-trash-alt"></i></a></td>';
+		content += '<td><a href="#" class="delete" data-doc-idx="'+item.doc_idx+'"><i class="fas fa-trash-alt delete-icon"></i></a></td>';
 		content += '</tr>';
 	}
 	$('.saveList').html(content);
-    
+	
+	$('.delete').click(function() {
+        var doc_idx = $(this).data('doc-idx');
+        console.log(doc_idx);
+        $.ajax({
+            type: 'POST',
+            url: 'documentDelete.ajax',
+            data: { doc_idx: doc_idx },
+            success: function(response) {
+                if (response.success) {
+                    console.log('삭제');
+                    pageCall(showPage);
+                } else {
+                	console.log('삭제 실패');
+                }
+            },
+            error: function(e) {
+                console.log(e);
+            }
+        });
+    });
 }
+
+/* 
+// 임시저장 상세보기
+function draftDetail(doc_idx) {
+	
+    $.ajax({
+        type: 'GET',
+        url: 'draftDetail.ajax',
+        data: { doc_idx: doc_idx },
+        dataType: 'text',
+        success: function(response) {
+        	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
+            open(response); 
+        },
+        error: function(xhr, status, error) {
+            console.error('문서 요청 실패:', error);
+        }
+    });
+}
+//모달 열기
+function open(cont) {
+    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+
+    // 모달 HTML 생성
+    var Html = 
+        '<div id="' + modalId + '" class="modal" style="display: none;">' +
+        '  <div class="modal-content">' +
+        '    <div class="modal-box">' +
+        '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
+        '      <button class="modal-btn save" onclick="btnAction(\'임시저장\')">임시저장</button>' +
+        '      <button class="modal-btn append" onclick="button3Action(\'결재선\')">결재선 추가</button>' +
+        '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
+        '    </div>' +
+        '    <div class="cont" contenteditable="true">' + cont + '</div>' +
+        '  </div>' +
+        '</div>';
+
+    // body에 추가
+    $('body').append(Html);
+
+    // 모달 표시
+    $('#' + modalId).show();
+
+    // 닫기 버튼 이벤트 등록 (이벤트 위임)
+    $(document).on('click', '.close-btn', function() {
+        var targetModalId = $(this).data('modal-id');
+        $('#' + targetModalId).remove();
+    });
+} */
+
+// 임시저장 삭제
 
 
 </script>

@@ -19,4 +19,11 @@ public interface DocumentDAO {
 	// 임시저장 리스트
 	List<DocumentDTO> saveList(int limit, int offset);
 
+	// 임시저장 상세보기
+	String draftDetail(String doc_idx);
+
+	// 임시저장 삭제
+	int draftDelete(String doc_idx);
+
+
 }

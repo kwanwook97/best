@@ -21,19 +21,25 @@
 	</select>
 	<!-- 임시저장 리스트 -->
 	<select id="saveList" resultType="map">
-        SELECT 
-	        d.doc_idx, 
-	        d.doc_subject, 
-	        d.emp_idx, 
-	        d.date, 
-	        d.status,
-	        f.form_subject
-	    FROM document d
-	    LEFT JOIN form f ON d.form_idx = 1
-	    WHERE d.emp_idx = 1
-	    ORDER BY d.date DESC
+    	SELECT 
+	        doc_idx, 
+	        doc_subject, 
+	        emp_idx, 
+	        date, 
+	        status
+	    FROM document
+	    WHERE emp_idx = 1
+	    ORDER BY date DESC
 	    LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
+	<!-- 임시저장 상세보기 -->
+	<select id="draftDetail" resultType="String">
+		SELECT doc_content FROM document WHERE doc_idx = #{doc_idx}
+	</select>
 	
+	<!-- 임시저장 삭제 -->
+	<delete id="draftDelete">
+		DELETE FROM document where doc_idx = #{doc_idx}
+	</delete>
 </mapper>  

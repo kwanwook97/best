@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class DocumentService {
@@ -21,9 +22,11 @@ public class DocumentService {
 	}
 
 	// 결재 기안, 임시저장
-	public void formSave(int form_idx, String doc_subject, String doc_content, int emp_idx, String status) {
+	public void formSave(String form_idx, String doc_subject, 
+			String doc_content, int emp_idx, String status) {
+		
 		DocumentDTO docDTO = new DocumentDTO();
-		docDTO.setForm_idx(form_idx);
+		docDTO.setForm_idx(Integer.parseInt(form_idx));
 		docDTO.setDoc_subject(doc_subject);
 		docDTO.setDoc_content(doc_content);
 		docDTO.setEmp_idx(emp_idx);
@@ -44,5 +47,18 @@ public class DocumentService {
 		
 		return result;
 	}
+
+	// 임시저장 상세보기
+	public String draftDetail(String doc_idx) {
+		return documentDao.draftDetail(doc_idx);
+	}
+	
+	// 임시저장 삭제
+	public int draftDelete(String doc_idx) {
+		return documentDao.draftDelete(doc_idx);
+	}
+
+
+
 
 }
