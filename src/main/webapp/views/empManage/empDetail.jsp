@@ -1,9 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <style>
 .body {
   width: 83%;
@@ -25,7 +28,7 @@
   color: #30005A;
 }
 
-button {
+.normalBtn {
   background-color: #30005A;
   color: #fff;
   font-weight: bold;
@@ -34,13 +37,9 @@ button {
   border-radius: 8px !important;
 }
 
-.register-btn {
-  width: 10%;
-  height: auto;
-}
-
 .notbtn {
-  background-color: #8B6AA7;
+  width: 100%;
+  background-color: #E9396B;
   color: #fff;
   font-weight: bold;
   padding: 10px 20px;
@@ -48,7 +47,7 @@ button {
   border-radius: 8px !important;
 }
 
-button:hover {
+.normalBtn:hover {
   background-color: #8B6AA7;
 }
 
@@ -77,6 +76,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   height: 100%;
+  
 }
 
 .personal-info h2 {
@@ -276,19 +276,82 @@ th, td {
   margin-right: 10px; /* 텍스트 사이 여백 */
   font-weight: bold;
 }
+
+/* 드롭다운 관련 CSS */
+select {
+    color: #30005A; /* 글자색: 진한 보라색 */
+    border: 1px solid #8B6AA7; /* 테두리색: 연한 보라색 */
+    padding: 5px;
+    font-size: 18px;
+}
+
+/* 옵션 스타일 */
+select option {
+    background-color: #FFFFFF !important; /* 옵션 배경색: 흰색 */
+    color: #8B6AA7; /* 글자색: 연한 보라색 */
+    font-weight: bold; /* 굵은 글자 */
+}
+
+/* Hover된 옵션 스타일 */
+select option:hover {
+    background-color: #F5F5F5; /* Hover 시 배경색: 연한 회색 */
+    color: #30005A; /* Hover 시 글자색: 진한 보라색 */
+}
+
+form{
+	margin: 0;
+}
+
+.driver_area{
+	width: 100%;
+}
+
   </style>
 </head>
 <body class="bg-theme bg-theme1">
+  <c:set var="emp_idx" value="${param.emp_idx}" />
+
   <jsp:include page="../main/header.jsp"></jsp:include>
+  <!-- 기본 모달, 사원정보 변경 모달 -->
+  <jsp:include page="../modal/modal.jsp"></jsp:include>
+  <!-- 기사정보 관리 모달 -->
+	<div class="driver_modal modal_change">
+	  <div class="driver_modal_container">
+	    <!-- 제목을 동적으로 설정할 부분 -->
+	    <h2 id="modalTitle" class="driver_modal_title">기사 정보 관리</h2>
+	    <table class="modal_table">
+	      <tr>
+	        <th>면허번호</th>
+	        <td>
+	          <input type="text" id="license" class="input_field" placeholder="면허번호를 입력하세요.">
+	        </td>
+	      </tr>
+	      <tr>
+	        <th>면허유효기간</th>
+	        <td>
+	          <input type="date" id="license_period" class="input_field">
+	        </td>
+	      </tr>
+	      <tr>
+	        <th>자격증번호</th>
+	        <td>
+	          <input type="text" id="certificate" class="input_field" placeholder="자격증번호를 입력하세요.">
+	        </td>
+	      </tr>
+	    </table>
+	    <div class="driver_modal_footer">
+	      <button class="full_btn_regist">등록 하기</button>
+	      <button class="full_btn_cancel">취소</button>
+	    </div>
+	  </div>
+	</div>
+  
+  
+  
   <div class="body">
     <div class="naviPath">
       <span class="lPurple">사원관리</span> <span class="cPurple">&gt; 사원상세</span>
     </div>
-<!-- 
-    <div class="btn_area">
-      <button class="registerBtn">등록 하기</button>
-    </div>
- -->
     <div class="content">
       <div class="top-section">
       	<div class="photo-container">
@@ -332,51 +395,48 @@ th, td {
             </colgroup>
             <tr>
               <th>이름</th>
-              <td>${detail.name}<div class="btn_area"><button class="normalBtn">변경하기</button></div></td>
+              <td>${detail.name}</td>
               <th>부서</th>
-              <td>${detail.depart_name}<div class="btn_area"><button class="normalBtn">변경하기</button></div></td>
+              <td>${detail.depart_name}<div class="btn_area"><button class="normalBtn" id="depart_idx">변경하기</button></div></td>
             </tr>
             <tr>
               <th>사원번호</th>
               <td>${detail.emp_idx}</td>
               <th>직급</th>
-              <td>${detail.rank_name}<div class="btn_area"><button class="normalBtn">변경하기</button></div></td>
+              <td>${detail.rank_name}<div class="btn_area"><button class="normalBtn" id="rank_idx">변경하기</button></div></td>
             </tr>
             <tr>
               <th>주민번호</th>
               <td>${detail.resident_number}</td>
               <th>연봉</th>
-              <td>${detail.salary}<div class="btn_area"><button class="normalBtn">변경하기</button></div></td>
+              <td>${detail.salary}<div class="btn_area"><button class="normalBtn" id="salary">변경하기</button></div></td>
             </tr>
             <tr>
               <th>성별</th>
               <td>${detail.gender}</td>
               <th>계좌번호</th>
-              <td>${detail.account_number}<div class="btn_area"><button class="normalBtn">변경하기</button></div></td>
-            </tr>
-            <tr>
-              <th>주소</th>
-              <td>${detail.address}</td>
-              <th>전화번호</th>
-              <td>${detail.phone}</td>
+              <td>${detail.account_number}<div class="btn_area"><button class="normalBtn" id="account_number">변경하기</button></div></td>
             </tr>
             <tr>
               <th>이메일</th>
               <td>${detail.email}</td>
+              <th>전화번호</th>
+              <td>${detail.phone}</td>
+            </tr>
+            <tr>
+              <th>주소</th>
+              <td>${detail.address}</td>
               <th>핸드폰번호</th>
               <td>${detail.mobile}</td>
             </tr>
             <tr>
               <th>입사일</th>
               <td>${detail.start_date}</td>
-              <th>면허번호</th>
-              <td>${detail.license}</td>
+              <th>퇴사일</th>
+              <td>${detail.end_date}<div class="btn_area"><button class="normalBtn" id="end_date">변경하기</button></div></td>
             </tr>
             <tr>
-              <th>퇴사일</th>
-              <td>${detail.end_date}<div class="btn_area"><button class="normalBtn">변경하기</button></div></td>
-              <th>면허유효기간</th>
-              <td>${detail.license_period}<div class="btn_area"><button class="normalBtn">변경하기</button></div></td>
+              <td colspan="4"><div class="driver_area"><button class="notbtn" id="driver_manage">기사정보 관리하기</button></div></td>
             </tr>
           </table>
         </div>
@@ -415,35 +475,105 @@ th, td {
           <h2>인사 변경 내역</h2>
           <table>
             <tr><th>부서</th><th>직급</th><th>근무 시작일</th><th>근무 종료일</th><th>연봉</th></tr>
-            <tr><td>개발팀</td><td>사원</td><td>2022-01-01</td><td>2023-01-01</td><td>3000만원</td></tr>
-            <tr><td>개발팀</td><td>사원</td><td>2022-01-01</td><td>2023-01-01</td><td>3000만원</td></tr>
-            <tr><td>개발팀</td><td>사원</td><td>2022-01-01</td><td>2023-01-01</td><td>3000만원</td></tr>
-            <tr><td>개발팀</td><td>사원</td><td>2022-01-01</td><td>2023-01-01</td><td>3000만원</td></tr>
-            <tr><td>개발팀</td><td>사원</td><td>2022-01-01</td><td>2023-01-01</td><td>3000만원</td></tr>
-            <tr><td>개발팀</td><td>사원</td><td>2022-01-01</td><td>2023-01-01</td><td>3000만원</td></tr>
-            <c:forEach items="${detail.list}" var="item">
-            	<tr>
-	            	<td>${detail.depart_name}</td>
-	            	<td>${detail.rank_name}</td>
-	            	<td>${detail.start_date}</td>
-	            	<td>${detail.end_date}</td>
-	            	<td>${detail.salary}</td>
-            	</tr>
+            <c:set var="maxRows" value="6" /> <!-- 최대 행 개수 설정 -->
+			<c:set var="rowCount" value="${fn:length(detail.list)}" />
+			
+			<c:set var="prevDepart" value="${detail.depart_name}" />
+			<c:set var="prevRank" value="${detail.rank_name}" />
+			<c:set var="prevSalary" value="${detail.salary}" />
+			
+			<c:forEach items="${detail.list}" var="item">
+			  <tr>
+			    <!-- 부서 -->
+			    <td>
+			      <c:choose>
+			        <c:when test="${item.category == 'depart_idx'}">
+			          ${item.after_update}
+			          <c:set var="prevDepart" value="${item.before_update}" />
+			        </c:when>
+			        <c:otherwise>
+			          ${prevDepart}
+			        </c:otherwise>
+			      </c:choose>
+			    </td>
+			    <!-- 직급 -->
+			    <td>
+			      <c:choose>
+			        <c:when test="${item.category == 'rank_idx'}">
+			          ${item.after_update}
+			          <c:set var="prevRank" value="${item.before_update}" />
+			        </c:when>
+			        <c:otherwise>
+			          ${prevRank}
+			        </c:otherwise>
+			      </c:choose>
+			    </td>
+			    <!-- 근무 시작일과 종료일 -->
+			    <td>${detail.start_date}</td>
+			    <td>${detail.end_date}</td>
+			    <!-- 연봉 -->
+			    <td>
+			      <c:choose>
+			        <c:when test="${item.category == 'salary'}">
+			          <fmt:formatNumber value="${item.after_update}" type="number" groupingUsed="true" /> 원
+			          <c:set var="prevSalary" value="${item.before_update}" />
+			        </c:when>
+			        <c:otherwise>
+			          <fmt:formatNumber value="${prevSalary}" type="number" groupingUsed="true" /> 원
+			        </c:otherwise>
+			      </c:choose>
+			    </td>
+			  </tr>
+			</c:forEach>
+
+			
+			<!-- 빈 행 추가 -->
+			<c:forEach begin="${rowCount}" end="${maxRows - 1}" var="i">
+			  <tr>
+			    <td></td>
+			    <td></td>
+			    <td></td>
+			    <td></td>
+			    <td></td>
+			  </tr>
 			</c:forEach>
           </table>
         </div>
         <div class="attachment-info">
+        	
 		  <h2>첨부 파일</h2>
 		  <table>
-		    <tr><th>파일명</th><th>업로드 날짜</th></tr>
-		    <tr><td>인사기록.pdf</td><td>2024-01-15</td></tr>
-		    <tr><td></td><td></td></tr>
-		    <tr><td></td><td></td></tr>
-		    <tr><td></td><td></td></tr>
-		    <tr><td></td><td></td></tr>
+		    <tr><th>파일명</th><th>업로드 날짜</th><th>삭제</th></tr>
+			
+			<c:set var="index" value="0" />
+			<c:set var="maxRows" value="5" />
+			
+			<c:forEach items="${detail.fileList}" var="file">
+		        <tr>
+		            <td><a href="fileDownload.do?file_name=${file.file_name}">${file.file_name}</a></td>
+		            <td>${file.date}</td>
+		            <td><button onclick="delFile(this)" class="normalBtn"><i class="bi bi-trash-fill"></i></button></td>
+		        </tr>
+		        <c:set var="index" value="${index + 1}" />
+			</c:forEach>
+			
+			<!-- 부족한 행만큼 빈 행 추가 -->
+			<c:forEach begin="${fn:length(detail.fileList)}" end="${maxRows - 1}" var="i">
+			    <tr>
+			        <td></td>
+			        <td></td>
+			        <td></td>
+			    </tr>
+			</c:forEach>
+			   
 		    <tr class="file-upload">
-		      <td><div class="notBtn">파일을 등록 해주세요</div></td>
-		      <td><button class="normalBtn">파일첨부</button></td>
+		      <form action="fileUpload.do" method="POST" enctype="multipart/form-data">
+			      <td colspan="2"><input type="file" id="fileUpload" name="files" multiple/></td>
+			      <td>
+					<input type="text" name="emp_idx" value="${emp_idx}" hidden/>
+					<button type="submit" class="normalBtn">저장</button>
+			      </td>
+		      </form>
 		    </tr>
 		  </table>
 		</div>
@@ -451,4 +581,248 @@ th, td {
     </div>
   </div>
 </body>
+
+<script>
+	/* 전역변수 */
+	var col = '';              // 변경할 컬럼
+	var empIdx = '${emp_idx}'; // 사번
+	var currentVal = '';    // 현재 값
+	var newVal = '';        // 변경 값
+	var newText = '';        // 변경 값(부서, 직급 Text)
+	var fileName = '';      // 삭제할 파일이름
+	var fileCnt = ${index};    // 첨부파일 개수
+	var license = ${detail.license};         // 면허번호
+    var license_period = '${detail.license_period}';  // 면허유효기간
+    var certificate = '${detail.certificate}';     // 자격증번호
+	
+	
+	/* 직원정보 변경 모달창 관련 기능 */
+	// 1. 모달 띄우기
+	$('.normalBtn').on('click', function() {
+	    // 클릭한 버튼의 컬럼 값 가져오기
+	    col = $(this).attr('id');
+	    // 변경할 항목 이름 가져오기
+	    var changeName = $(this).closest('td').prev('th').text();
+	    // 현재 값 (버튼태그 값 제거)
+	    currentVal = $(this).closest('td').clone().children().remove().end().text().trim();
+	    
+	 	// 날짜수정인 경우(퇴사일, 면허유효기간)
+	    if (changeName == '퇴사일' || changeName == '면허유효기간') {
+	        // date선택 기능
+	        var dateInput = $('<input type="date" id="new" class="input_field" value="' + currentVal + '">');
+	        $('#newVal').html(dateInput);
+	    }
+	    // 부서나 직급인 경우 DROPDOWN 추가
+	    else if(changeName == '부서' || changeName == '직급'){
+	    	var table = changeName == '부서' ? 'department' : 'rank_emp'; 
+	    	
+			$.ajax({
+				method: 'POST',
+				url: 'empDrop.ajax',
+				data: {
+					'table': table
+				},
+				dataType: 'JSON',
+				success: function(list){
+					
+					// select 태그 동적 생성
+		            var dropdown = $('<select id="new" class="input_field"></select>');
+					
+		            $.each(list, function (index, item) {
+		                var value = changeName === '부서' ? item.depart_name : item.rank_name;
+		                var idx = changeName === '부서' ? item.depart_idx : item.rank_idx;
+		                if(currentVal == value){
+		                	dropdown.append('<option value="' + idx + '" selected>' + value + '</option>');	
+		                }else{
+		                	dropdown.append('<option value="' + idx + '">' + value + '</option>');
+		                }
+		                
+		            });
+
+		
+		            // 모달에 dropdown 삽입
+		            $('#newVal').html(dropdown); // 변경할 값 부분을 교체
+					
+				},
+				error: function(e){
+					modal.showAlert('잠시 후 다시 시도해주세요.');
+				}
+			});	    	
+	    }else{
+	    	// 모달에 input태그 삽입
+	    	var inputTag = $('<input type="text" id="new" class="input_field" value="' +currentVal+ '"/>');
+	        $('#newVal').html(inputTag); // 변경할 값 부분을 교체
+	    }
+	    	
+	 	
+        
+	    // 모달 타이틀과 현재 값 설정
+	    showChangeModal(changeName + ' 변경', currentVal, '담당자입니다.(sessionId로 교체 예정)');
+	});
+	
+	// 2. 직원정보 값 변경
+	$('.full_btn_change').on('click', function() {
+	    // 변경할 값 저장
+	    newVal = $('#new').val();
+	    newText = $('#new option:selected').text();
+	    
+	    // 확인 모달 띄우기
+	    modal.showConfirm('정말로 수정하시겠습니까?', function () {
+	        empUpdate(); // 확인 버튼 클릭 시 수정 함수 실행
+	    });
+	});
+	
+	// 3. 모달창 닫기
+	$('.full_btn_cancel').on('click', function() {
+	    hideChangeModal();
+	    hideDriverModal();
+	});
+	
+	
+	
+	// 직원정보 수정 함수
+	function empUpdate() {
+	    $.ajax({
+	        method: 'POST',
+	        url: 'empUpdate.ajax',
+	        data: {
+	            'emp_idx': empIdx,        // 사번
+	            'col': col,               // 컬럼 값
+	            'currentVal': currentVal,  // 현재 값
+	            'newVal': newVal,           // 변경할 값
+	            'newText': newText          // 부서,직급 Text값
+	        },
+	        dataType: 'JSON',
+	        success: function(data) {
+	        	if(data.success == '성공'){
+	        	    modal.showConfirm('정보수정에 성공했습니다.', function () {
+	        	    	location.reload(); // 페이지 새로고침
+	        	    });
+	        		
+	        	}else{
+	        		modal.showAlert('정보수정에 실패했습니다.');
+	        	}
+	            
+	        },
+	        error: function(e) {
+	            modal.showAlert('잠시 후 다시 시도해주세요.');
+	        }
+	    });
+	}
+	
+	
+	/* 기사정보 관리 */
+	// 'driver_manage' 버튼 클릭 시 모달창 띄우기
+	$('#driver_manage').on('click', function() {
+		// 모달 표시
+	    document.querySelector('.driver_modal.modal_change').style.display = 'flex';
+		
+		// 기사정보 가져오기
+		$('#license').val(license);                 // 면허번호
+        $('#license_period').val(license_period); // 면허유효기간
+        $('#certificate').val(certificate);       // 자격증번호
+	    	
+	});
+
+	// 기사정보 관리 모달창 닫기	
+	function hideDriverModal() {
+	  document.querySelector('.driver_modal.modal_change').style.display = 'none';
+	}
+	
+	// 기사정보 수정하기
+	$('.full_btn_regist').on('click', function() {
+	    // 변경할 값 저장
+	    license = $('#license').val();               // 면허번호
+        license_period = $('#license_period').val(); // 면허유효기간
+        certificate = $('#certificate').val();       // 자격증번호
+	    
+     	// 입력값 검증
+        if (!license || !license_period || !certificate) {
+            modal.showAlert('모든 항목을 입력해주세요.'); // 경고창 표시
+            return;
+        }
+        
+	    // 확인 모달 띄우기
+	    modal.showConfirm('정말로 수정하시겠습니까?', function () {
+	    	driverUpsert(); 
+	    });
+	});
+	
+	
+	// 기사정보 수정 함수
+	function driverUpsert(){
+		$.ajax({
+			method: 'POST',
+			url: 'driverUpsert.ajax',
+			data: {
+				'emp_idx': empIdx,
+				'license': license,
+				'license_period': license_period,
+				'certificate': certificate
+			},
+			dataType: 'JSON',
+			success: function(data){
+				if(data.success == '성공'){
+	        	    modal.showConfirm('기사정보가 등록되었습니다.', function () {
+        	    		location.reload(); // 페이지 새로고침 
+	        	    });
+	        		
+	        	}else{
+	        		modal.showAlert('정보수정에 실패했습니다.');
+	        	}
+			},
+			error: function(e){
+				modal.showAlert('잠시 후 다시 시도해주세요.');
+			}
+		});
+	}
+	
+	
+	/* 파일 관련 기능 */
+	// 파일 선택 이벤트
+    $('#fileUpload').on('change', function () {
+        var selectedFiles = this.files; // 새로 선택된 파일 목록
+        var totalFiles = fileCnt + selectedFiles.length; // 총 파일 개수 계산
+
+        // 파일 개수 초과 여부 확인
+        if (totalFiles > 5) {
+        	modal.showAlert("파일은 최대 5개까지 업로드 가능합니다.");
+            $(this).val(''); // 선택된 파일 초기화
+        }
+        
+    });
+	
+	
+	// 파일삭제 함수
+	function delFile(button) {
+		// 삭제할 파일이름 세팅
+		fileName = $(button).closest('tr').find('td').eq(0).text();
+		// ajax를 이용한삭제
+		$.ajax({
+	        method: 'POST',
+	        url: 'fileDel.ajax',
+	        data: {
+	            'idx_num': empIdx,    // 사번
+	            'file_name': fileName // 파일이름
+	        },
+	        dataType: 'JSON',
+	        success: function(data) {
+	        	if(data.success == '성공'){
+	        	    modal.showConfirm('파일삭제에 성공했습니다.', function () {
+        	    		location.reload(); // 페이지 새로고침 
+	        	    });
+	        		
+	        	}else{
+	        		modal.showAlert('정보수정에 실패했습니다.');
+	        	}
+	        },
+	        error: function(e) {
+	            modal.showAlert('잠시 후 다시 시도해주세요.');
+	        }
+	    });
+	}
+
+	
+</script>
+
 </html>
