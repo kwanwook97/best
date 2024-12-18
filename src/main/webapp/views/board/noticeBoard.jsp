@@ -9,7 +9,7 @@
 	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
-	<script src="resources/js/jquery.twbsPagination.js" type="text/javascript"></script>
+	<script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
   
   <style>
 	.dashboard-body{

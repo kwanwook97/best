@@ -3,5 +3,37 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="com.best.document.DocumentDAO">
-
+    
+    <!-- 양식 불러오기 -->
+    <select id="getForm" resultType="String">
+        SELECT form_content FROM form WHERE form_subject = #{form_subject}
+    </select>
+    
+    <!-- 결재 기안, 임시저장 -->
+    <insert id="formSave" parameterType="com.best.document.DocumentDTO">
+    	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status)
+    		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status})
+    </insert>
+    
+    <!-- 임시저장 토탈 페이지 -->
+	<select id="allCount" resultType="int">
+		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM document
+	</select>
+	<!-- 임시저장 리스트 -->
+	<select id="saveList" resultType="map">
+        SELECT 
+	        d.doc_idx, 
+	        d.doc_subject, 
+	        d.emp_idx, 
+	        d.date, 
+	        d.status,
+	        f.form_subject
+	    FROM document d
+	    LEFT JOIN form f ON d.form_idx = 1
+	    WHERE d.emp_idx = 1
+	    ORDER BY d.date DESC
+	    LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	
 </mapper>  

@@ -4,12 +4,14 @@
 <head>
   <meta charset="utf-8"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
   <style>
 	.dashboard-body{
 		transform: scale(0.9);
-	    margin-left: 14vw;
-	    width: 85vw;
+	    margin-left: 22vw;
+	    width: 70vw;
 	    margin-top: 7vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
@@ -32,41 +34,66 @@
 	.docbox{
 		border: 2px solid var(--primary-color);
 	    width: -webkit-fill-available;
-		height: 80%;
-	    border: 2px solid var(--primary-color);
+		height: 700px;
 	    border-radius: 10px;
 	}
 	.opt div:nth-child(1){
 		border-bottom: 3px solid var(--accent-color);
 	}
-	.opt div:hover:not(nth-child(1)){
+	.opt div:nth-child(1) a{
+		color: var(--primary-color) !important;
+	}
+	.opt div:hover{
 		cursor: pointer;
 		border-bottom: 3px solid var(--accent-color);
 	}
-	table{
+	.opt div a:hover{
+		color: var(--primary-color);
+	}
+	table.myTable{
 		border-collapse: separate !important;
         border-spacing: 0;
 		width: -webkit-fill-available;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
 		margin: 0 48px 30px 48px;
+		text-align: center;
 	}
-	table tr:not(:last-child) td, table th {
+	table.myTable tr:not(:last-child) td, table.myTable th {
         border-bottom: 1px solid var(--primary-color) !important;
     }
-	tr{
+	table.myTable tr{
 		border-bottom: 1px solid var(--primary-color);
 		height: 35px;
 	}
-	th, td{
+	table.myTable th, table.myTable td{
 		padding-left: 10px;
    		text-align: inherit;
 	}
-	th{
+	table.myTable th{
 		background-color: var(--primary-color);
-		border-radius: 9px 0;
+		border-radius: 9px 9px 0 0;
 		color: white;
+		text-align: left;
 	}
+	table.myTable td:nth-child(1) {
+       width: 3%;
+    }
+    table.myTable td:nth-child(2) {
+        width: 3%;
+    }
+    table.myTable td:nth-child(3) {
+        width: 15%;
+    }
+    table.myTable td:nth-child(4) {
+        width: 5%;
+    }
+    table.myTable td:nth-child(5) {
+        width: 5%;
+    }
+    table.myTable td:nth-child(6) {
+        width: 3%;
+    }
 	.fa-arrow-alt-circle-left{
 		font-size: 20px;
 	    margin: 5px;
@@ -90,10 +117,10 @@
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"></jsp:include>
-			<table class="table1">
+			<table class="table1 myTable">
 				<thead>
 					<tr>
-						<th colspan="4">내 승인을 기다리는 문서 (3)</th>
+						<th colspan="6">내 승인을 기다리는 문서 (3)</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -137,7 +164,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<table class="table2">
+			<table class="table2 myTable">
 				<thead>
 					<tr>
 						<th colspan="4">진행 중인 문서 (8)</th>
