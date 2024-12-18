@@ -10,7 +10,7 @@ public interface BusDAO {
 
 	List<RouteDTO> driveInfo();
 
-	List<Map<String, Object>> busDetail();
+	List<Map<String, Object>> busDetail(String routeName, String filterType, String keyword);
 
 	void busInsert(BusDTO bus);
 
@@ -20,7 +20,7 @@ public interface BusDAO {
 
 	BusManageDTO busManUpdate(int bus_idx);
 
-	List<Map<String, Object>> busSum();
+	List<Map<String, Object>> busSum(String routeName);
 
 	void busUpdateDo(BusDTO bus);
 

@@ -1,5 +1,6 @@
 package com.best.bus;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,16 +36,38 @@ public class BusController {
 	public Map<String, Object> apiCall(@RequestParam Map<String, String>params){
 		return busService.apiCall(params); 
 	}
+	
+	
 	/* 버스 상세 정보 */
-	@RequestMapping(value="/busDetail.go")
-	public ModelAndView busDetail(Model model) {
-		ModelAndView mav = new ModelAndView("bus/busDetail");
-		List<Map<String, Object>> busData = busService.busDetail();
-		List<Map<String, Object>> busSum = busService.busSum();
-		mav.addObject("busSum", busSum);
-        mav.addObject("busData", busData);
-		return mav;
+	
+	@RequestMapping(value = "/busDetail.go")
+    public String busDetailGo() {
+        return "bus/busDetail"; // busDetail.jsp로 이동
+    }
+	
+	@GetMapping(value = "/busDetail.ajax")
+	@ResponseBody
+	public Map<String, Object> busDetail(
+	        @RequestParam(value = "route_name", required = false, defaultValue = "") String routeName,
+	        @RequestParam(value = "filterType", required = false, defaultValue = "") String filterType,
+	        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
+
+	    Map<String, Object> result = new HashMap<>();
+
+	    // route_name, filterType, keyword 값 확인
+	    System.out.println("route_name: " + routeName);
+	    System.out.println("filterType: " + filterType);
+	    System.out.println("keyword: " + keyword);
+
+	    List<Map<String, Object>> busData = busService.busDetail(routeName, filterType, keyword);
+	    List<Map<String, Object>> busSum = busService.busSum(routeName);
+
+	    result.put("busData", busData);
+	    result.put("busSum", busSum);
+
+	    return result;
 	}
+	
 	/* 버스 등록*/
 	@RequestMapping(value="/busInsert.go")
 	public ModelAndView busInsert() {
@@ -70,7 +93,7 @@ public class BusController {
 	public String busUpdate(@RequestParam Map<String, String> param) {
 		busService.busUpdateDo(param); 
 		log.info("contrl param:{}",param);
-	    return "redirect:/busDetail";
+	    return "redirect:/busUpdate.go?bus_idx="+Integer.parseInt(param.get("bus_idx"));
 	}
 	
 	
@@ -83,5 +106,9 @@ public class BusController {
 		return "bus/busManage";
 	}
 	
+	@RequestMapping(value="/dispatchInsert.go")
+	public String dispatchInsert() {
+		return "bus/dispatchInsert";
+	}
 
 }

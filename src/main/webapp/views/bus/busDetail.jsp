@@ -8,6 +8,7 @@
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="resources/css/app-style.css" rel="stylesheet"/>
+  <script src="resources/js/busDetail.js"></script>
   <style>
     .body {
 	height: auto;
@@ -141,8 +142,8 @@
 		top: 50%;
 		transform: translateY(-50%);
 		font-size: 18px;
-		pointer-events: none;
 		color: #E9396B;
+		cursor: pointer;
 	}
 	.editbtn{
 		color: #FFFBF2;
@@ -253,6 +254,7 @@
 .bus-sum li strong{
 	color: #8B6AA7;
 }
+
   </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -273,106 +275,24 @@
 				  <option value="busNo">노선 번호</option>
 				</select>
 				<div class="search">
-					<input type="text" name="">
+					<input type="text" name="keyword" value=""/>
 					<i class="fas fa-search"></i>
 				</div>
 			</div>
 		</div>
     <!-- 버스 정보 리스트 -->
     <div class="content">
-      <!-- 버스 정보 카드 -->
-      <div class="bus-info">
-      <div class="bus-info2">
-<c:set var="seenRoutes" value="" scope="page" />
-<c:forEach var="route" items="${busData}">
-    <c:if test="${not fn:contains(seenRoutes, route.route_name)}">
-        <c:set var="seenRoutes" value="${seenRoutes},${route.route_name}" scope="page" />
-        <div class="bus-header">
-            <div class="bus-main-info">
-                <div style="width: 6.5vw;">
-                    <c:choose>
-                        <c:when test="${fn:length(route.route_name) == 3}">
-                            <span class="bus-number blue">${route.route_name}</span>
-                        </c:when>
-                        <c:when test="${fn:length(route.route_name) == 4}">
-                            <span class="bus-number green">${route.route_name}</span>
-                        </c:when>
-                    </c:choose>
-                </div>
-                <input type="hidden" value="${route.bus_id}" />
-                <input type="hidden" value="${route.route_name}" />
-                <div class="bus-sum">
-                    <ul>
-                        <li><strong>총 버스 : </strong>
-                            <span>
-                                <c:forEach var="sum" items="${busSum}">
-                                    <c:if test="${sum.route_name == route.route_name}">
-                                        ${sum.total_buses}
-                                    </c:if>
-                                </c:forEach>
-                            </span>
-                        </li>
-                        <li><strong>운행가능 : </strong>
-                            <span>
-                                <c:forEach var="sum" items="${busSum}">
-                                    <c:if test="${sum.route_name == route.route_name}">
-                                        ${sum.normal_count}
-                                    </c:if>
-                                </c:forEach>
-                            </span>
-                        </li>
-                        <li><strong>정비 중 : </strong>
-                            <span>
-                                <c:forEach var="sum" items="${busSum}">
-                                    <c:if test="${sum.route_name == route.route_name}">
-                                        ${sum.maintenance_count}
-                                    </c:if>
-                                </c:forEach>
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-    </c:if>
-</c:forEach>
-</div>
-	<div class="editbtn-div">
-		<button class="editbtn" onclick="location.href='busInsert.go'"><i class="far fa-edit"></i>&nbsp;등록</button>
- 	  </div>
- 	  </div>
- 	  
- 	  <div class="bus-detail-card">
-      	<c:forEach var="bus" items="${busData}">
-      		<div class="bus-info-card" onclick="busUpdate(this)">
-      		<input type="hidden" name="bus_idx" value="${bus.bus_idx}"/>
-        		<c:choose>
-					<c:when test="${fn:length(bus.route_name) == 3}">
-						<div class="bus-number blue">${bus.route_name}</div>
-					</c:when>
-					<c:when test="${fn:length(bus.route_name) == 4}">
-  						<div class="bus-number green">${bus.route_name}</div>
-  					</c:when>
-				</c:choose>
-        		<div class="bus-details">
-       				<p><strong>차량 번호:</strong> <span class="purple">${bus.license_plate}</span></p>
-          			<p><strong>운행 상태:</strong> <span class="purple">운행 중</span></p>
-          			<p><strong>연비:</strong> <span class="purple">${bus.fuel_efficiency} km/L</span></p>
-          			<p><strong>구입일:</strong> <span class="purple">${bus.buy_date}</span></p>
-          			<p><strong>제조사:</strong> <span class="purple">${bus.bus_company}</span></p>
-          			<p><strong>좌석 수:</strong> <span class="purple">${bus.seat_number} 석</span></p>
-          			<p><strong>운행거리:</strong> <span class="purple">${bus.distance}km</span></p>
-          			<p><strong>점검 일:</strong> <span class="purple">${bus.inspect_date}</span></p>
-          			<p><strong>다음 점검일:</strong> <span class="purple">${bus.next_inspect_date}</span></p>
-          			<p><strong>담당 정비사:</strong> <span class="purple">${bus.emp_idx}</span></p>
-          			<p><strong>정비 내용:</strong> <span class="purple">${bus.content}</span></p>
-          			<p><strong>버스 상태:</strong> <span class="purple">${bus.status}</span></p>
-        		</div>
-      		</div>
-        </c:forEach>
+    <!-- 노선 정보 영역 -->
+    <div class="bus-info">
+        <div class="bus-info2"></div>
+        <div class="editbtn-div">
+            <button class="editbtn" onclick="location.href='busInsert.go'"><i class="far fa-edit"></i>&nbsp;등록</button>
         </div>
     </div>
+
+    <!-- 버스 상세 정보 영역 -->
+    <div class="bus-detail-card"></div>
+</div>
   </div>
 </body>
 <div id="busUpdateModal" class="modal">
@@ -382,38 +302,6 @@
   </div>
 </div>
 <script>
-function busUpdate(element) {
-    // 클릭한 요소에서 bus_idx 값을 가져오기
-    const busIdx = $(element).find('input[name="bus_idx"]').val();
-    console.log('busIdx:', busIdx); // bus_idx 값을 확인
-    
-    if (!busIdx) {
-        alert('bus_idx 값을 가져올 수 없습니다.');
-        return;
-    }
-
-    // 모달 열기
-    const modal = document.getElementById('busUpdateModal');
-    modal.style.display = 'block';
-
-    // bus_idx 값을 포함한 URL로 iframe을 업데이트
-    const iframe = modal.querySelector('iframe');
-    iframe.src = 'busUpdate.go?bus_idx=' + busIdx;
-}
-
-	// 모달 닫기
-	function closeModal() {
-	  const modal = document.getElementById('busUpdateModal');
-	  modal.style.display = 'none';
-	}
-
-	// 모달 외부 클릭 시 닫기
-	window.onclick = function (event) {
-	  const modal = document.getElementById('busUpdateModal');
-	  if (event.target === modal) {
-	    modal.style.display = 'none';
-	  }
-	};
 
 </script>
 </html>

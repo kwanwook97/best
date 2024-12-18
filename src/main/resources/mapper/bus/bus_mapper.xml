@@ -6,7 +6,7 @@
 	<select id="driveInfo" resultType="com.best.bus.RouteDTO">
 		SELECT * FROM route
 	</select>
-	<select id="busDetail" resultType="map">
+	<!-- <select id="busDetail" resultType="map">
         SELECT 
             b.*, 
             bm.* 
@@ -17,6 +17,33 @@
         ON 
             b.bus_idx = bm.bus_idx;
     </select>
+    <select id="busFilter" resultType="map">
+    	SELECT 
+        	b.bus_idx AS bus_idx,
+        	b.route_name AS route_name,
+        	b.license_plate AS license_plate,
+        	b.fuel_efficiency AS fuel_efficiency,
+        	b.buy_date AS buy_date,
+        	b.bus_company AS bus_company,
+        	b.seat_number AS seat_number,
+       	 	bm.status AS manage_status,
+        	bm.distance AS manage_distance,
+        	bm.inspect_date AS manage_inspect_date,
+        	bm.next_inspect_date AS manage_next_inspect_date,
+       	 	bm.emp_idx AS manage_emp_idx,
+        	bm.content AS manage_content,
+        	bm.amount AS manage_amount
+    	FROM 
+        	bus b
+    	LEFT JOIN 
+        	bus_manage bm 
+    	ON 
+        	b.bus_idx = bm.bus_idx
+    	WHERE 
+        	b.route_name = #{route_name}
+	</select>
+    
+    
     <select id="busSum" resultType="map">
     	SELECT b.route_name,
            COUNT(*) AS total_buses,
@@ -25,7 +52,46 @@
     	FROM bus b
     	LEFT JOIN bus_manage bm ON b.bus_idx = bm.bus_idx
     	GROUP BY b.route_name;
-	</select>
+	</select> -->
+	
+	<select id="busDetail" resultType="map">
+    SELECT 
+        b.*,
+        bm.*
+    FROM 
+        bus b
+    LEFT JOIN 
+        bus_manage bm ON b.bus_idx = bm.bus_idx
+    WHERE 1=1
+    <if test="routeName != null and routeName != ''">
+        AND b.route_name = #{routeName}
+    </if>
+    <if test="filterType != null and keyword != null and keyword != ''">
+        <choose>
+            <when test="filterType == 'busPlateNo'">
+                AND b.license_plate LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+            <when test="filterType == 'busNo'">
+                AND b.route_name LIKE CONCAT('%', #{keyword}, '%')
+            </when>
+        </choose>
+    </if>
+    ORDER BY b.bus_idx ASC
+</select>
+
+<!-- busSum 데이터 -->
+<select id="busSum" resultType="map">
+    SELECT 
+        b.route_name,
+        COUNT(*) AS total_buses,
+        SUM(CASE WHEN bm.status = '정상' THEN 1 ELSE 0 END) AS normal_count,
+        SUM(CASE WHEN bm.status = '정비 중' THEN 1 ELSE 0 END) AS maintenance_count
+    FROM 
+        bus b
+    JOIN 
+        bus_manage bm ON b.bus_idx = bm.bus_idx
+    GROUP BY b.route_name
+</select>
     
     <insert id="busInsert" 
     parameterType="com.best.bus.BusDTO" useGeneratedKeys="true" keyProperty="bus_idx">
@@ -45,10 +111,48 @@
     	SELECT * FROM bus_manage WHERE bus_idx = #{bus_idx}
 	</select>
 	
-	<update id="busUpdateDo" parameterType="com.best.bus.BusDTO">
-	
+	<update id="busUpdateDo">
+    	UPDATE bus
+    		<set>
+        		<if test="route_name != null and route_name != ''">
+            		route_name = #{route_name},
+        		</if>
+        		<if test="fuel_efficiency != null">
+            		fuel_efficiency = #{fuel_efficiency},
+        		</if>
+        		<if test="seat_number != null">
+            		seat_number = #{seat_number},
+        		</if>
+        		<if test="bus_type != null and bus_type != ''">
+            		bus_type = #{bus_type},
+        		</if>
+    		</set>
+   		WHERE bus_idx = #{bus_idx}
 	</update>
-	<update id="busManUpdateDo" parameterType="com.best.bus.BusManageDTO">
-	
+
+	<update id="busManUdateDo">
+    	UPDATE bus_manage
+    		<set>
+        		<if test="status != null and status != ''">
+            		status = #{status},
+        		</if>
+        		<if test="distance != null">
+            		distance = #{distance},
+        		</if>
+        		<if test="inspect_date != null">
+            		inspect_date = #{inspect_date},
+        		</if>
+        		<if test="next_inspect_date != null">
+            		next_inspect_date = #{next_inspect_date},
+        		</if>
+        		<if test="content != null and content != ''">
+            		content = #{content},
+        		</if>
+        		<if test="amount != null">
+            		amount = #{amount},
+        		</if>
+    		</set>
+    	WHERE bus_idx = #{bus_idx}
 	</update>
+
 </mapper>  
