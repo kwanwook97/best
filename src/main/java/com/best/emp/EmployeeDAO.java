@@ -22,6 +22,27 @@ public interface EmployeeDAO {
 	// 변경내역
 	List<Map<String, Object>> empHistory(int emp_idx);
 	// 첨부파일
-	Map<String, Object> empAttach(int emp_idx);
+	List<Map<String, Object>> empAttach(int emp_idx);
+
+	// 사원정보 수정하기
+	int empUpdate(Map<String, Object> condition);
+	
+	// 부서 및 직급 드롭다운 메뉴 가져오기
+	List<Map<String, Object>> empDropdown(String table);
+	// 사원정보 업데이트사항 History기록
+	int historyUpdate(Map<String, Object> condition);
+	
+	// 삭제할 파일의 newFileName 가져오기
+	String newFilename(Map<String, Object> condition);
+	
+	// 파일삭제
+	int fileDel(Map<String, Object> condition);
+
+	// 파일업로드
+	int fileUpload(Map<String, Object> condition);
+	
+	// 기사정보 관리
+	int driverUpsert(Map<String, String> params);
+	
 
 }

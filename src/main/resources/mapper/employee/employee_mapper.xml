@@ -72,7 +72,9 @@
             ee.email,
             ee.address,
             ee.emp_idx,
+            dt.depart_idx,
             dt.depart_name,
+            rp.rank_idx,
             rp.rank_name,
             ee.salary,
 			ee.account_number,
@@ -80,6 +82,7 @@
             ee.mobile, 
             dr.license,
             dr.license_period,
+            dr.certificate,
             ee.enable, <!-- 계정 활성화여부 -->
             ee.state   <!-- 근무상태 -->
         FROM
@@ -142,16 +145,71 @@
 	<!-- 사원정보 상세보기 : 첨부파일 -->
 	<select id="empAttach" resultType="map" parameterType="int">
 		SELECT
-			file_name 
+			file_name,
+			date 
 		FROM attachment
 		WHERE
-			attach_category = 'emp_idx'
+			attach_category = 3
 		AND 
 			idx_num = #{emp_idx}
 		ORDER BY date DESC
 		LIMIT 5
 	</select>
 	
+	<!-- 사원정보 업데이트 -->
+	<update id="empUpdate" parameterType="map">
+	    UPDATE employee
+	    <set>
+	        ${col} = #{newVal},
+	        <if test="col == 'end_date' and state != null and enable != null">
+	            state = #{state},
+	            enable = #{enable}
+	        </if>
+	    </set>
+	    WHERE emp_idx = #{emp_idx}
+	</update>
 	
+	<!-- 기사정보 관리 insert 또는 update -->
+	<update id="driverUpsert" parameterType="map">
+		INSERT INTO driver (emp_idx, license, license_period, certificate)
+		VALUES (#{emp_idx}, #{license}, #{license_period}, #{certificate})
+		ON DUPLICATE KEY UPDATE
+		    license = VALUES(license),
+		    license_period = VALUES(license_period),
+		    certificate = VALUES(certificate)
+	</update>
+	
+	<!-- 사원정보 업데이트사항 History기록 -->
+	<insert id="historyUpdate" parameterType="map">
+		INSERT INTO emp_history(emp_idx, category, before_update, after_update, emp_manage_idx)
+		VALUES(#{emp_idx}, #{col}, #{currentVal}, #{newVal}, 1)
+	</insert>
+	
+	<!-- 부서 및 직급 드롭다운 메뉴 가져오기 -->
+	<select id="empDropdown" resultType="map" parameterType="String">
+		SELECT * FROM ${table}
+	</select>
+	
+	<!-- 삭제할 파일의 newFilename정보 가져오기 -->
+	<select id="newFilename" parameterType="map">
+		SELECT newfile_name FROM attachment
+		WHERE attach_category = 3
+		AND idx_num = #{idx_num}
+		AND file_name = #{file_name}
+	</select>
+	
+	<!-- 파일삭제 -->
+	<delete id="fileDel" parameterType="map">
+		DELETE FROM attachment
+		WHERE attach_category = 3
+		AND idx_num = #{idx_num}
+		AND file_name = #{file_name}
+	</delete>
+	
+	<!-- 파일업로드 -->
+	<insert id="fileUpload" parameterType="map">
+		INSERT INTO attachment(attach_category, idx_num, file_name, newfile_Name)
+		VALUES(3, #{emp_idx}, #{fileName}, #{newFileName})
+	</insert>
 	
 </mapper>
