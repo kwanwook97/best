@@ -203,19 +203,19 @@
         <ul class="dropD-menu">
     		<li class="dropD-item">
       			<a href="meetingRoomCalendar.do">
-        			<i class="bi bi-file-text-fill"></i> <span>회의실 예약</span>
+        			<i class="fa-regular fa-calendar-check"></i> <span>회의실 예약</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
       			<a href="myReserve.go">
-        			<i class="bi bi-file-earmark-check-fill"></i> <span>내 예약 현황</span>
+        			<i class="fa-regular fa-calendar-check"></i> <span>내 예약 현황</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
    			<li class="dropD-item">
       			<a href="roomInfo.go">
-        			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>회의실 정보</span>
+        			<i class="fa-regular fa-calendar-check"></i> <span>회의실 정보</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>

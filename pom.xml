@@ -87,6 +87,12 @@
     		<groupId>org.seleniumhq.selenium</groupId>
     		<artifactId>selenium-java</artifactId>
 		</dependency>
+		<!-- 추가 라이브러리 -->
+		<!-- jackson -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		</dependency>
 		
 		
 		

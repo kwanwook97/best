@@ -25,8 +25,8 @@
        flex-wrap: wrap;
        padding: 2vh;
        color: var(--primary-color);
-       border: 1px solid black;
-       height: 92%;
+       border: 1px solid #00000000;
+       height: 857px;
        display: flex;
        flex-direction: column;
        align-content:center;
@@ -47,7 +47,7 @@
 		background-color: #100f0f4a;
 	}
     table {
-        width: 100%;
+        width: 1272px;
         border-collapse: collapse;
         margin-top: 20px;
     }
@@ -176,7 +176,7 @@
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="title-name">
-	    <h1>내 예약 현황</h1>
+	    <h3>내 예약 현황</h3>
 	    <div class="title-line"></div>
 	</div>
  	<div class="dashboard-body">
@@ -209,7 +209,7 @@
 
 <div class="meetingmodal">
   <div class="modal-content">
-	<h2>회의실 예약</h2>
+	<h3>회의실 예약</h3>
 	<div class="box-line"></div>
 	<div class="room-btn-container">
 		<c:forEach var="room" items="${roomList}">

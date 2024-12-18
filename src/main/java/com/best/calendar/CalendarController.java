@@ -2,6 +2,8 @@ package com.best.calendar;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,13 +18,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.best.attendance.AttendanceService;
 
 @Controller
 public class CalendarController {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired CalendarService calendarService;
+	@Autowired AttendanceService attendanceService;
 	
-	
+	// 회의실 예약 페이지 가기
 	@RequestMapping(value="/meetingRoomCalendar.do")
 	public String meetingRoomCalendarDo(Model model) {
 		//List<String> departName = calendarService.meetingRoomCalendarDo();
@@ -30,6 +36,7 @@ public class CalendarController {
 		model.addAttribute("roomList",roomList);
 		return "calendar/meetingRoomCalendar";
 	}
+	
 	@RequestMapping(value="/calendar.go")
 	public String calendarGo() {
 		return "calendar/calendar";
@@ -45,19 +52,31 @@ public class CalendarController {
 	
 	@GetMapping(value ="/getCalendarEvents.ajax")
 	@ResponseBody
-    public List<Map<String, Object>> getCalendarEvents(
-            @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        // 데이터베이스에서 데이터를 가져옵니다.
-		 logger.info("캘린더: 시작시간 테스트" + start);
-		 logger.info("캘린더: 종료 테스트" + end);
-		    LocalDate startDate = start.toLocalDate();
-		    LocalDate endDate = end.toLocalDate().plusDays(1);
-		 
-        List<Map<String, Object>> events = calendarService.getEvents(startDate, endDate);
+	public List<Map<String, Object>> getCalendarEvents(
+	        @RequestParam("start") String start,
+	        @RequestParam("end") String end) {
 
-        return events; // FullCalendar가 처리할 수 있도록 JSON 데이터 반환
-    }
+	    logger.info("캘린더: 시작시간 테스트 " + start);
+	    logger.info("캘린더: 종료 테스트 " + end);
+
+	    // UTC 시간 -> KST 변환
+	    DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+	    LocalDateTime startDateTime = LocalDateTime.parse(start, formatter).plusHours(9);
+	    LocalDateTime endDateTime = LocalDateTime.parse(end, formatter).plusHours(9);
+
+	    logger.info("KST 시작시간: " + startDateTime);
+	    logger.info("KST 종료시간: " + endDateTime);
+
+	    LocalDate startDate = startDateTime.toLocalDate();
+	    LocalDate endDate = endDateTime.toLocalDate().plusDays(1);
+	    logger.info("startDate:테스트 {}:" ,startDate);
+	    logger.info("endDate:테스트 {}:" ,endDate);
+	   
+
+	    List<Map<String, Object>> events = calendarService.getEvents(startDate, endDate);
+	    logger.info("events:테스트 {}:" ,events);
+	    return events;
+	}
 	
 	@GetMapping("/myReserve.go")
 	public String myReserveGo(Model model) {
@@ -81,18 +100,70 @@ public class CalendarController {
 		return calendarService.cancelReserve(params);
 	}
 	
+
+	@GetMapping(value="/roomList.ajax")
+	@ResponseBody
+    public List<Map<String, Object>> roomList() {
+		
+		
+        return calendarService.allRoomList();
+    }
+	
+	// 회의실 등록 할때 하는 컨트롤러
+	// 기자재 테이블 에서 기자재 가져오는 역할도 있음
+	
 	@GetMapping(value="/roomInfo.go")
-	public String roomInfoGo() {
+	public String roomInfoGo(Model model) {
+		
+        List<Map<String, Object>> materialList = calendarService.getAllMaterials(); // 기자재 리스트 가져오기
+        model.addAttribute("materialList", materialList);
+        
 		return "calendar/roomInfo" ;
 	}
-//	@GetMapping(value="/roomList.ajax")
-//	@ResponseBody
-//    public Map<String, Object> roomList() {
-//        return calendarService.roomList();
-//    }
+	
+	//회의실 정보 저장
+	@PostMapping(value="/saveRoomInfo.ajax")
+	@ResponseBody
+    public Map<String, Object> saveRoomInfo(
+            @RequestParam("roomName") String roomName,
+            @RequestParam("photo") MultipartFile photo,
+            @RequestParam("maxCapacity") int maxCapacity,
+            @RequestParam("materialIdx") List<Integer> materialIdxList,
+            @RequestParam("quantity") List<Integer> quantityList) {
+		
+		logger.info("roomName : " + roomName);
+		logger.info("photo : " + photo);
+		logger.info("maxCapacity : " + maxCapacity);
+		logger.info("materialIdxList : " + materialIdxList);
+		logger.info("quantityList : " + quantityList);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (!roomName.isEmpty()) {
+			map= calendarService.saveRoomInfo(roomName,photo,maxCapacity,materialIdxList,quantityList);
+		}
+		map.put("response", "대화방 이름이 없습니다.");
+        return map;
+    }
+	
+	//회의실 정보 저장
+	@PostMapping(value = "/delRoomInfo.ajax")
+	@ResponseBody
+	public Map<String, Object> delRoomInfo(@RequestParam(value = "roomIdx", required = false) Integer roomIdx) {
+	    if (roomIdx == null) {
+	        throw new IllegalArgumentException("roomIdx 값이 비어 있습니다.");
+	    }
+	    return calendarService.delRoomInfo(roomIdx);
+	}
+	
+	@PostMapping(value = "/getRoomMaterial.ajax")
+	@ResponseBody
+	public List<Map<String, Object>> getRoomMaterial(){
+		
+		return null;
+	}
+    	
 	
 }
-
 
 
 

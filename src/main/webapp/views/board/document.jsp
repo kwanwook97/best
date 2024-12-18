@@ -25,6 +25,7 @@
 	    align-content: center;
 	    align-items: flex-start;
 	    justify-content: center;
+	    transform:scale(0.7);
 	}
 	.maintext{
 		display: flex;
