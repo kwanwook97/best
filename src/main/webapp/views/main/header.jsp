@@ -137,25 +137,25 @@
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
-      			<a href="document.go">
+      			<a href="documentBoard.go">
         			<i class="bi bi-file-text-fill"></i> <span>진행 중</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="documentApproved.go">
         			<i class="bi bi-file-earmark-check-fill"></i> <span>완료</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
    			<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="documentDraft.go">
         			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>임시저장</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void();">
+      			<a href="documentReject.go">
         			<i class="bi bi-file-earmark-break-fill"></i> <span>반려 문서</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
