@@ -50,7 +50,7 @@
 	.opt div a:hover{
 		color: var(--primary-color);
 	}
-	table{
+	table.myTable{
 		border-collapse: separate !important;
         border-spacing: 0;
 		width: -webkit-fill-available;
@@ -106,6 +106,7 @@
 	  border-top: 1px solid rgba(0, 0, 0, .1) !important;
 	  margin: 10px 0;
 	}
+
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -113,57 +114,11 @@
  	<div class="dashboard-body">
 		<div class="maintext">
 			<h3 class="document">결재문서</h3>
-			<h3>>&nbsp;&nbsp;반려문서</h3>
+			<h3>>&nbsp;&nbsp;반려</h3>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
-			<table class="table1 myTable">
-				<thead>
-					<tr>
-						<th colspan="6">반려 문서</th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- 읽지 않은 메일 -->
-					<tr class="unread">
-						<td>example1@example.com</td>
-						<td>읽지 않은 메일 제목</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-07 10:30</td>
-					</tr>
-					<!-- 읽은 메일 -->
-					<tr>
-						<td>example2@example.com</td>
-						<td>읽은 메일 제목</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-06 18:45</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-				</tbody>
-			</table>
+			<jsp:include page="documentRadio.jsp"/>
 		</div>
  	</div>
 </body>

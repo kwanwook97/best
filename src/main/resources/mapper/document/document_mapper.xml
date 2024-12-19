@@ -11,26 +11,35 @@
     
     <!-- 결재 기안, 임시저장 -->
     <insert id="formSave" parameterType="com.best.document.DocumentDTO">
-    	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status)
-    		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status})
+    	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status, doc_number)
+    		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status}, #{doc_number})
     </insert>
-    
+    <!-- 문서번호 생성 -->
+    <select id="getLastSequenceForDate" resultType="Integer">
+		SELECT MAX(CAST(SUBSTRING(doc_number, INSTR(doc_number, '-') + 1) AS UNSIGNED))
+		FROM document
+		WHERE doc_number LIKE CONCAT(#{today}, '-%');
+	</select>
+	
     <!-- 임시저장 토탈 페이지 -->
 	<select id="allCount" resultType="int">
 		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM document
 	</select>
 	<!-- 임시저장 리스트 -->
 	<select id="saveList" resultType="map">
-    	SELECT 
-	        doc_idx, 
-	        doc_subject, 
-	        emp_idx, 
-	        date, 
-	        status
-	    FROM document
-	    WHERE emp_idx = 1
-	    ORDER BY date DESC
-	    LIMIT #{limit} OFFSET #{offset}
+		SELECT 
+		    d.doc_idx, 
+		    d.form_idx,
+		    d.doc_subject,
+		    d.date, 
+		    d.status,
+		    d.doc_number,
+		    f.form_subject
+		FROM document d
+		LEFT JOIN form f ON d.form_idx = f.form_idx
+		WHERE d.emp_idx = 1
+		ORDER BY d.doc_idx DESC
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
 	<!-- 임시저장 상세보기 -->

@@ -38,10 +38,10 @@
 		height: 700px;
 	    border-radius: 10px;
 	}
-	.opt div:nth-child(2){
+	.opt div:nth-child(1){
 		border-bottom: 3px solid var(--accent-color);
 	}
-	.opt div:nth-child(2) a{
+	.opt div:nth-child(1) a{
 		color: var(--primary-color) !important;
 	}
 	.opt div:hover{
@@ -114,7 +114,7 @@
  	<div class="dashboard-body">
 		<div class="maintext">
 			<h3 class="document">결재문서</h3>
-			<h3>>&nbsp;&nbsp;진행중</h3>
+			<h3>>&nbsp;&nbsp;대기</h3>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>

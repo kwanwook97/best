@@ -37,10 +37,10 @@
 	    border: 2px solid var(--primary-color);
 	    border-radius: 10px;
 	}
-	.opt div:nth-child(2){
+	.opt div:nth-child(3){
 		border-bottom: 3px solid var(--accent-color);
 	}
-	.opt div:nth-child(2) a{
+	.opt div:nth-child(3) a{
 		color: var(--primary-color) !important;
 	}
 	.opt div:hover{
@@ -117,53 +117,7 @@
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
-			<table class="table1 myTable">
-				<thead>
-					<tr>
-						<th colspan="6">승인된 문서</th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- 읽지 않은 메일 -->
-					<tr class="unread">
-						<td>example1@example.com</td>
-						<td>읽지 않은 메일 제목</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-07 10:30</td>
-					</tr>
-					<!-- 읽은 메일 -->
-					<tr>
-						<td>example2@example.com</td>
-						<td>읽은 메일 제목</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-06 18:45</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-					<tr>
-						<td>example3@example.com</td>
-						<td>광고 메일</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-05 14:20</td>
-					</tr>
-				</tbody>
-			</table>
+			<jsp:include page="documentRadio.jsp"/>
 		</div>
  	</div>
 </body>

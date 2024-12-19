@@ -17,7 +17,7 @@
 }
 
 .opt {
-    width: 35%;
+    width: 45%;
 	display: flex;
 	justify-content: space-between;
 }
@@ -183,24 +183,30 @@ input[name="doc_subject"]{
     cursor: pointer;
     font-size: 14px; /* 글자 크기 줄이기 */
 }
-/* 모달 종류 */
-.one div.modal-content{
-    left: 6%;
-    transform: scale(1) !important;
-}
-.two div.modal-content{
-    left: 6%;
-}
-.thr div.modal-content{
-    left: 6%;
-    transform: scale(1) !important;
-    color: black !important;
-}
+	/* 모달 종류 */
+	.one div.modal-content{
+        left: 6%;
+	    transform: scale(0.9) !important;
+	}
+	.two div.modal-content{
+	    left: 6%;
+	    transform: scale(0.8) !important;
+	}
+	.thr div.modal-content{
+	    left: 6%;
+	    transform: scale(1) !important;
+	    color: black !important;
+	}
+#divCustomWrapper div.inaRowRight {
+    display: flex;
 </style>
 </head>
 <body>
 	<div class="docnav">
 		<div class="opt">
+			<div>
+				<a href="documentPending.go">대기<span>1</span></a>
+			</div>
 			<div>
 				<a href="documentBoard.go">진행중<span>12</span></a>
 			</div>
@@ -208,10 +214,13 @@ input[name="doc_subject"]{
 				<a href="documentApproved.go">완료</a>
 			</div>
 			<div>
-				<a href="documentDraft.go">임시저장<span>3</span></a>
+				<a href="documentReject.go">반려<span>3</span></a>
 			</div>
 			<div>
-				<a href="documentReject.go">반려문서<span>3</span></a>
+				<a href="documentReference.go">참조<span>3</span></a>
+			</div>
+			<div>
+				<a href="documentDraft.go">임시저장<span>3</span></a>
 			</div>
 		</div>
 		<div class="searchbox">
@@ -335,7 +344,13 @@ function btnAction(actionType) {
 	var doc_subject = $('input[name="doc_subject"]').val();
 	var textareaValue = $('.modal-content:last-child textarea').val(); 
 	var updatedHtml = $('.modal-content:last-child').html();
-
+    var start_date = $('input[name="start_date"]').val();
+    var end_date = $('input[name="end_date"]').val();
+    // input[data-index]의 값들을 values 배열에 저장
+    var values = [];
+    $('input[data-index]').each(function() {
+        values.push($(this).val());    
+    });
 	// HTML에서 <input name="doc_subject"> 부분 찾아서 그 안의 값을 doc_subject로 변경
 	updatedHtml = updatedHtml.replace(
 	    /<input([^>]*name=["']doc_subject["'][^>]*)>/,
@@ -358,11 +373,8 @@ function btnAction(actionType) {
         doc_content: doc_content
 	};
 	
-	
 	switch (form_idx) {
 	    case '1':
-	        var start_date = $('input[name="start_date"]').val();
-	        var end_date = $('input[name="end_date"]').val();
 	        // start_date 값 삽입
 	        updatedHtml = updatedHtml.replace(
 	            /<input([^>]*name=["']start_date["'][^>]*)>/,
@@ -385,46 +397,30 @@ function btnAction(actionType) {
 	        break;
 	    case '2':
 	        break;
+	        
 	    case '3':
-	        // input[data-index]의 값들을 values 배열에 저장
-//	        var values = [];
-//	        $('input[data-index]').each(function() {
-//	            values.push($(this).val());
-//	        });
+	        // 동적으로 추가된 input 값들을 updatedHtml에 반영
+			for (var i = 0; i < values.length; i++) { 
+			    var value = values[i];  // values 배열에서 값 가져오기
+			    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
+			
+			    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
+			
+			    // updatedHtml에서 해당 input 값을 수정
+			    updatedHtml = updatedHtml.replace(
+			        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
+			        '<input$1 value="' + value + '">'
+			    );
+			}
 
-	        // 기존 modal-content HTML을 가져오기
-	        var updatedHtml = $('.modal-content:last-child').html();
-
-	        // 동적으로 추가된 행을 modal-content에 반영
-	        var rowsHtml = '';
-	        $('#dynamic_table1 tr').each(function() {
-	            rowsHtml += $(this).prop('outerHTML');
-	        });
-
-//	        for (var i = 0; i < $('input[data-index]').length; i++) {
-//	            updatedHtml = updatedHtml.replace(
-//	                new RegExp('<input([^>]*data-index=["\']' + (i + 1) + '["\'][^>]*)>', 'g'),
-//	                '<input$1 value="' + $('input[data-index="' + (i + 1) + '"]').val() + '">'
-//	            );
-//	        }
-			updatedHtml = updatedHtml.replace(
-			    new RegExp('<input([^>]*data-index=["\']1["\'][^>]*)>', 'g'),
-			    '<input$1 value="' + $('input[data-index="1"]').val() + '">'
-			);
-	
-	        // 수정된 HTML을 마지막 modal-content에 적용
+	        // 수정된 HTML을 다시 modal-content에 적용
 	        $('.modal-content:last-child').html(updatedHtml);
-
-	        // modal-content에 추가된 행 HTML 반영
-	        updatedHtml += rowsHtml;
-
-	        // 수정된 modal-content에서 내용을 가져오기
-	        var doc_content = $('.modal-content:last-child .content').html();
-
-            data.doc_subject = doc_subject;
-            data.doc_content = doc_content;
 	        break;
+	        
 	}
+	// 마지막으로 doc_content를 업데이트된 HTML에서 추출하여 data 객체에 저장
+	var doc_content = $('.modal-content:last-child .content').html();
+	data.doc_content = doc_content;  
 	
 	$.ajax({
         type: 'GET',
@@ -432,7 +428,7 @@ function btnAction(actionType) {
         data: data,
         success: function(response) {
         	alert(response.message);
-            closeModal();
+        	location.reload();
             if (response.success) {
                 // 성공 처리
             } else {
@@ -442,11 +438,6 @@ function btnAction(actionType) {
     });
 }
 
-function closeModal() {
-    // 모달을 닫는 로직
-    $('.modal').hide(); // 예시: modal 클래스를 가진 요소 숨기기
-    $('.modal-content').empty(); // 모달 내용을 비우기
-}
 
 </script>
 </html>

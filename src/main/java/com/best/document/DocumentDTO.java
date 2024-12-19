@@ -10,6 +10,15 @@ public class DocumentDTO {
 	private int emp_idx; // 직원 ID
 	private LocalDateTime date; // 작성 날짜 (TIMESTAMP)
 	private String status; // 상태
+	private String doc_number;
+	
+	
+	public String getDoc_number() {
+		return doc_number;
+	}
+	public void setDoc_number(String doc_number) {
+		this.doc_number = doc_number;
+	}
 	public int getDoc_idx() {
 		return doc_idx;
 	}

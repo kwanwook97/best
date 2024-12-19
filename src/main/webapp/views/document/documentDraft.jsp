@@ -36,10 +36,10 @@
 	    height: 700px;
 	    border-radius: 10px;
 	}
-	.opt div:nth-child(3){
+	.opt div:nth-child(6){
 		border-bottom: 3px solid var(--accent-color);
 	}
-	.opt div:nth-child(3) a{
+	.opt div:nth-child(6) a{
 		color: var(--primary-color) !important;
 	}
 	.opt div:hover{
@@ -49,7 +49,7 @@
 	.opt div a:hover{
 		color: var(--primary-color);
 	}
-	table{
+	table.myTable{
 		border-collapse: separate !important;
         border-spacing: 0;
 		width: -webkit-fill-available;
@@ -73,11 +73,15 @@
 	    color: var(--accent-color);
 	    cursor: pointer;
 	}
-	table.myTable th{
+	table.myTable thead tr{
 		background-color: var(--primary-color);
-		border-radius: 9px 9px 0 0;
 		color: white;
-	    text-align: left;
+	}
+	table.myTable thead tr th:first-child{
+		border-top-left-radius: 10px;
+	}
+	table.myTable thead tr th:last-child{
+		border-top-right-radius: 10px;
 	}
 	table.myTable td:nth-child(1) {
         width: 3%;
@@ -86,15 +90,18 @@
         width: 3%;
     }
     table.myTable td:nth-child(3) {
-        width: 15%;
+        width: 5%;
     }
     table.myTable td:nth-child(4) {
-        width: 5%;
+        width: 15%;
     }
     table.myTable td:nth-child(5) {
         width: 5%;
     }
     table.myTable td:nth-child(6) {
+        width: 3%;
+    }
+    table.myTable td:nth-child(7) {
         width: 3%;
     }
 	.fa-arrow-alt-circle-left{
@@ -157,7 +164,13 @@
 			<table class="table1 myTable">
 				<thead>
 					<tr>
-						<th colspan="6">임시저장 문서</th>
+						<th>NO.</th>
+						<th>문서번호</th>
+						<th>분류</th>
+						<th>문서 제목</th>
+						<th>기안일</th>
+						<th>문서 상태</th>
+						<th ></th>
 					</tr>
 				</thead>
 				<tbody class="saveList">
@@ -189,7 +202,6 @@ function pageCall(page){
         dataType: 'JSON',
         success: function(data) {
             console.log(data);
-            $('.saveList').html('');
             Print(data.saveList);
 
             // 페이징
@@ -204,6 +216,7 @@ function pageCall(page){
                 onPageClick: function(evt, page){
                     console.log("evt", evt);  // 클릭 이벤트
                     console.log("page", page);  // 클릭한 페이지 번호
+                    pageCall(page);
                 }
             });
         },
@@ -219,8 +232,10 @@ function Print(document) {
     var content = '';
 	var i = 1;
 	for(var item of document){
+		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
+		content += '<td>' + item.doc_number + '</td>';
 		content += '<td>' + item.form_subject + '</td>';
 		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
 
@@ -230,7 +245,7 @@ function Print(document) {
 		content += '<td>' + formattedDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		
-		content += '<td><a href="#" class="delete" data-doc-idx="'+item.doc_idx+'"><i class="fas fa-trash-alt delete-icon"></i></a></td>';
+		content += '<td><a href="javascript:void(0);" class="delete" data-doc-idx="'+item.doc_idx+'"><i class="fas fa-trash-alt delete-icon"></i></a></td>';
 		content += '</tr>';
 	}
 	$('.saveList').html(content);
@@ -257,7 +272,7 @@ function Print(document) {
     });
 }
 
-/* 
+
 // 임시저장 상세보기
 function draftDetail(doc_idx) {
 	
@@ -285,7 +300,7 @@ function open(cont) {
         '  <div class="modal-content">' +
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
-        '      <button class="modal-btn save" onclick="btnAction(\'임시저장\')">임시저장</button>' +
+        '      <button class="modal-btn save" onclick="btnAction(\'수정\')">수정</button>' +
         '      <button class="modal-btn append" onclick="button3Action(\'결재선\')">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
@@ -304,7 +319,7 @@ function open(cont) {
         var targetModalId = $(this).data('modal-id');
         $('#' + targetModalId).remove();
     });
-} */
+}
 
 // 임시저장 삭제
 

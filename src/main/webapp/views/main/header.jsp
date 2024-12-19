@@ -137,8 +137,14 @@
         
         <ul class="dropD-menu">
     		<li class="dropD-item">
+      			<a href="documentPending.go">
+        			<i class="bi bi-file-text-fill"></i> <span>대기</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
       			<a href="documentBoard.go">
-        			<i class="bi bi-file-text-fill"></i> <span>진행 중</span>
+        			<i class="bi bi-file-text-fill"></i> <span>진행중</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
@@ -148,15 +154,21 @@
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
-   			<li class="dropD-item">
-      			<a href="documentDraft.go">
-        			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>임시저장</span>
+    		<li class="dropD-item">
+      			<a href="documentReject.go">
+        			<i class="bi bi-file-earmark-break-fill"></i> <span>반려</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
-    		<li class="dropD-item">
-      			<a href="documentReject.go">
-        			<i class="bi bi-file-earmark-break-fill"></i> <span>반려 문서</span>
+   			<li class="dropD-item">
+      			<a href="documentReference.go">
+        			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>참조</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+   			<li class="dropD-item">
+      			<a href="documentDraft.go">
+        			<i class="bi bi-file-earmark-arrow-up-fill"></i> <span>임시저장</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>

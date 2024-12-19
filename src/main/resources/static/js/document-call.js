@@ -32,7 +32,7 @@ $(document).ready(function() {
     });
 
     // 삭제 버튼 클릭 시 (맨 뒤의 tr 삭제)
-    $(document).on('click', '.deleteRow', function() {
+    $('#minus1').click(function() {
         // 마지막 tr 요소 삭제
         var lastRow = $('#dynamic_table1 tr:last');
         if (lastRow.length > 0) {

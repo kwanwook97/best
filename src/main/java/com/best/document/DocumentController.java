@@ -22,7 +22,13 @@ public class DocumentController {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired DocumentService documentService;
 
-	// 전자결재 메인 리스트
+	// 전자결재 대기 리스트
+	@RequestMapping(value="/documentPending.go")
+	public String documentPending() {
+		return "document/documentPending";
+	}
+	
+	// 전자결재 진행중 리스트
 	@RequestMapping(value="/documentBoard.go")
 	public String documentBoard() {
 		return "document/documentBoard";
@@ -34,17 +40,24 @@ public class DocumentController {
 		return "document/documentApproved";
 	}
 
+	// 전자결재 반려 리스트
+	@RequestMapping(value="/documentReject.go")
+	public String documentReject() {
+		return "document/documentReject";
+	}
+	
+	// 전자결재 참조 리스트
+	@RequestMapping(value="/documentReference.go")
+	public String documentReference() {
+		return "document/documentReference";
+	}
+	
 	// 전자결재 임시저장 리스트
 	@RequestMapping(value="/documentDraft.go")
 	public String documentDraft() {
 		return "document/documentDraft";
 	}
 
-	// 전자결재 메인 리스트
-	@RequestMapping(value="/documentReject.go")
-	public String documentReject() {
-		return "document/documentReject";
-	}
 
 	// 전자결재 양식 불러오기
 	@GetMapping(value="/getForm.ajax")
@@ -80,10 +93,8 @@ public class DocumentController {
 			int emp_idx = 1; // 사원번호
 			documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "임시저장");
 			response.put("message", "임시저장 완료");
-		} else {
-			int emp_idx = 1; // 사원번호
+		} else if("수정".equals(doc_subject)) {
 			response.put("message", "알 수 없는 요청");
-			documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "임시저장");
 		}
 		
 		return ResponseEntity.ok(response);
@@ -106,6 +117,7 @@ public class DocumentController {
 	public String draftDetail(String doc_idx) {
 		String Detail = documentService.draftDetail(doc_idx);
 		return Detail;
+		
 	}
 	
 	// 임시저장 삭제
