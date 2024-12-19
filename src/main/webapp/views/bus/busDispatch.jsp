@@ -19,7 +19,7 @@
     <div class="naviPath bold f32 w100 tm2">
 		<span class="lPurple">버스정보</span>
 			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
-		<span class="purple">배차현황</span>
+		<span class="purple">배차관리</span>
 		<div class="bus-drive-info">
 				
 		</div>
@@ -93,12 +93,29 @@
   </div>
 </form>
     </div>
-
+    
+    <div class="bus-filter">
+	<div class="route-filters">
+	
+	</div>
     <!-- 버스 목록 -->
     <div class="bus-list">
-      
+      <div class="bus-card">
+      	<table>
+      		<thead>
+      			<tr>
+      				<th>차량 번호</th>
+                    <th>첫 차 ~ 14:00</th>
+                    <th>14:00 ~ 막차</th>
+      			</tr>
+      		</thead>
+      		<tbody class="list-tbody">
+      			
+      		</tbody>
+      	</table>
+      </div>
 	</div>
-	
+	</div>
 	
 	
     </div>

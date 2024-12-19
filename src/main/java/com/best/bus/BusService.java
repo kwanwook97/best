@@ -3,6 +3,7 @@ package com.best.bus;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -202,9 +203,23 @@ public class BusService {
 		return busDao.shift();
 	}
 	
-	public boolean dispatchInsert(DispatchDTO dispatch) {
-	    int rowsAffected = busDao.dispatchInsert(dispatch); // 반환 값이 영향 받은 행 수
-	    return rowsAffected > 0; // 삽입 성공 여부 반환
+	public boolean dispatchInsert(DispatchDTO dispatch, DriveDTO drive) {
+        // 중복 확인
+		DispatchDTO existingDispatch = busDao.checkDuplicateDispatch(dispatch);
+        if (existingDispatch != null) {
+            return false; // 중복된 데이터가 있어 삽입하지 않음
+        }
+
+        // dispatch 삽입
+        busDao.dispatchInsert(dispatch);
+
+        // drive 삽입
+        drive.setDispatch_idx(dispatch.getDispatch_idx()); // dispatch의 자동 생성된 PK를 설정
+        busDao.driveInsert(drive);
+        return true; // 성공적으로 삽입됨
+    }
+	public boolean driveInsert(DriveDTO drive) {
+	    return busDao.driveInsert(drive) > 0;
 	}
 
 	public List<Map<String, Object>> dispatchList(String date) {
@@ -218,6 +233,76 @@ public class BusService {
 	public Map<String, Object> getDispatchByIdx(int dispatchIdx) {
 		return busDao.getDispatchByIdx(dispatchIdx);
 	}
+	
+	public int getDriverIdx(int empIdx) {
+	    return busDao.getDriverIdx(empIdx);
+	}
+	
+	public int getDispatchIdx(int driverIdx, String date) {
+	    return busDao.getDispatchIdx(driverIdx, date);
+	}
+	
+	public void insertDrive(int dispatchIdx, String startTime, String status) {
+		busDao.insertDrive(dispatchIdx, startTime, status);
+	}
+	
+	public Integer updateDriveStatus(int empIdx, String date) {
+	    // 1. driver 테이블에서 driver_idx 조회
+	    Integer driverIdx = busDao.findDriverIdxByEmpIdx(empIdx);
+	    if (driverIdx == null) {
+	        return null; // 실패 시 null 반환
+	    }
+
+	    // 2. dispatch 테이블에서 driver_idx와 date로 dispatch_idx와 bus_idx 조회
+	    Map<String, Object> dispatchData = busDao.findDispatchIdxByDriverIdxAndDate(driverIdx, date);
+	    if (dispatchData == null || dispatchData.isEmpty()) {
+	        return null; // 실패 시 null 반환
+	    }
+
+	    Integer dispatchIdx = (Integer) dispatchData.get("dispatch_idx");
+	    Integer busIdx = (Integer) dispatchData.get("bus_idx");
+
+	    // 3. drive 테이블의 status와 start_time 업데이트
+	    int updatedDriveRows = busDao.updateDriveStatus(dispatchIdx, new Date(), "운행 중 <i class=\"bi bi-bus-front-fill\"></i>");
+
+	    if (updatedDriveRows > 0 && busIdx != null) {
+	        // 4. bus 테이블의 drive_status 업데이트
+	        busDao.updateBusDriveStatus(busIdx, "운행 중");
+	    }
+
+	    return updatedDriveRows > 0 ? dispatchIdx : null; // 업데이트 성공 시 dispatchIdx 반환
+	}
+	
+	public Integer stopDriveStatus(int empIdx, String date) {
+	    // 1. driver 테이블에서 driver_idx 조회
+	    Integer driverIdx = busDao.findDriverIdxByEmpIdx(empIdx);
+	    if (driverIdx == null) {
+	        return null; // 실패 시 null 반환
+	    }
+
+	    // 2. dispatch 테이블에서 driver_idx와 date로 dispatch_idx와 bus_idx 조회
+	    Map<String, Object> dispatchData = busDao.findDispatchIdxByDriverIdxAndDate(driverIdx, date);
+	    if (dispatchData == null || dispatchData.isEmpty()) {
+	        return null; // 실패 시 null 반환
+	    }
+
+	    Integer dispatchIdx = (Integer) dispatchData.get("dispatch_idx");
+	    Integer busIdx = (Integer) dispatchData.get("bus_idx");
+
+	    // 3. drive 테이블의 status와 end_time 업데이트
+	    int updatedDriveRows = busDao.updateDriveEndStatus(dispatchIdx, new Date(), "운행 종료 <i class=\"bi bi-bus-front-fill\"></i>");
+
+	    if (updatedDriveRows > 0 && busIdx != null) {
+	        // 4. bus 테이블의 drive_status 업데이트
+	        busDao.updateBusDriveStatus(busIdx, "운행 종료");
+	    }
+
+	    return updatedDriveRows > 0 ? dispatchIdx : null; // 업데이트 성공 시 dispatchIdx 반환
+	}
+
+
+	
+	
 
 }
 

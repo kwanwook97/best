@@ -149,24 +149,25 @@
     	WHERE route_name = #{routeName}
 	</select>
 	<select id="driver" parameterType="string" resultType="map">
-    	SELECT d.emp_idx, e.name
+    	SELECT d.driver_idx, e.emp_idx, e.name
     	FROM driver d
     	JOIN employee e ON d.emp_idx = e.emp_idx
     	WHERE d.route_name = #{routeName}
 	</select>
 	
-	<insert id="dispatchInsert" parameterType="com.best.bus.DispatchDTO"
-    	useGeneratedKeys="true" keyProperty="dispatch_idx">
+		<select id="checkDuplicateDispatch" parameterType="com.best.bus.DispatchDTO" resultType="com.best.bus.DispatchDTO">
+    	SELECT * FROM dispatch WHERE bus_idx = #{bus_idx}
+      	AND date = #{date}
+      	AND shift_idx = #{shift_idx};
+	</select>
+	<insert id="dispatchInsert" parameterType="com.best.bus.DispatchDTO" 
+	useGeneratedKeys="true" keyProperty="dispatch_idx">
     	INSERT INTO dispatch (bus_idx, driver_idx, date, shift_idx)
-    		SELECT #{bus_idx}, #{driver_idx}, #{date}, #{shift_idx}
-    	FROM DUAL
-    	WHERE NOT EXISTS (
-        	SELECT 1
-        	FROM dispatch
-        	WHERE bus_idx = #{bus_idx}
-          	AND shift_idx = #{shift_idx}
-          	AND date = #{date}
-    	)
+    	VALUES (#{bus_idx}, #{driver_idx}, #{date}, #{shift_idx});
+	</insert>
+	<insert id="driveInsert" parameterType="com.best.bus.DriveDTO">
+    	INSERT INTO drive (dispatch_idx, status)
+    	VALUES (#{dispatch_idx}, #{status})
 	</insert>
 
 	<select id="dispatchList" parameterType="int" resultType="map">
@@ -175,17 +176,73 @@
         	b.license_plate,               -- bus 테이블에서 차량 번호
         	e.name AS driver_name,         -- employee 테이블에서 운전기사 이름
         	s.shift,                       -- shift 테이블에서 운행 시간
-        	s.shift_idx,                       -- shift 테이블에서 운행 시간
+        	s.shift_idx,                   -- shift 테이블에서 운행 시간
         	d.date,                        -- dispatch 테이블의 운행 날짜
-        	b.route_name,                   -- bus 테이블에서 노선 이름
-        	e.emp_idx
+        	b.route_name,                  -- bus 테이블에서 노선 이름
+        	e.emp_idx,                     -- employee 테이블의 직원 번호
+        	d.driver_idx,                  -- dispatch 테이블의 운전기사 ID
+        	dv.status                      -- drive 테이블의 상태 (추가)
     	FROM dispatch d
-    	JOIN bus b ON d.bus_idx = b.bus_idx            -- dispatch 테이블과 bus 테이블 조인
-    	JOIN driver dr ON d.driver_idx = dr.driver_idx -- dispatch 테이블과 driver 테이블 조인
-    	JOIN employee e ON dr.emp_idx = e.emp_idx      -- driver 테이블과 employee 테이블 조인
-    	JOIN shift s ON d.shift_idx = s.shift_idx      -- dispatch 테이블과 shift 테이블 조인
+    	JOIN bus b ON d.bus_idx = b.bus_idx              -- dispatch 테이블과 bus 테이블 조인
+    	JOIN driver dr ON d.driver_idx = dr.driver_idx   -- dispatch 테이블과 driver 테이블 조인
+    	JOIN employee e ON dr.emp_idx = e.emp_idx        -- driver 테이블과 employee 테이블 조인
+    	JOIN shift s ON d.shift_idx = s.shift_idx        -- dispatch 테이블과 shift 테이블 조인
+    	LEFT JOIN drive dv ON d.dispatch_idx = dv.dispatch_idx -- dispatch 테이블과 drive 테이블 조인
     	<if test="date != null and date != ''">
         	WHERE d.date = #{date}        -- 날짜 조건 추가
     	</if>
 	</select>
+
+	
+	<select id="findDriverIdxByEmpIdx" parameterType="int" resultType="int">
+    SELECT driver_idx
+    FROM driver
+    WHERE emp_idx = #{empIdx}
+</select>
+<select id="findDispatchIdxByDriverIdxAndDate" parameterType="map" resultType="map">
+    SELECT dispatch_idx, bus_idx
+    FROM dispatch
+    WHERE driver_idx = #{driverIdx}
+      AND date = #{date}
+    LIMIT 1
+</select>
+<update id="updateDriveStatus">
+    UPDATE drive
+    SET status = #{status},
+        start_time = #{startTime}
+    WHERE dispatch_idx = #{dispatchIdx}
+</update>
+<update id="updateBusDriveStatus">
+    UPDATE bus
+    SET drive_status = #{driveStatus}
+    WHERE bus_idx = #{busIdx}
+</update>
+<update id="updateDriveEndStatus">
+    UPDATE drive
+    SET status = #{status},
+        end_time = #{endTime}
+    WHERE dispatch_idx = #{dispatchIdx}
+</update>
+
+	
+	<select id="getDriverIdx" parameterType="int" resultType="int">
+    	SELECT driver_idx
+    	FROM driver
+    	WHERE emp_idx = #{empIdx}
+	</select>
+	<select id="getDispatchIdx" parameterType="map" resultType="int">
+    	SELECT dispatch_idx
+    	FROM dispatch
+    	WHERE driver_idx = #{driverIdx} AND date = #{date}
+	</select>
+	<insert id="insertDrive" parameterType="map">
+    	INSERT INTO drive (dispatch_idx, start_time, status)
+    	VALUES (#{dispatchIdx}, #{startTime}, #{status})
+	</insert>
+	
+	
+	
+	
+	
+	
 </mapper>  

@@ -27,6 +27,7 @@ window.onload = function () {
         method: "GET",
         success: function (shifts) {
             const shiftSelect = $(".shift");
+            shiftSelect.empty();
             shiftSelect.append('<option value="">선택</option>');
             shifts.forEach(function (shift) {
                 let option = $('<option></option>');
@@ -74,7 +75,7 @@ window.onload = function () {
                     driverSelect.append('<option value="">선택</option>');
                     drivers.forEach(function (driver) {
                         let option = $('<option></option>');
-                        option.val(driver.emp_idx);
+                        option.val(driver.driver_idx);
                         option.html(driver.name + ' / ' + driver.emp_idx);
                         driverSelect.append(option);
                     });
@@ -87,96 +88,125 @@ window.onload = function () {
         }
     });
 
-    const loadDispatchList = function (date) {
+const loadDispatchList = function (date, selectedRouteName = "") {
+    const $listTbody = $(".list-tbody");
+    const $routeFilters = $(".route-filters");
+
     $.ajax({
         url: "dispatchList.ajax",
         method: "GET",
         data: { date: date },
         success: function (response) {
-            const $busList = $(".bus-list");
-            if (response.success) {
-                $busList.empty();
+            // 기존 데이터 제거
+            $listTbody.empty(); // tbody 초기화
+            $routeFilters.empty(); // 필터 초기화
 
-                // 데이터를 차량 번호 기준으로 그룹화
+            if (response.success) {
+                // 1. 노선 필터 버튼 생성
+                response.routes.forEach(function (route) {
+    				const div = $('<div></div>') // div 생성
+        				.addClass("route-filter")
+        				.addClass("bus-number")
+        				.attr("data-route", route)
+        				.text(route);
+
+    				// 글자 수에 따른 클래스 추가
+    			if (route.length === 4) {
+        			div.addClass("cGreen");
+    			} else {
+        			div.addClass("cBlue");
+    			}
+
+    			// 선택된 노선 강조
+    			if (route === selectedRouteName) {
+       				div.addClass("active");
+    				}
+
+    				$routeFilters.append(div); // div를 필터 컨테이너에 추가
+				});
+
+
+                // 2. 데이터 그룹화
                 const groupedData = {};
                 response.result.forEach(function (info) {
                     const routeName = info.route_name;
                     const licensePlate = info.license_plate;
 
-                    // routeName 초기화
+                    // 그룹화 데이터 초기화
                     if (!groupedData[routeName]) {
                         groupedData[routeName] = {};
                     }
 
-                    // 차량 번호 초기화
                     if (!groupedData[routeName][licensePlate]) {
-                        groupedData[routeName][licensePlate] = { shift_1: '-', shift_2: '-' };
+                        groupedData[routeName][licensePlate] = {
+                            shift_1: '-',
+                            shift_2: '-',
+                            dispatch_1_idx: null,
+                            dispatch_2_idx: null
+                        };
                     }
 
-                    // shift_idx에 따라 데이터 추가
+                    // shift 데이터 추가
                     if (info.shift_idx === 1) {
-                        groupedData[routeName][licensePlate].shift_1 = info.driver_name + ' / ' + info.emp_idx;
-                        groupedData[routeName][licensePlate].dispatch_1_idx = info.dispatch_idx;
+                        groupedData[routeName][licensePlate].shift_1 =
+                            info.driver_name + ' / <span style="color:#8B6AA7;">' + info.emp_idx + '</span>';
+                        groupedData[routeName][licensePlate].dispatch_1_idx = info.dispatch_idx; // dispatch_idx 저장
                     } else if (info.shift_idx === 2) {
-                        groupedData[routeName][licensePlate].shift_2 = info.driver_name + ' / ' + info.emp_idx;
-                        groupedData[routeName][licensePlate].dispatch_2_idx = info.dispatch_idx;
+                        groupedData[routeName][licensePlate].shift_2 =
+                            info.driver_name + ' / <span style="color:#8B6AA7;">' + info.emp_idx + '</span>';
+                        groupedData[routeName][licensePlate].dispatch_2_idx = info.dispatch_idx; // dispatch_idx 저장
                     }
                 });
 
-                console.log("Grouped Data:", groupedData); // 디버깅: 데이터 확인
-
-                // HTML 생성
-                for (const routeName in groupedData) {
-                    const licensePlates = groupedData[routeName];
-
-                    const cardHeader =
-                        '<div class="bus-card">' +
-                        '<div class="bus-number ' + (routeName.length === 4 ? 'cGreen' : 'cBlue') + '">' + routeName + '</div>' +
-                        '<div class="bus-details">' +
-                        '<table>' +
-                        '<thead>' +
+                // 3. tbody 데이터 추가
+                if (groupedData[selectedRouteName]) {
+                    const selectedData = groupedData[selectedRouteName];
+                    for (const licensePlate in selectedData) {
+                        const shifts = selectedData[licensePlate];
+                        const row =
+                            '<tr>' +
+                            `<td>${licensePlate}</td>` +
+                            `<td class="editable" data-dispatch-idx="${shifts.dispatch_1_idx || ''}">${shifts.shift_1 || '-'}</td>` +
+                            `<td class="editable" data-dispatch-idx="${shifts.dispatch_2_idx || ''}">${shifts.shift_2 || '-'}</td>` +
+                            '</tr>';
+                        $listTbody.append(row);
+                    }
+                } else {
+                    // 선택된 노선에 데이터가 없는 경우
+                    const emptyRow =
                         '<tr>' +
-                        '<th>차량 번호</th>' +
-                        '<th>첫 차 ~ 14:00</th>' +
-                        '<th>14:00 ~ 막차</th>' +
-                        '</tr>' +
-                        '</thead>' +
-                        '<tbody>';
-
-                    let cardBody = '';
-
-                    // 각 차량 번호에 대한 데이터 생성
-                    for (const licensePlate in licensePlates) {
-    const shifts = licensePlates[licensePlate];
-    cardBody +=
-        '<tr>' +
-        '<td>' + licensePlate + '</td>' +
-        '<td class="editable" data-dispatch-idx="' + (shifts.dispatch_1_idx || '') + '">' +
-        (shifts.shift_1 || '-') + '</td>' +
-        '<td class="editable" data-dispatch-idx="' + (shifts.dispatch_2_idx || '') + '">' +
-        (shifts.shift_2 || '-') + '</td>' +
-        '</tr>';
-}
-
-                    const cardFooter =
-                        '</tbody>' +
-                        '</table>' +
-                        '</div>' +
-                        '</div>';
-
-                    $busList.append(cardHeader + cardBody + cardFooter);
+                        '<td colspan="3">데이터가 없습니다.</td>' +
+                        '</tr>';
+                    $listTbody.append(emptyRow);
                 }
             } else {
-                alert("리스트를 불러오는 데 실패했습니다.");
+                alert("데이터를 불러오는 데 실패했습니다.");
             }
         },
         error: function () {
             alert("서버와 통신 중 오류가 발생했습니다.");
         }
     });
+    $(".route-filter").removeClass("active"); // 기존 active 제거
+    $(`[data-route="${selectedRouteName}"]`).addClass("active"); 
 };
 
 
+
+
+
+$("body").on("click", ".route-filter", function () {
+    const $this = $(this);
+    const selectedRouteName = $this.data("route");
+    const currentDate = $(".current-date").text();
+
+    // 모든 필터에서 active 클래스 제거 후 클릭된 요소에 추가
+    $(".route-filter").removeClass("active");
+    $this.addClass("active");
+
+    // 데이터 갱신 호출
+    loadDispatchList(currentDate, selectedRouteName);
+});
 
 
 $("body").on("click", ".editable", function () {
@@ -268,7 +298,7 @@ function loadDrivers(routeName) {
             driverSelect.append('<option value="">선택</option>');
             drivers.forEach(function (driver) {
                 const option = $('<option></option>');
-                option.val(driver.emp_idx);
+                option.val(driver.driver_idx);
                 option.html(driver.name + ' / ' + driver.emp_idx);
                 driverSelect.append(option);
             });
@@ -347,8 +377,7 @@ $(".updatebtn").on("click", function (e) {
     const $currentDate = $(".current-date");
     $currentDate.text(today.toISOString().split("T")[0]);
     $("#operation_date").val($currentDate.text()); // 초기화
-    loadDispatchList($currentDate.text());
-
+    loadDispatchList($currentDate.text(), "5714");
     // 날짜 이동 버튼 이벤트
     $(".date-button").on("click", function () {
         const currentDate = new Date($currentDate.text());
@@ -367,41 +396,43 @@ $(".updatebtn").on("click", function (e) {
         const newDate = currentDate.toISOString().split("T")[0];
         $currentDate.text(newDate);
         $("#operation_date").val(newDate); // 날짜 갱신
-        loadDispatchList(newDate);
+        loadDispatchList(newDate, "5714");
     });
+
 
     // 데이터 삽입 및 리스트 갱신
     $("#dispatchForm").on("submit", function (e) {
-        e.preventDefault(); // 기본 동작 중지
+    e.preventDefault(); // 기본 동작 중지
 
-        const formData = {
-            bus_idx: $("#licensePlateSelect").val(),
-            driver_idx: $("#driverSelect").val(),
-            date: $("#operation_date").val(),
-            shift_idx: $(".shift").val()
-        };
+    const formData = {
+        bus_idx: $("#licensePlateSelect").val(),
+        driver_idx: $("#driverSelect").val(),
+        date: $("#operation_date").val(),
+        shift_idx: $(".shift").val()
+    };
 
-        if (!$("#routeSelect").val() || !formData.bus_idx || !formData.driver_idx || !formData.date || !formData.shift_idx) {
-            alert("모든 항목을 선택해주세요.");
-            return;
-        }
+    if (!$("#routeSelect").val() || !formData.bus_idx || !formData.driver_idx || !formData.date || !formData.shift_idx) {
+        alert("모든 항목을 선택해주세요.");
+        return;
+    }
 
-        $.ajax({
-            url: "dispatchInsert.ajax",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(formData),
-            success: function (response) {
-                if (response.success) {
-                    alert("배차 등록이 완료되었습니다!");
-                    loadDispatchList(formData.date); // 삽입된 날짜로 리스트 갱신
-                } else {
-                    alert(response.message || "배차 등록에 실패했습니다.");
-                }
-            },
-            error: function () {
-                alert("서버와 통신 중 오류가 발생했습니다.");
+    $.ajax({
+        url: "dispatchInsert.ajax",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(formData),
+        success: function (response) {
+            if (response.success) {
+                alert("배차 등록이 완료되었습니다!");
+                loadDispatchList(formData.date); // 삽입된 날짜로 리스트 갱신
+            } else {
+                alert(response.message || "배차 등록에 실패했습니다.");
             }
-        });
+        },
+        error: function () {
+            alert("서버와 통신 중 오류가 발생했습니다.");
+        }
     });
+});
+
 };

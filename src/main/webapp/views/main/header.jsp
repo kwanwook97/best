@@ -74,8 +74,14 @@
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="busDispatch.go">
+      			<a href="dispatchList.go">
         			<i class="fa-solid fa-user-tie"></i> <span>배차현황</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+    		<li class="dropD-item">
+      			<a href="busDispatch.go">
+        			<i class="fa-solid fa-user-tie"></i> <span>배차관리</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
