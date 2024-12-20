@@ -197,8 +197,6 @@ input[name="doc_subject"]{
 	    transform: scale(1) !important;
 	    color: black !important;
 	}
-#divCustomWrapper div.inaRowRight {
-    display: flex;
 </style>
 </head>
 <body>

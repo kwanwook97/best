@@ -8,7 +8,7 @@ public class DocumentDTO {
 	private String doc_subject; // 문서 제목
 	private String doc_content; // 문서 내용
 	private int emp_idx; // 직원 ID
-	private LocalDateTime date; // 작성 날짜 (TIMESTAMP)
+	private LocalDateTime doc_date; // 작성 날짜 (TIMESTAMP)
 	private String status; // 상태
 	private String doc_number;
 	
@@ -49,11 +49,12 @@ public class DocumentDTO {
 	public void setEmp_idx(int emp_idx) {
 		this.emp_idx = emp_idx;
 	}
-	public LocalDateTime getDate() {
-		return date;
+	
+	public LocalDateTime getDoc_date() {
+		return doc_date;
 	}
-	public void setDate(LocalDateTime date) {
-		this.date = date;
+	public void setDoc_date(LocalDateTime doc_date) {
+		this.doc_date = doc_date;
 	}
 	public String getStatus() {
 		return status;

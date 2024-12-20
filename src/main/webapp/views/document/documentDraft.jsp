@@ -150,6 +150,14 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}
+	textarea{
+	  resize: none; /* 크기 조절 기능 비활성화 */
+	  overflow: hidden; /* 내용이 넘칠 때 스크롤바가 나타나지 않게 */
+	  width: auto; /* 너비 고정 */
+	  height: auto; /* 높이 고정 */
+	  position: relative; /* 고정 위치 설정 */
+	}
+	
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -169,7 +177,7 @@
 						<th>분류</th>
 						<th>문서 제목</th>
 						<th>기안일</th>
-						<th>문서 상태</th>
+						<th>결재 상태</th>
 						<th ></th>
 					</tr>
 				</thead>
@@ -239,7 +247,7 @@ function Print(document) {
 		content += '<td>' + item.form_subject + '</td>';
 		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
 
-		var date = new Date(item.date);
+		var date = new Date(item.doc_date);
 		var formattedDate = date.toISOString().split('T')[0];
 
 		content += '<td>' + formattedDate + '</td>';
@@ -283,7 +291,7 @@ function draftDetail(doc_idx) {
         dataType: 'text',
         success: function(response) {
         	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
-            open(response); 
+        	open(response); 
         },
         error: function(xhr, status, error) {
             console.error('문서 요청 실패:', error);

@@ -4,6 +4,89 @@
 >
 <mapper namespace="com.best.document.DocumentDAO">
     
+    <!-- 전자결재 대기 토탈 페이지 -->
+	<select id="receivedCount" resultType="int">
+		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM approv WHERE emp_idx = #{emp_idx} AND approv_order = 1 
+	</select>
+	<select id="sentCount" resultType="int">
+		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM document WHERE emp_idx = #{emp_idx} AND status = '상신'
+	</select>
+    <!-- 전자결재 대기 리스트 -->
+   	<select id="receivedList" resultType="map">
+   		SELECT 
+		    a.status,
+		    a.approv_date,
+		    d.doc_number,
+		    d.doc_subject,
+		    d.form_idx,
+		    d.doc_date,
+		    f.form_subject,
+		    e.name
+		FROM approv a
+		JOIN document d ON d.doc_idx = a.doc_idx
+		LEFT JOIN form f ON d.form_idx = f.form_idx
+		LEFT JOIN employee e ON e.emp_idx = d.emp_idx 
+		WHERE e.emp_idx = #{emp_idx}
+		ORDER BY d.doc_date DESC
+		LIMIT #{limit} OFFSET #{offset}
+   	</select>
+   	<select id="sentList" resultType="map">
+   		SELECT 
+		    d.doc_idx, 
+		    d.form_idx,
+		    d.doc_subject,
+		    d.doc_date, 
+		    d.status,
+		    d.doc_number,
+		    f.form_subject
+		FROM document d
+		LEFT JOIN form f ON d.form_idx = f.form_idx
+		WHERE d.emp_idx = #{emp_idx} AND status = '상신'
+		ORDER BY d.doc_date DESC
+		LIMIT #{limit} OFFSET #{offset}
+   	</select>
+   	
+   	
+    <!-- 전자결재 진행중 토탈 페이지 -->
+    <!-- 전자결재 진행중 리스트 -->
+    <!-- 전자결재 완료 토탈 페이지 -->
+    <!-- 전자결재 완료 리스트 -->
+    <!-- 전자결재 반려 토탈 페이지 -->
+    <!-- 전자결재 반려 리스트 -->
+    <!-- 전자결재 참조 토탈 페이지 -->
+    <!-- 전자결재 참조 리스트 -->
+    
+    
+    <!-- 임시저장 토탈 페이지 -->
+	<select id="allCount" resultType="int">
+		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM document WHERE emp_idx = #{emp_idx}
+	</select>
+	<!-- 임시저장 리스트 -->
+	<select id="saveList" resultType="map">
+		SELECT 
+		    d.doc_idx, 
+		    d.form_idx,
+		    d.doc_subject,
+		    d.doc_date, 
+		    d.status,
+		    d.doc_number,
+		    f.form_subject
+		FROM document d
+		LEFT JOIN form f ON d.form_idx = f.form_idx
+		WHERE d.emp_idx = #{emp_idx}
+		ORDER BY d.doc_date DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	<!-- 임시저장 상세보기 -->
+	<select id="draftDetail" resultType="String">
+		SELECT doc_content FROM document WHERE doc_idx = #{doc_idx}
+	</select>
+	<!-- 임시저장 삭제 -->
+	<delete id="draftDelete">
+		DELETE FROM document where doc_idx = #{doc_idx}
+	</delete>
+	
+	
     <!-- 양식 불러오기 -->
     <select id="getForm" resultType="String">
         SELECT form_content FROM form WHERE form_subject = #{form_subject}
@@ -16,39 +99,10 @@
     </insert>
     <!-- 문서번호 생성 -->
     <select id="getLastSequenceForDate" resultType="Integer">
-		SELECT MAX(CAST(SUBSTRING(doc_number, INSTR(doc_number, '-') + 1) AS UNSIGNED))
-		FROM document
-		WHERE doc_number LIKE CONCAT(#{today}, '-%');
+	    SELECT MAX(CAST(SUBSTRING(doc_number, INSTR(doc_number, '-') + 1) AS UNSIGNED))
+	    FROM document
+	    WHERE doc_number LIKE CONCAT(#{today}, '-%')
+	    FOR UPDATE;
 	</select>
 	
-    <!-- 임시저장 토탈 페이지 -->
-	<select id="allCount" resultType="int">
-		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM document
-	</select>
-	<!-- 임시저장 리스트 -->
-	<select id="saveList" resultType="map">
-		SELECT 
-		    d.doc_idx, 
-		    d.form_idx,
-		    d.doc_subject,
-		    d.date, 
-		    d.status,
-		    d.doc_number,
-		    f.form_subject
-		FROM document d
-		LEFT JOIN form f ON d.form_idx = f.form_idx
-		WHERE d.emp_idx = 1
-		ORDER BY d.doc_idx DESC
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
-	
-	<!-- 임시저장 상세보기 -->
-	<select id="draftDetail" resultType="String">
-		SELECT doc_content FROM document WHERE doc_idx = #{doc_idx}
-	</select>
-	
-	<!-- 임시저장 삭제 -->
-	<delete id="draftDelete">
-		DELETE FROM document where doc_idx = #{doc_idx}
-	</delete>
 </mapper>  

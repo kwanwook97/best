@@ -8,7 +8,7 @@ public class ApprovDTO {
 	private int emp_idx; // 직원 ID
 	private int approv_order; // 승인 순서
 	private String status; // 승인 상태
-	private LocalDateTime date; // 승인 날짜 (TIMESTAMP)
+	private LocalDateTime approv_date; // 승인 날짜 (TIMESTAMP)
 	public int getApprov_num() {
 		return approv_num;
 	}
@@ -39,11 +39,11 @@ public class ApprovDTO {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public LocalDateTime getDate() {
-		return date;
+	public LocalDateTime getApprov_date() {
+		return approv_date;
 	}
-	public void setDate(LocalDateTime date) {
-		this.date = date;
+	public void setApprov_date(LocalDateTime approv_date) {
+		this.approv_date = approv_date;
 	}
 
 }

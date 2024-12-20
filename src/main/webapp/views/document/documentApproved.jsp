@@ -113,11 +113,53 @@
  	<div class="dashboard-body">
 		<div class="maintext">
 			<h3 class="document">결재문서</h3>
-			<h3>>&nbsp;&nbsp;완료</h3>
+			<h3>>&nbsp;&nbsp;승인</h3>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
-			<jsp:include page="documentRadio.jsp"/>
+			<table class="table1 myTable">
+				<thead>
+					<tr>
+						<th>NO.</th>
+						<th>문서번호</th>
+						<th>분류</th>
+						<th>문서 제목</th>
+						<th>기안일</th>
+						<th>문서 상태</th>
+					</tr>
+				</thead>
+				<tbody class="saveList">
+					<tr>
+						<td>example3@example.com</td>
+						<td>광고 메일</td>
+						<td>이메일 내용 미리보기...</td>
+						<td>2024-12-05 14:20</td>
+					</tr>
+					<tr>
+						<td>example3@example.com</td>
+						<td>광고 메일</td>
+						<td>이메일 내용 미리보기...</td>
+						<td>2024-12-05 14:20</td>
+					</tr>
+					<tr>
+						<td>example3@example.com</td>
+						<td>광고 메일</td>
+						<td>이메일 내용 미리보기...</td>
+						<td>2024-12-05 14:20</td>
+					</tr>
+					<tr>
+						<td>example3@example.com</td>
+						<td>광고 메일</td>
+						<td>이메일 내용 미리보기...</td>
+						<td>2024-12-05 14:20</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="container" id="cont">
+			    <nav aria-label="Page navigation">
+			        <ul class="pagination" id="Pagination"></ul>
+			    </nav>
+			</div>
 		</div>
  	</div>
 </body>

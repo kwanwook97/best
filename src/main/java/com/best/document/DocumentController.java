@@ -1,6 +1,5 @@
 package com.best.document;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class DocumentController {
@@ -27,6 +25,15 @@ public class DocumentController {
 	public String documentPending() {
 		return "document/documentPending";
 	}
+	@GetMapping(value="/pendingList.ajax")
+	@ResponseBody
+	public Map<String, Object> pendingList(String page, String cnt) {
+		int page_ = Integer.parseInt(page);
+		int cnt_ = Integer.parseInt(cnt);
+		
+		return documentService.pendingList(page_, cnt_);
+	}
+	
 	
 	// 전자결재 진행중 리스트
 	@RequestMapping(value="/documentBoard.go")
@@ -34,17 +41,20 @@ public class DocumentController {
 		return "document/documentBoard";
 	}
 
+	
 	// 전자결재 완료 리스트
 	@RequestMapping(value="/documentApproved.go")
 	public String documentApproved() {
 		return "document/documentApproved";
 	}
 
+	
 	// 전자결재 반려 리스트
 	@RequestMapping(value="/documentReject.go")
 	public String documentReject() {
 		return "document/documentReject";
 	}
+	
 	
 	// 전자결재 참조 리스트
 	@RequestMapping(value="/documentReference.go")
@@ -52,28 +62,51 @@ public class DocumentController {
 		return "document/documentReference";
 	}
 	
+	
 	// 전자결재 임시저장 리스트
 	@RequestMapping(value="/documentDraft.go")
 	public String documentDraft() {
 		return "document/documentDraft";
 	}
+	@GetMapping(value="/saveList.ajax")
+	@ResponseBody
+	public Map<String, Object> saveList(String page, String cnt) {
+		int page_ = Integer.parseInt(page);
+		int cnt_ = Integer.parseInt(cnt);
+		
+		return documentService.saveList(page_, cnt_);
+	}
+	// 임시저장 상세보기
+	@GetMapping(value="/draftDetail.ajax")
+	@ResponseBody
+	public String draftDetail(String doc_idx) {
+		String Detail = documentService.draftDetail(doc_idx);
+		return Detail;
+		
+	}
+	// 임시저장 삭제
+	@PostMapping(value="/documentDelete.ajax")
+	@ResponseBody
+	public Map<String, Object> draftDelete(String doc_idx) {
+		Map<String, Object> response = new HashMap<>();
+	    
+		int row = documentService.draftDelete(doc_idx);
+		if(row>0) {			
+			response.put("success", true);
+		}
+	    return response;
+	}
 
-
+	
 	// 전자결재 양식 불러오기
 	@GetMapping(value="/getForm.ajax")
 	@ResponseBody
-	 public String getForm(String form_subject) {
-		// 오늘 날짜
-	    LocalDate todayDate = LocalDate.now();
-	    String todayDateString = todayDate.toString();  // 날짜를 문자열로 변환
-	    logger.info("날짜: "+todayDateString);
-	    
-	    // 양식 가져오기
-	    String htmlContent = documentService.getForm(form_subject);
-	    String responseContent = htmlContent.replace("${todayDate}", todayDateString);
+	public String getForm(String form_subject) {
+	    // 양식 내용 가져오기
+	    String responseContent = documentService.getForm(form_subject);
 	    
 	    return responseContent;
-    }
+	}
 	
 	// 결재 기안, 임시저장
 	@GetMapping(value="/formType.ajax")
@@ -101,36 +134,5 @@ public class DocumentController {
 		}
 
 	
-	// 임시저장 리스트
-	@GetMapping(value="/saveList.ajax")
-	@ResponseBody
-	public Map<String, Object> saveList(String page, String cnt) {
-		int page_ = Integer.parseInt(page);
-		int cnt_ = Integer.parseInt(cnt);
-		
-		return documentService.saveList(page_, cnt_);
-	}
-	
-	// 임시저장 상세보기
-	@GetMapping(value="/draftDetail.ajax")
-	@ResponseBody
-	public String draftDetail(String doc_idx) {
-		String Detail = documentService.draftDetail(doc_idx);
-		return Detail;
-		
-	}
-	
-	// 임시저장 삭제
-	@PostMapping(value="/documentDelete.ajax")
-	@ResponseBody
-	public Map<String, Object> draftDelete(String doc_idx) {
-		Map<String, Object> response = new HashMap<>();
-	    
-		int row = documentService.draftDelete(doc_idx);
-		if(row>0) {			
-			response.put("success", true);
-		}
-		
-	    return response;
-	}
+
 }
