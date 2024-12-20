@@ -105,4 +105,24 @@
 	    FOR UPDATE;
 	</select>
 	
+	<!-- 전자결재 기안자 정보 -->
+	<select id="getEmpDetails" resultType="map">
+		 SELECT 
+	        e.name,
+	        e.sign,
+	        m.name AS managerName,
+	        dp.depart_name,
+	        r.rank_name
+	    FROM 
+	        employee e
+	    JOIN 
+	        employee m ON m.emp_idx = e.parent_emp_idx
+	    LEFT JOIN 
+	        department dp ON dp.depart_idx = e.depart_idx
+	    LEFT JOIN 
+	        rank_emp r ON r.rank_idx = e.rank_idx
+	    WHERE 
+	        e.emp_idx = #{emp_idx};
+	</select>
+	
 </mapper>  

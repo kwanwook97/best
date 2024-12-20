@@ -20,7 +20,6 @@ public class DocumentService {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired DocumentDAO documentDao;
-	@Autowired EmployeeDAO employeeDao;
 	
 	// 전자결재 대기 리스트
 	public Map<String, Object> pendingList(int page, int cnt) {
@@ -87,7 +86,7 @@ public class DocumentService {
 
         // 직원 정보 가져오기 (예시로 emp_idx가 1인 직원 정보)
         int emp_idx = 1;  // 예시로 1번 직원 정보를 가져옴
-        Map<String, Object> employeeDetails = employeeDao.getEmpDetails(emp_idx);
+        Map<String, Object> employeeDetails = documentDao.getEmpDetails(emp_idx);
         logger.info("기안자 정보: {}",employeeDetails);
         // HTML 내용에 데이터를 삽입 (replace를 사용하여 치환)
         return htmlContent

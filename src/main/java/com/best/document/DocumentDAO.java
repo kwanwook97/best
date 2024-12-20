@@ -45,6 +45,8 @@ public interface DocumentDAO {
 	// 전자결재 문서번호 만들기
 	Integer getLastSequenceForDate(String today);
 
+	// 전자결재 기안자 정보
+	Map<String, Object> getEmpDetails(int emp_idx);
 	
 	
 
