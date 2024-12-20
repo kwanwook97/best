@@ -2,6 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
-<mapper namespace="com.best.employee.LoginDAO">
-
+<mapper namespace="com.best.emp.LoginDAO">
+	<select id="login" parameterType="String">
+		SELECT password FROM employee WHERE emp_idx = #{id}
+	</select>
+	<update id="updatePassword" parameterType="map">
+        UPDATE employee
+        SET password = #{pw}
+        WHERE emp_idx = #{id}
+    </update>
 </mapper>  

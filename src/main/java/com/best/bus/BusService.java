@@ -290,7 +290,7 @@ public class BusService {
 	    Integer busIdx = (Integer) dispatchData.get("bus_idx");
 
 	    // 3. drive 테이블의 status와 end_time 업데이트
-	    int updatedDriveRows = busDao.updateDriveEndStatus(dispatchIdx, new Date(), "운행 종료 <i class=\"bi bi-bus-front-fill\"></i>");
+	    int updatedDriveRows = busDao.updateDriveEndStatus(dispatchIdx, new Date(), "운행 종료");
 
 	    if (updatedDriveRows > 0 && busIdx != null) {
 	        // 4. bus 테이블의 drive_status 업데이트

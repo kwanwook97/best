@@ -11,13 +11,9 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
   <!-- Bootstrap core CSS-->
-  <link href="css/bootstrap.min.css" rel="stylesheet"/>
-  <!-- animate CSS-->
-  <link href="css/animate.css" rel="stylesheet" type="text/css"/>
-  <!-- Icons CSS-->
-  <link href="css/icons.css" rel="stylesheet" type="text/css"/>
+  <link href="resources/css/bootstrap.min.css" rel="stylesheet"/>
   <!-- Custom Style-->
-  <link href="css/app-style.css" rel="stylesheet"/>
+  <link href="resources/css/app-style.css" rel="stylesheet"/>
   <style>
   .bg-th111{
     		background-image: url('img/loginBus5.jpg');
@@ -128,15 +124,15 @@
 	</div><!--wrapper-->
 	
   <!-- Bootstrap core JavaScript-->
-  <script src="js/jquery.min.js"></script>
-  <script src="js/popper.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+<!--   <script src="recources/js/jquery.min.js"></script>
+  <script src="recources/js/popper.min.js"></script> -->
+  <script src="resources/js/bootstrap.min.js"></script>
 	
   <!-- sidebar-menu js -->
-  <script src="js/sidebar-menu.js"></script>
-  
+<!--   <script src="recources/js/sidebar-menu.js"></script>
+   -->
   <!-- Custom scripts -->
-  <script src="js/app-script.js"></script>
+<!--   <script src="recources/js/app-script.js"></script> -->
   
 </body>
 </html>

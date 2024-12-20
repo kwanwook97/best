@@ -1,0 +1,355 @@
+@charset "UTF-8";
+
+:root { -
+	-primary-color: #30005A; -
+	-secondary-color: #8B6AA7; -
+	-accent-color: #E9396B;
+}
+
+.dashboard-body {
+	margin-left: 14vw;
+	width: 85vw;
+	margin-top: 7vh;
+	flex-wrap: wrap;
+	padding: 2vh;
+	color: var(- -primary-color);
+	height: 92%;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+.messenger-container {
+	display: flex;
+	height: 66vh;
+	color: #fff;
+	width: 84%;
+	border-radius: 10px;
+	margin: 1px 16px 1px 16px;
+}
+
+.sidebar {
+	width: 20%;
+	background-color: #30005A;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0 2% 0 0;
+	border-radius: 10px;
+}
+
+.sidebar h3 {
+	margin: 0;
+	text-align: center;
+	font-size: 18px;
+	margin-bottom: 20px;
+}
+
+.chat-window {
+	width: 60%;
+	display: flex;
+	flex-direction: column;
+	background-color: #8B6AA7;
+	padding: 20px;
+	border-left: 2px solid #4a225d;
+	border-right: 2px solid #4a225d;
+	border-radius: 10px;
+}
+
+.chat-header {
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.messages {
+	flex-grow: 1;
+	overflow-y: auto;
+	padding-right: 10px;
+}
+
+.message {
+	margin-bottom: 10px;
+	padding: 10px;
+	border-radius: 5px;
+	max-width: 70%;
+	line-height: 1.4;
+}
+
+.message.sent {
+	background-color: #9a57c6;
+	align-self: flex-end;
+}
+
+.message.received {
+	background-color: #8339a5;
+}
+
+.message-input {
+	display: flex;
+	gap: 10px;
+}
+
+.message-input input {
+	flex-grow: 1;
+	padding: 10px;
+	border-radius: 5px;
+	border: none;
+	outline: none;
+}
+
+.message-input button {
+	padding: 10px 20px;
+	border-radius: 5px;
+	border: none;
+	background-color: #30005A;
+	color: #FFFBF2;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.message-input button:hover {
+	background-color: #b06ed5;
+}
+
+.tm2 {
+	margin-top: 2%;
+	width: 21%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+
+.f32 {
+	font-size: 32px;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.lPurple {
+	color: #8B6AA7;
+}
+
+.chat-item {
+	display: flex;
+	align-items: center;
+	background-color: #FFFBF2;
+	padding: 10px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+	color: #fff;
+	transition: background-color 0.3s;
+}
+
+.chat-item:hover {
+	background-color: #FFF3D9;
+	cursor: pointer;
+}
+
+.chat-avatar {
+	width: 50px;
+	height: 50px;
+	border-radius: 20%;
+	overflow: hidden;
+	margin-right: 10px;
+	background-color: #fff; /* 기본 배경 (이미지 없을 때) */
+}
+
+.chat-avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.chat-details {
+	flex-grow: 1;
+}
+
+.chat-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+.chat-title {
+	font-weight: bold;
+	font-size: 16px;
+	color: #30005A;
+}
+
+.chat-time {
+	font-size: 12px;
+	color: #8B6AA7;
+}
+
+.chat-preview {
+	font-size: 14px;
+	color: #8B6AA7;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 참여자리스트 */
+.member-list {
+	width: 100%;
+	background-color: #30005A;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0 0 0 0;
+	border-radius: 10px 10px 0 0;
+	height: 92%;
+}
+
+.image-label-wrapper {
+	display: flex;
+	align-items: center;
+	background-color: #fdf6e4; /* 배경색 */
+	border: 2px solid #30005A; /* 외곽선 */
+	border-radius: 10px; /* 둥근 모서리 */
+	padding: 5px 10px; /* 내부 여백 */
+	width: auto; /* 내용에 맞게 크기 조정 */
+}
+
+.custom-image {
+	width: 30px; /* 이미지 크기 */
+	height: 30px;
+	border-radius: 5px; /* 이미지 둥글게 */
+	border: 2px solid #30005A; /* 이미지 외곽선 */
+	margin-right: 10px; /* 텍스트와의 간격 */
+}
+
+.custom-label {
+	color: #30005A; /* 텍스트 색상 */
+	font-size: 14px; /* 텍스트 크기 */
+	font-weight: bold; /* 텍스트 굵게 */
+}
+
+.line-box {
+	border: 3px solid #30005A;
+	width: 100%;
+	display: flex;
+	padding: 1% 1% 1% 1%;
+	border-radius: 10px;
+}
+
+/* 방설정 아이콘들	 */
+.footer-menu {
+	padding: 10px;
+	background-color: #8B6AA7;
+	border-radius: 0 0 10px 10px;
+	box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+	margin: 0 0 0 0;
+	height: 8%;
+	display: flow;
+}
+
+.footer-menu i {
+	font-size: 20px;
+	color: white;
+	margin: 0 0 0 17%;
+	cursor: pointer;
+	transition: color 0.3s ease;
+}
+
+.footer-menu i:hover {
+	color: #E9396B;
+}
+
+.footer-menu i:first-child {
+	margin-left: auto; /* 첫 번째 아이콘을 왼쪽으로 붙임 */
+}
+
+.member-list-wrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%; /* 부모 컨테이너의 높이 */
+	width: 20%;
+	margin: 0 0 0 2%;
+}
+/* 메시지 프로필 css */
+/* 채팅 전체 스타일 */
+.chat-message {
+	display: flex; /* 프로필과 채팅 버블을 나란히 */
+	align-items: flex-start; /* 위쪽 정렬 */
+	gap: 10px; /* 프로필과 채팅 버블 간격 */
+	background-color: #8B6AA7; /* 배경색 */
+	padding: 10px; /* 내부 여백 */
+	border-radius: 8px; /* 둥근 모서리 */
+	color: #FFF5E2; /* 텍스트 색상 */
+	width: fit-content; /* 내용에 맞는 너비 설정 */
+}
+
+/* 프로필 이미지와 이름 */
+.chat-profile {
+	display: flex; /* 프로필 이미지와 이름을 세로로 배치 */
+	flex-direction: column;
+	align-items: center; /* 중앙 정렬 */
+	min-width: 60px; /* 프로필 영역 최소 너비 */
+}
+
+.profile-image {
+	width: 40px; /* 프로필 이미지 크기 */
+	height: 40px;
+	background-color: #D9D9D9; /* 회색 배경 */
+	border-radius: 10px; /* 원형 모양 */
+	border: 2px solid #30005A; /* 테두리 */
+}
+
+.profile-name {
+	margin-top: 5px; /* 이미지와 이름 간격 */
+	font-size: 12px; /* 이름 글씨 크기 */
+	color: #30005A; /* 이름 텍스트 색상 */
+	text-align: center;
+}
+
+/* 채팅 말풍선 컨테이너 */
+.chat-bubble-container {
+	display: flex; /* 말풍선을 오른쪽으로 정렬 */
+	align-items: flex-end; /* 텍스트를 왼쪽 정렬 */
+	width: 100%;
+}
+
+/* 말풍선 스타일 */
+.chat-bubble {
+    background-color: #FFF5E2;
+    color: #30005A;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    width: fit-content;
+    max-width: 300px;
+    word-break: break-word;
+    min-height: 30px;
+    height: fit-content;
+}
+
+/* 채팅 시간 스타일 */
+.message-time {
+	font-size: 12px; /* 시간 글씨 크기 */
+	color: #ffffff; /* 시간 텍스트 색상 */
+	white-space: nowrap; /* 줄바꿈 방지 */
+}
+/* send message css */
+.send-messages {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: flex-end;
+}
+
+.sent-time {
+	font-size: 12px;
+}

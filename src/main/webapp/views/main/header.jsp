@@ -95,7 +95,7 @@
       </li>
       
       <li>
-        <a href="javaScript:void(0);">
+        <a href="chatList.go">
           <i class="bi bi-chat-left-text-fill"></i> <span>메신져</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
@@ -305,6 +305,11 @@
       <li>
       <a href="javaScript:void(0);">
       	<i class="bi bi-person-fill-gear"></i> <span>내 정보관리</span>
+      	<i class="fa-solid fa-angle-right"></i>
+      	</a>
+      </li>
+      <li>
+      	<a href="login.go"><i class="fa-solid fa-right-to-bracket"></i> <span>로그인</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>

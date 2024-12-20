@@ -204,9 +204,28 @@ $("body").on("click", ".route-filter", function () {
     $(".route-filter").removeClass("active");
     $this.addClass("active");
 
+    // 선택된 노선 저장
+    localStorage.setItem("selectedRouteName", selectedRouteName);
+
     // 데이터 갱신 호출
     loadDispatchList(currentDate, selectedRouteName);
 });
+
+// 페이지 로드 시 선택된 노선 복원
+window.onload = function () {
+    console.log("Window loaded!");
+
+    const selectedRouteName = localStorage.getItem("selectedRouteName"); // 저장된 노선 이름 가져오기
+    const currentDate = $(".current-date").text();
+
+    // 초기 데이터 로드
+    loadDispatchList(currentDate, selectedRouteName || ""); // 저장된 노선이 없으면 기본값 ""
+
+    // 저장된 노선 강조
+    if (selectedRouteName) {
+        $(`[data-route="${selectedRouteName}"]`).addClass("active");
+    }
+};
 
 
 $("body").on("click", ".editable", function () {
@@ -374,36 +393,39 @@ $(".updatebtn").on("click", function (e) {
 
     // 현재 날짜 설정 및 초기 데이터 로드
     const today = new Date();
-    const $currentDate = $(".current-date");
-    $currentDate.text(today.toISOString().split("T")[0]);
-    $("#operation_date").val($currentDate.text()); // 초기화
-    loadDispatchList($currentDate.text(), "5714");
-    // 날짜 이동 버튼 이벤트
-    $(".date-button").on("click", function () {
-        const currentDate = new Date($currentDate.text());
-        const buttonClass = $(this).find("i").attr("class");
+today.setHours(today.getHours() + 9); // UTC 시간을 KST(UTC+9)로 변환
+const $currentDate = $(".current-date");
+$currentDate.text(today.toISOString().split("T")[0]);
+loadDispatchList($currentDate.text(), "5714");
 
-        if (buttonClass.includes("fa-angle-double-left")) {
-            currentDate.setDate(currentDate.getDate() - 7);
-        } else if (buttonClass.includes("fa-angle-left")) {
-            currentDate.setDate(currentDate.getDate() - 1);
-        } else if (buttonClass.includes("fa-angle-right")) {
-            currentDate.setDate(currentDate.getDate() + 1);
-        } else if (buttonClass.includes("fa-angle-double-right")) {
-            currentDate.setDate(currentDate.getDate() + 7);
-        }
+// 날짜 이동 버튼 이벤트
+$(".date-button").on("click", function () {
+    const currentDate = new Date($currentDate.text());
+    const buttonClass = $(this).find("i").attr("class");
 
-        const newDate = currentDate.toISOString().split("T")[0];
-        $currentDate.text(newDate);
-        $("#operation_date").val(newDate); // 날짜 갱신
-        loadDispatchList(newDate, "5714");
-    });
+    if (buttonClass.includes("fa-angle-double-left")) {
+        currentDate.setDate(currentDate.getDate() - 7);
+    } else if (buttonClass.includes("fa-angle-left")) {
+        currentDate.setDate(currentDate.getDate() - 1);
+    } else if (buttonClass.includes("fa-angle-right")) {
+        currentDate.setDate(currentDate.getDate() + 1);
+    } else if (buttonClass.includes("fa-angle-double-right")) {
+        currentDate.setDate(currentDate.getDate() + 7);
+    }
+
+    const newDate = currentDate.toISOString().split("T")[0];
+    $currentDate.text(newDate);
+
+    // 새로운 날짜로 데이터 로드
+    loadDispatchList(newDate, "5714");
+});
 
 
     // 데이터 삽입 및 리스트 갱신
-    $("#dispatchForm").on("submit", function (e) {
+$("#dispatchForm").on("submit", function (e) {
     e.preventDefault(); // 기본 동작 중지
 
+    const selectedRoute = $("#routeSelect").val(); // 선택된 노선
     const formData = {
         bus_idx: $("#licensePlateSelect").val(),
         driver_idx: $("#driverSelect").val(),
@@ -411,7 +433,7 @@ $(".updatebtn").on("click", function (e) {
         shift_idx: $(".shift").val()
     };
 
-    if (!$("#routeSelect").val() || !formData.bus_idx || !formData.driver_idx || !formData.date || !formData.shift_idx) {
+    if (!selectedRoute || !formData.bus_idx || !formData.driver_idx || !formData.date || !formData.shift_idx) {
         alert("모든 항목을 선택해주세요.");
         return;
     }
@@ -424,7 +446,7 @@ $(".updatebtn").on("click", function (e) {
         success: function (response) {
             if (response.success) {
                 alert("배차 등록이 완료되었습니다!");
-                loadDispatchList(formData.date); // 삽입된 날짜로 리스트 갱신
+                loadDispatchList(formData.date, selectedRoute); // 삽입된 날짜와 노선으로 리스트 갱신
             } else {
                 alert(response.message || "배차 등록에 실패했습니다.");
             }

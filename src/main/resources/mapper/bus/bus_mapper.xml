@@ -191,6 +191,7 @@
     	<if test="date != null and date != ''">
         	WHERE d.date = #{date}        -- 날짜 조건 추가
     	</if>
+    	ORDER BY d.dispatch_idx
 	</select>
 
 	

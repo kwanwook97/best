@@ -195,7 +195,7 @@ tbody tr {
 }
 
 .docnav {
-	width: 19%;
+	width: 21%;
 	display: flex;
 }
 
@@ -206,6 +206,13 @@ tbody tr {
 	border-radius: 5px;
 	background-color: #E9396B;
 	color: #FFF5E2;
+	display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    padding: 4px 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 0 6px 0 1px;
 }
 
 .stopBtn {
@@ -214,6 +221,13 @@ tbody tr {
 	font-family: "Noto Sans KR", sans-serif;
 	font-size: 16px;
 	border-radius: 5px;
+	display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    padding: 4px 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 0 0 0 1px;
 }
 
 tbody i {
@@ -261,7 +275,7 @@ tbody i {
 						<button class="startBtn">운행 시작</button>
 					</div>
 					<div>
-						<button class="stopBtn">운행종료</button>
+						<button class="stopBtn">운행 종료</button>
 					</div>
 				</div>
 			</div>
@@ -414,8 +428,12 @@ window.onload = function () {
         loadDispatchList(currentDate, selectedRouteName);
     });
 
+    
+    
+
     // 현재 날짜 설정 및 초기 데이터 로드
     const today = new Date();
+    today.setHours(today.getHours() + 9); // UTC 시간을 KST(UTC+9)로 변환
     const $currentDate = $(".current-date");
     $currentDate.text(today.toISOString().split("T")[0]);
     loadDispatchList($currentDate.text(), "5714");
@@ -443,10 +461,19 @@ window.onload = function () {
     });
 };
 
-$(".startBtn, .stopBtn").on("click", function () {
+//tbody에 데이터 추가 후 '운행 대기' 상태인 셀 색상 변경
+$(document).on("ajaxComplete", function () {
+    $(".list-tbody td").each(function () {
+        const cellText = $(this).text().trim(); // 셀의 텍스트 가져오기
+        if (cellText === "운행 대기") {
+            $(this).css("color", "#8B6AA7"); // 텍스트 색상 변경
+        }
+    });
+});
+
+$(".startBtn").on("click", function () {
     const empIdx = loggedInEmpIdx;
     const date = $(".current-date").text();
-    const action = $(this).hasClass("startBtn") ? "start" : "stop";
 
     if (!empIdx || !date) {
         alert("필요한 정보가 누락되었습니다.");
@@ -460,11 +487,11 @@ $(".startBtn, .stopBtn").on("click", function () {
         data: JSON.stringify({
             emp_idx: empIdx,
             date: date,
-            action: action,
         }),
         success: function (response) {
             if (response.success) {
-                alert(`운행 상태가 ${action == "start" ? "시작" : "종료"}되었습니다!`);
+                alert("운행이 시작되었습니다.");
+                location.reload();
             } else {
                 alert(response.message || "운행 상태 업데이트에 실패했습니다.");
             }
@@ -495,11 +522,8 @@ $(".stopBtn").on("click", function () {
         }),
         success: function (response) {
             if (response.success) {
-                alert("운행 상태가 '운행 종료'로 변경되었습니다!");
-                const dispatchIdx = response.dispatchIdx;
-                // 특정 dispatchIdx에 해당하는 아이콘 변경
-                const $icon = $("td[data-dispatch-idx='" + dispatchIdx + "'] .bi-bus-front-fill");
-                $icon.css("display", "inline-block");
+                alert("운행 종료 되었습니다!");
+                location.reload();
             } else {
                 alert(response.message || "운행 상태 업데이트에 실패했습니다.");
             }
