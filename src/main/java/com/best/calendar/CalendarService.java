@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,8 +28,8 @@ public class CalendarService {
 	@Value("${upload.path}") private String bpath;
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
-
-	public Map<String, Object> saveCalendar(Map<String, Object> params) {
+	@Transactional
+	public Map<String, Object> saveCalendar(Map<String, Object> params, List<Integer> quantityList, List<Integer> materialIdxList) {
 	    String date = (String) params.get("date");
 	    String startTime = (String) params.get("startTime");
 	    String endTime = (String) params.get("endTime");
@@ -41,13 +42,38 @@ public class CalendarService {
 	    
 		int row = calendarDAO.saveCalendar(params);
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("msg","실패");
 		if (row >0) {
 			map.put("msg", "회의가 성공적으로 저장되었습니다!");
+		}else {
+			map.put("msg","이미 예약된 시간대 입니다 회의실 예약 현황 확인후 다시 입력해 주세요.");
+			return map;
 		}
-		
-		
-		
+		Object reserveIdx = params.get("reserveIdx");
+		Object empIdx = params.get("emp_idx");
+		if (materialIdxList.size() != 0) {
+			saveBorrow(reserveIdx,quantityList,materialIdxList,empIdx,startDatetime,endDatetime);
+			
+		}
 		return map;
+	}
+
+	private void saveBorrow(Object reserveIdx, List<Integer> quantityList, List<Integer> materialIdxList, Object empIdx, String startDatetime, String endDatetime) {
+        for (int i = 0; i < materialIdxList.size(); i++) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("reserveIdx", reserveIdx);
+            params.put("materialIdx", materialIdxList.get(i));
+            params.put("quantity", quantityList.get(i));
+            params.put("empIdx", empIdx);
+            params.put("startDatetime", startDatetime);
+            params.put("endDatetime", endDatetime);
+            
+            int row = calendarDAO.insertBorrow(params);
+            int dow = calendarDAO.updateMaterial(params);
+            if (row == 0) {
+                throw new IllegalArgumentException("재고 부족: materialIdx = " + materialIdxList.get(i));
+            }
+        }
 	}
 
 	public List<Map<String, Object>> getEvents(LocalDate startDate, LocalDate endDate) {
@@ -65,6 +91,18 @@ public class CalendarService {
 		
 	    List<Map<String, Object>> list = calendarDAO.myReserveList(limit, offset,loginId);
 	    // 총 페이지 수 계산
+//	    List<Map<String, Object>> completedList = new ArrayList<>();
+//
+//	    for (Map<String, Object> item : list) {
+//	        String status = (String) item.get("status");
+//	        if ("이용 완료".equals(status)) { // status 값이 '이용 완료'인지 확인
+//	            completedList.add(item);
+//	        }
+//	    }
+//	    logger.info("completedList:{}",completedList);
+//	    logger.info("completedList.size:{}",completedList.size());
+	    
+	    
 	    int totalPages = calendarDAO.getTotalPages(limit, loginId);
 
 	    // 결과 반환
@@ -87,16 +125,25 @@ public class CalendarService {
 	    params.put("startDateTime",startDatetime);
 	    params.put("endDateTime",endDatetime);
 	    
+	    Map<String, Object> map = new HashMap<String, Object>();
 	    int row = calendarDAO.myReserveUpdate(params);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("msg", "업데이트 성공");
+	    if (row>0) {
+	    	map.put("msg", "업데이트 성공");
+		}else {
+			map.put("msg", "이미 예약된 내역이 있습니다. 가능한 시간대 확인후 다시 해주세요.");
+		}
 		return map;
 	}
-
+	
 	public Map<String, Object> cancelReserve(Map<String, Object> params) {
-	    int row = calendarDAO.cancelReserve(params);
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("msg", "삭제 성공");
+	    int row = calendarDAO.cancelReserve(params);
+	    int dow = calendarDAO.cancelMaterial(params);
+	    int sow =0;
+	    if (dow>0) {
+	    	sow = calendarDAO.delBorrow(params);
+	    	map.put("msg", "삭제 성공");
+		}
 		return map;
 	}
 
@@ -175,9 +222,11 @@ public class CalendarService {
 		List<ReserveDTO> reserve = calendarDAO.selectReserveData(roomIdx);
 		int row = 0;
 		int dow = 0;
+		int sow = 0;
 		if (reserve.isEmpty()) {
 			row = calendarDAO.delRoomInfo(roomIdx);
 			dow = calendarDAO.updateMaterialBecauseRoomInfo(roomIdx);
+			sow = calendarDAO.delRoomMaterial(roomIdx);
 			map.put("response", "해당하는 회의실을 삭제 완료 되었습니다.");
 				
 		}else {
@@ -188,9 +237,30 @@ public class CalendarService {
 
 	public Map<String, Object> getRoomMaterialList(int roomIdx) {
 		
+		List<Map<String, Object>> materialList = calendarDAO.getRoomMaterialList(roomIdx);
+		List<Map<String, Object>> reserveList = calendarDAO.getReserves(roomIdx);
+		Map<String, Object> materialAndReserve = new HashMap<String, Object>();
+		if (!materialList.isEmpty()) {
+			materialAndReserve.put("materialList",materialList);
+			materialAndReserve.put("reserveList",reserveList);
+		}else {
+			materialAndReserve.put("msg", "회의실 정보 불러오기 실패!");
+		}
 		
-		
-		return null;
+		logger.info("테스트1:{}" ,materialList);
+		logger.info("테스트2:{}" ,materialAndReserve);
+		return materialAndReserve;
+	}
+
+	public Map<String, Object> getMaterial() {
+		List<Map<String, Object>> list = calendarDAO.getAllMaterials();
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (!list.isEmpty()) {
+			map.put("materials", list);
+		}else {
+			map.put("msg", "기자재가 없습니다.");
+		}
+		return map;
 	}
 	
 	

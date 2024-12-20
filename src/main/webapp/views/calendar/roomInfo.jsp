@@ -252,10 +252,10 @@ label {
 				                <!-- 체크박스 -->
 				                <label>
 				                    <input type="checkbox" name="selectedMaterials" value="${material.material_idx}" class="material-checkbox">
-				                    ${material.material_name} (전체 수량: ${material.quantity})
+				                    ${material.material_name} (전체 수량: ${material.remain_quantity})
 				                </label>
 				                <!-- 수량 입력 -->
-				                <input id="material-input" type="number" name="quantity_${material.material_idx}" min="1" max="${material.remain_quantity}" placeholder="수량 입력" class="quantity-input">
+				                <input id="material-input" type="number" name="quantity_${material.material_idx}" min="0" max="${material.remain_quantity}" placeholder="수량 입력" class="quantity-input">
 				            </div>
 				        </c:forEach>
 				    </td>

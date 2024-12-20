@@ -101,7 +101,7 @@
     display: none; /* 초기 상태는 숨김 */
     position: fixed;
     top: 8%;
-    left: 50%;
+    left: 3%;
     transform: translate(0%, 0%);
     background-color: white;
     padding: 20px;
@@ -338,8 +338,26 @@
 	border: 2px solid #30005A;
 	padding: 3px;
 	border-radius: 10px;
+	display: table;
+	margin: 6px 0 0 83px;
 }	
-	
+.material-add {
+	margin: 0 0 0 0;
+	border: 1px solid black;
+	border-radius: 10px;
+}
+/* 추가 기자재들 css*/
+.equipment-label {
+	color: black;
+}
+/* 회의실 수용 인원 css*/
+.max-capacity {
+	display: none;
+}
+#room-capacity {
+	display:contents;
+}
+
   </style>
   
 </head>
@@ -418,7 +436,7 @@
 	<div class="box-line"></div>
 	<div class="room-btn-container">
 		<c:forEach var="room" items="${roomList}">
-			<button value="${room.room_idx}" class="btn-primary room-btn" data-photo="${room.photo}" data-name="${room.name}">${room.name}</button>
+			<button value="${room.room_idx}" class="btn-primary room-btn" data-photo="${room.photo}" data-name="${room.name}" data-capacity="${room.max_capacity}">${room.name}</button>
 		</c:forEach>
 	</div>
 		<div id="room-image-container">
@@ -434,29 +452,23 @@
  		<input id="hidden-room-idx" value="" name="room_idx" type="hidden">
       </div>
       
-      <div class="form-group">
-        <label class="la">회의실 기자재:</label>
-		<span id="room-material">뭐뭐</span>
+      <div class="form-group max-capacity">
+        <label class="la" for="room">회의실 수용 인원:</label>
+		<p id="room-capacity"></p>
+      </div>
+      
+      <!-- 회의실 기자재 동적 추가 -->
+      <div class="form-group" id="room-material-List">
+
       </div>
 
+	<!-- 추가 기자재 동적 생성 -->
 	<div class="equipment-section">
 	    <div class="equipment-title">
-	        <label>기자재 리스트</label>
+	        <button class="btn-primary material-add" type="button" onclick="addMaterial()">+ 기자재 추가</button>
 	    </div>
 	    <div id="equipment-list" class="equipment-list">
-	        <c:forEach var="material" items="${materialList}">
-	            <div class="equipment-item">
-	                <!-- 체크박스 -->
-	                <label class="equipment-label">
-	                    <input type="checkbox" name="selectedMaterials" value="${material.material_idx}" class="material-checkbox">
-	                    ${material.material_name} (전체 수량: ${material.quantity})
-	                </label>
-	                <!-- 수량 입력 -->
-	                <input type="number" name="quantity_${material.material_idx}" 
-	                       min="1" max="${material.remain_quantity}" 
-	                       placeholder="수량 입력" class="quantity-input">
-	            </div>
-	        </c:forEach>
+		
 	    </div>
 	</div>
       
@@ -470,12 +482,13 @@
       
       <div class="form-group">
         <label class="la" for="date">날짜:</label>
-        <input type="date" id="date" name="date">
+        <input type="date" id="date" name="date" min="">
       </div>
       
 		<div class="form-group">
 			  <label class="la" for="start-time">시작 시간:</label>
 			  <select id="start-time" name="start-time">
+			  	<option value="">선택</option>
 			  	<option>01:00</option>
 			  	<option>02:00</option>
 			  	<option>03:00</option>
@@ -504,6 +517,7 @@
 			
 			  <label class="la" for="end-time">종료 시간:</label>
 			  <select id="end-time" name="end-time">
+			  	<option value="">선택</option>
 			  	<option>01:00</option>
 			  	<option>02:00</option>
 			  	<option>03:00</option>
@@ -530,7 +544,7 @@
 			  	<option>24:00</option>
 			  </select>
 		</div>
-      <p class="sometext"> 
+      <p class="sometext"></p>
       <div class="form-group">
         <label class="la" for="title">회의 제목:</label>
         <input type="text" id="title" name="title">
@@ -544,12 +558,12 @@
 </div>
 </body> 
 <script>
+let calendar;
 document.addEventListener('DOMContentLoaded', function loadEvt() {
     var calendarEl = document.getElementById('calendar-room');
-    
 
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new FullCalendar.Calendar(calendarEl, {
     	locale:"ko",
         headerToolbar: {
             left: 'prev,next today',
@@ -572,26 +586,22 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
         dateClick: function (info) {
             console.log("클릭된 날짜:", info.dateStr);
 
-            // 해당 날짜에 있는 이벤트 필터링
-			const events = calendar.getEvents();
-			console.log("캘린더에 로드된 이벤트:", events);
-			
-			if (events.length === 0) {
-			    console.error("캘린더에 로드된 이벤트가 없습니다.");
-			}
-            const filteredEvents = calendar.getEvents().filter(event => {
-                console.log("이벤트 시작 날짜 (event.start):", event.start);
-                console.log("event.start instanceof Date:", event.start instanceof Date); // 출력: true
-                console.log(event.start.toISOString()); // 정상 출력되면 Date 객체임
+            // 캘린더의 모든 이벤트 가져오기
+            const events = calendar.getEvents();
+            console.log("캘린더에 로드된 이벤트:", events);
+
+            if (events.length === 0) {
+                console.error("캘린더에 로드된 이벤트가 없습니다.");
+            }
+
+            // 클릭된 날짜의 이벤트 필터링
+            const filteredEvents = events.filter(event => {
                 const eventDate = new Date(event.start.getTime() + 9 * 60 * 60 * 1000) // 9시간 더하기
-                .toISOString()
-                .split('T')[0]; // ISO 형식으로 변환 후 날짜 부분만 추출
-                console.log("날짜 테스트 :",eventDate); // 정상 출력되면 Date 객체임
-                console.log("날짜 테스트 :",info.dateStr); // 정상 출력되면 Date 객체임
+                    .toISOString()
+                    .split('T')[0]; // ISO 형식으로 변환 후 날짜 부분만 추출
                 return eventDate === info.dateStr; // 클릭된 날짜와 비교
-            console.log("해당 eventDate:", eventDate);
-            console.log("해당 info.dateStr",info.dateStr);
             });
+
             console.log("해당 날짜의 이벤트:", filteredEvents);
 
             // 회의실 예약 현황 리스트 업데이트
@@ -604,19 +614,19 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 row.classList.add('table-row-point'); // 스타일링을 위해 클래스 추가
 
                 // 각 열을 나타내는 div 생성 및 추가
-				 const timeDiv = document.createElement('div');
-				timeDiv.textContent = event.start.toLocaleTimeString('ko-KR', { 
-				    hour: '2-digit', 
-				    minute: '2-digit', 
-				    hour12: false // 24시간 형식
-				}) + ' ~ ' + 
-				event.end.toLocaleTimeString('ko-KR', { 
-				    hour: '2-digit', 
-				    minute: '2-digit', 
-				    hour12: false // 24시간 형식
-				});
-				row.appendChild(timeDiv);
-				
+                const timeDiv = document.createElement('div');
+                timeDiv.textContent = event.start.toLocaleTimeString('ko-KR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    hour12: false // 24시간 형식
+                }) + ' ~ ' + 
+                event.end.toLocaleTimeString('ko-KR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    hour12: false // 24시간 형식
+                });
+                row.appendChild(timeDiv);
+
                 const roomDiv = document.createElement('div');
                 roomDiv.textContent = event.extendedProps.room_name || '정보 없음';
                 row.appendChild(roomDiv);
@@ -630,58 +640,45 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 row.appendChild(rankDiv);
 
                 const reserverDiv = document.createElement('div');
-                reserverDiv.textContent = (event.extendedProps.name || '정보 없음')
+                reserverDiv.textContent = event.extendedProps.name || '정보 없음';
                 row.appendChild(reserverDiv);
 
-                // 숨겨진 입력 필드 (회의 목적)
-                const purposeInput = document.createElement('input');
-                purposeInput.type = 'hidden';
-                purposeInput.value = event.title || '정보 없음';
-                row.appendChild(purposeInput);
-                console.log(" 회의 제목 : " , purposeInput);
 
-                // 숨겨진 입력 필드 (기자재)
-                const equipmentInput = document.createElement('input');
-                equipmentInput.type = 'hidden';
-                equipmentInput.value = event.extendedProps.equipment || '정보 없음';
-                row.appendChild(equipmentInput);
-                
                 // 리스트 컨테이너에 추가
                 listContainer.appendChild(row);
-                
-             // 클릭 이벤트 추가
+
+                // 클릭 이벤트 추가
                 row.addEventListener('click', () => {
                     const detailTable = document.querySelector('.detail-table-container .detail-table');
 
                     // 디테일 컨테이너 업데이트
-					detailTable.innerHTML = 
-					    '<tr>' +
-					        '<th>시간</th>' +
-					        '<td>' + event.start.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + 
-					        ' ~ ' + event.end.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + '</td>' +
-					    '</tr>' +
-					    '<tr>' +
-					        '<th>회의실</th>' +
-					        '<td>' + (event.extendedProps.room_name || '정보 없음') + '</td>' +
-					    '</tr>' +
-					    '<tr>' +
-					        '<th>회의 부서</th>' +
-					        '<td>' + (event.extendedProps.depart_name || '정보 없음') + '</td>' +
-					    '</tr>' +
-					    '<tr>' +
-					        '<th>회의 목적</th>' +
-					        '<td>' + (event.title || '정보 없음') + '</td>' +
-					    '</tr>' +
-					    '<tr>' +
-					        '<th>예약자</th>' +
-					        '<td>' + (event.extendedProps.name || '정보 없음') + 
-					        ' (' + (event.extendedProps.rank_name || '직급 없음') + ')</td>' +
-					    '</tr>' +
-					    '<tr>' +
-					        '<th>기자재</th>' +
-					        '<td>' + (event.extendedProps.equipment || '정보 없음') + '</td>' +
-					    '</tr>';
-
+                    detailTable.innerHTML = 
+                        '<tr>' +
+                            '<th>시간</th>' +
+                            '<td>' + event.start.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + 
+                            ' ~ ' + event.end.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + '</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<th>회의실</th>' +
+                            '<td>' + (event.extendedProps.room_name || '정보 없음') + '</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<th>회의 부서</th>' +
+                            '<td>' + (event.extendedProps.depart_name || '정보 없음') + '</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<th>회의 목적</th>' +
+                            '<td>' + (event.title || '정보 없음') + '</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<th>예약자</th>' +
+                            '<td>' + (event.extendedProps.name || '정보 없음') + 
+                            ' (' + (event.extendedProps.rank_name || '직급 없음') + ')</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<th>추가 기자재</th>' +
+                            '<td>' + (event.extendedProps.material || '정보 없음') + '</td>' +
+                        '</tr>';
 
                     // 디테일 컨테이너 표시
                     document.querySelector('.detail-table-container').style.display = 'block';
@@ -745,7 +742,8 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                                 rank_name: event.rank_name,
                                 depart_idx: event.depart_idx,
                                 depart_name: event.depart_name,
-                                emp_idx: event.emp_idx
+                                emp_idx: event.emp_idx,
+                                material: event.material_quantities
                             }
                         };
                     });
@@ -792,8 +790,6 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                     '<div class="event-box">' +
                         '<span>회의실: ' + roomName + '</span>' +
                         '<span>시간: ' + startTime + ' - ' + endTime + '</span>' +
-                        '<span>예약자: ' + reserverName + ' (' + rankName + ')</span>' +
-                        '<span>회의 제목:' + (arg.event.title || '제목 없음') + '</span>' +
                     '</div>'
             };
         }
@@ -831,11 +827,15 @@ function openModal() {
 }
 function closeModal() {
     document.querySelector('.meetingmodal').style.display = 'none';
+    document.getElementById('room-image').style.display='none';
+    document.getElementById('room-name').innerHTML = '';
+    document.getElementById('room-capacity').innerHTML= '';
+    document.querySelector('.max-capacity').style.display = 'none';
+    document.getElementById('hidden-room-idx').innerHTML = '';
+    document.getElementById('room-material-List').innerHTML = '';
+
+
 }
-const startValue = $('#start-time').val();
-console.log(startValue);
-const endValue = $('#end-time').val();
-console.log(endValue);
 
 $(document).ready(function () {
 	  const $startTimeSelect = $("#start-time");
@@ -888,34 +888,69 @@ $(document).ready(function () {
 	  $form.on("submit", function (e) {
 	    e.preventDefault(); // 폼 기본 제출 방지
 
-	    // 폼 데이터 가져오기
-	    const formData = {
-	    		
-	      emp_idx: $("#emp_idx").val(),
-	    	room_idx : $("#hidden-room-idx").val(),
-	      subject: $("#title").val(),
-	      startTime: $("#start-time").val(),
-	      endTime: $("#end-time").val(),
-	      date : $("#date").val(),
-	      status:1
-	    };
+	    // FormData 객체 생성
+	    const formMaterial = new FormData();
+
+	    // 폼 데이터 가져오기 및 FormData에 추가
+	    formMaterial.append("emp_idx", $("#emp_idx").val());
+	    formMaterial.append("room_idx", $("#hidden-room-idx").val());
+	    formMaterial.append("subject", $("#title").val());
+	    formMaterial.append("startTime", $("#start-time").val());
+	    formMaterial.append("endTime", $("#end-time").val());
+	    formMaterial.append("date", $("#date").val());
 	    
-        // 폼 데이터 유효성 검사
-        for (const [key, value] of Object.entries(formData)) {
-            if (!value) { // 값이 비어있으면
-                alert("항목을 입력해주세요.");
-                return; // 폼 제출 중단
-            }
-        }
+        // 필수 항목 폼 데이터 유효성 검사
+		if (!$("#emp_idx").val()) {
+		    alert("직원 번호를 입력해주세요.");
+		    return;
+		}
+		if (!$("#hidden-room-idx").val()) {
+		    alert("회의실 번호를 입력해주세요.");
+		    return;
+		}
+		if (!$("#title").val()) {
+		    alert("제목을 입력해주세요.");
+		    return;
+		}
+		if (!$("#start-time").val()|| "") {
+		    alert("시작 시간을 입력해주세요.");
+		    return;
+		}
+		if (!$("#end-time").val()|| "") {
+		    alert("종료 시간을 입력해주세요.");
+		    return;
+		}
+		if (!$("#date").val()) {
+		    alert("날짜를 입력해주세요.");
+		    return;
+		}
         
-	    console.log(formData);
+        
+        const checkboxes = document.querySelectorAll('.material-checkbox:checked');
+        if (checkboxes.length === 0) {
+        	console.log("체크박스가 선택되지 않았습니다.");
+		}else{
+		    checkboxes.forEach(function(checkbox) {
+		        const materialIdx = checkbox.value;
+		        const quantityInput = document.querySelector('input[name="quantity_' + materialIdx + '"]');
+		        const quantity = quantityInput.value;
+
+		        formMaterial.append("materialIdxList", materialIdx);
+		        formMaterial.append("quantityList", quantity);
+		    });
+		}
+        
+	    console.log(formMaterial);
 	    // 서버에 데이터 저장
 	    $.ajax({
 	      url: "saveCalendar.ajax", // 서버의 엔드포인트 URL
 	      method: "POST",
-	      data: formData,
+	      data:formMaterial,
+	      processData: false,  
+	      contentType: false,  
 	      success: function (response) {
 	        alert(response.msg);
+	        
 	        // 저장 후 캘린더에 이벤트 추가
 	        closeModal(); // 모달 닫기
 	        calendar.refetchEvents(); // 캘린더 새로고침
@@ -934,13 +969,18 @@ document.querySelectorAll('.room-btn').forEach(button => {
         const photoUrl = this.getAttribute('data-photo');
         const roomName = this.getAttribute('data-name');
         const roomIdx = this.value;
+        const roomCapacity = this.getAttribute('data-capacity');
         // 이미지 요소 가져오기
         const imageElement = document.getElementById('room-image');
         const ptagElement = document.getElementById('room-name');
+        const ptagRoomCapacity= document.getElementById('room-capacity');
+        document.querySelector('.max-capacity').style.display = 'block';
         document.getElementById('hidden-room-idx').value = roomIdx;
 
         if (photoUrl) {
         	ptagElement.textContent = roomName;
+        	ptagRoomCapacity.textContent = roomCapacity;        
+        	
             // 이미지 URL 설정
             imageElement.src ="/photo/"+photoUrl;
             imageElement.style.display = 'block'; // 이미지 표시
@@ -958,18 +998,232 @@ document.querySelectorAll('.room-btn').forEach(button => {
 		    	  "roomIdx" : roomIdx
 		      },
 		      dataType: 'json',
-		      success: function (response) {
-		        alert(response.msg);
+		      success: function (data) {
+		        if (!data.msg) {
+					drawRoomMaterialList(data.materialList);
+                    //날짜 선택 조건
+
+/* 			        const dateInput = document.getElementById("date");
+
+			        // 날짜 선택 이벤트 리스너 등록
+			        dateInput.addEventListener("change", function () {
+			            if (dateInput.value) {
+			                console.log("선택된 날짜:", dateInput.value);
+			                selectDateOption(data.reserveList); // 날짜 선택 후 실행
+			            }
+			        }); */
+			        console.log("날짜가 선택될 때까지 대기 중...");
+                }else{
+					alert(data.msg);
+				}
 		      },
 		      error: function (error) {
 		        alert("저장 중 오류가 발생했습니다: " + error);
 		      }
 		    });
-        
-        
-        
-        
     });
 });
+
+/* function selectDateOption(reserveList){
+	
+	
+    const startTimeSelect = document.getElementById("start-time");
+    const endTimeSelect = document.getElementById("end-time");
+    const dateInput = document.getElementById("date");
+    
+    // 모든 옵션 초기화
+    Array.from(startTimeSelect.options).forEach(option => option.disabled = false);
+    Array.from(endTimeSelect.options).forEach(option => option.disabled = false);
+
+    // 선택된 날짜 가져오기
+    const selectedDate = dateInput.value; // 형식: YYYY-MM-DD
+    
+    
+    // 예약된 시간에 따라 옵션 비활성화
+    reserveList.forEach(reservation => {
+        const reserveStart = new Date(reservation.start_datetime);
+        const reserveEnd = new Date(reservation.end_datetime);
+
+        Array.from(startTimeSelect.options).forEach(option => {
+            const [hour, minute] = option.value.split(":").map(Number);
+
+            // 옵션의 시간에 선택된 날짜를 추가하여 `Date` 객체 생성
+            const optionTime = new Date(`${selectedDate}T${option.value}:00`);
+
+            // 예약된 시간 범위에 포함되면 비활성화
+            if (optionTime >= reserveStart && optionTime < reserveEnd) {
+                option.disabled = true;
+            }
+        });
+
+        Array.from(endTimeSelect.options).forEach(option => {
+            const [hour, minute] = option.value.split(":").map(Number);
+
+            // 옵션의 시간에 선택된 날짜를 추가하여 `Date` 객체 생성
+            const optionTime = new Date(`${selectedDate}T${option.value}:00`);
+
+            // 예약된 시간 범위에 포함되면 비활성화
+            if (optionTime > reserveStart && optionTime <= reserveEnd) {
+                option.disabled = true;
+            }
+        });
+    });
+	
+} */
+
+function drawRoomMaterialList(materialList) {
+    const roomMaterialListDiv = document.getElementById("room-material-List");
+    roomMaterialListDiv.innerHTML = '<label class="la">회의실 기자재:</label>';
+
+    materialList.forEach(function(material) {
+        roomMaterialListDiv.innerHTML += 
+            '<span id="room-material">' + material.material_name + ' (' + material.quantity + ')' + '</span>';
+    });
+}
+
+/* 기자재 추가 버튼 클릭시 기자재 추가 내용 내용 생성 */
+function addMaterial(){
+    const equipmentList = document.getElementById("equipment-list");
+   
+	if (equipmentList.children.length > 0) {
+		 equipmentList.innerHTML = '';
+		 return;
+	}
+	
+    $.ajax({
+	      method: "POST",
+	      url: "getMaterial.ajax", 
+	      data: {},
+	      dataType: 'json',
+	      success: function (data) {
+	        if (!data.msg) {
+				drawMaterialList(data.materials);
+			}else{
+				alert(data.msg);
+			}
+	      },
+	      error: function (error) {
+	        alert("오류가 발생했습니다: " + error);
+	      }
+	    });
+}
+
+function drawMaterialList(materials) {
+    const equipmentList = document.getElementById("equipment-list");
+    equipmentList.innerHTML = '';
+    materials.forEach(function(material) {
+    	equipmentList.innerHTML += 
+    	    '<div class="equipment-item">' +
+    	        '<label class="equipment-label">' +
+    	            '<input type="checkbox" name="selectedMaterials" value="' + material.material_idx + '" class="material-checkbox">' +
+    	            material.material_name + ' (잔여 수량: ' + material.remain_quantity + ')' +
+    	        '</label>' +
+    	        '<input type="number" name="quantity_' + material.material_idx + '" min="0" max="' + material.remain_quantity + '" placeholder="수량 입력" class="quantity-input">' +
+    	    '</div>';
+    });
+}
+
+// 시간 제약 조건 현재 날짜 이후만 예약 가능
+document.addEventListener("DOMContentLoaded", function () {
+  const dateInput = document.getElementById("date");
+  const startTimeSelect = document.getElementById("start-time");
+  const endTimeSelect = document.getElementById("end-time");
+
+  // 현재 시간 객체 생성
+  const now = new Date();
+
+  // 한국 시간으로 조정 (UTC + 9시간)
+  now.setHours(now.getHours());
+  console.log("now: ", now);
+
+  // 'YYYY-MM-DD' 형식으로 변환된 오늘 날짜
+  const today = now
+    .toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .replace(/\. /g, "-")
+    .replace(/\./g, "");
+  console.log("today", today);
+
+  // 날짜 입력 필드에 최소 날짜 설정
+  dateInput.setAttribute("min", today);
+
+  // 날짜 선택 이벤트
+  dateInput.addEventListener("change", function () {
+    const selectedDate = dateInput.value;
+
+    // 현재 시간 객체 생성 및 KST로 조정
+    const currentTime = new Date();
+    currentTime.setHours(currentTime.getHours());
+    console.log("currentTime: ", currentTime);
+
+    // 오늘 날짜인 경우만 필터링
+    if (selectedDate === today) {
+      const currentHour = currentTime.getHours(); // 현재 시간 (시)
+      const currentMinute = currentTime.getMinutes(); // 현재 시간 (분)
+
+      // 모든 옵션을 순회하며 활성화/비활성화
+      Array.from(startTimeSelect.options).forEach((option) => {
+        const [hour, minute] = option.value.split(":").map(Number);
+
+        // 현재 시간 이후의 옵션만 활성화
+        if (hour > currentHour || (hour === currentHour && minute > currentMinute)) {
+          option.disabled = false; // 활성화
+        } else {
+          option.disabled = true; // 비활성화
+        }
+      });
+
+      // 유효한 옵션이 없을 경우 초기값 선택
+      if (!Array.from(startTimeSelect.options).some((opt) => !opt.disabled)) {
+        startTimeSelect.value = "";
+      }
+    } else {
+      // 오늘 날짜가 아닌 경우 모든 옵션 활성화
+      Array.from(startTimeSelect.options).forEach((option) => {
+        option.disabled = false;
+      });
+    }
+  });
+
+  // 시작 시간 선택 이벤트
+  startTimeSelect.addEventListener("change", function () {
+    const selectedStartTime = startTimeSelect.value; // 선택된 시작 시간
+
+    if (!selectedStartTime) {
+      // 시작 시간이 선택되지 않은 경우 모든 종료 시간 옵션 비활성화
+      Array.from(endTimeSelect.options).forEach((option) => {
+        option.disabled = true;
+      });
+      endTimeSelect.value = ""; // 종료 시간 초기화
+      return;
+    }
+
+    const [selectedHour, selectedMinute] = selectedStartTime
+      .split(":")
+      .map(Number);
+
+    // 종료 시간 옵션 활성화/비활성화
+    Array.from(endTimeSelect.options).forEach((option) => {
+      const [hour, minute] = option.value.split(":").map(Number);
+
+      // 선택된 시작 시간 이후의 옵션만 활성화
+      if (hour > selectedHour || (hour === selectedHour && minute > selectedMinute)) {
+        option.disabled = false; // 활성화
+      } else {
+        option.disabled = true; // 비활성화
+      }
+    });
+
+    // 유효한 옵션이 없을 경우 초기값 선택
+    if (!Array.from(endTimeSelect.options).some((opt) => !opt.disabled)) {
+      endTimeSelect.value = "";
+    }
+  });
+});
+
+
 </script>
 </html>
