@@ -3,6 +3,7 @@ package com.best.calendar;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +46,17 @@ public class CalendarController {
 	
 	@PostMapping(value ="/saveCalendar.ajax")
 	@ResponseBody
-	public Map<String, Object> saveCalendar(@RequestParam Map<String, Object> params){
-		 logger.info("params: " + params);
-		return calendarService.saveCalendar(params);
+	public Map<String, Object> saveCalendar(
+		    @RequestParam(value ="materialIdxList", required = false) List<Integer> materialIdxList,
+		    @RequestParam(value = "quantityList", required = false) List<Integer> quantityList,
+			@RequestParam Map<String, Object> params){
+		 
+	    materialIdxList = materialIdxList != null ? materialIdxList : new ArrayList<>();
+	    quantityList = quantityList != null ? quantityList : new ArrayList<>();
+//		 logger.info("params: " + params);
+//		 logger.info("quantityList: " + quantityList);
+//		 logger.info("materialIdxList: " + materialIdxList);
+		return calendarService.saveCalendar(params,quantityList,materialIdxList);
 	}
 	
 	@GetMapping(value ="/getCalendarEvents.ajax")
@@ -91,12 +100,13 @@ public class CalendarController {
 	@PostMapping(value="/myReserveUpdate.ajax")
 	@ResponseBody
 	public Map<String, Object> myReserveUpdate(@RequestParam Map<String, Object> params) {
-		logger.info("params: 수정 ",params);
+		logger.info("params: 수정 {}",params);
 		return calendarService.myReserveUpdate(params);
 	}
 	@PostMapping(value="/cancelReserve.ajax")
 	@ResponseBody
 	public Map<String, Object> cancelReserve(@RequestParam Map<String, Object> params) {
+		logger.info("params: 삭제 {}",params);
 		return calendarService.cancelReserve(params);
 	}
 	
@@ -141,7 +151,7 @@ public class CalendarController {
 		if (!roomName.isEmpty()) {
 			map= calendarService.saveRoomInfo(roomName,photo,maxCapacity,materialIdxList,quantityList);
 		}
-		map.put("response", "대화방 이름이 없습니다.");
+		map.put("response", "회의실 이름이 없습니다.");
         return map;
     }
 	
@@ -157,9 +167,15 @@ public class CalendarController {
 	
 	@PostMapping(value = "/getRoomMaterial.ajax")
 	@ResponseBody
-	public List<Map<String, Object>> getRoomMaterial(){
-		
-		return null;
+	public Map<String, Object> getRoomMaterial(int roomIdx){
+		return calendarService.getRoomMaterialList(roomIdx);
+	}
+	
+	// 회의실 예약시 기자재 추가 버튼 클릭 정보 가져오기
+	@PostMapping(value="/getMaterial.ajax")
+	@ResponseBody
+	public Map<String, Object> getMaterial(){
+		return calendarService.getMaterial();
 	}
     	
 	
