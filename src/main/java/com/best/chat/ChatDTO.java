@@ -1,11 +1,14 @@
 package com.best.chat;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class ChatDTO {
 	private int chat_idx; // 채팅방 ID (Primary Key, AUTO_INCREMENT)
 	private String chat_subject; // 채팅방 제목
-	private LocalDateTime created_at; // 생성 시간 (TIMESTAMP)
+	private Date created_at; // 생성 시간 (TIMESTAMP)
+	
+	
+	
 	public int getChat_idx() {
 		return chat_idx;
 	}
@@ -18,10 +21,10 @@ public class ChatDTO {
 	public void setChat_subject(String chat_subject) {
 		this.chat_subject = chat_subject;
 	}
-	public LocalDateTime getCreated_at() {
+	public Date getCreated_at() {
 		return created_at;
 	}
-	public void setCreated_at(LocalDateTime created_at) {
+	public void setCreated_at(Date created_at) {
 		this.created_at = created_at;
 	}
 

@@ -8,6 +8,16 @@ public class DriverDTO {
 	private String license; // 운전면허 번호
 	private Date license_period; // 면허 유효 기간
 	private String certificate; // 자격증 번호
+	private String route_name;
+	
+	
+	
+	public String getRoute_name() {
+		return route_name;
+	}
+	public void setRoute_name(String route_name) {
+		this.route_name = route_name;
+	}
 	public int getDriver_idx() {
 		return driver_idx;
 	}

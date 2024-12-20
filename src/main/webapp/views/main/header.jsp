@@ -74,8 +74,14 @@
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="busDispatch.go">
+      			<a href="dispatchList.go">
         			<i class="fa-solid fa-user-tie"></i> <span>배차현황</span>
+ 					<i class="fa-solid fa-angle-right"></i>
+      			</a>
+   			</li>
+    		<li class="dropD-item">
+      			<a href="busDispatch.go">
+        			<i class="fa-solid fa-user-tie"></i> <span>배차관리</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
    			</li>
@@ -89,7 +95,7 @@
       </li>
       
       <li>
-        <a href="javaScript:void(0);">
+        <a href="chatList.go">
           <i class="bi bi-chat-left-text-fill"></i> <span>메신져</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
@@ -340,6 +346,11 @@
       <li>
       <a href="javaScript:void(0);">
       	<i class="bi bi-person-fill-gear"></i> <span>내 정보관리</span>
+      	<i class="fa-solid fa-angle-right"></i>
+      	</a>
+      </li>
+      <li>
+      	<a href="login.go"><i class="fa-solid fa-right-to-bracket"></i> <span>로그인</span>
       	<i class="fa-solid fa-angle-right"></i>
       	</a>
       </li>

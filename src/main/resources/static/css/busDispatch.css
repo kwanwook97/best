@@ -29,7 +29,7 @@
 	align-items: center;
 	justify-content: center;
 	margin: 20px 0;
-	font-size: 36px;
+	font-size: 24px;
 	font-weight: bold;
 	text-align: center;
 }
@@ -90,11 +90,8 @@
 .bus-list {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
-	height: 70%;
-	max-height: 70%;
-	overflow-y: auto; /* 높이를 초과하면 스크롤 생성 */
-	width: 70%;
+	width: 100%;
+    height: 100%;
 }
 
 .bus-card {
@@ -102,17 +99,26 @@
 	border-radius: 10px;
 	padding: 3%;
 	display: flex;
+	flex-direction: column;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	height: 230px;
+    height: 100%;
 	font-weight: bold;
 }
 
-.bus-number {
-	font-size: 48px;
-	font-weight: bold;
-	flex: 0 0 10%; /* 비율 10% */
-	text-align: left;
-	margin: auto 0;
+.route-filter {
+    border-bottom: 3px solid #FFFBF2;
+    cursor: pointer;
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.route-filter.active {
+    border-bottom: 3px solid #E9396B;
+}
+
+.route-filter:hover {
+    border-bottom: 3px solid #E9396B;
 }
 
 /* 초록색 글씨 */
@@ -186,9 +192,15 @@ select option {
 	width: 100%;
 	height: 4vh;
 }
+.editable{
+	cursor: pointer;
+}
 
-.bus-insert-btn .editbtn:nth-of-type(2) {
+.updatebtn {
+	color: #FFFBF2;
     background-color:#8B6AA7;
+    width: 100%;
+	height: 4vh;
     border-radius: 0 0 10px 10px;
 }
 
@@ -216,18 +228,22 @@ select option {
 
 .dispatch-insert {
 	width: 25%;
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .body-content {
 	width: 100%;
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+    justify-content: space-evenly;
+    height: 71%;
 }
 
 .content {
 	width: 100%;
-	height: 80%;
+	height: 381px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -261,7 +277,8 @@ select option {
 	margin-right: 15%;
 	width: 100%;
 	display: flex;
-	justify-content: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .bus-details p {
@@ -278,7 +295,7 @@ select option {
 	font-weight: bold; /* Bold 효과 추가 */
 }
 
-.shift{
+select{
 	width: 11vw;
     border-radius: 5px;
 	padding: 3 10px;
@@ -312,9 +329,6 @@ select option {
 	color: #30005A;
 }
 
-.naviPath i {
-	margin-right: 2vw;
-}
 
 #operation_date{
 	padding: 5px;
@@ -322,4 +336,29 @@ select option {
 	border: 1px solid #30005A;
 	border-radius: 5px;
 	width: 11vw;
+}
+.bus-filter{
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+}
+.route-filters{
+    width: 28%;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 1vw;
+}
+table{
+    text-align: center;
+}
+thead{
+	background-color: #30005A;
+	color: #FFFBF2;
+}
+thead tr{
+	height: 41px;
+}
+tbody tr{
+    height: 30px;
+    border-bottom: 1px solid #8B6AA7;
 }

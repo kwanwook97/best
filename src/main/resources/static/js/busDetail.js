@@ -81,7 +81,7 @@ $(document).ready(function() {
                         </div>
                         <div class="bus-details">
                             <p><strong>차량 번호:</strong> <span class="purple">${bus.license_plate}</span></p>
-                            <p><strong>운행 상태:</strong> <span class="purple">${bus.status}</span></p>
+                            <p><strong>운행 상태:</strong> <span class="purple">${bus.drive_status}</span></p>
                             <p><strong>연비:</strong> <span class="purple">${bus.fuel_efficiency} km/L</span></p>
                             <p><strong>구입일:</strong> <span class="purple">${bus.buy_date}</span></p>
                             <p><strong>제조사:</strong> <span class="purple">${bus.bus_company}</span></p>

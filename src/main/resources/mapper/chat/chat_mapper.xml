@@ -4,4 +4,31 @@
 >
 <mapper namespace="com.best.chat.ChatDAO">
 
+	<select id="chatList" resultType="com.best.chat.ChatDTO">
+		SELECT c.chat_idx,
+		c.chat_subject
+		FROM chat c
+		JOIN party p ON c.chat_idx = p.chat_idx
+		WHERE
+		p.emp_idx = #{emp_idx}
+	</select>
+
+	<insert id="insertChat" useGeneratedKeys="true"
+		keyProperty="chat_idx">
+		INSERT INTO chat (chat_subject, created_at)
+		VALUES
+		(#{chat_subject}, NOW())
+	</insert>
+
+	<insert id="insertParty">
+		INSERT INTO party (chat_idx, emp_idx, enter_time)
+		VALUES (#{chat_idx}, #{emp_idx}, NOW())
+	</insert>
+
+	<insert id="message"
+		parameterType="com.best.chat.MessageDTO">
+		INSERT INTO message (chat_idx, msg_send_idx, content, time)
+		VALUES (#{chat_idx}, #{msg_send_idx}, #{content}, NOW())
+	</insert>
+
 </mapper>  
