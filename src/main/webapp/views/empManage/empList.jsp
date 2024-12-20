@@ -151,7 +151,14 @@
     border: 2px solid #30005A;
     flex-shrink: 0;
     overflow: hidden;
+    aspect-ratio: 1 / 1; /* 정사각형 비율 */
   }
+  
+  .photo img {
+	  width: 100%;
+	  height: 100%;
+	  object-fit: cover;
+	}
 
   /* 사원 정보 */
   .employee-details {
@@ -239,6 +246,9 @@
 	  color: inherit; /* 글씨색 변경 효과 제거 */
 	  text-decoration: none; /* 밑줄 제거 */
 	}
+	
+	
+	
 	
 	
   </style>
@@ -480,7 +490,7 @@
 	      		
 	      	    content =  '<a href="empDetail.go?emp_idx=' + item.emp_idx + '">' +
 		      	    		   '<div class="employee-card">' +
-		      	                    '<div class="profile-pic">' + item.photo + '</div>' +
+		      	                    '<div class="profile-pic"><div class="photo"><img alt="Profile Photo" src="/photo/' + item.photo + '"/></div></div>' +
 		      	                    '<div class="employee-details">' +
 		      	                        '<div class="name-title">' + item.depart_name + ' ' + item.name + ' ' + item.rank_name + '</div>' +
 		      	                        '<p><strong>email:</strong> ' + item.email + '</p>' +

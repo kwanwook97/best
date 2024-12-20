@@ -37,6 +37,10 @@
   border-radius: 8px !important;
 }
 
+.normalBtn:hover {
+  background-color: #8B6AA7;
+}
+
 .notbtn {
   width: 100%;
   background-color: #E9396B;
@@ -47,9 +51,6 @@
   border-radius: 8px !important;
 }
 
-.normalBtn:hover {
-  background-color: #8B6AA7;
-}
 
 .content {
   height: 78%;
@@ -76,7 +77,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  
 }
 
 .personal-info h2 {
@@ -356,7 +356,7 @@ form{
       <div class="top-section">
       	<div class="photo-container">
 		    <div class="photo">
-		        <img src="profile.jpg" alt="Profile Photo">
+		        <img alt="Profile Photo" src="/photo/${detail.photo}"/>
 		    </div>
 		    <div class="photo-bottom">
 		    	<div class="state">
@@ -436,7 +436,9 @@ form{
               <td>${detail.end_date}<div class="btn_area"><button class="normalBtn" id="end_date">변경하기</button></div></td>
             </tr>
             <tr>
-              <td colspan="4"><div class="driver_area"><button class="notbtn" id="driver_manage">기사정보 관리하기</button></div></td>
+              <th>IP주소</th>
+              <td>${detail.ip}<div class="btn_area"><button class="normalBtn" id="ip">변경하기</button></div></td>
+              <td colspan="2"><div class="driver_area"><button class="notbtn" id="driver_manage">기사정보 관리하기</button></div></td>
             </tr>
           </table>
         </div>
@@ -591,10 +593,10 @@ form{
 	var newText = '';        // 변경 값(부서, 직급 Text)
 	var fileName = '';      // 삭제할 파일이름
 	var fileCnt = ${index};    // 첨부파일 개수
-	var license = ${detail.license};         // 면허번호
+	var license = '${detail.license}';         // 면허번호
     var license_period = '${detail.license_period}';  // 면허유효기간
     var certificate = '${detail.certificate}';     // 자격증번호
-	
+    
 	
 	/* 직원정보 변경 모달창 관련 기능 */
 	// 1. 모달 띄우기
@@ -682,15 +684,26 @@ form{
 	
 	// 직원정보 수정 함수
 	function empUpdate() {
+		
+		// 상급자 정보를 찾기 위한 변수
+		var parentFind = ''; 
+		
+		if(col == 'depart_idx'){
+			parentFind = '${detail.depart_idx}';
+		}else if(col == 'rank_idx'){
+			parentFind = '${detail.rank_idx}';
+		}
+		
 	    $.ajax({
 	        method: 'POST',
 	        url: 'empUpdate.ajax',
 	        data: {
-	            'emp_idx': empIdx,        // 사번
-	            'col': col,               // 컬럼 값
-	            'currentVal': currentVal,  // 현재 값
-	            'newVal': newVal,           // 변경할 값
-	            'newText': newText          // 부서,직급 Text값
+	            'emp_idx': empIdx,           // 사번
+	            'col': col,                  // 컬럼 값
+	            'currentVal': currentVal,    // 현재 값
+	            'newVal': newVal,            // 변경할 값
+	            'newText': newText,          // 부서,직급 Text값
+	            'parentFind': parentFind     // 상급자정보를 찾기위한 값
 	        },
 	        dataType: 'JSON',
 	        success: function(data) {

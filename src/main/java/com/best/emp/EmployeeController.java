@@ -105,7 +105,7 @@ public class EmployeeController {
 	}
 	
 	// 부서 및 직급 드롭다운 메뉴 가져오기
-	@PostMapping(value = "/empDrop.ajax")
+	@PostMapping(value = {"/empDrop.ajax", "/orgStruct.ajax"})
 	@ResponseBody
 	public List<Map<String, Object>> empDropdown(String table){
 		
@@ -124,19 +124,20 @@ public class EmployeeController {
 	// 사원등록 
 	@RequestMapping(value="/empCreate.do")
 	public String empCreate(
-	        @RequestParam(value = "photo", required = false) MultipartFile photo, // 파일 처리
-	        @RequestParam("files") MultipartFile[] files,            // 첨부 파일
-	        EmployeeDTO employeeDTO) { // 폼 데이터를 EmployeeDTO로 매핑
+	        @RequestParam(value = "photoFile", required = false) MultipartFile photo,
+	        @RequestParam(value = "files", required = false) MultipartFile[] files,            
+	        EmployeeDTO employeeDTO) {                  
 		
 		String page = "redirect:/empList.go";
 		
 		// 사원등록에 성공하면, 사번 받아오기.
-		/*
-		 * int emp_idx = empService.empCreate(photo, files, employeeDTO);
-		 * 
-		 * // 사원등록에 성공했다면 if(emp_idx > 0) { page = "redirect:/empDetail.go?emp_idx=" +
-		 * emp_idx; }
-		 */
+		
+		 int emp_idx = empService.empCreate(photo, files, employeeDTO);
+		 
+		 // 사원등록에 성공했다면 
+		 if(emp_idx > 0) { 
+			 page = "redirect:/empDetail.go?emp_idx=" + emp_idx;
+		 }
 		
 		return page; 
 	}
@@ -158,5 +159,29 @@ public class EmployeeController {
 		
 		return map; 
 	}
+	
+	
+	// 조직도 페이지로 이동
+	@RequestMapping(value="/orgChart.go")
+	public String orgChart() {
+		return "emp/orgChart";
+	}
+	
+	
+	
+	// 조직도 정보 가져오기
+	@PostMapping(value = "/orgChart.ajax")
+	@ResponseBody
+	public List<Map<String, Object>> orgList(){
+		
+		// 조직도정보 DTO에 담기.
+		return empService.orgList(); 
+	}
+	
+	
+	
+	
+	
+	
 	
 }
