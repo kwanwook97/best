@@ -84,19 +84,19 @@ public class EmployeeService {
 		// 2. 근무상태
 		Map<String, Object> empAttend = empDAO.empAttend(emp_idx);
 		if(empAttend != null)
-		empDetail.putAll(empAttend);
+			empDetail.putAll(empAttend);
 		// 3. 연차정보
 		Map<String, Object> empLeave = empDAO.empLeave(emp_idx);
-		if(empLeave != null)
-		empDetail.putAll(empLeave);
+		if(empLeave != null) 
+			empDetail.putAll(empLeave);
 		// 4. 변경내역
 		List<Map<String, Object>> empHistory = empDAO.empHistory(emp_idx);
-		if(empHistory != null)
-		empDetail.put("list", empHistory);
+		if(empHistory != null) 
+			empDetail.put("list", empHistory);
 		// 5. 첨부파일
 		List<Map<String, Object>> empAttach = empDAO.empAttach(emp_idx);
-		if(empAttach != null)
-		empDetail.put("fileList", empAttach);
+		if(empAttach != null) 
+			empDetail.put("fileList", empAttach);
 		
 		return empDetail;
 	}
@@ -113,11 +113,15 @@ public class EmployeeService {
 		String newVal = params.get("newVal");                        /* 변경할 값 */
 		String newText = params.get("newText");
 		
+		// 사원정보를 변경하기 위한 조건
 		Map<String, Object> condition = new HashMap<String, Object>();
 		condition.put("emp_idx", emp_idx);
 		condition.put("currentVal", currentVal);
 		condition.put("col", col);            
 		
+		// 상급자정보를 변경하기 위한 조건
+		Map<String, Object> parentCondition = new HashMap<String, Object>();
+		parentCondition.put("emp_idx", emp_idx);
 		
 		// 날짜형 컬럼인경우 Date타입으로 형변환후 condition에 put
 		if (col.equals("end_date") || col.equals("license_period")) {
@@ -139,16 +143,68 @@ public class EmployeeService {
 		    
 		// 부서나 직책정보 업데이트인 경우 int형으로 형변환후 condition에 put
 		} else if(col.equals("depart_idx") || col.equals("rank_idx")) {
+			int parentFind = Integer.parseInt(params.get("parentFind"));
+			int depart_idx = 0;
+			int rank_idx = 0;
+			
 			int numCol = Integer.parseInt(newVal); 
+			condition.put("newVal", numCol);
+			
+			if(col.equals("depart_idx")) {         // 부서변경인 경우
+				depart_idx = numCol;
+				rank_idx = parentFind;
+			}else if(col.equals("rank_idx")) {     // 직급변경인 경우
+				depart_idx = parentFind;
+				rank_idx = numCol;
+			}
+			
+			
+			/* 상급자 정보수정 */
+			if (3 < rank_idx && rank_idx < 9) {          // 팀원이라면, 상급자 => 같은 부서의 팀장
+				// 같은부서 팀장의 정보를 가져와서 put
+				parentCondition.put("rank_idx", 3);	
+				parentCondition.put("depart_idx", depart_idx);	
+			} else if (rank_idx == 3) {                  // 팀장이라면, 상급자 => 같은부서 상무
+			    // 같은부서 상무의 정보를 가져와서 put
+				parentCondition.put("rank_idx", 2);	
+				parentCondition.put("depart_idx", depart_idx);
+			} else if (rank_idx < 3) {                   // 상무, 대표라면, 상급자 => 대표
+			    // 대표의 정보를 가져와서 put
+				parentCondition.put("rank_idx", 1);	
+			}                     
+			
+			
+			// 미발령이라면, 상급자 => 대표
+			if(depart_idx == 1) {
+				// 대표의 정보를 가져와서 put
+				parentCondition.put("rank_idx", 1);
+				parentCondition.remove("depart_idx");
+			}
+			
+			
+			// 같은부서에 상급자가 있는지 체크
+			int parent_idx = empDAO.parentCheck(condition);
+			// 같은부서에 상급자가 없다면, 상급자 => 대표
+			if(parent_idx == 0) {
+				parentCondition.put("rank_idx", 1);
+				parentCondition.remove("depart_idx");
+			}
+			
+			
+				
 			condition.put("newVal", numCol);
 		}else {
 			condition.put("newVal", newVal);
 		}
 		
 		
-		// 사원정보 업데이트인 경우
+		// 사원정보 업데이트
 		row = empDAO.empUpdate(condition);
 		
+		// 성공시 상급자정보 업데이트
+		if(row > 0) {
+			row = empDAO.parentUpdate(parentCondition);
+		}
 		
 		// 성공시 History기록
 		if(row > 0) {
@@ -205,6 +261,11 @@ public class EmployeeService {
 		int emp_idx = Integer.parseInt(emp_idx_);
 		
 		for(MultipartFile file : files) {
+			if(file == null || file.isEmpty()) {
+		        logger.info("업로드할 파일이 없습니다.");
+		        continue; // 반복문 건너뛰기
+		    }
+			
 			try {
 				/* 파일이름 변경 */
 				// 1. 기존 파일명
@@ -249,7 +310,58 @@ public class EmployeeService {
 		return empDAO.driverUpsert(params);
 	}
 
+	// 사원등록
+	@Transactional
+	public int empCreate(MultipartFile photo, MultipartFile[] files, EmployeeDTO empDTO) {
+		// 성공여부 체크
+		int row = 0;
+		
+		// 프로필사진 파일명 가져오기
+		String photoName = photo.getOriginalFilename();
+		if (photoName == null || photoName.isEmpty()) {
+			logger.info("유효하지 않은 파일 이름입니다.");
+	    }
+		empDTO.setPhoto(photoName);
+		
+		row = empDAO.empCreate(empDTO);
+		int idx = empDTO.getEmp_idx();
+		
+		// 1. 사원등록
+		if(row > 0) {
+			// emp_idx값 가져오기
+			String emp_idx = Integer.toString(idx);
+			
+			// 2. 프로필사진 저장.
+			if(photo != null && !photo.isEmpty() && photo.getSize() > 0) {
+			    try {
+			        /* 파일저장 */
+			        byte[] arr = photo.getBytes();
+			        Path path = Paths.get("C:/upload/" + photoName);
+			        Files.write(path, arr);
+			    } catch (IOException e) {
+			        e.printStackTrace();
+			    }
+			} else {
+			    logger.info("유효한 프로필 사진이 없습니다.");
+			}
+			
+			// 3. 첨부파일 저장.
+			fileUpload(emp_idx, files);
+			
+		}
+		
+		// 모든 처리가 성공했으면 emp_idx값 반환
+		return row > 0 ? idx : 0;
+		
+	}
 
+	// 조직도정보 가져오기
+	public List<Map<String, Object>> orgList() {
+		
+		List<Map<String, Object>> orgList = empDAO.orgList();
+		
+		return orgList;
+	}
 
 }
 

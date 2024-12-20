@@ -80,6 +80,7 @@
 			ee.account_number,
             ee.phone, 
             ee.mobile, 
+            ee.ip,
             dr.license,
             dr.license_period,
             dr.certificate,
@@ -87,10 +88,10 @@
             ee.state   <!-- 근무상태 -->
         FROM
             employee ee 
-        INNER JOIN 
+        LEFT JOIN 
             department dt 
             ON ee.depart_idx = dt.depart_idx
-        INNER JOIN 
+        LEFT JOIN 
             rank_emp rp 
             ON ee.rank_idx = rp.rank_idx
         LEFT JOIN
@@ -212,4 +213,99 @@
 		VALUES(3, #{emp_idx}, #{fileName}, #{newFileName})
 	</insert>
 	
+	<!-- 사원등록 -->
+	<insert id="empCreate"
+	        parameterType="com.best.emp.EmployeeDTO"
+	        useGeneratedKeys="true"
+	        keyColumn="emp_idx"     
+	        keyProperty="emp_idx"> 	
+		INSERT INTO employee(
+			photo, 
+			name, 
+			gender, 
+			resident_number, 
+			address, 
+			account_number, 
+			salary, 
+			email, 
+			phone, 
+			start_date, 
+			mobile, 
+			rank_idx, 
+			password
+		)VALUES(
+			#{photo}, 
+			#{name}, 
+			#{gender}, 
+			#{resident_number}, 
+			#{address}, 
+			#{account_number}, 
+			#{salary}, 
+			#{email}, 
+			#{phone}, 
+			#{start_date}, 
+			#{mobile}, 
+			#{rank_idx}, 
+			#{password}	
+		)
+	</insert>
+	
+	<!-- 상급자 존재여부 체크 -->
+	<select id="parentCheck" parameterType="map">
+        SELECT emp_idx
+        FROM employee
+        WHERE rank_idx = #{rank_idx} 
+          <if test="depart_idx != null">
+              AND depart_idx = #{depart_idx}
+          </if>
+          AND enable = 1  
+        LIMIT 1
+	</select>
+	
+	<!-- 상급자정보 업데이트 -->
+	<update id="parentUpdate" parameterType="map">
+	    UPDATE employee e1
+	    SET e1.parent_emp_idx = (
+	        SELECT e2.emp_idx
+	        FROM employee e2
+	        WHERE e2.rank_idx = #{rank_idx} 
+	          <if test="depart_idx != null">
+	              AND e2.depart_idx = #{depart_idx}
+	          </if>
+	          AND e2.enable = 1  
+	        LIMIT 1
+	    )
+	    WHERE e1.emp_idx = #{emp_idx}
+	</update>
+	
+	<!-- 조직도정보 가져오기 -->
+	<select id="orgList" resultType="map">
+		SELECT 
+            ee.emp_idx,
+            ee.name, 
+            ee.email, 
+            ee.phone, 
+            ee.mobile, 
+            ee.photo, 
+            ee.enable, 
+            ee.state, 
+            dt.depart_idx, 
+            dt.depart_name, 
+            rp.rank_idx,
+            rp.rank_name,
+            dr.route_name
+        FROM
+            employee ee 
+        INNER JOIN 
+            department dt 
+            ON ee.depart_idx = dt.depart_idx
+        INNER JOIN 
+            rank_emp rp 
+            ON ee.rank_idx = rp.rank_idx
+        LEFT JOIN
+        	driver dr
+        	ON ee.emp_idx = dr.emp_idx
+        WHERE state = 1
+        ORDER BY rank_idx ASC 
+	</select>
 </mapper>

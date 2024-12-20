@@ -22,7 +22,15 @@ public class EmployeeDTO {
     private int rank_idx; // 직급 ID
     private int depart_idx; // 부서 ID
     private String sign; // 서명
+    private String password; // 비밀번호
     
+    
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	public int getEmp_idx() {
 		return emp_idx;
 	}

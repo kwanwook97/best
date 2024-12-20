@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.web.multipart.MultipartFile;
 
 @Mapper
 public interface EmployeeDAO {
@@ -43,6 +44,18 @@ public interface EmployeeDAO {
 	
 	// 기사정보 관리
 	int driverUpsert(Map<String, String> params);
+	
+	// 사원정보 등록
+	int empCreate(EmployeeDTO empDTO);
+
+	// 상급자 존재여부 체크
+	int parentCheck(Map<String, Object> condition);
+	
+	// 상급자정보 업데이트
+	int parentUpdate(Map<String, Object> parentCondition);
+	
+	// 조직도 정보
+	List<Map<String, Object>> orgList();
 	
 
 }
