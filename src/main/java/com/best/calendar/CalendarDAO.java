@@ -39,5 +39,22 @@ public interface CalendarDAO {
 
 	int updateMaterialBecauseRoomInfo(int roomIdx);
 
+	List<Map<String, Object>> getRoomMaterialList(int roomIdx);
+
+	int insertBorrow(Map<String, Object> params);
+
+	List<Map<String, Object>> getReserves(int roomIdx);
+
+	int cancelMaterial(Map<String, Object> params);
+
+	int findBorrowReserve(Map<String, Object> params);
+
+	int delBorrow(Map<String, Object> params);
+
+	int delRoomMaterial(int roomIdx);
+
+
+
+
 
 }

@@ -4,6 +4,15 @@ public class RoomDTO {
 	private int room_idx;
 	private String name;
 	private String photo;
+	private int max_capacity;
+	
+	
+	public int getMax_capacity() {
+		return max_capacity;
+	}
+	public void setMax_capacity(int max_capacity) {
+		this.max_capacity = max_capacity;
+	}
 	public int getRoom_idx() {
 		return room_idx;
 	}
