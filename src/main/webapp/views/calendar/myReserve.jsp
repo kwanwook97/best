@@ -232,14 +232,16 @@
         <p class="emp-name">사원 이름 부서</p> 
       </div>
       
-      <div class="form-group">
-        <label class="la" for="date">날짜:</label>
-        <input type="date" id="date" name="date">
-      </div>
+		<div class="form-group">
+		  <label class="la" for="date">날짜:</label>
+		  <input type="date" id="date" name="date" min="">
+		</div>
+
       
 		<div class="form-group">
 			  <label class="la" for="start-time">시작 시간:</label>
 			  <select id="start-time" name="start-time">
+			  	<option value="">선택</option>
 			  	<option>01:00</option>
 			  	<option>02:00</option>
 			  	<option>03:00</option>
@@ -268,6 +270,7 @@
 			
 			  <label class="la" for="end-time">종료 시간:</label>
 			  <select id="end-time" name="end-time">
+			  	<option value="">선택</option>
 			  	<option>01:00</option>
 			  	<option>02:00</option>
 			  	<option>03:00</option>
@@ -387,7 +390,7 @@ function drawList(list) {
                         : item.status === '이용중' 
                             ? '<button class="status-button status-running" disabled>이용중</button>'
                             : '<button class="status-button status-modify" onclick="openModal(\'' + item.room_name + '\', ' + item.room_idx + ', ' + item.reserve_idx + ')">일정변경</button>' +
-                              '<button class="status-button status-cancelled" onclick="cancelReserve(' + item.reserve_idx + ')">예약취소</button>'
+                          	  '<button class="status-button status-cancelled" onclick="cancelReserve(' + item.reserve_idx + ', ' + item.room_idx + ')">예약취소</button>'
                     ) +
                 '</td>' +
             '</tr>';
@@ -404,7 +407,7 @@ function noList() {
 
 
 // 예약 취소 함수
-function cancelReserve(no) {
+function cancelReserve(no,roomIdx) {
     if (!confirm('예약을 취소하시겠습니까?')) {
         return; // 취소 버튼 클릭 시 종료
     }
@@ -413,7 +416,10 @@ function cancelReserve(no) {
         url: "cancelReserve.ajax",
         method: "POST",
         data: {
-            reserveIdx: no
+            reserveIdx: no,
+            empIdx: 1 ,
+            roomIdx: roomIdx
+            
         },
         dataType: 'json',
         success: function (response) {
@@ -583,7 +589,107 @@ document.querySelectorAll('.room-btn').forEach(button => {
     });
 });
 
+/* input date 날짜 이전으로 변경 불가능 js */
+// 시간 제약 조건 현재 날짜 이후만 예약 가능
+document.addEventListener("DOMContentLoaded", function () {
+  const dateInput = document.getElementById("date");
+  const startTimeSelect = document.getElementById("start-time");
+  const endTimeSelect = document.getElementById("end-time");
 
+  // 현재 시간 객체 생성
+  const now = new Date();
+
+  // 한국 시간으로 조정 (UTC + 9시간)
+  now.setHours(now.getHours());
+  console.log("now: ", now);
+
+  // 'YYYY-MM-DD' 형식으로 변환된 오늘 날짜
+  const today = now
+    .toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .replace(/\. /g, "-")
+    .replace(/\./g, "");
+  console.log("today", today);
+
+  // 날짜 입력 필드에 최소 날짜 설정
+  dateInput.setAttribute("min", today);
+
+  // 날짜 선택 이벤트
+  dateInput.addEventListener("change", function () {
+    const selectedDate = dateInput.value;
+
+    // 현재 시간 객체 생성 및 KST로 조정
+    const currentTime = new Date();
+    currentTime.setHours(currentTime.getHours());
+    console.log("currentTime: ", currentTime);
+
+    // 오늘 날짜인 경우만 필터링
+    if (selectedDate === today) {
+      const currentHour = currentTime.getHours(); // 현재 시간 (시)
+      const currentMinute = currentTime.getMinutes(); // 현재 시간 (분)
+
+      // 모든 옵션을 순회하며 활성화/비활성화
+      Array.from(startTimeSelect.options).forEach((option) => {
+        const [hour, minute] = option.value.split(":").map(Number);
+
+        // 현재 시간 이후의 옵션만 활성화
+        if (hour > currentHour || (hour === currentHour && minute > currentMinute)) {
+          option.disabled = false; // 활성화
+        } else {
+          option.disabled = true; // 비활성화
+        }
+      });
+
+      // 유효한 옵션이 없을 경우 초기값 선택
+      if (!Array.from(startTimeSelect.options).some((opt) => !opt.disabled)) {
+        startTimeSelect.value = "";
+      }
+    } else {
+      // 오늘 날짜가 아닌 경우 모든 옵션 활성화
+      Array.from(startTimeSelect.options).forEach((option) => {
+        option.disabled = false;
+      });
+    }
+  });
+
+  // 시작 시간 선택 이벤트
+  startTimeSelect.addEventListener("change", function () {
+    const selectedStartTime = startTimeSelect.value; // 선택된 시작 시간
+
+    if (!selectedStartTime) {
+      // 시작 시간이 선택되지 않은 경우 모든 종료 시간 옵션 비활성화
+      Array.from(endTimeSelect.options).forEach((option) => {
+        option.disabled = true;
+      });
+      endTimeSelect.value = ""; // 종료 시간 초기화
+      return;
+    }
+
+    const [selectedHour, selectedMinute] = selectedStartTime
+      .split(":")
+      .map(Number);
+
+    // 종료 시간 옵션 활성화/비활성화
+    Array.from(endTimeSelect.options).forEach((option) => {
+      const [hour, minute] = option.value.split(":").map(Number);
+
+      // 선택된 시작 시간 이후의 옵션만 활성화
+      if (hour > selectedHour || (hour === selectedHour && minute > selectedMinute)) {
+        option.disabled = false; // 활성화
+      } else {
+        option.disabled = true; // 비활성화
+      }
+    });
+
+    // 유효한 옵션이 없을 경우 초기값 선택
+    if (!Array.from(endTimeSelect.options).some((opt) => !opt.disabled)) {
+      endTimeSelect.value = "";
+    }
+  });
+});
 
 </script>
 </html>
