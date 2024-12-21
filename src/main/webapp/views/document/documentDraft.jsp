@@ -33,7 +33,7 @@
 	.docbox{
 		border: 2px solid var(--primary-color);
 	    width: -webkit-fill-available;
-	    height: 700px;
+	    height: 745px;
 	    border-radius: 10px;
 	}
 	.opt div:nth-child(6){
@@ -55,21 +55,27 @@
 		width: -webkit-fill-available;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
-		margin: 0 48px 30px 48px;
+		margin: 0 48px 15px 48px;
 	    text-align: center;
 	}
-	table.myTable tr:not(:last-child) td, table.myTable th {
+	table.myTable caption.caption{
+		color: var(--primary-color) !important;
+	    font-size: large;
+	    font-weight: bold;
+	    text-align: left;
+	    caption-side: top;
+	}
+	table.myTable caption.sentCap{
+		padding-top: 0;
+	}
+	table.myTable tr:not(:last-child) td{
         border-bottom: 1px solid var(--primary-color) !important;
     }
 	table.myTable tr{
 		border-bottom: 1px solid var(--primary-color);
 		height: 35px;
 	}
-	table.myTable th, table.myTable td{
-		padding-left: 10px;
-   		text-align: inherit;
-	}
-	.saveList tr td:hover :nth-child(3) {
+	.saveList tr td:hover:nth-child(4) {
 	    color: var(--accent-color);
 	    cursor: pointer;
 	}
@@ -150,14 +156,6 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}
-	textarea{
-	  resize: none; /* 크기 조절 기능 비활성화 */
-	  overflow: hidden; /* 내용이 넘칠 때 스크롤바가 나타나지 않게 */
-	  width: auto; /* 너비 고정 */
-	  height: auto; /* 높이 고정 */
-	  position: relative; /* 고정 위치 설정 */
-	}
-	
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -170,9 +168,10 @@
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
 			<table class="table1 myTable">
+				<caption class="receivedCap caption">임시 저장된 문서</caption>
 				<thead>
 					<tr>
-						<th>NO.</th>
+						<th>NO</th>
 						<th>문서번호</th>
 						<th>분류</th>
 						<th>문서 제목</th>
@@ -194,39 +193,42 @@
 </body>
 <script>
 var showPage = 1; // 기본으로 보여줄 페이지
-
+var text = "임시저장";
 pageCall(showPage);
 
 function pageCall(page){
     console.log('pageCall');
-    
+
     $.ajax({
         type: 'GET',
-        url: 'saveList.ajax',
+        url: 'documentList.ajax',
         data: {
+        	'text': text,
             'page': page,  // 몇 페이지 보여줄지
             'cnt': 15       // 페이지당 보여줄 게시물 수
         },
         dataType: 'JSON',
         success: function(data) {
             console.log(data);
-            Print(data.saveList);
-
-            // 페이징
-            $('#Pagination').twbsPagination({
-                startPage: 1,
-                totalPages: data.totalPages,
-                visiblePages: 5,
-                first: '<i class="fas fa-angle-double-left"></i>',
-                prev: '<i class="fas fa-angle-left"></i>',
-                next: '<i class="fas fa-angle-right"></i>',
-                last: '<i class="fas fa-angle-double-right"></i>',
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCall(page);
-                }
-            });
+            if(data.saveList.length>0){
+            	Print(data.saveList);
+	            // 페이징
+	            $('#Pagination').twbsPagination({
+	                startPage: 1,
+	                totalPages: data.totalPages,
+	                visiblePages: 5,
+	                onPageClick: function(evt, page){
+	                    console.log("evt", evt);  // 클릭 이벤트
+	                    console.log("page", page);  // 클릭한 페이지 번호
+	                    pageCall(page);
+	                }
+	            });
+            }else{
+            	var content = '<tr>';
+        		content += '<td colspan="7"> 임시저장 문서가 없습니다. </td>'
+        		content += '</tr>';
+        		$('.saveList').html(content);
+            }
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -328,9 +330,6 @@ function open(cont) {
         $('#' + targetModalId).remove();
     });
 }
-
-// 임시저장 삭제
-
 
 </script>
 </html>

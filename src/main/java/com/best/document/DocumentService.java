@@ -22,21 +22,21 @@ public class DocumentService {
 	@Autowired DocumentDAO documentDao;
 	
 	// 전자결재 대기 리스트
-	public Map<String, Object> pendingList(int page, int cnt) {
+	public Map<String, Object> pendingList(int page, int cnt, String status) {
 		int limit = cnt;
 		int offset = (page-1) * cnt;
-		int emp_idx = 1;
+		int emp_idx = 1; // 사원 번호
 		
-		int receivedTotalPages = documentDao.receivedCount(emp_idx, cnt);
-		int sentTotalPages = documentDao.sentCount(emp_idx, cnt);
+		int receivedTotalPages = documentDao.pendingCount(emp_idx, cnt);
+		int sentTotalPages = documentDao.sentCount(emp_idx, cnt, status);
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		result.put("receivedTotalPages", receivedTotalPages);
 		result.put("sentTotalPages", sentTotalPages);
 		
-		List<Map<String, Object>> receivedList = documentDao.receivedList(emp_idx, limit, offset);
-		List<Map<String, Object>> sentList = documentDao.sentList(emp_idx, limit, offset);
+		List<Map<String, Object>> receivedList = documentDao.pendingList(emp_idx, limit, offset);
+		List<Map<String, Object>> sentList = documentDao.sentList(emp_idx, limit, offset, status);
 	    result.put("receivedList", receivedList);
 	    result.put("sentList", sentList);
 		return result;
@@ -44,20 +44,93 @@ public class DocumentService {
 	
 	
 	// 전자결재 진행중 리스트
-	// 전자결재 완료 리스트
-	// 전자결재 반려 리스트
-	// 전자결재 참조 리스트
-	// 임시저장 리스트
-	public Map<String, Object> saveList(int page, int cnt) {
+	public Map<String, Object> inProgressList(int page, int cnt, String status) {
 		int limit = cnt;
 		int offset = (page-1) * cnt;
 		int emp_idx = 1;
 		
-		int totalPages = documentDao.allCount(cnt);
+		int receivedTotalPages = documentDao.inProgressCount(emp_idx, cnt);
+		int sentTotalPages = documentDao.sentCount(emp_idx, cnt, status);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		result.put("receivedTotalPages", receivedTotalPages);
+		result.put("sentTotalPages", sentTotalPages);
+		
+		List<Map<String, Object>> receivedList = documentDao.inProgressList(emp_idx, limit, offset);
+		List<Map<String, Object>> sentList = documentDao.sentList(emp_idx, limit, offset, status);
+	    result.put("receivedList", receivedList);
+	    result.put("sentList", sentList);
+		return result;
+	}
+	// 전자결재 완료 리스트
+	public Map<String, Object> approvedList(int page, int cnt, String status) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1;
+		
+		int receivedTotalPages = documentDao.approvedCount(emp_idx, cnt);
+		int sentTotalPages = documentDao.sentCount(emp_idx, cnt, status);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		result.put("receivedTotalPages", receivedTotalPages);
+		result.put("sentTotalPages", sentTotalPages);
+		
+		List<Map<String, Object>> receivedList = documentDao.approvedList(emp_idx, limit, offset);
+		List<Map<String, Object>> sentList = documentDao.sentList(emp_idx, limit, offset, status);
+	    result.put("receivedList", receivedList);
+	    result.put("sentList", sentList);
+		return result;
+	}
+	// 전자결재 반려 리스트
+	public Map<String, Object> rejectList(int page, int cnt, String status) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1;
+		
+		int receivedTotalPages = documentDao.rejectCount(emp_idx, cnt);
+		int sentTotalPages = documentDao.sentCount(emp_idx, cnt, status);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		result.put("receivedTotalPages", receivedTotalPages);
+		result.put("sentTotalPages", sentTotalPages);
+		
+		List<Map<String, Object>> receivedList = documentDao.rejectList(emp_idx, limit, offset);
+		List<Map<String, Object>> sentList = documentDao.sentList(emp_idx, limit, offset, status);
+	    result.put("receivedList", receivedList);
+	    result.put("sentList", sentList);
+		return result;
+	}
+	// 전자결재 참조 리스트
+	public Map<String, Object> referenceList(int page, int cnt, String status) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1;
+		
+		int receivedTotalPages = documentDao.referenceCount(emp_idx, cnt);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		result.put("receivedTotalPages", receivedTotalPages);
+		
+		List<Map<String, Object>> receivedList = documentDao.referenceList(emp_idx, limit, offset);
+	    result.put("receivedList", receivedList);
+		return result;
+	}
+	// 임시저장 리스트
+	public Map<String, Object> draftList(int page, int cnt, String status) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1;
+		
+		int totalPages = documentDao.sentCount(emp_idx, cnt, status);
+		logger.info("토탈페이지:", totalPages);
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("totalPages", totalPages);
 		
-		List<Map<String, Object>> saveList = documentDao.saveList(emp_idx, limit, offset);
+		List<Map<String, Object>> saveList = documentDao.sentList(emp_idx, limit, offset, status);
 	    result.put("saveList", saveList);
 		
 		return result;
@@ -131,6 +204,12 @@ public class DocumentService {
 	    // Step 6: 데이터베이스에 저장
 	    documentDao.formSave(docDTO);
 	}
+
+
+
+
+
+
 
 	
 

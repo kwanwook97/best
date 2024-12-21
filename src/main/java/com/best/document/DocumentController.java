@@ -25,64 +25,73 @@ public class DocumentController {
 	public String documentPending() {
 		return "document/documentPending";
 	}
-	@GetMapping(value="/pendingList.ajax")
-	@ResponseBody
-	public Map<String, Object> pendingList(String page, String cnt) {
-		int page_ = Integer.parseInt(page);
-		int cnt_ = Integer.parseInt(cnt);
-		
-		return documentService.pendingList(page_, cnt_);
-	}
-	
-	
 	// 전자결재 진행중 리스트
 	@RequestMapping(value="/documentBoard.go")
 	public String documentBoard() {
 		return "document/documentBoard";
 	}
-
-	
 	// 전자결재 완료 리스트
 	@RequestMapping(value="/documentApproved.go")
 	public String documentApproved() {
 		return "document/documentApproved";
 	}
-
-	
 	// 전자결재 반려 리스트
 	@RequestMapping(value="/documentReject.go")
 	public String documentReject() {
 		return "document/documentReject";
-	}
-	
-	
+	}		
 	// 전자결재 참조 리스트
 	@RequestMapping(value="/documentReference.go")
 	public String documentReference() {
 		return "document/documentReference";
-	}
-	
-	
+	}		
 	// 전자결재 임시저장 리스트
 	@RequestMapping(value="/documentDraft.go")
 	public String documentDraft() {
 		return "document/documentDraft";
 	}
-	@GetMapping(value="/saveList.ajax")
+	
+	
+	// 전자결재 리스트 ajax
+	@GetMapping(value="/documentList.ajax")
 	@ResponseBody
-	public Map<String, Object> saveList(String page, String cnt) {
-		int page_ = Integer.parseInt(page);
-		int cnt_ = Integer.parseInt(cnt);
-		
-		return documentService.saveList(page_, cnt_);
+	public Map<String, Object> inProgressList(String text, String page, String cnt) {
+	    int page_ = Integer.parseInt(page);
+	    int cnt_ = Integer.parseInt(cnt);
+	    String status = "";
+	    
+	    switch (text) {
+	        case "대기":
+	            status = "상신";
+	            return documentService.pendingList(page_, cnt_, status);
+	        case "진행중":
+	            status = "진행중";
+	            return documentService.inProgressList(page_, cnt_, status);
+	        case "완료":
+	        	status = "완료";
+	        	return documentService.approvedList(page_, cnt_, status);
+	        case "반려":
+	        	status = "반려";
+	        	return documentService.rejectList(page_, cnt_, status);
+	        case "참조":
+	        	status = "참조";
+	        	return documentService.referenceList(page_, cnt_, status);
+	        case "임시저장":
+	        	status = "임시저장";
+	        	return documentService.draftList(page_, cnt_, status);
+	        default:
+	            logger.warn("알 수 없는 상태", text);
+	            return new HashMap<String, Object>(); // 기본값 반환
+	    }
 	}
+	
+	
 	// 임시저장 상세보기
 	@GetMapping(value="/draftDetail.ajax")
 	@ResponseBody
 	public String draftDetail(String doc_idx) {
 		String Detail = documentService.draftDetail(doc_idx);
-		return Detail;
-		
+		return Detail;		
 	}
 	// 임시저장 삭제
 	@PostMapping(value="/documentDelete.ajax")

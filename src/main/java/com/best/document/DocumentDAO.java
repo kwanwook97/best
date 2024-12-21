@@ -8,28 +8,34 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface DocumentDAO {
 
-	// 전자결재 대기 토탈 페이지
-	int receivedCount(int emp_idx, int cnt);
-	int sentCount(int emp_idx, int cnt);
-	// 전자결재 대기 리스트
-	List<Map<String, Object>> receivedList(int emp_idx, int limit, int offset);
-	List<Map<String, Object>> sentList(int emp_idx, int limit, int offset);
+	/* 보낸 문서 */
+	// 대기, 진행중, 완료, 반려, 임시저장 토탈 페이지 / 리스트
+	int sentCount(int emp_idx, int cnt, String status);
+	List<Map<String, Object>> sentList(int emp_idx, int limit, int offset, String status);
 	
 	
-	// 전자결재 진행중 토탈 페이지
-	// 전자결재 진행중 리스트
-	// 전자결재 완료 토탈 페이지
-	// 전자결재 완료 리스트
-	// 전자결재 반려 토탈 페이지
-	// 전자결재 반려 리스트
-	// 전자결재 참조 토탈 페이지
-	// 전자결재 참조 리스트
+	/* 받은 문서 */
+	// 전자결재 대기 토탈 페이지 / 리스트
+	int pendingCount(int emp_idx, int cnt);
+	List<Map<String, Object>> pendingList(int emp_idx, int limit, int offset);
+	
+	// 전자결재 진행중 토탈 페이지 / 리스트
+	int inProgressCount(int emp_idx, int cnt);
+	List<Map<String, Object>> inProgressList(int emp_idx, int limit, int offset);
+	
+	// 전자결재 완료 토탈 페이지 / 리스트
+	int approvedCount(int emp_idx, int cnt);
+	List<Map<String, Object>> approvedList(int emp_idx, int limit, int offset);
+	
+	// 전자결재 반려 토탈 페이지 / 리스트
+	int rejectCount(int emp_idx, int cnt);
+	List<Map<String, Object>> rejectList(int emp_idx, int limit, int offset);
+	
+	// 전자결재 참조 토탈 페이지 / 리스트
+	int referenceCount(int emp_idx, int cnt);
+	List<Map<String, Object>> referenceList(int emp_idx, int limit, int offset);
 	
 	
-	// 전자결재 임시저장 토탈 페이지
-	int allCount(int cnt);
-	// 전자결재 임시저장 리스트
-	List<Map<String, Object>> saveList(int emp_idx, int limit, int offset);
 	// 전자결재 임시저장 상세보기
 	String draftDetail(String doc_idx);
 	// 전자결재 임시저장 삭제
@@ -47,6 +53,13 @@ public interface DocumentDAO {
 
 	// 전자결재 기안자 정보
 	Map<String, Object> getEmpDetails(int emp_idx);
+
+
+
+
+
+
+
 	
 	
 

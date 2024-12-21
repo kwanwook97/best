@@ -9,6 +9,15 @@ public class ApprovDTO {
 	private int approv_order; // 승인 순서
 	private String status; // 승인 상태
 	private LocalDateTime approv_date; // 승인 날짜 (TIMESTAMP)
+	private boolean doc_read;
+	
+	
+	public boolean isDoc_read() {
+		return doc_read;
+	}
+	public void setDoc_read(boolean doc_read) {
+		this.doc_read = doc_read;
+	}
 	public int getApprov_num() {
 		return approv_num;
 	}
