@@ -14,12 +14,9 @@ public class LoginService {
 		this.loginDAO = loginDAO;
 	}
 
-	public boolean login(String id, String pw) {
-		boolean suc = false;
-		if(loginDAO.login(id, pw)) {
-			suc = true;
-		}
-		return suc;
+	public EmployeeDTO login(String id, String pw) {
+		
+		return loginDAO.login(id, pw);
 	}
 
 //	public boolean login(String id, String pw) {

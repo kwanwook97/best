@@ -8,6 +8,15 @@ public class MessageDTO {
 	private Integer msg_send_idx; // 보낸 사람 ID (NULL 가능)
 	private String content; // 메시지 내용
 	private Date time; // 메시지 시간 (TIMESTAMP)
+	private String message_type; // 메시지 유형 추가
+
+	public String getMessage_type() {
+        return message_type;
+    }
+
+    public void setMessage_type(String message_type) {
+        this.message_type = message_type;
+    }
 	
 	public int getMsg_idx() {
 		return msg_idx;
