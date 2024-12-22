@@ -6,11 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.best.emp.EmployeeDAO;
 import com.best.emp.EmployeeDTO;
@@ -138,7 +143,9 @@ public class DocumentService {
 
 	// 임시저장 상세보기
 	public String draftDetail(String doc_idx) {
-		return documentDao.draftDetail(doc_idx);
+		String htmlContent = documentDao.draftDetail(doc_idx);
+		return htmlContent
+				.replace("${doc_idx}", doc_idx);
 	}
 	
 	// 임시저장 삭제
@@ -169,11 +176,13 @@ public class DocumentService {
                 .replace("${managerName}", (String) employeeDetails.get("managerName"))
                 .replace("${depart_name}", (String) employeeDetails.get("depart_name"))
                 .replace("${rank_name}", (String) employeeDetails.get("rank_name"))
-        		.replace("${doc_number}", "");
+        		.replace("${doc_number}", "")
+        		.replace("${remain_leave}", Integer.toString((Integer) employeeDetails.get("remain_leave")));
+
     }
 
 
-	// 결재 기안, 임시저장
+	// 결재 임시저장
 	@Transactional
 	public void formSave(String form_idx, String doc_subject, 
 	                     String doc_content, int emp_idx, String status) {
@@ -192,18 +201,28 @@ public class DocumentService {
 	    String docNumber = today + "-" + String.format("%04d", newSeq);
 	    logger.info("생성된 문서번호: " + docNumber);
 
-	    // Step 5: DocumentDTO 생성 및 값 설정
-	    DocumentDTO docDTO = new DocumentDTO();
-	    docDTO.setForm_idx(Integer.parseInt(form_idx));
-	    docDTO.setDoc_subject(doc_subject);
-	    docDTO.setDoc_content(doc_content);
-	    docDTO.setEmp_idx(emp_idx);
-	    docDTO.setStatus(status);
-	    docDTO.setDoc_number(docNumber);
-
-	    // Step 6: 데이터베이스에 저장
-	    documentDao.formSave(docDTO);
+    	// Step 5: DocumentDTO 생성 및 값 설정
+    	DocumentDTO docDTO = new DocumentDTO();
+    	docDTO.setForm_idx(Integer.parseInt(form_idx));
+    	docDTO.setDoc_subject(doc_subject);
+    	docDTO.setDoc_content(doc_content);
+    	docDTO.setEmp_idx(emp_idx);
+    	docDTO.setStatus(status);
+    	docDTO.setDoc_number(docNumber);
+    	
+    	// Step 6: 데이터베이스에 저장
+    	documentDao.formSave(docDTO);
 	}
+
+
+	// 결재 임시저장 문서 수정
+	public void formUpdate(String doc_idx, String doc_subject, String doc_content) {
+		documentDao.formUpdate(doc_subject,doc_content,doc_idx);
+	}
+
+
+
+
 
 
 

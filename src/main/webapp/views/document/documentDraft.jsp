@@ -282,10 +282,8 @@ function Print(document) {
     });
 }
 
-
 // 임시저장 상세보기
 function draftDetail(doc_idx) {
-	
     $.ajax({
         type: 'GET',
         url: 'draftDetail.ajax',
@@ -300,17 +298,17 @@ function draftDetail(doc_idx) {
         }
     });
 }
+
 //모달 열기
 function open(cont) {
     var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
-
     // 모달 HTML 생성
     var Html = 
         '<div id="' + modalId + '" class="modal" style="display: none;">' +
         '  <div class="modal-content">' +
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
-        '      <button class="modal-btn save" onclick="btnAction(\'수정\')">수정</button>' +
+        '      <button class="modal-btn save" onclick="updateBtn()">수정</button>' +
         '      <button class="modal-btn append" onclick="button3Action(\'결재선\')">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
@@ -330,6 +328,85 @@ function open(cont) {
         $('#' + targetModalId).remove();
     });
 }
+
+function updateBtn() {
+    var doc_idx = $('input[name="doc_idx"]').val(); 
+    var doc_subject = $('input[name="doc_subject"]').val();
+    var textareaValue = $('.modal-content:last-child textarea').val();
+    var updatedHtml = $('.modal-content:last-child').html();
+    var start_date = $('input[name="start_date"]').val();
+    var end_date = $('input[name="end_date"]').val();
+    
+    // 동적으로 추가된 input 값들을 values 배열에 저장
+    var values = [];
+    $('input[data-index]').each(function() {
+        values.push($(this).val());    
+    });
+
+    // HTML 수정
+    updatedHtml = updatedHtml.replace(
+        /<input([^>]*name=["']doc_subject["'][^>]*)>/,
+        '<input$1 value="' + doc_subject + '">'
+    );
+    updatedHtml = updatedHtml.replace(
+        /<textarea[^>]*>.*?<\/textarea>/,
+        '<textarea>' + textareaValue + '</textarea>'
+    );
+    $('.modal-content:last-child').html(updatedHtml);
+
+    var doc_content = $('.modal-content:last-child .content').html();
+
+    var data = {
+        form_idx: $('input[name="form_idx"]').val(),
+        doc_subject: doc_subject,
+        doc_content: doc_content,
+        doc_idx: doc_idx 
+    };
+
+    // 추가적으로 필요한 데이터 추가
+    switch (data.form_idx) {
+        case '1':
+            updatedHtml = updatedHtml.replace(
+                /<input([^>]*name=["']start_date["'][^>]*)>/,
+                '<input$1 value="' + start_date + '">'
+            );
+            updatedHtml = updatedHtml.replace(
+                /<input([^>]*name=["']end_date["'][^>]*)>/,
+                '<input$1 value="' + end_date + '">'
+            );
+            $('.modal-content:last-child').html(updatedHtml);
+            data.start_date = start_date;
+            data.end_date = end_date;
+            break;
+        case '3':
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i];
+                var dataIndex = i + 1;
+                updatedHtml = updatedHtml.replace(
+                    new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
+                    '<input$1 value="' + value + '">'
+                );
+            }
+            $('.modal-content:last-child').html(updatedHtml);
+            break;
+    }
+
+    // 수정된 데이터를 서버로 전송
+    $.ajax({
+        type: 'POST',
+        url: 'formUpdate.ajax',
+        data: data,
+        success: function(response) {
+            alert(response.message);
+            if (response.success) {
+                location.reload();
+            } else {
+                // 실패 처리
+            }
+        }
+    });
+}
+
 
 </script>
 </html>

@@ -221,6 +221,11 @@
     
     
    
+    <!-- 결재 임시저장 -->
+    <insert id="formSave" parameterType="com.best.document.DocumentDTO">
+    	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status, doc_number)
+    		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status}, #{doc_number})
+    </insert>
 	<!-- 임시저장 상세보기 -->
 	<select id="draftDetail" resultType="String">
 		SELECT doc_content FROM document WHERE doc_idx = #{doc_idx}
@@ -229,6 +234,14 @@
 	<delete id="draftDelete">
 		DELETE FROM document where doc_idx = #{doc_idx}
 	</delete>
+	<!-- 임시저장 수정 -->
+	<update id="formUpdate">
+		UPDATE document 
+		SET 
+			doc_subject = #{doc_subject},
+			doc_content = #{doc_content}
+		WHERE doc_idx = #{doc_idx}
+	</update>
 	
 	
     <!-- 양식 불러오기 -->
@@ -236,11 +249,6 @@
         SELECT form_content FROM form WHERE form_subject = #{form_subject}
     </select>
     
-    <!-- 결재 기안, 임시저장 -->
-    <insert id="formSave" parameterType="com.best.document.DocumentDTO">
-    	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status, doc_number)
-    		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status}, #{doc_number})
-    </insert>
     <!-- 문서번호 생성 -->
     <select id="getLastSequenceForDate" resultType="Integer">
 	    SELECT MAX(CAST(SUBSTRING(doc_number, INSTR(doc_number, '-') + 1) AS UNSIGNED))
@@ -251,22 +259,25 @@
 	
 	<!-- 전자결재 기안자 정보 -->
 	<select id="getEmpDetails" resultType="map">
-		 SELECT 
-	        e.name,
-	        e.sign,
-	        m.name AS managerName,
-	        dp.depart_name,
-	        r.rank_name
-	    FROM 
-	        employee e
-	    JOIN 
-	        employee m ON m.emp_idx = e.parent_emp_idx
-	    LEFT JOIN 
-	        department dp ON dp.depart_idx = e.depart_idx
-	    LEFT JOIN 
-	        rank_emp r ON r.rank_idx = e.rank_idx
-	    WHERE 
-	        e.emp_idx = #{emp_idx};
+		SELECT 
+		    e.name,
+		    e.sign,
+		    m.name AS managerName,
+		    dp.depart_name,
+		    r.rank_name,
+		    le.remain_leave
+		FROM 
+		    employee e
+		JOIN 
+		    employee m ON m.emp_idx = e.parent_emp_idx
+		LEFT JOIN 
+		    department dp ON dp.depart_idx = e.depart_idx
+		LEFT JOIN 
+		    rank_emp r ON r.rank_idx = e.rank_idx
+		LEFT JOIN 
+		    leave_emp le ON le.emp_idx = e.emp_idx
+		WHERE 
+		    e.emp_idx = #{emp_idx}
 	</select>
 	
 </mapper>  

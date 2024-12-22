@@ -314,10 +314,10 @@ function pageCall(page){
 	            });
             }else{
             	var content = '<tr>';
-        		content += '<td colspan="8"> 받은 문서가 없습니다. </td>'
+        		content += '<td colspan="8"> 받은 문서가 없습니다. </td>';
         		content += '</tr>';
         		$('.receivedList').html(content);
-            }
+            }                         
             if(data.sentList.length>0){
 	            // 보낸 문서
 	            sent(data.sentList);
