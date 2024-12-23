@@ -3,9 +3,12 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="com.best.emp.LoginDAO">
-	<select id="login" parameterType="String">
-		SELECT password FROM employee WHERE emp_idx = #{id}
-	</select>
+	<select id="login" resultType="com.best.emp.EmployeeDTO">
+        SELECT emp_idx, name, photo
+        FROM employee
+        WHERE emp_idx = #{id}
+          AND password = #{pw}
+    </select>
 	<update id="updatePassword" parameterType="map">
         UPDATE employee
         SET password = #{pw}

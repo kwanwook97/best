@@ -4,31 +4,129 @@
 >
 <mapper namespace="com.best.chat.ChatDAO">
 
-	<select id="chatList" resultType="com.best.chat.ChatDTO">
-		SELECT c.chat_idx,
-		c.chat_subject
-		FROM chat c
-		JOIN party p ON c.chat_idx = p.chat_idx
-		WHERE
-		p.emp_idx = #{emp_idx}
+	<!-- 참여중인 대화방 리스트 -->
+	<select id="chatList" resultType="map">
+    	SELECT 
+        	c.chat_idx,
+        	c.chat_subject,
+        		(SELECT m.content 
+         		FROM message m 
+         		WHERE m.chat_idx = c.chat_idx 
+         		ORDER BY m.time DESC 
+         		LIMIT 1) AS latest_message,
+        			(SELECT m.time 
+         			FROM message m 
+         			WHERE m.chat_idx = c.chat_idx 
+         			ORDER BY m.time DESC 
+         			LIMIT 1) AS latest_time
+   		FROM chat c
+    	JOIN party p ON c.chat_idx = p.chat_idx
+    	WHERE p.emp_idx = #{emp_idx}
+    	ORDER BY latest_time DESC
 	</select>
-
+	
+	<!-- 나를 제외한 참여중인 대화방 참여자 리스트 -->
+	<select id="getParticipantNames" resultType="string">
+    	SELECT e.name, e.photo
+    	FROM employee e
+    	JOIN party p ON e.emp_idx = p.emp_idx
+    	WHERE p.chat_idx = #{chat_idx} AND e.emp_idx != #{emp_idx}
+	</select>
+	
+	<!-- 모든 회원 리스트 -->
+	<select id="getEmployeeList" resultType="com.best.emp.EmployeeDTO">
+    	SELECT 
+        	emp_idx,
+        	name,
+        	photo
+    	FROM 
+        	employee
+	</select>
+	
+	<!-- 모든 대화방 -->
+	<select id="getAllChatIdx" resultType="int">
+    	SELECT chat_idx FROM chat
+	</select>
+	
+	<!-- 대화방 생성 -->
 	<insert id="insertChat" useGeneratedKeys="true"
 		keyProperty="chat_idx">
 		INSERT INTO chat (chat_subject, created_at)
 		VALUES
 		(#{chat_subject}, NOW())
 	</insert>
-
+	
+	<!-- 참여자 확인 -->
+	<select id="checkPartyExists" resultType="int">
+    	SELECT COUNT(*)
+    	FROM party
+    	WHERE chat_idx = #{chat_idx}
+    	AND emp_idx = #{emp_idx}
+	</select>
+	
+	<!-- 초대 -->
 	<insert id="insertParty">
 		INSERT INTO party (chat_idx, emp_idx, enter_time)
 		VALUES (#{chat_idx}, #{emp_idx}, NOW())
 	</insert>
-
+	
+	<!-- 시스템 메시지 확인 -->
+	<select id="checkEnterMessageExists" resultType="int">
+    	SELECT COUNT(*)
+    	FROM message
+    	WHERE chat_idx = #{chat_idx}
+    	AND message_type = 'system'
+    	AND content = #{content}
+	</select>
+	
+	<!-- 회원 이름 -->
+	<select id="getEmployeeName">
+		SELECT name FROM employee WHERE emp_idx = #{emp_idx}
+	</select>
+	
+	<!-- 입장 시스템 메시지 -->
+	<insert id="insertEnterMessage">
+    	INSERT INTO message (chat_idx, content, time, message_type)
+    	VALUES (#{chat_idx}, #{content}, NOW(), 'system')
+	</insert>
+	
+	<!-- 메시지 저장 -->
 	<insert id="message"
 		parameterType="com.best.chat.MessageDTO">
 		INSERT INTO message (chat_idx, msg_send_idx, content, time)
 		VALUES (#{chat_idx}, #{msg_send_idx}, #{content}, NOW())
 	</insert>
+	
+	<!-- 메시지 뿌려주기 -->
+	<select id="getMessagesByChatIdx" resultType="map">
+    	SELECT 
+        	m.content, 
+        	m.time, 
+        	e.name, 
+        	m.msg_send_idx,
+        	m.message_type
+    	FROM 
+        	message m
+    	LEFT JOIN 
+        	employee e ON m.msg_send_idx = e.emp_idx
+    	WHERE 
+        	m.chat_idx = #{chatIdx}
+    	ORDER BY 
+        	m.time ASC
+	</select>
+	
+	<!-- 참여중인 대화방 참여자 리스트 -->
+	<select id="getChatParticipants" resultType="map">
+    	SELECT 
+       		e.name, 
+        	e.photo
+    	FROM 
+        	employee e
+    	JOIN 
+        	party p ON e.emp_idx = p.emp_idx
+    	WHERE 
+        	p.chat_idx = #{chat_idx}
+	</select>
+	
 
 </mapper>  

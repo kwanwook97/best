@@ -45,7 +45,6 @@ public class BusController {
 	
 	
 	/* 버스 상세 정보 */
-	
 	@RequestMapping(value = "/busDetail.go")
     public String busDetailGo() {
         return "bus/busDetail"; // busDetail.jsp로 이동
@@ -87,7 +86,7 @@ public class BusController {
 	    return "redirect:/busDetail";
 	}
 	
-
+	/* 버스 수정 */
 	@RequestMapping(value="/busUpdate.go")
 	public String busUpdate(@RequestParam("bus_idx") String busIdx, Model model) {
 		int bus_idx = Integer.parseInt(busIdx);
@@ -102,12 +101,13 @@ public class BusController {
 	    return "redirect:/busUpdate.go?bus_idx="+Integer.parseInt(param.get("bus_idx"));
 	}
 	
-	
+	/* 배차현황 */
 	@RequestMapping(value="/dispatchList.go")
 	public String dispatchList() {
 		return "bus/dispatchList";
 	}
 	
+	/* 배차현황 등록 */
 	@RequestMapping(value="/busDispatch.go")
 	public String busDispatchGo() {
 		return "bus/busDispatch";
@@ -119,25 +119,26 @@ public class BusController {
         return busService.busDispatch();
     }
 	
+	/* 교대시간 가져오기 */
 	@GetMapping("/shift.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> shift() {
 	    return busService.shift();
 	}
-	
+	/*차량번호 가져오기 */
 	@GetMapping("/license.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> license(@RequestParam("route_name") String routeName) {
 	    return busService.license(routeName);
 	}
-	
+	/* 기사정보 가져오기 */
 	@GetMapping("/driver.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> driver(@RequestParam("route_name") String routeName) {
 	    return busService.driver(routeName);
 	}
 	
-	
+	/* 배차현황 리스트 가져오기 & 검색 & 필터링 */
 	@GetMapping("/dispatchList.ajax")
 	@ResponseBody
 	public Map<String, Object> dispatchList(@RequestParam(required = false) String date) {
@@ -161,7 +162,7 @@ public class BusController {
 	    log.info("result{}",result);
 	    return result;
 	}
-	
+	/* 배차현황 등록 */
 	@PostMapping("/dispatchInsert.ajax")
 	@ResponseBody
 	public Map<String, Object> dispatchInsert(@RequestBody DispatchDTO dispatch) {
@@ -189,7 +190,7 @@ public class BusController {
 
 	    return result;
 	}
-	
+	/* 배차현황 수정 */
 	@PostMapping(value = "/dispatchUpdate.ajax")
     @ResponseBody
     public Map<String, Object> dispatchUpdate(@RequestBody Map<String, Object> updateData) {
@@ -198,7 +199,7 @@ public class BusController {
         response.put("success", result > 0);
         return response;
     }
-	
+	/* 배차현황 idx 가져오기 */
 	@GetMapping(value = "/getDispatchByIdx.ajax")
 	@ResponseBody
 	public Map<String, Object> getDispatchByIdx(@RequestParam("dispatch_idx") int dispatchIdx) {
@@ -208,7 +209,7 @@ public class BusController {
 	    response.put("data", dispatchData);
 	    return response;
 	}
-	
+	/* 기사 idx 가져오기 */
 	@GetMapping("/getDriverIdx.ajax")
 	@ResponseBody
 	public Map<String, Object> getDriverIdx(@RequestParam("emp_idx") int empIdx) {
@@ -222,7 +223,7 @@ public class BusController {
 	    }
 	    return response;
 	}
-	
+	/* 날짜별로 배차현황 가져오기 */
 	@GetMapping("/getDispatchIdx.ajax")
 	@ResponseBody
 	public Map<String, Object> getDispatchIdx(@RequestParam("driver_idx") int driverIdx,
@@ -237,7 +238,7 @@ public class BusController {
 	    }
 	    return response;
 	}
-	
+	/* 운행상태 등록 */
 	@PostMapping("/insertDrive.ajax")
 	@ResponseBody
 	public Map<String, Object> insertDrive(@RequestParam("dispatch_idx") int dispatchIdx,
@@ -252,7 +253,7 @@ public class BusController {
 	    }
 	    return response;
 	}
-
+	/* 운행상태 시작 변경 */
 	@PostMapping("/updateDriveStatus.ajax")
 	@ResponseBody
 	public Map<String, Object> updateDriveStatus(@RequestBody Map<String, Object> requestData) {
@@ -276,7 +277,7 @@ public class BusController {
 	    }
 	    return response;
 	}
-	
+	/* 운행상태 종료 변경 */
 	@PostMapping("/stopDriveStatus.ajax")
 	@ResponseBody
 	public Map<String, Object> stopDriveStatus(@RequestBody Map<String, Object> requestData) {
@@ -303,12 +304,12 @@ public class BusController {
 
 	
 	
-	
+	/* 버스 관리 정보 */
 	@RequestMapping(value="/busManage.go")
 	public String busManage() {
 		return "bus/busManage";
 	}
-	
+	/* 배차등록 보류 */
 	@RequestMapping(value="/dispatchInsert.go")
 	public String dispatchInsert() {
 		return "bus/dispatchInsert";

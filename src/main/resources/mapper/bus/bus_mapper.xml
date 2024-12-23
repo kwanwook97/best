@@ -3,9 +3,13 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="com.best.bus.BusDAO">
+
+	<!-- 모든 노선 정보 -->
 	<select id="driveInfo" resultType="com.best.bus.RouteDTO">
 		SELECT * FROM route
 	</select>
+	
+	<!-- 버스 상세 정보 / 검색 / 필터링 -->
 	<select id="busDetail" resultType="map">
 		SELECT
 		b.*,
@@ -31,7 +35,7 @@
 		ORDER BY b.bus_idx ASC
 	</select>
 
-	<!-- busSum 데이터 -->
+	<!-- 버스 상태 카운트 -->
 	<select id="busSum" resultType="map">
 		SELECT
 		b.route_name,
@@ -45,6 +49,7 @@
 		GROUP BY b.route_name
 	</select>
 
+	<!-- 버스 등록 -->
 	<insert id="busInsert" parameterType="com.best.bus.BusDTO"
 		useGeneratedKeys="true" keyProperty="bus_idx">
 		INSERT INTO bus (route_name, license_plate, fuel_efficiency, buy_date,
@@ -52,7 +57,8 @@
 		VALUES (#{route_name}, #{license_plate}, #{fuel_efficiency}, #{buy_date},
 		#{bus_company}, #{seat_number}, #{bus_type})
 	</insert>
-
+	
+	<!-- 버스 관리 등록 -->
 	<insert id="busManInsert"
 		parameterType="com.best.bus.BusManageDTO">
 		INSERT INTO bus_manage (bus_idx, inspect_date, next_inspect_date, status,
@@ -60,7 +66,8 @@
 		VALUES (#{bus_idx}, #{inspect_date}, #{next_inspect_date}, #{status},
 		#{distance}, #{emp_idx}, #{content}, #{amount})
 	</insert>
-
+	
+	<!-- 배차현황 수정 -->
 	<update id="dispatchUpdate" parameterType="map">
 		UPDATE dispatch
 		SET
@@ -70,19 +77,20 @@
 		shift_idx = #{shift_idx}
 		WHERE dispatch_idx = #{dispatch_idx}
 	</update>
-
+	
+	<!-- 배차현황 가져오기 -->
 	<select id="getDispatchByIdx" parameterType="int"
 		resultType="map">
 		SELECT
 		d.bus_idx,
 		d.driver_idx,
-		d.dispatch_idx, -- dispatch 테이블의 기본 키
-		b.license_plate, -- 차량 번호
-		e.name AS driver_name, -- 기사 이름
-		s.shift, -- 운행 시간
-		s.shift_idx, -- Shift 번호
-		d.date, -- 운행 날짜
-		b.route_name -- 노선 이름
+		d.dispatch_idx, 
+		b.license_plate, 
+		e.name AS driver_name,
+		s.shift, 
+		s.shift_idx, 
+		d.date, 
+		b.route_name 
 		FROM dispatch d
 		JOIN bus b ON d.bus_idx = b.bus_idx
 		JOIN driver dr ON d.driver_idx = dr.driver_idx
@@ -91,16 +99,18 @@
 		WHERE d.dispatch_idx = #{dispatch_idx}
 	</select>
 
-
+	<!-- 모든 버스 정보 가져오기 -->
 	<select id="busUpdate" parameterType="int"
 		resultType="com.best.bus.BusDTO">
 		SELECT * FROM bus WHERE bus_idx = #{bus_idx}
 	</select>
+	<!-- 모든 버스 관리 정보 가져오기 -->
 	<select id="busManUpdate" parameterType="int"
 		resultType="com.best.bus.BusManageDTO">
 		SELECT * FROM bus_manage WHERE bus_idx = #{bus_idx}
 	</select>
-
+	
+	<!-- 버스 정보 수정 -->
 	<update id="busUpdateDo">
 		UPDATE bus
 		<set>
@@ -144,25 +154,30 @@
 		</set>
 		WHERE bus_idx = #{bus_idx}
 	</update>
-
+	
+	<!-- 배차현황 노선번호 가져오기 -->
 	<select id="busDispatch" resultType="string">
 		SELECT route_name FROM route
 	</select>
+	<!-- 배차현황 교대근무 가져오기 -->
 	<select id="shift" resultType="map">
 		SELECT shift_idx, shift FROM shift
 	</select>
+	<!-- 배차현황 차량번호 가져오기 -->
 	<select id="license" parameterType="string" resultType="map">
 		SELECT license_plate, bus_idx
 		FROM bus
 		WHERE route_name = #{routeName}
 	</select>
+	<!-- 배차현황 기사정보 가져오기 -->
 	<select id="driver" parameterType="string" resultType="map">
 		SELECT d.driver_idx, e.emp_idx, e.name
 		FROM driver d
 		JOIN employee e ON d.emp_idx = e.emp_idx
 		WHERE d.route_name = #{routeName}
 	</select>
-
+	
+	<!-- 배차현황 중복등록 체크 -->
 	<select id="checkDuplicateDispatch"
 		parameterType="com.best.bus.DispatchDTO"
 		resultType="com.best.bus.DispatchDTO">
@@ -170,51 +185,51 @@
 		AND date = #{date}
 		AND shift_idx = #{shift_idx};
 	</select>
+	<!-- 배차현황 등록 -->
 	<insert id="dispatchInsert"
 		parameterType="com.best.bus.DispatchDTO" useGeneratedKeys="true"
 		keyProperty="dispatch_idx">
 		INSERT INTO dispatch (bus_idx, driver_idx, date, shift_idx)
 		VALUES (#{bus_idx}, #{driver_idx}, #{date}, #{shift_idx});
 	</insert>
+	<!-- 운행상태 등록 -->
 	<insert id="driveInsert" parameterType="com.best.bus.DriveDTO">
 		INSERT INTO drive (dispatch_idx, status)
 		VALUES (#{dispatch_idx}, #{status})
 	</insert>
-
+	<!-- 배차현황 리스트 -->
 	<select id="dispatchList" parameterType="int" resultType="map">
 		SELECT
-		d.dispatch_idx, -- dispatch 테이블의 기본 키
-		b.license_plate, -- bus 테이블에서 차량 번호
-		e.name AS driver_name, -- employee 테이블에서 운전기사 이름
-		s.shift, -- shift 테이블에서 운행 시간
-		s.shift_idx, -- shift 테이블에서 운행 시간
-		d.date, -- dispatch 테이블의 운행 날짜
-		b.route_name, -- bus 테이블에서 노선 이름
-		e.emp_idx, -- employee 테이블의 직원 번호
-		d.driver_idx, -- dispatch 테이블의 운전기사 ID
-		dv.status -- drive 테이블의 상태 (추가)
+		d.dispatch_idx, 
+		b.license_plate, 
+		e.name AS driver_name,
+		s.shift,
+		s.shift_idx, 
+		d.date, 
+		b.route_name, 
+		e.emp_idx, 
+		d.driver_idx,
+		dv.status 
 		FROM dispatch d
-		JOIN bus b ON d.bus_idx = b.bus_idx -- dispatch 테이블과 bus 테이블 조인
-		JOIN driver dr ON d.driver_idx = dr.driver_idx -- dispatch 테이블과 driver 테이블
-		조인
-		JOIN employee e ON dr.emp_idx = e.emp_idx -- driver 테이블과 employee 테이블 조인
-		JOIN shift s ON d.shift_idx = s.shift_idx -- dispatch 테이블과 shift 테이블
-		조인
-		LEFT JOIN drive dv ON d.dispatch_idx = dv.dispatch_idx -- dispatch 테이블과
-		drive 테이블 조인
+		JOIN bus b ON d.bus_idx = b.bus_idx 
+		JOIN driver dr ON d.driver_idx = dr.driver_idx 
+		JOIN employee e ON dr.emp_idx = e.emp_idx
+		JOIN shift s ON d.shift_idx = s.shift_idx -- dispatch
+		LEFT JOIN drive dv ON d.dispatch_idx = dv.dispatch_idx 
 		<if test="date != null and date != ''">
 			WHERE d.date = #{date} -- 날짜 조건 추가
 		</if>
 		ORDER BY d.dispatch_idx
 	</select>
 
-
+	<!-- 사원번호로 기사번호 가져오기 -->
 	<select id="findDriverIdxByEmpIdx" parameterType="int"
 		resultType="int">
 		SELECT driver_idx
 		FROM driver
 		WHERE emp_idx = #{empIdx}
 	</select>
+	<!-- 날짜별로 배차현황 가져오기 -->
 	<select id="findDispatchIdxByDriverIdxAndDate"
 		parameterType="map" resultType="map">
 		SELECT dispatch_idx, bus_idx
@@ -223,17 +238,20 @@
 		AND date = #{date}
 		LIMIT 1
 	</select>
+	<!-- 운행 시작 변경 -->
 	<update id="updateDriveStatus">
 		UPDATE drive
 		SET status = #{status},
 		start_time = #{startTime}
 		WHERE dispatch_idx = #{dispatchIdx}
 	</update>
+	<!-- 버스 운행상태 변경 -->
 	<update id="updateBusDriveStatus">
 		UPDATE bus
 		SET drive_status = #{driveStatus}
 		WHERE bus_idx = #{busIdx}
 	</update>
+	<!-- 운행 종료 시간 -->
 	<update id="updateDriveEndStatus">
 		UPDATE drive
 		SET status = #{status},
@@ -241,17 +259,19 @@
 		WHERE dispatch_idx = #{dispatchIdx}
 	</update>
 
-
+	<!-- 사원번호로 기사번호 가져오기 -->
 	<select id="getDriverIdx" parameterType="int" resultType="int">
 		SELECT driver_idx
 		FROM driver
 		WHERE emp_idx = #{empIdx}
 	</select>
+	<!-- 기사정보로 배차현황 가져오기 -->
 	<select id="getDispatchIdx" parameterType="map" resultType="int">
 		SELECT dispatch_idx
 		FROM dispatch
 		WHERE driver_idx = #{driverIdx} AND date = #{date}
 	</select>
+	<!-- 배차 등록 -->
 	<insert id="insertDrive" parameterType="map">
 		INSERT INTO drive (dispatch_idx, start_time, status)
 		VALUES (#{dispatchIdx}, #{startTime}, #{status})
