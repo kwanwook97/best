@@ -19,17 +19,41 @@ public class ChatService {
 	
 	/* 내가 참여중인 메신져 리스트 */
 	public List<Map<String, Object>> chatList(Integer emp_idx) {
+	    // 메신저 리스트 가져오기
 	    List<Map<String, Object>> chatList = chatDAO.chatList(emp_idx);
 
+	    // 사원 전체 목록 가져오기
+	    List<EmployeeDTO> employeeList = chatDAO.getEmployeeList();
+
+	    // 사원 ID와 사진 경로 매핑
+	    Map<String, String> employeePhotoMap = new HashMap<>(); // 이름 기준으로 매핑
+	    for (EmployeeDTO employee : employeeList) {
+	        employeePhotoMap.put(employee.getName(), employee.getPhoto());
+	    }
+
+	    // 각 메신저 리스트의 참여자 이름 및 사진 추가
 	    for (Map<String, Object> chat : chatList) {
-	        // 참여자 이름 가져오기
+	        // 참여자 이름 가져오기 (이미 나를 제외한 참여자 정보)
 	        List<String> participantNames = chatDAO.getParticipantNames(
 	            (Integer) chat.get("chat_idx"), emp_idx
 	        );
 	        chat.put("participants", String.join(", ", participantNames)); // 참여자 이름 추가
+
+	        // 첫 번째 참여자의 이름을 기준으로 사진 매핑
+	        String photo = null;
+	        if (!participantNames.isEmpty()) {
+	            String firstParticipantName = participantNames.get(0); // 첫 번째 참여자 이름
+	            photo = employeePhotoMap.get(firstParticipantName); // 이름으로 사진 경로 매핑
+	        }
+
+	        // 사진을 chat에 추가
+	        chat.put("photo", photo);
 	    }
+
 	    return chatList;
 	}
+
+
 	
 	public List<EmployeeDTO> getEmployeeList() {
         return chatDAO.getEmployeeList();
@@ -80,7 +104,7 @@ public class ChatService {
 	/* 대화방 초대,생성 & 시스템 메시지 */
 	@Transactional
 	public void addPartyWithInviteMessage(int chat_idx, int emp_idx, String inviterName, String invitedEmpName) {
-	    // 중복 여부 확인
+	    // 중복 여부 확인 (참여자 추가는 중복 확인 유지)
 	    int partyExists = chatDAO.checkPartyExists(chat_idx, emp_idx);
 	    if (partyExists == 0) {
 	        // 참여자 추가
@@ -92,20 +116,20 @@ public class ChatService {
 	        System.out.println("이미 참여자로 등록된 사용자입니다: chat_idx=" + chat_idx + ", emp_idx=" + emp_idx);
 	    }
 
-	    // 초대 메시지 저장 전에 중복 여부 확인
+	    // 초대 메시지 생성
 	    String inviteMessage = inviterName + "님이 " + invitedEmpName + "님을 초대하셨습니다.";
-	    int messageExists = chatDAO.checkEnterMessageExists(chat_idx, inviteMessage);
-	    if (messageExists == 0) {
-	        MessageDTO messageDTO = new MessageDTO();
-	        messageDTO.setChat_idx(chat_idx);
-	        messageDTO.setContent(inviteMessage);
-	        messageDTO.setMessage_type("system");
-	        chatDAO.insertEnterMessage(messageDTO);
 
-	        // WebSocket 브로드캐스트
-	        broadcastEnterMessage(chat_idx, inviteMessage);
-	    }
+	    // 시스템 메시지 저장 (중복 확인 제거)
+	    MessageDTO messageDTO = new MessageDTO();
+	    messageDTO.setChat_idx(chat_idx);
+	    messageDTO.setContent(inviteMessage);
+	    messageDTO.setMessage_type("system");
+	    chatDAO.insertEnterMessage(messageDTO);
+
+	    // WebSocket 브로드캐스트
+	    broadcastEnterMessage(chat_idx, inviteMessage);
 	}
+
 	
 	/* 매일 자정 날짜 시스템 메시지 저장 & 뿌려주기 */
 	@Transactional
@@ -138,9 +162,43 @@ public class ChatService {
 	}
 	
 	
-	/* 메시지 저장 */
+	/* 메시지 저장 & 날짜 확인 */
 	public void message(MessageDTO message) {
-		chatDAO.message(message);
+	    // 오늘 날짜 포맷
+	    String today = new SimpleDateFormat("yyyy년 MM월 dd일").format(new Date());
+
+	    // 오늘 날짜에 메시지가 있는지 확인
+	    int messageExists = chatDAO.checkMessageExistsForToday(message.getChat_idx(), today);
+	    
+	    // 메시지가 없으면 시스템 메시지로 날짜 추가
+	    if (messageExists == 0) {
+	        MessageDTO systemMessage = new MessageDTO();
+	        systemMessage.setChat_idx(message.getChat_idx());
+	        systemMessage.setContent(today); // 날짜를 시스템 메시지로 설정
+	        systemMessage.setMessage_type("system");
+	        chatDAO.insertEnterMessage(systemMessage); // 시스템 메시지 DB에 저장
+
+	        // WebSocket으로 날짜 시스템 메시지 전송
+	        broadcastEnterMessage(message.getChat_idx(), today);
+	    }
+
+	    // 메시지 저장
+	    chatDAO.message(message);
+	}
+	
+	 /* 마지막 읽은 메시지 업데이트 */
+    @Transactional
+    public void updateLastMsg(int chatIdx, int empIdx, int lastMsgIdx) {
+        chatDAO.updateLastMsg(chatIdx, empIdx, lastMsgIdx);
+    }
+
+    /* 읽지 않은 메시지 수 계산 */
+    public int getUnreadMessageCount(int chatIdx, int empIdx) {
+        return chatDAO.getUnreadMessageCount(chatIdx, empIdx);
+    }
+    
+    public int getUnreadCountForMessage(int chat_idx, int msg_idx) {
+        return chatDAO.getUnreadCountForMessage(chat_idx, msg_idx);
     }
 	
 	/* 메시지 가져오기 */
@@ -157,6 +215,24 @@ public class ChatService {
 	public List<Map<String, Object>> getChatParticipants(int chat_idx) {
         return chatDAO.getChatParticipants(chat_idx);
     }
+	
+	/* 방 나가기 */
+	public boolean leaveChat(int chat_idx, int emp_idx) {
+	    // DAO를 호출하여 참여자 테이블에서 삭제
+	    int result = chatDAO.removeParticipant(chat_idx, emp_idx);
+	    return result > 0; // 성공 여부 반환
+	}
+	/* 방 나간후 시스템 메시지 뿌려주기 */
+	public void saveAndBroadcastSystemMessage(int chat_idx, String content) {
+	    // 시스템 메시지 저장
+	    MessageDTO messageDTO = new MessageDTO();
+	    messageDTO.setChat_idx(chat_idx);
+	    messageDTO.setContent(content);
+	    messageDTO.setMessage_type("system");
+	    chatDAO.insertEnterMessage(messageDTO); // 기존 insertEnterMessage 메서드 사용
 
+	    // WebSocket으로 메시지 전송
+	    broadcastEnterMessage(chat_idx, content);
+	}
 	
 }

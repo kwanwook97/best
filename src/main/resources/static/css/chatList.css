@@ -239,7 +239,6 @@
 	width: 30px; /* 이미지 크기 */
 	height: 30px;
 	border-radius: 5px; /* 이미지 둥글게 */
-	border: 2px solid #30005A; /* 이미지 외곽선 */
 	margin-right: 10px; /* 텍스트와의 간격 */
 }
 

@@ -9,6 +9,15 @@ public class MessageDTO {
 	private String content; // 메시지 내용
 	private Date time; // 메시지 시간 (TIMESTAMP)
 	private String message_type; // 메시지 유형 추가
+	private int last_msg;
+
+	public int getLast_msg() {
+		return last_msg;
+	}
+
+	public void setLast_msg(int last_msg) {
+		this.last_msg = last_msg;
+	}
 
 	public String getMessage_type() {
         return message_type;

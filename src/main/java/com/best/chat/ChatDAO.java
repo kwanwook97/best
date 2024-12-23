@@ -38,6 +38,18 @@ public interface ChatDAO {
 
 	List<Map<String, Object>> getChatParticipants(int chat_idx);
 
+	int removeParticipant(int chat_idx, int emp_idx);
+
+	int checkMessageExistsForToday(int chat_idx, String today);
+
+	void updateLastMsg(int chatIdx, int empIdx, int lastMsgIdx);
+
+	Integer getLastMsg(int chatIdx, int empIdx);
+
+	int getUnreadMessageCount(int chatIdx, int empIdx);
+
+	int getUnreadCountForMessage(int chat_idx, int msg_idx);
+
 
 
 }

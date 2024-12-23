@@ -150,7 +150,7 @@ $(document).ready(function () {
                     var chatItem =
                         '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="location.href=\'chat.go?chat_idx=' + chat.chat_idx + '\'">' +
                         '<div class="chat-avatar">' +
-                        '<img src="" alt="Avatar">' +
+                        '<img src="/photo/' + chat.photo + '" alt="프로필 사진" class="custom-image">' +
                         '</div>' +
                         '<div class="chat-details">' +
                         '<div class="chat-header">' +
@@ -174,7 +174,7 @@ $(document).ready(function () {
                 response.employeeList.forEach(function (employee) {
                     var memberItem =
                         '<div class="image-label-wrapper member-item" data-emp-idx="' + employee.emp_idx + '">' +
-                        '<img src="' + (employee.photo || "resources/images/default-user.png") + '" alt="이미지" class="custom-image">' +
+                        '<img src="/photo/' + employee.photo + '" alt="프로필 사진" class="custom-image">' +
                         '<span class="custom-label">' + employee.name + '</span>' +
                         '</div>';
                     memberListWrapper.append(memberItem);

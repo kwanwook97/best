@@ -80,7 +80,7 @@
 <div id="memberModal" class="modal" style="display: none;">
   <div class="modal-content">
     <span class="close-modal" onclick="closeModal();">&times;</span>
-    <h3>회원 전체 리스트</h3>
+    <h3>메신져 초대</h3>
     <div class="member-list-container">
       <ul id="memberList">
         <!-- 회원 리스트가 여기에 추가됩니다 -->
@@ -109,33 +109,77 @@ $(document).ready(function() {
         var messagesContainer = $("#messages");
         var messageElement = "";
 
+        // 이전 메시지의 시간을 저장할 변수
+        var lastMessageTime = messagesContainer.data("lastMessageTime");
+
+        // 현재 메시지의 시간을 포맷팅
+        var currentMessageTime = formatTimeToAmPm(messageData.time);
+
+        // 시간 표시 여부를 결정
+        var shouldShowTime = lastMessageTime !== currentMessageTime;
+
         if (messageData.message_type === "system") {
+            // 시스템 메시지
             messageElement = '<div class="system-message">' + messageData.content + '</div>';
         } else if (isMyMessage) {
+            // 내가 보낸 메시지: 시간이 먼저 오게 표시
             messageElement =
                 '<div class="send-messages">' +
-                    '<div class="sent-time">' + formatTimeToAmPm(messageData.time) + '</div>' +
-                    '<div class="chat-bubble send-message">' + messageData.content + '</div>' +
+                '<input type="hidden" class="msg-idx" value="' + messageData.msg_idx + '">' +
+                '<div class="number"><span>2</span></div>' + // 기존 number div
+                (shouldShowTime ? '<div class="sent-time">' + currentMessageTime + '</div>' : '') +
+                '<div class="chat-bubble send-message">' + messageData.content + '</div>' +
                 '</div>';
         } else {
             messageElement =
                 '<div class="chat-message">' +
-                    '<div class="chat-profile">' +
-                        '<div class="profile-image"></div>' +
-                    '</div>' +
-                    '<div class="chat-bubble-container">' +
-                        '<div class="profile-name"><span>' + messageData.name + '</span></div>' +
-                        '<div class="content-div">' +
-                            '<div class="chat-bubble">' + messageData.content + '</div>' +
-                            '<div class="message-time">' + formatTimeToAmPm(messageData.time) + '</div>' +
-                        '</div>' +
-                    '</div>' +
+                '<input type="hidden" class="msg-idx" value="' + messageData.msg_idx + '">' +
+                '<div class="chat-profile">' +
+                '<div class="profile-image">' +
+                '<img src="/photo/' + messageData.photo + '" alt="프로필 사진" class="custom-image">' +
+                '</div>' +
+                '</div>' +
+                '<div class="chat-bubble-container">' +
+                '<div class="profile-name">' +
+                '<span>' + messageData.name + '</span>' +
+                '</div>' +
+                '<div class="content-div">' +
+                '<div class="chat-bubble">' + messageData.content + '</div>' +
+                '<div class="number"><span>2</span></div>' + // 기존 number div
+                (shouldShowTime ? '<div class="message-time">' + currentMessageTime + '</div>' : '') +
+                '</div>' +
+                '</div>' +
                 '</div>';
         }
 
+        // 메시지를 UI에 추가
         messagesContainer.append(messageElement);
+
+        // 마지막 메시지의 시간을 업데이트
+        if (!shouldShowTime) {
+            messagesContainer.find(".sent-time, .message-time").last().remove();
+            if (isMyMessage) {
+                messagesContainer.find(".send-message").last().before('<div class="sent-time">' + currentMessageTime + '</div>');
+            } else {
+                messagesContainer.find(".chat-bubble").last().after('<div class="message-time">' + currentMessageTime + '</div>');
+            }
+        } else {
+            messagesContainer.data("lastMessageTime", currentMessageTime);
+        }
+
+        // 메시지 컨테이너 스크롤을 아래로 이동
         messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
+
+        // 읽지 않은 사람 숫자를 업데이트
+        updateMessageUnreadCount(messageData.chat_idx, messageData.msg_idx);
     }
+
+
+
+
+
+
+
 
     if (chatIdx) {
         console.log("선택된 chat_idx:", chatIdx);
@@ -154,8 +198,12 @@ $(document).ready(function() {
                 console.log("수신 메시지 데이터:", messageData);
 
                 if (messageData && messageData.content) {
-                    var isMyMessage = messageData.msg_send_idx === loginId; // 정확히 비교
-                    addMessageToUI(messageData, isMyMessage); // UI에 메시지 렌더링
+                    // 메시지를 메시지 창에 추가
+                    var isMyMessage = messageData.msg_send_idx === loginId; 
+                    addMessageToUI(messageData, isMyMessage);
+
+                    // 대화방 리스트의 최신 메시지와 시간 갱신
+                    updateChatListWithLatestMessage(messageData);
                 } else {
                     console.error("메시지 데이터에 content 필드가 없습니다:", messageData);
                 }
@@ -171,6 +219,7 @@ $(document).ready(function() {
         socket.onerror = function(error) {
             console.error("WebSocket 에러 발생:", error);
         };
+
         
         $.ajax({
             type: "GET",
@@ -222,11 +271,11 @@ $(document).ready(function() {
                         if (chat.chat_idx.toString() === chatIdx) {
                             $(".naviPath .purple").text(chatTitle);
                         }
-
+							
                         var chatItem =
                             '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="location.href=\'chat.go?chat_idx=' + chat.chat_idx + '\'">' +
                             '<div class="chat-avatar">' +
-                            '<img src="" alt="Avatar">' +
+                            '<img src="/photo/' + chat.photo + '" alt="프로필 사진" class="custom-image">' +
                             '</div>' +
                             '<div class="chat-details">' +
                             '<div class="chat-header">' +
@@ -250,6 +299,33 @@ $(document).ready(function() {
             }
         });
         
+        
+        function updateChatListWithLatestMessage(messageData) {
+            var chatIdx = messageData.chat_idx;
+            var latestMessage = messageData.content;
+            var sidebar = $(".sidebar");
+
+            // 대화방 리스트에서 해당 chat_idx를 가진 항목 찾기
+            var chatItem = sidebar.find(".chat-item[data-chat-idx='" + chatIdx + "']");
+            if (chatItem.length > 0) {
+                // 최신 메시지 갱신
+                chatItem.find(".chat-preview").text(latestMessage);
+
+                // 최신 메시지 시간 갱신
+                var formattedTime = formatTimeToAmPm(messageData.time);
+                chatItem.find(".chat-time").text(formattedTime);
+
+                // 대화방을 맨 위로 이동 (선택 사항)
+                chatItem.prependTo(sidebar);
+            } else {
+                console.warn("chat_idx "+chatIdx+"에 해당하는 대화방을 찾을 수 없습니다.");
+            }
+        }
+
+        
+        
+        
+        
         if (chatIdx) {
             // 참여자 리스트 가져오기
             $.ajax({
@@ -264,7 +340,7 @@ $(document).ready(function() {
                         participants.forEach(function(participant) {
                             var participantElement =
                                 '<div class="image-label-wrapper">' +
-                                '<img src="' + (participant.photo || "https://via.placeholder.com/40") + '" alt="이미지" class="custom-image">' +
+                                '<img src="/photo/' + participant.photo + '" alt="프로필 사진" class="custom-image">' +
                                 '<span class="custom-label">' + participant.name + '</span>' +
                                 '</div>';
                             memberListContainer.append(participantElement);
@@ -295,6 +371,9 @@ $(document).ready(function() {
                     } else {
                         // 일반 메시지 렌더링
                         addMessageToUI(message, message.msg_send_idx === loginId);
+
+                        // 읽지 않은 사람 수 업데이트
+                        updateMessageUnreadCount(chatIdx, message.msg_idx); // 새로 추가
                     }
                 });
 
@@ -305,6 +384,7 @@ $(document).ready(function() {
                 console.error("메시지 로드 중 오류 발생");
             }
         });
+
 
         var sendButton = $("#sendButton");
         var messageInput = $("#messageInput");
@@ -354,7 +434,104 @@ $(document).ready(function() {
     } else {
         console.error("chat_idx가 URL에 없습니다.");
     }
+    
+    function markMessageAsRead(chatIdx, msgIdx) {
+        $.ajax({
+            type: "POST",
+            url: "updateLastMsg.ajax", // URL과 컨트롤러 메서드 일치
+            contentType: "application/json",
+            data: JSON.stringify({
+                chat_idx: chatIdx,
+                msg_idx: msgIdx // 컨트롤러와 필드 이름 일치
+            }),
+            success: function(response) {
+                console.log("Successfully updated last message:", response);
+            },
+            error: function(xhr, status, error) {
+                console.error("Failed to update last message:", error);
+            }
+        });
+    }
+
+    function updateMessageUnreadCount(chatIdx, msgIdx) {
+        $.ajax({
+            type: "GET",
+            url: "messageUnreadCount.ajax",
+            data: { chat_idx: chatIdx, msg_idx: msgIdx },
+            success: function(unreadCount) {
+                // number div 안의 span에 읽지 않은 사람 수를 업데이트
+                $(".send-messages .msg-idx[value='" + msgIdx + "']")
+                    .siblings(".number")
+                    .find("span")
+                    .text(unreadCount); // 읽지 않은 사람 수로 변경
+            },
+            error: function() {
+                console.error("읽지 않은 사람 수를 가져오는 데 실패했습니다.");
+            }
+        });
+    }
+
+
+
+    
+    
+    
+    function updateUnreadCount() {
+        $.ajax({
+            type: "GET",
+            url: "unreadCount.ajax",
+            data: { chat_idx: chatIdx },
+            success: function (unreadCount) {
+                $(".number").text(unreadCount); // 읽지 않은 메시지 수 표시
+            },
+            error: function () {
+                console.error("읽지 않은 메시지 수를 가져오는 데 실패했습니다.");
+            }
+        });
+    }
+
+    $("#messages").on("scroll", function () {
+        const isScrolledToBottom = $(this)[0].scrollHeight - $(this).scrollTop() === $(this).outerHeight();
+        if (isScrolledToBottom) {
+            const lastMsgIdx = $("#messages .msg-idx:last").val(); // 마지막 메시지의 hidden input에서 msg_idx 가져오기
+            markMessageAsRead(chatIdx, lastMsgIdx); // 마지막 메시지 ID로 호출
+        }
+    });
+
+    
+    
+    
+    $(".fa-door-open").on("click", function () {
+        var chatIdx = new URLSearchParams(window.location.search).get("chat_idx");
+
+        if (!chatIdx) {
+            alert("방 정보를 찾을 수 없습니다.");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "leaveChat.ajax",
+            data: { chat_idx: chatIdx },
+            success: function (response) {
+                if (response.success) {
+                    alert("방에서 나갔습니다.");
+                    location.href = "chatList.go"; // 방 나가기 후 이동할 페이지
+                } else {
+                    alert(response.message || "방 나가기에 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("방 나가기 요청 중 오류가 발생했습니다.");
+            },
+        });
+    });
+    
+    
+    
 });
+
+
 
 $(document).ready(function () {
     $(".fa-user-plus").on("click", function () {
@@ -410,9 +587,10 @@ function loadMemberList() {
                 members.forEach(function (member) {
                     var memberItem = 
                         '<li>' +
-                            '<img src="' + (member.photo || 'https://via.placeholder.com/40') + '" alt="프로필 사진" class="custom-image">' +
+                        	'<div onclick="addMemberToChat(' + member.emp_idx + ');">' +
+                            '<img src="/photo/' + member.photo + '" alt="프로필 사진" class="custom-image">' +
                             '<span>' + member.name + '</span>' +
-                            '<button onclick="addMemberToChat(' + member.emp_idx + ');">추가</button>' +
+                            '</div>' +
                         '</li>';
                     memberList.append(memberItem);
                 });

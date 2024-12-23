@@ -110,6 +110,49 @@ public class ChatController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving message");
 	        }
 	 }
+	 
+	 
+
+
+	 /* 읽지 않은 메시지 수 */
+	 @GetMapping("/unreadCount.ajax")
+	 @ResponseBody
+	 public ResponseEntity<?> unreadCount(@RequestParam int chat_idx, HttpSession session) {
+	     int emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+	     int unreadCount = chatService.getUnreadMessageCount(chat_idx, emp_idx);
+	     return ResponseEntity.ok(unreadCount);
+	 }
+	 
+	 @PostMapping("/updateLastMsg.ajax")
+	 @ResponseBody
+	 public ResponseEntity<?> updateLastMsg(@RequestBody Map<String, Object> payload, HttpSession session) {
+	     try {
+	         int chatIdx = Integer.parseInt(payload.get("chat_idx").toString());
+	         int lastMsgIdx = Integer.parseInt(payload.get("msg_idx").toString());
+	         int empIdx = Integer.parseInt((String) session.getAttribute("loginId")); // 현재 사용자 ID 가져오기
+
+	         chatService.updateLastMsg(chatIdx, empIdx, lastMsgIdx); // Service 호출
+
+	         return ResponseEntity.ok("Last message updated successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating last message");
+	     }
+	 }
+	 
+	 @GetMapping("/messageUnreadCount.ajax")
+	 @ResponseBody
+	 public ResponseEntity<?> getMessageUnreadCount(@RequestParam int chat_idx, @RequestParam int msg_idx) {
+	     try {
+	         int unreadCount = chatService.getUnreadCountForMessage(chat_idx, msg_idx);
+	         return ResponseEntity.ok(unreadCount);
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류 발생");
+	     }
+	 }
+
+
 	
 	
 	/* 메신져 리스트 이동*/
@@ -162,6 +205,29 @@ public class ChatController {
 	        result.put("success", false);
 	    }
 	    return result;
+	}
+	
+	/* 방 나가기 */
+	@PostMapping("/leaveChat.ajax")
+	@ResponseBody
+	public Map<String, Object> leaveChat(HttpSession session, @RequestParam int chat_idx) {
+	    Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+	    String loginName = (String) session.getAttribute("loginName"); // 로그인한 사용자 이름
+
+	    boolean success = chatService.leaveChat(chat_idx, emp_idx);
+
+	    // 시스템 메시지 저장 및 WebSocket 전송
+	    if (success) {
+	        String systemMessage = loginName + " 님이 나갔습니다.";
+	        chatService.saveAndBroadcastSystemMessage(chat_idx, systemMessage);
+	    }
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("success", success);
+	    if (!success) {
+	        response.put("message", "방 나가기에 실패했습니다.");
+	    }
+	    return response;
 	}
 
 }
