@@ -172,10 +172,10 @@ public class EmployeeController {
 	// 조직도 정보 가져오기
 	@PostMapping(value = "/orgChart.ajax")
 	@ResponseBody
-	public List<Map<String, Object>> orgList(){
+	public List<Map<String, Object>> orgList(@RequestParam Map<String, String> parmas){
 		
 		// 조직도정보 DTO에 담기.
-		return empService.orgList(); 
+		return empService.orgList(parmas); 
 	}
 	
 	

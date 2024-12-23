@@ -10,8 +10,8 @@
 <body>
 
     <!-- 검색 입력창 -->
-    <div class="search-input-container">
-        <input type="text" class="search-input" placeholder="검색어를 입력하세요" />
+    <div class="searchArea-container">
+        <input type="text" class="searchArea" placeholder="검색어를 입력하세요" />
         <i class="bi bi-search search-icon"></i>
     </div>
 	

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.web.multipart.MultipartFile;
 
 @Mapper
 public interface EmployeeDAO {
@@ -46,20 +45,6 @@ public interface EmployeeDAO {
 	int driverUpsert(Map<String, String> params);
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	// 전자결재 기안자 정보
 	Map<String, Object> getEmpDetails(int emp_idx);
 	
@@ -73,7 +58,7 @@ public interface EmployeeDAO {
 	int parentUpdate(Map<String, Object> parentCondition);
 	
 	// 조직도 정보
-	List<Map<String, Object>> orgList();
+	List<Map<String, Object>> orgList(Map<String, String> parmas);
 	
 
 }

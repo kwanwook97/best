@@ -356,9 +356,9 @@ public class EmployeeService {
 	}
 
 	// 조직도정보 가져오기
-	public List<Map<String, Object>> orgList() {
+	public List<Map<String, Object>> orgList(Map<String, String> parmas) {
 		
-		List<Map<String, Object>> orgList = empDAO.orgList();
+		List<Map<String, Object>> orgList = empDAO.orgList(parmas);
 		
 		return orgList;
 	}
