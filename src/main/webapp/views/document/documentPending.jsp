@@ -505,7 +505,7 @@ $('#status').change(function() {
 function filterRead(data, readStatus) {
     var result = [];
     for (var i = 0; i < data.length; i++) {
-        if (data[i].doc_read == true) {
+        if (data[i].doc_read == readStatus) {
             result.push(data[i]);
         }
     }
