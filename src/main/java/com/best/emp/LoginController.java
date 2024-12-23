@@ -19,9 +19,11 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login.do")
 	public String memberLogin(Model model, HttpSession session, String id, String pw) {
-		String page = "";
-		if(loginService.login(id, pw)) {
+		String page="";
+		EmployeeDTO employee = loginService.login(id, pw);
+		if(employee != null) {
 			session.setAttribute("loginId", id);
+			session.setAttribute("loginName", employee.getName());
 			page = "redirect:/main.go";
 		}else {
 			page = "redirect:/login.go";

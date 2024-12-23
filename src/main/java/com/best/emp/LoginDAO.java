@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface LoginDAO {
 
-	boolean login(String id, String pw);
+	EmployeeDTO login(String id, String pw);
 
 	void updatePassword(Map<String, String> params);
 
