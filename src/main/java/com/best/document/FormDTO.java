@@ -4,6 +4,8 @@ public class FormDTO {
 	private int form_idx; // 양식 ID (Primary Key, AUTO_INCREMENT)
 	private String form_subject; // 양식 제목
 	private String form_content; // 양식 내용
+	
+	
 	public int getForm_idx() {
 		return form_idx;
 	}

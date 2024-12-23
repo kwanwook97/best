@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -62,10 +63,10 @@ public class DocumentController {
 	}
 	
 	
-	// 전자결재 리스트 ajax
+	// 전자결재 리스트
 	@GetMapping(value="/documentList.ajax")
 	@ResponseBody
-	public Map<String, Object> inProgressList(String text, String page, String cnt) {
+	public Map<String, Object> documentList(String text, String page, String cnt) {
 	    int page_ = Integer.parseInt(page);
 	    int cnt_ = Integer.parseInt(cnt);
 	    String status = "";
@@ -91,8 +92,58 @@ public class DocumentController {
 	        	return documentService.draftList(page_, cnt_, status);
 	        default:
 	            logger.warn("알 수 없는 상태", text);
-	            return new HashMap<String, Object>(); // 기본값 반환
+	            return new HashMap<String, Object>();
 	    }
+	}
+	
+	
+	// 전자결재 리스트 검색
+	@PostMapping(value="/searchList.ajax")
+	@ResponseBody
+    public Map<String, Object> searchForm(String page, String cnt, String text, String listType, String searchType, String query) {
+	    int page_ = Integer.parseInt(page);
+	    int cnt_ = Integer.parseInt(cnt);
+		String status = "";
+		switch (text) {
+        case "대기":
+            status = "상신";
+            return documentService.searchPending(page_, cnt_, status, listType, searchType, query);
+		case "진행중":
+            status = "진행중";
+            return documentService.searchInProgress(page_, cnt_, status, listType, searchType, query);
+        case "완료":
+        	status = "완료";
+        	return documentService.searchApproved(page_, cnt_, status, listType, searchType, query);
+        case "반려":
+        	status = "반려";
+        	return documentService.searchReject(page_, cnt_, status, listType, searchType, query);
+        case "참조":
+        	status = "참조";
+        	return documentService.searchReference(page_, cnt_, status, listType, searchType, query);
+        case "임시저장":
+        	status = "임시저장";
+        	return documentService.searchDraft(page_, cnt_, status, listType, searchType, query);
+        default:
+            logger.warn("알 수 없는 상태", text);
+            return new HashMap<String, Object>();
+		}
+	}    
+	
+	// 읽음, 읽지않음 처리
+	@PostMapping(value="/updateRead.ajax")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> updateRead(Integer doc_idx, Integer doc_read) {
+		Map<String, Object> response = new HashMap<>();
+		
+		boolean success = documentService.updateRead(doc_idx, doc_read);
+	
+        if (success) {
+            response.put("success", 1);
+        } else {
+            response.put("success", 0);
+            response.put("message", "문서 상태 업데이트 실패");
+        }
+		return ResponseEntity.ok(response);
 	}
 	
 	
@@ -121,11 +172,17 @@ public class DocumentController {
 	@GetMapping(value="/getForm.ajax")
 	@ResponseBody
 	public String getForm(String form_subject) {
-	    // 양식 내용 가져오기
 	    String responseContent = documentService.getForm(form_subject);
 	    
 	    return responseContent;
 	}
+	// 전재결재 양식 검색
+	@PostMapping(value="/searchForm.ajax")
+	@ResponseBody
+    public List<Map<String, String>> searchForm(String query) {
+        return documentService.searchForm(query);
+    }
+	
 	
 	// 결재 라인 추가하기
 	@GetMapping(value = "/orgChartGet.ajax")

@@ -284,6 +284,7 @@
 var showPage = 1;
 var text = "대기";
 pageCall(showPage);
+var receivedData = []; 
 
 function pageCall(page){
     console.log('pageCall');
@@ -299,7 +300,7 @@ function pageCall(page){
         success: function(data) {
             console.log(data);
             if(data.receivedList.length>0){
-            	// 받은 문서
+            	receivedData = data.receivedList;
                 received(data.receivedList);
 	            // 받은 문서 페이징
 	            $('#receivedPage').twbsPagination({
@@ -366,10 +367,10 @@ function received(document) {
 		content += '<td>' + docDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		content += '<td>' + 
-	        (item.doc_read == false
-	         ? '<i class="fas fa-envelope" title="읽지 않음"></i>'
-	         : '<i class="fas fa-envelope-open-text" title="읽음"></i>') +
-        '</td>';
+		    (item.doc_read == false
+		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+		'</td>';
 		
 		content += '</tr>';
 	}
@@ -439,7 +440,77 @@ function sentPageCall(page) {
     });
 }
 
+$(document).on('click', '.update', function() {
+    var doc_idx = $(this).data('doc-idx'); // 클릭된 요소의 data-doc-idx 값을 가져옴
+    var icon = $(this).find('i'); // 클릭된 요소의 아이콘을 찾음
+    var doc_read = icon.hasClass('fa-envelope') ? 1 : 0; // 아이콘 상태에 따라 doc_read 값을 설정
 
+    $.ajax({
+        url: 'updateRead.ajax',
+        method: 'POST',
+        data: {
+            doc_idx: doc_idx,
+            doc_read: doc_read
+        },
+        success: function(response) {
+            if (response.success) {
+                // 서버 응답 후, 아이콘을 즉시 업데이트
+                if (doc_read == 1) {
+                    icon.removeClass('fa-envelope').addClass('fa-envelope-open-text').attr('title', '읽음');
+                } else {
+                    icon.removeClass('fa-envelope-open-text').addClass('fa-envelope').attr('title', '읽지 않음');
+                }
+            } else {
+                alert('상태 업데이트 실패');
+            }
+        },
+        error: function(error) {
+            console.error('에러:', error);
+            alert('에러 발생');
+        }
+    });
+});
+
+// 읽음, 읽지 않음 옵션 선택
+$('#status').change(function() {
+    var status = $(this).val();  // 읽음/안읽음 상태
+    var filteredData = [];
+
+    // 상태에 맞춰서 데이터 필터링
+    if (status == 'read') {
+        filteredData = filterRead(receivedData, 1);
+    } else if (status == 'unread') {
+        filteredData = filterRead(receivedData, 0);
+    } else {
+        filteredData = receivedData;  // 전체 보기
+    }
+
+    // 필터링된 데이터를 화면에 갱신
+    received(filteredData);
+
+    // 필터링된 데이터에 맞는 전체 페이지 수 갱신
+    var totalPages = Math.ceil(filteredData.length / 6);  // 6개씩 페이지 나누기
+    $('#receivedPage').twbsPagination('destroy');  // 기존 페이지네이션 초기화
+    $('#receivedPage').twbsPagination({
+        startPage: 1,
+        totalPages: totalPages,  // 필터링된 데이터에 맞는 페이지 수
+        visiblePages: 5,
+        onPageClick: function(evt, page) {
+            console.log("page", page);
+            receivedPageCall(page);
+        }
+    });
+});
+//필터링 함수 (읽음 상태에 맞는 필터링)
+function filterRead(data, readStatus) {
+    var result = [];
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].doc_read == true) {
+            result.push(data[i]);
+        }
+    }
+    return result;
+}
 
 </script>
 </html>

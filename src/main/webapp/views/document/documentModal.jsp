@@ -43,9 +43,24 @@ input, textarea, #approvalModal{
 	color: var(--accent-color);
 	margin-left: 5px;
 }
-
+.searchSelect, 
+.listSelect{
+	border: 1px solid var(--primary-color);
+	color: var(--primary-color);
+	font-weight: bold;
+	border-radius: 10px;
+}
+.searchSelect option, 
+.listSelect option{
+	width: 20px;
+	color: var(--primary-color);
+	background-color: white;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+}
 .searchbox {
-	width: 25%;
+	width: 40%;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -68,7 +83,7 @@ input, textarea, #approvalModal{
 	top: 50%;
 	transform: translateY(-50%);
 	font-size: 18px;
-	pointer-events: none;
+	cursor: pointer;
 	color: var(--accent-color);
 }
 
@@ -187,28 +202,28 @@ input[name="doc_subject"]{
     cursor: pointer;
     font-size: 14px; /* 글자 크기 줄이기 */
 }
-	/* 모달 종류 */
-	.one div.modal-content{
-        left: 6%;
-	    transform: scale(0.9) !important;
-	}
-	.two div.modal-content{
-	    left: 6%;
-	    transform: scale(0.8) !important;
-	}
-	.thr div.modal-content{
-	    left: 6%;
-	    transform: scale(1) !important;
-	    color: black !important;
-	}
-	input.manager, input.today2, input.today3{
-	    all: unset; /* 모든 기본 스타일 제거 */
-	    width: 7vw; /* 필요에 따라 크기 지정 */
-	    border: none; /* 테두리 제거 */
-	    background: none; /* 배경 제거 */
-	    padding: 0; /* 여백 제거 */
-	    font: inherit; /* 상속받은 글꼴 사용 */
-	}
+/* 모달 종류 */
+.one div.modal-content{
+       left: 6%;
+    transform: scale(0.9) !important;
+}
+.two div.modal-content{
+    left: 6%;
+    transform: scale(0.8) !important;
+}
+.thr div.modal-content{
+    left: 6%;
+    transform: scale(1) !important;
+    color: black !important;
+}
+input.manager, input.today2, input.today3{
+    all: unset; /* 모든 기본 스타일 제거 */
+    width: 7vw; /* 필요에 따라 크기 지정 */
+    border: none; /* 테두리 제거 */
+    background: none; /* 배경 제거 */
+    padding: 0; /* 여백 제거 */
+    font: inherit; /* 상속받은 글꼴 사용 */
+}
 </style>
 </head>
 <body>
@@ -234,8 +249,19 @@ input[name="doc_subject"]{
 			</div>
 		</div>
 		<div class="searchbox">
+			<c:if test="${not (text == '참조' || text == '임시저장')}">
+			    <select class="listSelect">
+			        <option class="listOpt" value="received">받은문서</option>
+			        <option class="listOpt" value="sent">보낸문서</option>
+			    </select>
+			</c:if>
+			<select class="searchSelect">
+	          <option class="searchOpt" value="subject">제목</option>
+	          <option class="searchOpt" value="docNum">문서번호</option>
+	          <option class="searchOpt" value="emp">기안자</option>
+	        </select>
 			<div class="search">
-				<input type="text" name=""><i class="fas fa-search"></i>
+				<input type="text" name="query"><i class="fas fa-search listIcon"></i>
 			</div>
 			<button class="editbtn">
 				<i class="far fa-edit"></i>작성
@@ -249,7 +275,7 @@ input[name="doc_subject"]{
 			<!-- 입력 필드 -->
 			<div class="search docSearch">
 				<input type="text" class="modal-input" name="item"
-					placeholder="양식 검색"> <i class="fas fa-search"></i>
+					placeholder="양식 검색" onkeyup="searchForm(this.value)"> <i class="fas fa-search"></i>
 			</div>
 			<hr />
 			<!-- 항목 리스트 -->
@@ -277,6 +303,43 @@ $(document).ready(function() {
    var inputValue = $('input[data-index="1"]').val();
    console.log(inputValue);  // 해당 input의 value를 콘솔에 출력
    
+   // 결재양식 검색
+   $(".modal-input").on("keyup", function(event) {
+       var query = $(this).val();
+       searchForm(query);
+   });
+   
+   // 리스트 검색
+   $('.listIcon').on('click', function() {
+       searchList();   
+   });
+
+   // 엔터 키로 검색
+   $('input[name="query"]').on('keypress', function(e) {
+       if (e.which === 13) { // Enter key
+    	   searchList();   
+       }
+   });
+   
+   // 검색 옵션
+   $('.listSelect').on('change', function () {
+       const selectedValue = $(this).val();
+
+       // searchSelect의 기존 옵션 제거
+       $('.searchSelect').empty();
+
+       // 새로운 옵션 추가
+       if (optionsMap[selectedValue]) {
+           optionsMap[selectedValue].forEach(optionData => {
+               $('.searchSelect').append(
+                   $('<option>', { value: optionData.value, text: optionData.text })
+               );
+           });
+       }
+   });
+
+   // 페이지 로드 시 초기화 (기본값 설정)
+   $('.listSelect').trigger('change');
 
 });
 
@@ -470,8 +533,8 @@ function btnAction(actionType) {
 }
 function addBtn() {
 	$.ajax({
-        url: 'orgChartGet.ajax',  // 서버에서 필요한 부분만 반환하도록 설정
-        type: 'GET',  // GET 방식으로 요청
+        type: 'GET',
+        url: 'orgChartGet.ajax',
         success: function(response) {
         	// 이미 모달이 열려있는지 확인
             if ($('.modal').length === 0) {
@@ -520,5 +583,258 @@ function addBtn() {
     signBox.after(newTableHtml); */
 }
 
+// 양식 검색
+$(document).ready(function() {
+    // keyup 이벤트로 입력 감지
+    $(".modal-input").on("keyup", function(event) {
+        var query = $(this).val();
+        searchForm(query);
+    });
+});
+
+function searchForm(query) {
+    if ($.trim(query) === "") {
+        // 입력이 비어 있으면 원래 리스트로 초기화
+        resetList(); 
+        return;
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: 'searchForm.ajax',
+        data: {
+            query: query
+        },
+        dataType: 'JSON',
+        success: function (data) {
+            var modalList = $(".modal-list");
+            modalList.empty(); // 기존 리스트 초기화
+
+            if (data.length > 0) {
+                $.each(data, function (index, item) {
+                    var li = $("<li></li>")
+                        .addClass("modal-item")
+                        .text(item.form_subject)
+                        .attr("onclick", "documentForm('" + item.form_subject + "')");
+                    modalList.append(li);
+                });
+            } else {
+                var li = $("<li></li>")
+                    .addClass("modal-item")
+                    .text("검색 결과가 없습니다.");
+                modalList.append(li);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error:", error);
+        }
+    });
+}
+
+// 원래 리스트를 보여주는 함수
+function resetList() {
+    var modalList = $(".modal-list");
+    modalList.empty(); // 기존 리스트 초기화
+
+    var defaultData = [
+        { form_subject: "연차신청서" },
+        { form_subject: "시말서" },
+        { form_subject: "구매요청서" }
+    ];
+
+    $.each(defaultData, function (index, item) {
+        var li = $("<li></li>")
+            .addClass("modal-item")
+            .text(item.form_subject)
+            .attr("onclick", "documentForm('" + item.form_subject + "')");
+        modalList.append(li);
+    });
+}
+
+
+
+// 각 listSelect 값에 따른 searchSelect의 옵션 정의
+const optionsMap = {
+    received: [
+        { value: 'subject', text: '제목' },
+        { value: 'docNum', text: '문서번호' },
+        { value: 'emp', text: '기안자' }
+    ],
+    sent: [
+        { value: 'subject', text: '제목' },
+        { value: 'docNum', text: '문서번호' }
+    ]
+};
+//리스트 검색
+function searchList() {
+	var page = 1;
+    var query = $('input[name="query"]').val().trim();
+    var searchType = $('.searchSelect').val();
+    console.log(searchType);
+    var listType = $('.listSelect').val();
+    if (query === "") {
+        alert("검색어를 입력하세요.");
+        return;
+    }
+    var cnt = 6;
+	if(text=='참조' || text=='임시저장'){
+		cnt = 15;
+	}
+	$.ajax({
+        type: 'POST',
+        url: 'searchList.ajax',
+        data: {
+        	text: text,
+        	page: page,
+        	cnt: cnt,
+            listType: listType,
+            searchType: searchType,
+            query: query
+        },
+        dataType: 'json',
+        success: function(data) {
+        	if(listType=='received'){
+	        	if(data.receivedList.length>0){
+	            	// 받은 문서
+	                searchReceived(data.receivedList);
+		            // 받은 문서 페이징
+		            $('#receivedPage').twbsPagination({
+		                startPage: 1,
+		                totalPages: data.receivedTotalPages,
+		                visiblePages: 5,
+		                onPageClick: function(evt, page){
+		                    console.log("evt", evt);  // 클릭 이벤트
+		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    searchReceivedPageCall(page);
+		                }
+		            });
+	            }else{
+	            	var content = '<tr>';
+	        		content += '<td colspan="8"> 검색결과가 없습니다. </td>';
+	        		content += '</tr>';
+	        		$('.receivedList').html(content);
+	            }                         
+        	}else if(listType=='sent'){
+	       		if(data.sentList.length>0){
+		            // 보낸 문서
+		            searchSent(data.sentList);
+		            // 보낸 문서 페이징
+		            $('#sentPage').twbsPagination({
+		                startPage: 1,
+		                totalPages: data.sentTotalPages,
+		                visiblePages: 5,
+		                onPageClick: function(evt, page){
+		                    console.log("evt", evt);  // 클릭 이벤트
+		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    searchSentPageCall(page);
+		                }
+		            });
+	            }else{
+	            	var content = '<tr>';
+	        		content += '<td colspan="6"> 검색결과가 없습니다. </td>'
+	        		content += '</tr>';
+	        		$('.sentList').html(content);
+	            }
+        	}
+        },
+        error: function(xhr, status, error) {
+            console.error("Error:", error);
+        }
+    });
+}
+function searchReceived(document) {
+	
+    var content = '';
+	var i = 1;
+	for(var item of document){
+		console.log(item.form_subject)
+		content += '<tr>';
+		content += '<td>' + i++ + '</td>';
+		content += '<td>' + item.doc_number + '</td>';
+		content += '<td>' + item.form_subject + '</td>';
+		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		content += '<td>' + item.name + '</td>';
+		
+		var doc_date = new Date(item.doc_date);
+		var docDate = doc_date.toISOString().split('T')[0];
+
+		content += '<td>' + docDate + '</td>';
+		content += '<td>' + item.status + '</td>';
+		content += '<td>' + 
+		    (item.doc_read == false
+		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+		'</td>';
+		
+		content += '</tr>';
+	}
+	$('.receivedList').html(content);
+}
+function searchSent(document) {
+	
+    var content = '';
+	var i = 1;
+	for(var item of document){
+		console.log(item.form_subject)
+		content += '<tr>';
+		content += '<td>' + i++ + '</td>';
+		content += '<td>' + item.doc_number + '</td>';
+		content += '<td>' + item.form_subject + '</td>';
+		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		
+		var doc_date = new Date(item.doc_date);
+		var docDate = doc_date.toISOString().split('T')[0];
+
+		content += '<td>' + docDate + '</td>';
+		content += '<td>' + item.status + '</td>';
+		content += '</tr>';
+	}
+	$('.sentList').html(content);
+}
+//받은 문서
+function searchReceivedPageCall(page) {
+	if(text=='참조' || text=='임시저장'){
+		var cnt = 15;
+	}
+    $.ajax({
+        type: 'GET',
+        url: 'searchList.ajax',
+        data: {
+        	'text': text,
+            'page': page,
+            'cnt': cnt
+        },
+        dataType: 'JSON',
+        success: function(data) {
+        	searchReceived(data.receivedList);
+        },
+        error: function(e) {
+            console.log("오류 발생", e);
+        }
+    });
+}
+// 보낸 문서
+function searchSentPageCall(page) {
+    var listType = $('.listOpt').val();
+	if(text=='참조' || text=='임시저장'){
+		var cnt = 15;
+	}
+    $.ajax({
+        type: 'GET',
+        url: 'searchList.ajax',
+        data: {
+        	'text': text,
+            'page': page,
+            'cnt': cnt
+        },
+        dataType: 'JSON',
+        success: function(data) {
+        	searchSent(data.sentList);
+        },
+        error: function(e) {
+            console.log("오류 발생", e);
+        }
+    });
+}
 </script>
 </html>
