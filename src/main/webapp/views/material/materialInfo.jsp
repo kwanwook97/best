@@ -55,7 +55,7 @@
         height: 85%;
         position: relative;
         top: 72px;
-        background-color: #f8f9fa;
+        background-color: #f8f9fa00;
         padding: 15px;
         border: 1px solid #ddd;
     }
@@ -63,7 +63,7 @@
 		float: left;
 		width: 30%;
 		height: 100%;
-		background-color: #efbfbf;
+		background-color: #efbfbf00;
     }
 	/* 테이블 기본 스타일 */
 	.materialInfo-table {
@@ -72,11 +72,12 @@
 	    margin: 0 0; /* 위아래 여백 */
 	    font-size: 12px; /* 글씨 크기 */
 	    text-align: left; /* 텍스트 왼쪽 정렬 */
-	    height: 94%;
+	   /*  height: 94%; */
+	    border: 2px solid #8B6AA7;
 	}
 	
 	/* 테이블 헤더 스타일 */
-	.materialInfo-table thead th {
+	.materialInfo-table > thead th {
 	    background-color: #8B6AA7; /* 헤더 배경색 */
 	    color: #30005A; /* 글씨 색 */
 	    border: 1px solid #ddd; /* 헤더 보더 */
@@ -90,8 +91,8 @@
 	#pagination .page-item.active a {
 		font-size: 19px;
 	}
-	.materialInfo-table tr,td {
-	    background-color: #f4f4f4; /* 헤더 배경색 */
+	.materialInfo-table > tr,td {
+	    background-color: #f4f4f400; /* 헤더 배경색 */
 	    color: #30005A; /* 글씨 색 */
 	    border: 1px solid #ddd; /* 헤더 보더 */
 	    padding: 10px; /* 셀 내부 여백 */
@@ -171,7 +172,7 @@
     border-collapse: collapse;
 }
 
-.form-table td {
+.form-table > td {
     padding: 10px;
     vertical-align: middle;
 }
@@ -267,8 +268,8 @@ input[type="number"] {
 
 /* 기자재 예약목록 css */
 .wrapper-borrowContainer {
-	width: 67%;
-	background-color: #cfbdbd;
+	width: 70%;
+	background-color: #cfbdbd00;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -282,30 +283,34 @@ input[type="number"] {
 	    margin: 0 0; /* 위아래 여백 */
 	    font-size: 12px; /* 글씨 크기 */
 	    text-align: left; /* 텍스트 왼쪽 정렬 */
-	    height: 94%;
-	    display: flex;
-	    flex-direction: column;
-	    align-items:center;
+	    border:2px solid #8B6AA7;
+	    position: relative;
+	    left: 14px;
+	}
+	.borrow-table > thead {
+		border: 2px solid #8B6AA7;
+		background-color: #8B6AA7;
+		height: 37px;
 	}
 	
-	/* 테이블 헤더 스타일 */
-	.borrow-table thead th {
-	    background-color: #8B6AA7; /* 헤더 배경색 */
-	    color: #30005A; /* 글씨 색 */
-	    border: 1px solid #ddd; /* 헤더 보더 */
-	    padding: 10px; /* 셀 내부 여백 */
-	    border: none;
+	.borrow-table > tbody {
+	
 	}
+	.borrow-table > tr,td {
+		border: 2px solid #8B6AA7;
+	}
+	.borrow-table > th {
+		border: 1px solid black;
+		width: 100px;
+	}
+	
+	
+	/* 테이블 헤더 스타일 */
+
 	#pagination .page-item.active a {
 		font-size: 19px;
 	}
-	.borrow-table-table tr,td {
-	    background-color: #f4f4f4; /* 헤더 배경색 */
-	    color: #30005A; /* 글씨 색 */
-	    border: 1px solid #ddd; /* 헤더 보더 */
-	    padding: 10px; /* 셀 내부 여백 */
-	    width: 100px;
-	}
+
 	
 	/* 셀렉 옵션 과 p 그 윂퍼 */
 	
@@ -341,6 +346,13 @@ input[type="number"] {
 
 .filter-select > option {
 	background-color: #ffffff00 !important;
+}
+.paginationBorrowSize {
+	height: 0px;
+}
+.paginationBoxSize {
+	height: 0px;
+	padding: 0 0 0 0;
 }
 
 
@@ -401,7 +413,7 @@ input[type="number"] {
 		            <table class="borrow-table">
 		                <thead>
 		                    <tr>
-					            <th>사원 이름(부서)(직급)(사원번호)</th>
+					            <th>사원 이름</th>
 					            <th>회의실 이름</th>
 					            <th>예약일정</th>
 					            <th>대여 기자재</th>
@@ -414,14 +426,14 @@ input[type="number"] {
 		                <tbody id="borrowTableBody">
 		                	
 		                </tbody>
-			            <tr>
-			               <th colspan="8">
+			            <tr class="paginationBorrowSize">
+			               <td class="paginationBoxSize" colspan="8">
 			                  <div class="pagination-container">
 			                      <nav aria-label="Page navigation">
-			                          <ul class="pagination" id="paginationBorrow"></ul>
+			                          <ul class="pagination paginationBorrow" id="pagination"></ul>
 			                      </nav>
 			                  </div>
-			               </th>
+			               </td>
 			            </tr>
 		            </table>
 			</div>
@@ -669,15 +681,25 @@ function delMaterial(){
 }
 
 
+let currentPage = 1;
+let pageSize = 10;
+let paginationInitialized = false; // 페이지네이션 초기화 상태 추적
+let previousFilters = null; // 이전 필터 상태 추적
+
 /* 최초 페이지 접근시 전체 기자재 예약 현황 리스트 함수 */
 document.addEventListener("DOMContentLoaded", () => {
-    loadBorrowList({ returnStatus: "전체" }); // 페이지 최초 로드 시 전체 데이터를 불러옴
+    loadBorrowList({ returnStatus: "전체" ,page: currentPage, size: pageSize}); // 페이지 최초 로드 시 전체 데이터를 불러옴
 });
+
+
+
 
 document.getElementById("returnStatusFilter").addEventListener("change", (event) => {
     const returnStatus = event.target.value; 
     console.log(returnStatus);
-    loadBorrowList({ returnStatus });
+    
+    currentPage = 1;
+    loadBorrowList({ returnStatus, page: currentPage, size: pageSize });
 });
 
 function loadBorrowList(filters) {
@@ -688,17 +710,49 @@ function loadBorrowList(filters) {
         data: JSON.stringify(filters),
         contentType: 'application/json; charset=UTF-8',
         dataType: 'json',
-        success: function(data) {
-        	if (data) {
-	        	console.log("서버 응답 데이터:", data);
-	            renderBorrowList(data);
-			}
+        success: function(response) {
+            if (response.data && response.data.length > 0) {
+                console.log("서버 응답 데이터:", response.data);
+                renderBorrowList(response.data);
+                if (!paginationInitialized || filters.returnStatus !== previousFilters?.returnStatus) {
+                    initializePagination(response.totalPages, response.currentPage, filters);
+                }
+            } else {
+                noListData();
+            }
         },
         error: function(error) {
             console.error("데이터 로드 실패:", error);
         }
     });
 }
+
+
+ 
+
+function initializePagination(totalPages, currentPage, filters) {
+    if (paginationInitialized) {
+        $('.paginationBorrow').twbsPagination('destroy'); // 기존 페이지네이션 제거
+    }
+
+    $('.paginationBorrow').twbsPagination({
+        startPage: currentPage,
+        totalPages: totalPages,
+        visiblePages: 5,
+        onPageClick: function (evt, page) {
+        	loadBorrowList({
+                ...filters,
+                page: page,
+            });
+        },
+    });
+
+    paginationInitialized = true; // 페이지네이션 초기화 완료
+    previousFilters = { ...filters, totalPages }; // 현재 필터 저장
+}
+
+
+
 
 function renderBorrowList(data) {
     const tbody = document.getElementById("borrowTableBody");
@@ -725,25 +779,22 @@ function renderBorrowList(data) {
         let buttonContent = '';
         if (item.flag == 0) {
             buttonContent = 
-                '<button onclick="markAsReturned(' + item.borrow_idx + ')">반납</button> | ' +
-                '<button onclick="confirmReturn(' + item.borrow_idx + ')">반납완료</button>';
+                '<button onclick="confirmReturn(' + item.borrow_idx + ')">반납</button>'
         } else {
-            buttonContent = '<span>반납 처리됨</span>';
+            buttonContent = '<span>반납완료</span>';
         }
 
         // 동적으로 행(row) 생성
         const row = document.createElement("tr");
         
         row.innerHTML = 
-            '<td>' + item.name + ' (' + item.depart_name + ') (' + item.rank_name + ') (' + item.emp_idx + ')</td>' +
+            '<td>' + item.name + '<br> (' + item.depart_name + ') <br>(' + item.rank_name + ') <br>(' + item.emp_idx + ')</td>' +
             '<td>' + item.room_name + '</td>' +
             '<td>' + formattedStart.split(' ')[0] + ' ' + formattedStart.split(' ')[1] + ' - ' + endTime + '</td>' +
             '<td>' + item.material_with_quantity + '</td>' +
-            '<td>' + item.confirmation_datetime + '</td>' +
-            '<td>' + item.handler_emp_idx + '</td>' +
+            '<td>' + (item.flag == 0 ? '미반납' : item.confirmation_datetime) + '</td>' +
             '<td>' + (item.flag == 0 ? '미반납' : '반납완료') + '</td>' +
-            '<td>' + (item.returnStatus || '') + '</td>' +
-            '<td>' + (item.confirmedBy || '미확인') + '</td>' +
+            '<td>' + (item.flag == 0 ? '미반납' : item.handler_name + '<br> (' + item.handler_depart_name + ') <br>(' + item.handler_rank_name + ') <br>(' + item.handler_emp_idx + ')') + '</td>' +
             '<td>' + buttonContent + '</td>';
 
         tbody.appendChild(row);
@@ -754,8 +805,37 @@ function renderBorrowList(data) {
 function noListData(){
     const tbody = document.getElementById("borrowTableBody");
     tbody.innerHTML = ""; // 기존 데이터를 초기화
-    tbody.innerHTML = '<tr class="nolist" ><td colspan="7">예약된 기자재가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr class="nolist" ><td colspan="8">예약된 기자재가 없습니다.</td></tr>';
 }
+
+/* 반납 함수 */
+function confirmReturn(borrowIdx){
+	console.log("borrowIdx:"+borrowIdx);
+	const returnStatus = document.getElementById("returnStatusFilter").value;
+
+    $.ajax({
+        type: 'POST',
+        url: 'confirmReturn.ajax',
+        data: {
+        	"borrowIdx":borrowIdx,
+        	"loginId":3
+        },
+        dataType: 'json',
+        success: function(data) {
+        	if (data.length != 0) {
+	        	console.log("서버 응답 데이터:", data);
+	        	loadBorrowList({ returnStatus });
+	        	alert(data.msg);
+			}else {
+				noListData();
+			}
+        },
+        error: function(error) {
+            console.error("데이터 로드 실패:", error);
+        }
+    });
+}
+
 
 </script>
 </html>

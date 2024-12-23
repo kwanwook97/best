@@ -56,9 +56,16 @@ public class MaterialController {
 	
 	@PostMapping(value="/borrowList.ajax")
 	@ResponseBody
-	public List<Map<String, Object>> borrowList(@RequestBody Map<String, Object> params){
+	public Map<String, Object> borrowList(@RequestBody Map<String, Object> params){
 		logger.info("params:종원 테스트 1:{}",params);
 		return materialService.borrowList(params);
+	}
+	
+	
+	@PostMapping(value="/confirmReturn.ajax")
+	@ResponseBody
+	public Map<String, Object> confirmReturn(@RequestParam Map<String, Object> params){
+		return materialService.confirmReturn(params);
 	}
 }
 

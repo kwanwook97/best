@@ -196,6 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	  var calendarEl = document.getElementById('calendar');
 
 	  var calendar = new FullCalendar.Calendar(calendarEl, {
+		  locale:"ko",
+		  timeZone: "Asia/Seoul",
 	    headerToolbar: {
 	      left: 'prev,next today',
 	      center: 'title',
@@ -223,8 +225,27 @@ document.addEventListener('DOMContentLoaded', function() {
 	      }
 	    },
 	    editable: true,
-	    dayMaxEvents: true, // allow "more" link when too many events
-	    events: []
+	    dayMaxEvents: true, 
+	    events: [],
+        dayCellDidMount: function(info) {
+
+            var day = info.date.getDay(); 
+            console.log("day:", day);
+            
+            if (day === 6 || day === 0) {
+                info.el.style.setProperty('background-color', '#FFEBEE', 'important');
+                info.el.style.setProperty('color', '#D32F2F', 'important');
+            }
+            
+            // DB에서 가져온 공휴일 데이터를 처리
+/*             const holiday = holidays.find(h => h.date === info.dateStr);
+            if (holiday) {
+                info.el.style.backgroundColor = "#FFEBEE"; // 빨간 배경
+                info.el.style.color = "#D32F2F"; // 빨간 글씨
+                info.el.title = holiday.name; // 툴팁에 공휴일 이름 표시
+            } */
+        }
+	    
 	  });
 
 	  calendar.render();
@@ -241,5 +262,56 @@ function updateClock() {
 
 setInterval(updateClock, 1000)
 updateClock()
+
+
+
+
+
+
+
 </script>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
