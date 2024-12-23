@@ -32,8 +32,8 @@
 	}
 	.docbox{
 		border: 2px solid var(--primary-color);
-	    width: -webkit-fill-available;
-	    height: 700px;
+	    width: 100%;
+	    height: 745px;
 	    border-radius: 10px;
 	}
 	.opt div:nth-child(1){
@@ -52,24 +52,34 @@
 	table.myTable{
 		border-collapse: separate !important;
         border-spacing: 0;
-		width: -webkit-fill-available;
+	    width: 90%;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
 		margin: 0 48px 15px 48px;
 	    text-align: center;
 	}
-	table.myTable tr:not(:last-child) td, table.myTable th {
+	table.myTable caption.caption{
+		color: var(--primary-color) !important;
+	    font-size: large;
+	    font-weight: bold;
+	    text-align: left;
+	    caption-side: top;
+	}
+	table.myTable caption.sentCap{
+		padding-top: 0;
+	}
+	table.myTable tr:not(:last-child) td{
         border-bottom: 1px solid var(--primary-color) !important;
     }
 	table.myTable tr{
 		border-bottom: 1px solid var(--primary-color);
 		height: 35px;
 	}
-	table.myTable th, table.myTable td{
-		padding-left: 10px;
-   		text-align: inherit;
+	.receivedList tr td:hover:nth-child(4) {
+	    color: var(--accent-color);
+	    cursor: pointer;
 	}
-	.saveList tr td:hover :nth-child(3) {
+	.sentList tr td:hover:nth-child(4) {
 	    color: var(--accent-color);
 	    cursor: pointer;
 	}
@@ -105,26 +115,34 @@
 	    width: 10%;
 	}
 	table.receivedTable th:nth-child(8) {
-	    width: 8%;
+	    width: 7%;
 	}
-	table.receivedTable th:nth-child(9) {
-	    width: 8%;
-	}
-	.receivedTable{
+	.table1{
 	    position: fixed;
-    	top: 10rem;
+	  	width: 100%;
 	}
-	#receivedCont{
-	    position: fixed;
-	    top: 26rem;
+	table.sentTable th:nth-child(1) {
+	    width: 4%;
 	}
-	.sentTable{
-	    position: fixed;
-    	top: 30rem;
+	table.sentTable th:nth-child(2) {
+	    width: 12%;
 	}
-	#sentCont{
+	table.sentTable th:nth-child(3) {
+	    width: 10%;
+	}
+	table.sentTable th:nth-child(4) {
+	    width: 30%;
+	}
+	table.sentTable th:nth-child(5) {
+	    width: 10%;
+	}
+	table.sentTable th:nth-child(6) {
+	    width: 10%;
+	}
+	.table2{
 	    position: fixed;
-        top: 46rem;	
+    	top: 30.5rem;
+		width: 100%;
 	}
     #status{
 		background-color: var(--primary-color);
@@ -189,6 +207,11 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}	
+	@media ( min-width :1200px) {
+		.container {
+			max-width: 100% !important;
+		}
+	}
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -196,116 +219,126 @@
  	<div class="dashboard-body">
 		<div class="maintext">
 			<h3 class="document">결재문서</h3>
-			<h3>>&nbsp;&nbsp;대기</h3>
+			<h3 class="text">>&nbsp;&nbsp;대기</h3>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
 			<!-- 받은 문서 -->
-			<table class="receivedTable myTable">
-				<thead>
-					<tr>
-						<th>NO.</th>
-						<th>문서번호</th>
-						<th>분류</th>
-						<th>문서 제목</th>
-						<th>기안자</th>
-						<th>상신 날짜</th>
-						<th>결재 날짜</th>
-						<th>결재 상태</th>
-						<th>
-							<select id="status">
-					          <option value="all">전체</option>
-					          <option value="read">읽음</option>
-					          <option value="unread">안읽음</option>
-					        </select>
-						</th>
-					</tr>
-				</thead>
-				<tbody class="receivedList">
-				</tbody>
-			</table>
-			<div class="container" id="receivedCont">
-			    <nav aria-label="Page navigation">
-			        <ul class="pagination" id="receivedPage"></ul>
-			    </nav>
+			<div class="table1">
+				<table class="receivedTable myTable">
+					<caption class="receivedCap caption">받은 문서</caption>
+					<thead>
+						<tr>
+							<th>NO</th>
+							<th>문서번호</th>
+							<th>분류</th>
+							<th>문서 제목</th>
+							<th>기안자</th>
+							<th>상신 날짜</th>
+							<th>결재 상태</th>
+							<th>
+								<select id="status">
+						          <option value="all">전체</option>
+						          <option value="read">읽음</option>
+						          <option value="unread">안읽음</option>
+						        </select>
+							</th>
+						</tr>
+					</thead>
+					<tbody class="receivedList">
+					</tbody>
+				</table>
+				<div class="container" id="receivedCont">
+				    <nav aria-label="Page navigation">
+				        <ul class="pagination" id="receivedPage"></ul>
+				    </nav>
+				</div>
 			</div>
-			<!-- 보낸 문서 -->
-			<table class="sentTable myTable">
-				<thead>
-					<tr>
-						<th>NO.</th>
-						<th>문서번호</th>
-						<th>분류</th>
-						<th>문서 제목</th>
-						<th>상신 날짜</th>
-						<th>결재 상태</th>
-					</tr>
-				</thead>
-				<tbody class="sentList">
-				</tbody>
-			</table>
-			<div class="container" id="sentCont">
-			    <nav aria-label="Page navigation">
-			        <ul class="pagination" id="sentPage"></ul>
-			    </nav>
+			<div class="table2">
+				<!-- 보낸 문서 -->
+				<table class="sentTable myTable">
+					<caption class="sentCap caption">보낸 문서</caption>
+					<thead>
+						<tr>
+							<th>NO</th>
+							<th>문서번호</th>
+							<th>분류</th>
+							<th>문서 제목</th>
+							<th>상신 날짜</th>
+							<th>결재 상태</th>
+						</tr>
+					</thead>
+					<tbody class="sentList">
+					</tbody>
+				</table>
+				<div class="container" id="sentCont">
+				    <nav aria-label="Page navigation">
+				        <ul class="pagination" id="sentPage"></ul>
+				    </nav>
+				</div>
 			</div>
 		</div>
  	</div>
 </body>
 <script>
 var showPage = 1;
-
+var text = "대기";
 pageCall(showPage);
 
 function pageCall(page){
     console.log('pageCall');
-    
     $.ajax({
         type: 'GET',
-        url: 'pendingList.ajax',
+        url: 'documentList.ajax',
         data: {
+        	'text': text,
             'page': page,  // 몇 페이지 보여줄지
             'cnt': 6      // 페이지당 보여줄 게시물 수
         },
         dataType: 'JSON',
         success: function(data) {
             console.log(data);
-            // 받은 문서
-            received(data.receivedList);
-            // 보낸 문서
-            sent(data.sentList);
+            if(data.receivedList.length>0){
+            	// 받은 문서
+                received(data.receivedList);
+	            // 받은 문서 페이징
+	            $('#receivedPage').twbsPagination({
+	                startPage: 1,
+	                totalPages: data.receivedTotalPages,
+	                visiblePages: 5,
+	                onPageClick: function(evt, page){
+	                    console.log("evt", evt);  // 클릭 이벤트
+	                    console.log("page", page);  // 클릭한 페이지 번호
+	                    receivedPageCall(page);
+	                }
+	            });
+            }else{
+            	var content = '<tr>';
+        		content += '<td colspan="8"> 받은 문서가 없습니다. </td>';
+        		content += '</tr>';
+        		$('.receivedList').html(content);
+            }                         
+            if(data.sentList.length>0){
+	            // 보낸 문서
+	            sent(data.sentList);
+	            // 보낸 문서 페이징
+	            $('#sentPage').twbsPagination({
+	                startPage: 1,
+	                totalPages: data.sentTotalPages,
+	                visiblePages: 5,
+	                onPageClick: function(evt, page){
+	                    console.log("evt", evt);  // 클릭 이벤트
+	                    console.log("page", page);  // 클릭한 페이지 번호
+	                    sentPageCall(page);
+	                }
+	            });
+            }else{
+            	var content = '<tr>';
+        		content += '<td colspan="6"> 보낸 문서가 없습니다. </td>'
+        		content += '</tr>';
+        		$('.sentList').html(content);
             
-            // 받은 문서 페이징
-            $('#receivedPage').twbsPagination({
-                startPage: 1,
-                totalPages: data.receivedTotalPages,
-                visiblePages: 5,
-                first: '<i class="fas fa-angle-double-left"></i>',
-                prev: '<i class="fas fa-angle-left"></i>',
-                next: '<i class="fas fa-angle-right"></i>',
-                last: '<i class="fas fa-angle-double-right"></i>',
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    receivedPageCall(page);
-                }
-            });
-            
-            // 보낸 문서 페이징
-            $('#sentPage').twbsPagination({
-                startPage: 1,
-                totalPages: data.sentTotalPages,
-                visiblePages: 5,
-                first: '<i class="fas fa-angle-double-left"></i>',
-                prev: '<i class="fas fa-angle-left"></i>',
-                next: '<i class="fas fa-angle-right"></i>',
-                last: '<i class="fas fa-angle-double-right"></i>',
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    sentPageCall(page);
-                }
-            });
+            }
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -328,17 +361,14 @@ function received(document) {
 		content += '<td>' + item.name + '</td>';
 		
 		var doc_date = new Date(item.doc_date);
-		var approv_date = new Date(item.approv_date);
 		var docDate = doc_date.toISOString().split('T')[0];
-		var approvDate = approv_date.toISOString().split('T')[0];
 
 		content += '<td>' + docDate + '</td>';
-		content += '<td>' + approvDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		content += '<td>' + 
-	        (item.status === '상신' 
-	         ? '<i class="fas fa-envelope-open-text" title="읽지 않음"></i>'
-	         : '<i class="fas fa-envelope" title="읽음"></i>') +
+	        (item.doc_read == false
+	         ? '<i class="fas fa-envelope" title="읽지 않음"></i>'
+	         : '<i class="fas fa-envelope-open-text" title="읽음"></i>') +
         '</td>';
 		
 		content += '</tr>';
@@ -374,8 +404,9 @@ function sent(document) {
 function receivedPageCall(page) {
     $.ajax({
         type: 'GET',
-        url: 'pendingList.ajax',
+        url: 'documentList.ajax',
         data: {
+        	'text': text,
             'page': page,
             'cnt': 6
         },
@@ -392,8 +423,9 @@ function receivedPageCall(page) {
 function sentPageCall(page) {
     $.ajax({
         type: 'GET',
-        url: 'pendingList.ajax',
+        url: 'documentList.ajax',
         data: {
+        	'text': text,
             'page': page,
             'cnt': 6
         },

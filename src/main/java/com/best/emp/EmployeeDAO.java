@@ -45,9 +45,6 @@ public interface EmployeeDAO {
 	int driverUpsert(Map<String, String> params);
 
 	
-	// 전자결재 기안자 정보
-	Map<String, Object> getEmpDetails(int emp_idx);
-	
 	// 사원정보 등록
 	int empCreate(EmployeeDTO empDTO);
 
