@@ -22,8 +22,14 @@ public interface MaterialDAO {
 
 	List<Map<String, Object>> getBorrowList(Map<String, Object> params);
 
-	List<Map<String, Object>> getBorrowListFlagFalse(Map<String, Object> params);
-	
-	List<Map<String, Object>> getBorrowListFlagTrue(Map<String, Object> params);
+	int getReserveIdx(Map<String, Object> params);
+
+	List<Map<String, Integer>> getMaterialConfirm(int reserveIdx);
+
+	int updateRemainQuantity(int materialIdx, int quantity);
+
+	int updateHandlerEmp(int borrowIdx,int loginId);
+
+	int getBorrowCount(Map<String, Object> params);
 
 }

@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
             startTime: '09:00',
             endTime: '18:00',
         }, */
-        weekends: false,
+        weekends: true,
         allDaySlot: false,
         editable: true,
         selectable: true,

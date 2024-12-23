@@ -18,15 +18,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CalendarService {
-	@Autowired CalendarDAO calendarDAO;
+	@Autowired private CalendarDAO calendarDAO;
 	@Value("${upload.path}") private String bpath;
 	Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired private RestTemplate restTemplate;
+
+	
 	
 	@Transactional
 	public Map<String, Object> saveCalendar(Map<String, Object> params, List<Integer> quantityList, List<Integer> materialIdxList) {
@@ -262,6 +267,43 @@ public class CalendarService {
 		}
 		return map;
 	}
+	
+	
+	//개인 캘린더 공휴일 api 사용
+	
+
+//        public void fetchAndStoreHolidays(String baseUrl, int startYear, int endYear) {
+//            for (int year = startYear; year <= endYear; year++) {
+//                for (int month = 1; month <= 12; month++) {
+//                    String apiUrl = baseUrl + "?year=" + year + "&month=" + String.format("%02d", month);
+//                    try {
+//                        // API 호출
+//                        ResponseEntity<Map> response = restTemplate.getForEntity(apiUrl, Map.class);
+//                        List<Map<String, Object>> holidays = (List<Map<String, Object>>) response.getBody().get("holidays");
+//
+//                        // 데이터 저장
+//                        for (Map<String, Object> holiday : holidays) {
+//                            LocalDate date = LocalDate.parse((String) holiday.get("date"));
+//                            String name = (String) holiday.get("name");
+//
+//                            // 중복 확인 및 삽입
+//                            if (!calendarDAO.existsByDate(date)) {
+//                                calendarDAO.insertHoliday(date, name);
+//                            }
+//                        }
+//                    } catch (Exception e) {
+//                        System.err.println("Error fetching data for year " + year + ", month " + month);
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }
+
+	
+	
+	
+	
+	
 	
 	
 	
