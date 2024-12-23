@@ -5,17 +5,27 @@
 <mapper namespace="com.best.document.DocumentDAO">
     
     <!-- 전자결재 대기 토탈 페이지 -->
-	<select id="receivedCount" resultType="int">
-		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM approv WHERE emp_idx = #{emp_idx} AND approv_order = 1 
-	</select>
-	<select id="sentCount" resultType="int">
-		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM document WHERE emp_idx = #{emp_idx} AND status = '상신'
+	<select id="pendingCount" resultType="int">
+		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
+		FROM approv
+		WHERE emp_idx = #{emp_idx}
+	  	AND (
+		      (status = '상신' AND approv_order = 1)
+		      OR
+		      (status = '상신' AND approv_order = 2
+		          AND doc_idx IN (
+		              SELECT doc_idx
+		              FROM approv
+		              WHERE status = '완료' AND approv_order = 1
+		          )
+		      )
+	  	)
 	</select>
     <!-- 전자결재 대기 리스트 -->
-   	<select id="receivedList" resultType="map">
+   	<select id="pendingList" resultType="map">
    		SELECT 
 		    a.status,
-		    a.approv_date,
+		    a.doc_read,
 		    d.doc_number,
 		    d.doc_subject,
 		    d.form_idx,
@@ -26,57 +36,196 @@
 		JOIN document d ON d.doc_idx = a.doc_idx
 		LEFT JOIN form f ON d.form_idx = f.form_idx
 		LEFT JOIN employee e ON e.emp_idx = d.emp_idx 
-		WHERE e.emp_idx = #{emp_idx}
+		WHERE a.emp_idx = #{emp_idx}
+		AND a.status = '상신'
+		AND (
+		    a.approv_order = 1
+		    OR
+		    (a.approv_order = 2
+		        AND a.doc_idx IN (
+		            SELECT doc_idx
+		            FROM approv
+		            WHERE status = '완료'
+		            AND approv_order = 1
+		        )
+		    )
+		)
 		ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
    	</select>
+
+
+   	<!-- 전자결재 진행중 토탈 페이지 -->
+   	<select id="inProgressCount" resultType="int">
+   		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
+		FROM approv a
+		WHERE a.doc_idx IN (
+		    SELECT doc_idx 
+		    FROM approv
+		    WHERE emp_idx = #{emp_idx}
+		      AND approv_order = 1 
+		      AND status = '완료'
+		) 
+		AND a.approv_order = 2 
+		AND a.status = '상신';
+   	</select>
+    <!-- 전자결재 진행중 리스트 -->
+   	<select id="inProgressList" resultType="map">
+		SELECT 
+		    d.doc_idx,
+		    d.doc_number, 
+		    d.doc_subject, 
+		    d.doc_date, 
+		    d.status,
+		    e.name, 
+		    f.form_subject,
+		    a1.approv_date
+		FROM document d
+		JOIN (
+		    SELECT doc_idx, approv_date
+		    FROM approv
+		    WHERE emp_idx = #{emp_idx}
+		      AND approv_order = 1
+		      AND status = '완료'
+		) a1 ON d.doc_idx = a1.doc_idx
+		JOIN employee e ON d.emp_idx = e.emp_idx
+		JOIN form f ON d.form_idx = f.form_idx
+		WHERE d.status = '진행중'
+   	</select>
+   	
+   	
+    <!-- 전자결재 완료 토탈 페이지 -->
+    <select id="approvedCount" resultType="int">
+   		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
+		FROM document d
+		WHERE d.doc_idx IN (
+		    SELECT a.doc_idx
+		    FROM approv a
+		    WHERE a.emp_idx = #{emp_idx}
+		      AND a.status = '완료'
+		)
+		AND d.status = '완료'
+   	</select>
+    <!-- 전자결재 완료 리스트 -->
+   	<select id="approvedList" resultType="map">
+   		SELECT 
+		    d.doc_idx,
+		    d.doc_number,
+		    d.doc_subject,
+		    d.doc_date,
+		    d.status,
+		    e.name,
+		    f.form_subject,
+		    a.approv_date
+		FROM document d
+		JOIN employee e ON d.emp_idx = e.emp_idx
+		JOIN form f ON d.form_idx = f.form_idx
+		JOIN approv a ON d.doc_idx = a.doc_idx
+		WHERE a.emp_idx = #{emp_idx}
+		  AND a.status = '완료'
+		  AND d.status = '완료'
+   	</select>
+   	
+   	
+ 	<!-- 전자결재 반려 토탈 페이지 -->
+	<select id="rejectCount" resultType="int">
+		SELECT CEIL(COUNT(a.doc_idx) / #{cnt}) AS pages
+		FROM approv a
+		WHERE	
+			a.doc_idx IN (
+		        SELECT doc_idx 
+		        FROM approv 
+		        WHERE status = '반려'
+		    )
+	   		AND a.emp_idx = #{emp_idx}
+	</select>	
+    <!-- 전자결재 반려 리스트 -->
+    <select id="rejectList" resultType="map">
+		SELECT 
+		    a.doc_idx,
+		    a.approv_date,
+		    d.status,    
+		    d.doc_number,
+		    d.doc_subject,
+		    d.doc_date,
+		    f.form_subject,
+		    e.name
+		FROM 
+		    approv a
+		JOIN 
+		    document d ON a.doc_idx = d.doc_idx
+		JOIN 
+		    form f ON d.form_idx = f.form_idx
+		JOIN 
+		    employee e ON d.emp_idx = e.emp_idx
+		WHERE 
+		    a.doc_idx IN (
+		        SELECT doc_idx
+		        FROM approv
+		        WHERE emp_idx = #{emp_idx}
+		    )
+		    AND a.status = '반려'
+		    AND a.doc_idx IN (
+		        SELECT doc_idx
+		        FROM approv
+		        WHERE status = '반려'
+		    );
+    </select>
+    
+    <!-- 전자결재 참조 토탈 페이지 -->
+    <select id="referenceCount" resultType="int">
+    	SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
+    	FROM reference WHERE emp_idx = #{emp_idx}
+    </select>
+    <!-- 전자결재 참조 리스트 -->
+   	<select id="referenceList" resultType="map">
+   		SELECT 
+		    d.doc_idx,
+		    d.doc_number, 
+		    d.doc_subject, 
+		    d.doc_date, 
+		    d.status,
+		    e.name, 
+		    f.form_subject,
+		    r.doc_read
+		FROM document d
+		JOIN employee e ON d.emp_idx = e.emp_idx
+		JOIN form f ON d.form_idx = f.form_idx
+		JOIN reference r ON d.doc_idx = r.doc_idx
+		WHERE r.emp_idx = #{emp_idx}
+   	</select>
+   	
+  	<!-- 전자결재 보낸 문서 토탈 페이지 -->
+	<select id="sentCount" resultType="int">
+		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
+		FROM document WHERE emp_idx = #{emp_idx} AND status = #{status}
+	</select>
+	<!-- 전자결재 보낸 문서 리스트 -->
    	<select id="sentList" resultType="map">
    		SELECT 
 		    d.doc_idx, 
 		    d.form_idx,
 		    d.doc_subject,
-		    d.doc_date, 
+		    d.doc_date,
 		    d.status,
 		    d.doc_number,
 		    f.form_subject
 		FROM document d
 		LEFT JOIN form f ON d.form_idx = f.form_idx
-		WHERE d.emp_idx = #{emp_idx} AND status = '상신'
+		WHERE d.emp_idx = #{emp_idx} AND status = #{status}
 		ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
    	</select>
    	
-   	
-    <!-- 전자결재 진행중 토탈 페이지 -->
-    <!-- 전자결재 진행중 리스트 -->
-    <!-- 전자결재 완료 토탈 페이지 -->
-    <!-- 전자결재 완료 리스트 -->
-    <!-- 전자결재 반려 토탈 페이지 -->
-    <!-- 전자결재 반려 리스트 -->
-    <!-- 전자결재 참조 토탈 페이지 -->
-    <!-- 전자결재 참조 리스트 -->
+
     
     
-    <!-- 임시저장 토탈 페이지 -->
-	<select id="allCount" resultType="int">
-		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages FROM document WHERE emp_idx = #{emp_idx}
-	</select>
-	<!-- 임시저장 리스트 -->
-	<select id="saveList" resultType="map">
-		SELECT 
-		    d.doc_idx, 
-		    d.form_idx,
-		    d.doc_subject,
-		    d.doc_date, 
-		    d.status,
-		    d.doc_number,
-		    f.form_subject
-		FROM document d
-		LEFT JOIN form f ON d.form_idx = f.form_idx
-		WHERE d.emp_idx = #{emp_idx}
-		ORDER BY d.doc_date DESC
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
+   
+    <!-- 결재 임시저장 -->
+    <insert id="formSave" parameterType="com.best.document.DocumentDTO">
+    	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status, doc_number)
+    		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status}, #{doc_number})
+    </insert>
 	<!-- 임시저장 상세보기 -->
 	<select id="draftDetail" resultType="String">
 		SELECT doc_content FROM document WHERE doc_idx = #{doc_idx}
@@ -85,6 +234,14 @@
 	<delete id="draftDelete">
 		DELETE FROM document where doc_idx = #{doc_idx}
 	</delete>
+	<!-- 임시저장 수정 -->
+	<update id="formUpdate">
+		UPDATE document 
+		SET 
+			doc_subject = #{doc_subject},
+			doc_content = #{doc_content}
+		WHERE doc_idx = #{doc_idx}
+	</update>
 	
 	
     <!-- 양식 불러오기 -->
@@ -92,11 +249,6 @@
         SELECT form_content FROM form WHERE form_subject = #{form_subject}
     </select>
     
-    <!-- 결재 기안, 임시저장 -->
-    <insert id="formSave" parameterType="com.best.document.DocumentDTO">
-    	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status, doc_number)
-    		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status}, #{doc_number})
-    </insert>
     <!-- 문서번호 생성 -->
     <select id="getLastSequenceForDate" resultType="Integer">
 	    SELECT MAX(CAST(SUBSTRING(doc_number, INSTR(doc_number, '-') + 1) AS UNSIGNED))
@@ -107,22 +259,25 @@
 	
 	<!-- 전자결재 기안자 정보 -->
 	<select id="getEmpDetails" resultType="map">
-		 SELECT 
-	        e.name,
-	        e.sign,
-	        m.name AS managerName,
-	        dp.depart_name,
-	        r.rank_name
-	    FROM 
-	        employee e
-	    JOIN 
-	        employee m ON m.emp_idx = e.parent_emp_idx
-	    LEFT JOIN 
-	        department dp ON dp.depart_idx = e.depart_idx
-	    LEFT JOIN 
-	        rank_emp r ON r.rank_idx = e.rank_idx
-	    WHERE 
-	        e.emp_idx = #{emp_idx};
+		SELECT 
+		    e.name,
+		    e.sign,
+		    m.name AS managerName,
+		    dp.depart_name,
+		    r.rank_name,
+		    le.remain_leave
+		FROM 
+		    employee e
+		JOIN 
+		    employee m ON m.emp_idx = e.parent_emp_idx
+		LEFT JOIN 
+		    department dp ON dp.depart_idx = e.depart_idx
+		LEFT JOIN 
+		    rank_emp r ON r.rank_idx = e.rank_idx
+		LEFT JOIN 
+		    leave_emp le ON le.emp_idx = e.emp_idx
+		WHERE 
+		    e.emp_idx = #{emp_idx}
 	</select>
 	
 </mapper>  

@@ -6,8 +6,12 @@
 <meta charset="UTF-8" />
 <title>Insert title here</title>
 <link rel="stylesheet" href="resources/css/root.css" />
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <style>
+input, textarea, #approvalModal{
+	pointer-events: auto;  /* input과 textarea는 마우스 이벤트 허용 */
+}
 .docnav {
 	display: flex;
 	justify-content: space-between;
@@ -197,6 +201,14 @@ input[name="doc_subject"]{
 	    transform: scale(1) !important;
 	    color: black !important;
 	}
+	input.manager, input.today2, input.today3{
+	    all: unset; /* 모든 기본 스타일 제거 */
+	    width: 7vw; /* 필요에 따라 크기 지정 */
+	    border: none; /* 테두리 제거 */
+	    background: none; /* 배경 제거 */
+	    padding: 0; /* 여백 제거 */
+	    font: inherit; /* 상속받은 글꼴 사용 */
+	}
 </style>
 </head>
 <body>
@@ -264,7 +276,8 @@ $(document).ready(function() {
 	
    var inputValue = $('input[data-index="1"]').val();
    console.log(inputValue);  // 해당 input의 value를 콘솔에 출력
-	
+   
+
 });
 
 
@@ -309,7 +322,7 @@ function openModal(content, form_subject) {
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
         '      <button class="modal-btn save" onclick="btnAction(\'임시저장\')">임시저장</button>' +
-        '      <button class="modal-btn append" onclick="button3Action(\'결재선\')">결재선 추가</button>' +
+        '      <button class="modal-btn append" onclick="addBtn()">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
         '    <div class="content" contenteditable="true">' + content + '</div>' +
@@ -332,6 +345,26 @@ function openModal(content, form_subject) {
     script.src = 'resources/js/document-call.js';
     script.type = 'text/javascript';
     document.body.appendChild(script);
+	// 오늘 날짜를 yyyy-mm-dd 형식으로 가져오기
+  	var today = new Date();
+   	var dd = String(today.getDate()).padStart(2, '0');
+   	var mm = String(today.getMonth() + 1).padStart(2, '0');
+   	var yyyy = today.getFullYear();
+   	today = yyyy + '-' + mm + '-' + dd;  // 예: 2024-12-22
+   
+   	// .ipt_editor_date 클래스의 input 요소에 min 속성 설정
+   	$('.ipt_editor_date').attr('min', today);
+   
+   	// 날짜 값이 변경될 때마다 호출되는 함수
+   	$('.ipt_editor_date').change(function() {
+   		var selectedDate = $(this).val();  // 선택된 날짜 값
+       
+       	// 선택된 날짜가 오늘 이전이라면
+       	if (selectedDate < today) {
+           	alert('오늘 이전 날짜는 선택할 수 없습니다.');
+           	$(this).val(today);  // 날짜를 오늘로 강제 설정
+       	}
+   	});
 }
 
 // 결재 기안, 임시저장
@@ -435,7 +468,57 @@ function btnAction(actionType) {
         }
     });
 }
+function addBtn() {
+	$.ajax({
+        url: 'orgChartGet.ajax',  // 서버에서 필요한 부분만 반환하도록 설정
+        type: 'GET',  // GET 방식으로 요청
+        success: function(response) {
+        	// 이미 모달이 열려있는지 확인
+            if ($('.modal').length === 0) {
+                // 서버에서 받은 HTML을 모달 창에 삽입
+                var modalHtml = 
+                    '<div class="modal" style="display: block;">' +
+                    '  <div class="modal-content">' +
+                    '    <span class="close-btn">X</span>' +
+                    '    <div class="userbox">' + response + '</div>' +
+                    '  </div>' +
+                    '</div>';
 
+                // body에 모달 추가
+                $('body').append(modalHtml);
+
+                // 모달 닫기 기능 추가
+                $('.close-btn').click(function() {
+                    $(this).closest('.modal').remove();
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX 요청 실패:', error);
+        }
+    });
+    // 기존 signBox 테이블을 찾음
+/*     var signBox = $('.signBox');
+    var managerName1 = '${managerName1}';
+    var todayDate3 = '${todayDate3}';
+    // 새로운 table HTML 생성
+    var newTableHtml = 
+        '<table style="width: 7vw; height: 14vh; border: 1px solid black; border-collapse: collapse;">' +
+        '  <tr>' +
+        '    <td rowspan="3" style="text-align: center; width: 1.2vw; border: 1px solid black; background-color: gainsboro;">결재</td>' +
+        '    <td class="managerName1" style="text-align: center; height: 0.5vh; border: 1px solid black;"><input type="text" class="manager" value="'+managerName1+'" readonly/></td>' +
+        '  </tr>' +
+        '  <tr>' +
+        '    <td class="sign" style="text-align: center; border: 1px solid black;"></td>' +
+        '  </tr>' +
+        '  <tr>' +
+        '    <td class="todayDate3" style="text-align: center; height: 0.5vh; border: 1px solid black;"><input type ="text" class="today3" value="'+todayDate3+'"readonly/></td>' +
+        '  </tr>' +
+        '</table>';
+
+    // signBox 테이블 뒤에 새로운 table 추가
+    signBox.after(newTableHtml); */
+}
 
 </script>
 </html>

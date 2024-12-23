@@ -304,10 +304,6 @@ function pageCall(page){
                 startPage: 1,
                 totalPages: data.importTotalPages,
                 visiblePages: 5,
-                first: '<i class="fas fa-angle-double-left"></i>',
-                prev: '<i class="fas fa-angle-left"></i>',
-                next: '<i class="fas fa-angle-right"></i>',
-                last: '<i class="fas fa-angle-double-right"></i>',
                 onPageClick: function(evt, page){
                     console.log("evt", evt);  // 클릭 이벤트
                     console.log("page", page);  // 클릭한 페이지 번호
@@ -320,10 +316,6 @@ function pageCall(page){
                 startPage: 1,
                 totalPages: data.generalTotalPages,
                 visiblePages: 5,
-                first: '<i class="fas fa-angle-double-left"></i>',
-                prev: '<i class="fas fa-angle-left"></i>',
-                next: '<i class="fas fa-angle-right"></i>',
-                last: '<i class="fas fa-angle-double-right"></i>',
                 onPageClick: function(evt, page){
                     console.log("evt", evt);  // 클릭 이벤트
                     console.log("page", page);  // 클릭한 페이지 번호
