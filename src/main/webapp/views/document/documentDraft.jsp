@@ -33,7 +33,7 @@
 	.docbox{
 		border: 2px solid var(--primary-color);
 	    width: -webkit-fill-available;
-	    height: 700px;
+	    height: 745px;
 	    border-radius: 10px;
 	}
 	.opt div:nth-child(6){
@@ -55,21 +55,27 @@
 		width: -webkit-fill-available;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
-		margin: 0 48px 30px 48px;
+		margin: 0 48px 15px 48px;
 	    text-align: center;
 	}
-	table.myTable tr:not(:last-child) td, table.myTable th {
+	table.myTable caption.caption{
+		color: var(--primary-color) !important;
+	    font-size: large;
+	    font-weight: bold;
+	    text-align: left;
+	    caption-side: top;
+	}
+	table.myTable caption.sentCap{
+		padding-top: 0;
+	}
+	table.myTable tr:not(:last-child) td{
         border-bottom: 1px solid var(--primary-color) !important;
     }
 	table.myTable tr{
 		border-bottom: 1px solid var(--primary-color);
 		height: 35px;
 	}
-	table.myTable th, table.myTable td{
-		padding-left: 10px;
-   		text-align: inherit;
-	}
-	.saveList tr td:hover :nth-child(3) {
+	.saveList tr td:hover:nth-child(4) {
 	    color: var(--accent-color);
 	    cursor: pointer;
 	}
@@ -150,14 +156,6 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}
-	textarea{
-	  resize: none; /* 크기 조절 기능 비활성화 */
-	  overflow: hidden; /* 내용이 넘칠 때 스크롤바가 나타나지 않게 */
-	  width: auto; /* 너비 고정 */
-	  height: auto; /* 높이 고정 */
-	  position: relative; /* 고정 위치 설정 */
-	}
-	
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -170,9 +168,10 @@
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
 			<table class="table1 myTable">
+				<caption class="receivedCap caption">임시 저장된 문서</caption>
 				<thead>
 					<tr>
-						<th>NO.</th>
+						<th>NO</th>
 						<th>문서번호</th>
 						<th>분류</th>
 						<th>문서 제목</th>
@@ -194,39 +193,42 @@
 </body>
 <script>
 var showPage = 1; // 기본으로 보여줄 페이지
-
+var text = "임시저장";
 pageCall(showPage);
 
 function pageCall(page){
     console.log('pageCall');
-    
+
     $.ajax({
         type: 'GET',
-        url: 'saveList.ajax',
+        url: 'documentList.ajax',
         data: {
+        	'text': text,
             'page': page,  // 몇 페이지 보여줄지
             'cnt': 15       // 페이지당 보여줄 게시물 수
         },
         dataType: 'JSON',
         success: function(data) {
             console.log(data);
-            Print(data.saveList);
-
-            // 페이징
-            $('#Pagination').twbsPagination({
-                startPage: 1,
-                totalPages: data.totalPages,
-                visiblePages: 5,
-                first: '<i class="fas fa-angle-double-left"></i>',
-                prev: '<i class="fas fa-angle-left"></i>',
-                next: '<i class="fas fa-angle-right"></i>',
-                last: '<i class="fas fa-angle-double-right"></i>',
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCall(page);
-                }
-            });
+            if(data.saveList.length>0){
+            	Print(data.saveList);
+	            // 페이징
+	            $('#Pagination').twbsPagination({
+	                startPage: 1,
+	                totalPages: data.totalPages,
+	                visiblePages: 5,
+	                onPageClick: function(evt, page){
+	                    console.log("evt", evt);  // 클릭 이벤트
+	                    console.log("page", page);  // 클릭한 페이지 번호
+	                    pageCall(page);
+	                }
+	            });
+            }else{
+            	var content = '<tr>';
+        		content += '<td colspan="7"> 임시저장 문서가 없습니다. </td>'
+        		content += '</tr>';
+        		$('.saveList').html(content);
+            }
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -280,10 +282,8 @@ function Print(document) {
     });
 }
 
-
 // 임시저장 상세보기
 function draftDetail(doc_idx) {
-	
     $.ajax({
         type: 'GET',
         url: 'draftDetail.ajax',
@@ -298,17 +298,17 @@ function draftDetail(doc_idx) {
         }
     });
 }
+
 //모달 열기
 function open(cont) {
     var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
-
     // 모달 HTML 생성
     var Html = 
         '<div id="' + modalId + '" class="modal" style="display: none;">' +
         '  <div class="modal-content">' +
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
-        '      <button class="modal-btn save" onclick="btnAction(\'수정\')">수정</button>' +
+        '      <button class="modal-btn save" onclick="updateBtn()">수정</button>' +
         '      <button class="modal-btn append" onclick="button3Action(\'결재선\')">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
@@ -329,7 +329,83 @@ function open(cont) {
     });
 }
 
-// 임시저장 삭제
+function updateBtn() {
+    var doc_idx = $('input[name="doc_idx"]').val(); 
+    var doc_subject = $('input[name="doc_subject"]').val();
+    var textareaValue = $('.modal-content:last-child textarea').val();
+    var updatedHtml = $('.modal-content:last-child').html();
+    var start_date = $('input[name="start_date"]').val();
+    var end_date = $('input[name="end_date"]').val();
+    
+    // 동적으로 추가된 input 값들을 values 배열에 저장
+    var values = [];
+    $('input[data-index]').each(function() {
+        values.push($(this).val());    
+    });
+
+    // HTML 수정
+    updatedHtml = updatedHtml.replace(
+        /<input([^>]*name=["']doc_subject["'][^>]*)>/,
+        '<input$1 value="' + doc_subject + '">'
+    );
+    updatedHtml = updatedHtml.replace(
+        /<textarea[^>]*>.*?<\/textarea>/,
+        '<textarea>' + textareaValue + '</textarea>'
+    );
+    $('.modal-content:last-child').html(updatedHtml);
+
+    var doc_content = $('.modal-content:last-child .content').html();
+
+    var data = {
+        form_idx: $('input[name="form_idx"]').val(),
+        doc_subject: doc_subject,
+        doc_content: doc_content,
+        doc_idx: doc_idx 
+    };
+
+    // 추가적으로 필요한 데이터 추가
+    switch (data.form_idx) {
+        case '1':
+            updatedHtml = updatedHtml.replace(
+                /<input([^>]*name=["']start_date["'][^>]*)>/,
+                '<input$1 value="' + start_date + '">'
+            );
+            updatedHtml = updatedHtml.replace(
+                /<input([^>]*name=["']end_date["'][^>]*)>/,
+                '<input$1 value="' + end_date + '">'
+            );
+            $('.modal-content:last-child').html(updatedHtml);
+            data.start_date = start_date;
+            data.end_date = end_date;
+            break;
+        case '3':
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i];
+                var dataIndex = i + 1;
+                updatedHtml = updatedHtml.replace(
+                    new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
+                    '<input$1 value="' + value + '">'
+                );
+            }
+            $('.modal-content:last-child').html(updatedHtml);
+            break;
+    }
+
+    // 수정된 데이터를 서버로 전송
+    $.ajax({
+        type: 'POST',
+        url: 'formUpdate.ajax',
+        data: data,
+        success: function(response) {
+            alert(response.message);
+            if (response.success) {
+                location.reload();
+            } else {
+                // 실패 처리
+            }
+        }
+    });
+}
 
 
 </script>
