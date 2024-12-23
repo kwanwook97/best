@@ -348,7 +348,7 @@ purple{
 .chat-bubble {
     background-color: #8B6AA7;
     color: #FFF5E2;
-    padding: 4px 10px;
+    padding: 7px 10px;
     border-radius: 5px;
     font-size: 14px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -378,7 +378,7 @@ purple{
 .send-message{
 	background-color: #FFF5E2;
     color: #30005A;
-    padding: 4px 10px;
+    padding: 7px 10px;
     border-radius: 5px;
     font-size: 14px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

@@ -41,15 +41,19 @@ public interface ChatDAO {
 	int removeParticipant(int chat_idx, int emp_idx);
 
 	int checkMessageExistsForToday(int chat_idx, String today);
+	
+	
+	
+	
+	
+	
+	// 메시지 읽지 않음 씨빨!!!!!!
+	int getUnreadMessageCountByChat(Map<String, Object> params);
 
-	void updateLastMsg(int chatIdx, int empIdx, int lastMsgIdx);
+	int getUnreadUserCount(int msg_idx);
 
-	Integer getLastMsg(int chatIdx, int empIdx);
+	void insertDefaultMsgRead(Map<String, Object> params);
 
-	int getUnreadMessageCount(int chatIdx, int empIdx);
-
-	int getUnreadCountForMessage(int chat_idx, int msg_idx);
-
-
+	void updateMsgRead(Map<String, Object> params);
 
 }

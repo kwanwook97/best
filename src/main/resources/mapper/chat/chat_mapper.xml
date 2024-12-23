@@ -91,11 +91,11 @@
 	</insert>
 	
 	<!-- 메시지 저장 -->
-	<insert id="message"
-		parameterType="com.best.chat.MessageDTO">
-		INSERT INTO message (chat_idx, msg_send_idx, content, time)
-		VALUES (#{chat_idx}, #{msg_send_idx}, #{content}, NOW())
+	<insert id="message" parameterType="com.best.chat.MessageDTO" useGeneratedKeys="true" keyProperty="msg_idx">
+    	INSERT INTO message (chat_idx, msg_send_idx, content, time)
+    	VALUES (#{chat_idx}, #{msg_send_idx}, #{content}, NOW())
 	</insert>
+
 	<!-- 메시지 날짜 확인 -->
 	<select id="checkMessageExistsForToday" parameterType="map" resultType="int">
     	SELECT COUNT(*)
@@ -125,36 +125,7 @@
         	m.time ASC
 	</select>
 	
-	<!-- 마지막 읽은 메시지 업데이트 -->
-	<update id="updateLastMsg">
-    	UPDATE party
-    	SET last_msg = #{lastMsgIdx}
-    	WHERE chat_idx = #{chatIdx} AND emp_idx = #{empIdx}
-	</update>
-
-	<!-- 마지막 읽은 메시지 가져오기 -->
-	<select id="getLastMsg" resultType="int">
-    	SELECT last_msg
-    	FROM party
-    	WHERE chat_idx = #{chatIdx} AND emp_idx = #{empIdx}
-	</select>
 	
-	<select id="getUnreadMessageCount" resultType="int">
-    	SELECT COUNT(*)
-   		FROM message
-    	WHERE chat_idx = #{chat_idx} AND msg_idx > (
-        	SELECT last_msg FROM party WHERE chat_idx = #{chat_idx} AND emp_idx = #{emp_idx}
-    	)
-	</select>
-	
-	<select id="getUnreadCountForMessage" resultType="int">
-    SELECT COUNT(*)
-    FROM party
-    WHERE chat_idx = #{chat_idx}
-      AND last_msg &lt; #{msg_idx}
-</select>
-
-
 	
 	<!-- 참여중인 대화방 참여자 리스트 -->
 	<select id="getChatParticipants" resultType="map">
@@ -175,5 +146,46 @@
    	 	WHERE chat_idx = #{chat_idx}
       	AND emp_idx = #{emp_idx}
 	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 메시지 읽음 표시!!!!!!!!!!!!씨빨 -->
+	<insert id="insertDefaultMsgRead" parameterType="map">
+    INSERT INTO msg_read (msg_idx, emp_idx, is_read, read_at)
+    SELECT #{msg_idx}, emp_idx, 0, NULL
+    FROM party
+    WHERE chat_idx = #{chat_idx}
+    AND emp_idx != #{sender_idx}
+</insert>
+	<update id="updateMsgRead" parameterType="map">
+    UPDATE msg_read
+    SET is_read = 1, read_at = NOW()
+    WHERE msg_idx = #{msg_idx}
+    AND emp_idx = #{emp_idx}
+</update>
+	<select id="getUnreadUserCount" parameterType="int" resultType="int">
+    SELECT COUNT(*) 
+    FROM msg_read 
+    WHERE msg_idx = #{msg_idx} 
+      AND is_read = 0;
+</select>
+<select id="getUnreadMessageCountByChat" parameterType="map" resultType="int">
+    SELECT COUNT(*) 
+    FROM message m
+    LEFT JOIN msg_read r ON m.msg_idx = r.msg_idx
+    WHERE m.chat_idx = #{chat_idx} 
+      AND r.emp_idx = #{emp_idx} 
+      AND r.is_read = 0;
+</select>
 
 </mapper>  

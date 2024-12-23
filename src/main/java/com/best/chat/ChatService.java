@@ -163,20 +163,20 @@ public class ChatService {
 	
 	
 	/* 메시지 저장 & 날짜 확인 */
-	public void message(MessageDTO message) {
+	public int message(MessageDTO message) {
 	    // 오늘 날짜 포맷
 	    String today = new SimpleDateFormat("yyyy년 MM월 dd일").format(new Date());
 
 	    // 오늘 날짜에 메시지가 있는지 확인
 	    int messageExists = chatDAO.checkMessageExistsForToday(message.getChat_idx(), today);
-	    
-	    // 메시지가 없으면 시스템 메시지로 날짜 추가
+
+	    // 메시지가 없으면 시스템 메시지 추가
 	    if (messageExists == 0) {
 	        MessageDTO systemMessage = new MessageDTO();
 	        systemMessage.setChat_idx(message.getChat_idx());
 	        systemMessage.setContent(today); // 날짜를 시스템 메시지로 설정
 	        systemMessage.setMessage_type("system");
-	        chatDAO.insertEnterMessage(systemMessage); // 시스템 메시지 DB에 저장
+	        chatDAO.insertEnterMessage(systemMessage); // 시스템 메시지 저장
 
 	        // WebSocket으로 날짜 시스템 메시지 전송
 	        broadcastEnterMessage(message.getChat_idx(), today);
@@ -184,22 +184,17 @@ public class ChatService {
 
 	    // 메시지 저장
 	    chatDAO.message(message);
-	}
-	
-	 /* 마지막 읽은 메시지 업데이트 */
-    @Transactional
-    public void updateLastMsg(int chatIdx, int empIdx, int lastMsgIdx) {
-        chatDAO.updateLastMsg(chatIdx, empIdx, lastMsgIdx);
-    }
+	    int msgIdx = message.getMsg_idx(); // 저장된 msg_idx 가져오기
 
-    /* 읽지 않은 메시지 수 계산 */
-    public int getUnreadMessageCount(int chatIdx, int empIdx) {
-        return chatDAO.getUnreadMessageCount(chatIdx, empIdx);
-    }
-    
-    public int getUnreadCountForMessage(int chat_idx, int msg_idx) {
-        return chatDAO.getUnreadCountForMessage(chat_idx, msg_idx);
-    }
+	    // msg_read에 기본값 삽입
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("msg_idx", msgIdx);
+	    params.put("chat_idx", message.getChat_idx());
+	    params.put("sender_idx", message.getMsg_send_idx());
+	    chatDAO.insertDefaultMsgRead(params);
+
+	    return msgIdx;
+	}
 	
 	/* 메시지 가져오기 */
 	public List<Map<String, Object>> getMessagesByChatIdx(int chatIdx) {
@@ -234,5 +229,40 @@ public class ChatService {
 	    // WebSocket으로 메시지 전송
 	    broadcastEnterMessage(chat_idx, content);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// 메시지 읽지 않음 씨빨!!!!
+	public void markMessageAsRead(int msgIdx, int empIdx) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("msg_idx", msgIdx);
+	    params.put("emp_idx", empIdx);
+
+	    chatDAO.updateMsgRead(params);
+	}
+	public int getUnreadMessageCountByChat(int chat_idx, int emp_idx) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("chat_idx", chat_idx);
+	    params.put("emp_idx", emp_idx);
+	    return chatDAO.getUnreadMessageCountByChat(params);
+	}
+	public int getUnreadUserCount(int msg_idx) {
+	    return chatDAO.getUnreadUserCount(msg_idx);
+	}
+
+
 	
 }

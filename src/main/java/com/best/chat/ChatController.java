@@ -88,72 +88,39 @@ public class ChatController {
     }
 	
 	/* 메시지 저장 */
-	 @PostMapping(value="/message.ajax")
-	 @ResponseBody
-	    public ResponseEntity<?> message(@RequestBody Map<String, Object> payload, HttpSession session) {
-	        try {
-	            int chatIdx = Integer.parseInt(payload.get("chat_idx").toString());
-	            String content = payload.get("content").toString();
-	            int senderIdx = Integer.parseInt((String) session.getAttribute("loginId"));
+	@PostMapping(value = "/message.ajax")
+	@ResponseBody
+	public ResponseEntity<?> message(@RequestBody Map<String, Object> payload, HttpSession session) {
+	    try {
+	        int chatIdx = Integer.parseInt(payload.get("chat_idx").toString());
+	        String content = payload.get("content").toString();
+	        int senderIdx = Integer.parseInt((String) session.getAttribute("loginId"));
 
-	            MessageDTO message = new MessageDTO();
-	            message.setChat_idx(chatIdx);
-	            message.setMsg_send_idx(senderIdx);
-	            message.setContent(content);
-	            message.setTime(new Date()); // 현재 시간
+	        MessageDTO message = new MessageDTO();
+	        message.setChat_idx(chatIdx);
+	        message.setMsg_send_idx(senderIdx);
+	        message.setContent(content);
+	        message.setTime(new Date()); // 현재 시간
 
-	            chatService.message(message);
+	        // 메시지 저장 및 msg_idx 반환
+	        int msgIdx = chatService.message(message);
 
-	            return ResponseEntity.ok("Message saved successfully");
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving message");
-	        }
-	 }
+	        // 저장된 메시지와 msg_idx를 클라이언트로 반환
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("msg_idx", msgIdx);
+	        response.put("chat_idx", chatIdx);
+	        response.put("content", content);
+	        response.put("time", message.getTime());
+
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving message");
+	    }
+	}
+
 	 
 	 
-
-
-	 /* 읽지 않은 메시지 수 */
-	 @GetMapping("/unreadCount.ajax")
-	 @ResponseBody
-	 public ResponseEntity<?> unreadCount(@RequestParam int chat_idx, HttpSession session) {
-	     int emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
-	     int unreadCount = chatService.getUnreadMessageCount(chat_idx, emp_idx);
-	     return ResponseEntity.ok(unreadCount);
-	 }
-	 
-	 @PostMapping("/updateLastMsg.ajax")
-	 @ResponseBody
-	 public ResponseEntity<?> updateLastMsg(@RequestBody Map<String, Object> payload, HttpSession session) {
-	     try {
-	         int chatIdx = Integer.parseInt(payload.get("chat_idx").toString());
-	         int lastMsgIdx = Integer.parseInt(payload.get("msg_idx").toString());
-	         int empIdx = Integer.parseInt((String) session.getAttribute("loginId")); // 현재 사용자 ID 가져오기
-
-	         chatService.updateLastMsg(chatIdx, empIdx, lastMsgIdx); // Service 호출
-
-	         return ResponseEntity.ok("Last message updated successfully");
-	     } catch (Exception e) {
-	         e.printStackTrace();
-	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating last message");
-	     }
-	 }
-	 
-	 @GetMapping("/messageUnreadCount.ajax")
-	 @ResponseBody
-	 public ResponseEntity<?> getMessageUnreadCount(@RequestParam int chat_idx, @RequestParam int msg_idx) {
-	     try {
-	         int unreadCount = chatService.getUnreadCountForMessage(chat_idx, msg_idx);
-	         return ResponseEntity.ok(unreadCount);
-	     } catch (Exception e) {
-	         e.printStackTrace();
-	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류 발생");
-	     }
-	 }
-
-
-	
 	
 	/* 메신져 리스트 이동*/
 	@RequestMapping(value="/chatList.go")
@@ -229,5 +196,36 @@ public class ChatController {
 	    }
 	    return response;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// 메지시 읽지 않음 씨빨!!!!!
+	@PostMapping("/markAsRead")
+	@ResponseBody
+	public ResponseEntity<?> markAsRead(@RequestParam int msgIdx, HttpSession session) {
+	    int empIdx = Integer.parseInt((String) session.getAttribute("loginId"));
+	    chatService.markMessageAsRead(msgIdx, empIdx);
+	    return ResponseEntity.ok("Message marked as read");
+	}
+	@GetMapping("/unreadMessageCountByChat.ajax")
+	@ResponseBody
+	public int getUnreadMessageCountByChat(@RequestParam int chat_idx, HttpSession session) {
+	    int emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+	    return chatService.getUnreadMessageCountByChat(chat_idx, emp_idx);
+	}
+	
+	@GetMapping("/unreadUserCount.ajax")
+	@ResponseBody
+	public int getUnreadUserCount(@RequestParam int msg_idx) {
+	    return chatService.getUnreadUserCount(msg_idx);
+	}
+
 
 }
