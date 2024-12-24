@@ -108,13 +108,19 @@
   		</a>
   		<ul class="dropD-menu">
     		<li class="dropD-item">
+      			<a href="mailWrite.go">
+        			<i class="bi bi-envelope-paper-fill"></i> <span>메일작성</span>
+        			<i class="fa-solid fa-angle-right"></i>
+      			</a>
+    		</li>
+    		<li class="dropD-item">
       			<a href="mail.go">
         			<i class="bi bi-envelope-paper-fill"></i> <span>받은 메일함</span>
         			<i class="fa-solid fa-angle-right"></i>
       			</a>
     		</li>
     		<li class="dropD-item">
-      			<a href="javaScript:void(0);">
+      			<a href="test.go">
         			<i class="bi bi-send"></i> <span>보낸 메일함</span>
  					<i class="fa-solid fa-angle-right"></i>
       			</a>
@@ -381,7 +387,6 @@
 </nav>
 </header>
 <script>
-	
 </script>
 
 </body>
