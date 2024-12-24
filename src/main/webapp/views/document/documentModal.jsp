@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 <link rel="stylesheet" href="resources/css/root.css" />
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
+<script src="resources/js/read-unread.js" type="text/javascript"></script>
 <style>
 input, textarea, #approvalModal{
 	pointer-events: auto;  /* input과 textarea는 마우스 이벤트 허용 */
@@ -204,7 +204,7 @@ input[name="doc_subject"]{
 }
 /* 모달 종류 */
 .one div.modal-content{
-       left: 6%;
+     left: 6%;
     transform: scale(0.9) !important;
 }
 .two div.modal-content{
@@ -249,12 +249,12 @@ input.manager, input.today2, input.today3{
 			</div>
 		</div>
 		<div class="searchbox">
-			<c:if test="${not (text == '참조' || text == '임시저장')}">
 			    <select class="listSelect">
 			        <option class="listOpt" value="received">받은문서</option>
-			        <option class="listOpt" value="sent">보낸문서</option>
+			        <c:if test="${not (text eq '참조' || text eq '임시저장')}">
+				       <option class="listOpt" value="sent">보낸문서</option>
+					</c:if>
 			    </select>
-			</c:if>
 			<select class="searchSelect">
 	          <option class="searchOpt" value="subject">제목</option>
 	          <option class="searchOpt" value="docNum">문서번호</option>
@@ -432,35 +432,61 @@ function openModal(content, form_subject) {
 
 // 결재 기안, 임시저장
 function btnAction(actionType) {
-	
+	console.log(actionType);
+	var doc_idx = $('input[name="doc_idx"]').val();
+	console.log("문서번호 "+doc_idx);
 	var form_idx = $('input[name="form_idx"]').val();
 	console.log("폼idx "+form_idx);
 	var doc_subject = $('input[name="doc_subject"]').val();
-	var textareaValue = $('.modal-content:last-child textarea').val(); 
+	console.log("제목 :"+ doc_subject);
+	var textareaValue = $('.modal-content:last-child textarea').val();
+	console.log("본문", textareaValue);
 	var updatedHtml = $('.modal-content:last-child').html();
+	console.log("html : ", updatedHtml);
     var start_date = $('input[name="start_date"]').val();
+    console.log("연차 시작", start_date);
     var end_date = $('input[name="end_date"]').val();
+    console.log("연차 끝", end_date);
     // input[data-index]의 값들을 values 배열에 저장
     var values = [];
     $('input[data-index]').each(function() {
-        values.push($(this).val());    
+        values.push($(this).val());
     });
-	// HTML에서 <input name="doc_subject"> 부분 찾아서 그 안의 값을 doc_subject로 변경
-	updatedHtml = updatedHtml.replace(
-	    /<input([^>]*name=["']doc_subject["'][^>]*)>/,
-	    '<input$1 value="' + doc_subject + '">'
-	);
-	// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경합니다
-	updatedHtml = updatedHtml.replace(
-	    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
-	    '<textarea>' + textareaValue + '</textarea>'  // textarea 값을 새로 덮어씌움
-	);
+    if(actionType == '기안' || actionType == '수정'){
+    	updatedHtml = updatedHtml.replace(
+   		    /(<input[^>]*\bname=["']doc_subject["'][^>]*)\s*value=["'][^"]*["']/i, // value가 존재하는 경우
+   		    function(match, group) {
+   		        return group + ' value="' + doc_subject + '"';  // 기존 value 속성 덮어쓰기
+   		    }
+   		);
+    	// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 덮어씁니다
+    	updatedHtml = updatedHtml.replace(
+    	    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
+    	    function(match) {
+    	        // 기존 내용이 있을 경우, 그 내용을 덮어씁니다
+    	        return match.replace(/<textarea[^>]*>(.*?)<\/textarea>/, '<textarea>' + textareaValue + '</textarea>');
+    	    }
+    	);
+    }else{    	
+		// HTML에서 <input name="doc_subject"> 부분 찾아서 그 안의 값을 doc_subject로 변경
+		updatedHtml = updatedHtml.replace(
+		    /<input([^>]*\bname=["']doc_subject["'][^>]*)>/i,
+		    '<input$1 value="' + doc_subject + '">'
+		);
+		console.log("After Replace: ", updatedHtml);
+		// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경합니다
+		updatedHtml = updatedHtml.replace(
+		    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
+		    '<textarea>' + textareaValue + '</textarea>'  // textarea 값을 새로 덮어씌움
+		);
+    }
 	// 수정된 HTML을 다시 modal-content에 적용
 	$('.modal-content:last-child').html(updatedHtml);
 	var doc_content = $('.modal-content:last-child .content').html();
-	console.log("최종"+ doc_content);
-	
+
+	console.log("시발롬 : "+doc_content);	
 	var data = {
+		doc_idx: doc_idx,
 	    form_idx: form_idx,
 	    action: actionType,
 	    doc_subject: doc_subject,
@@ -483,7 +509,6 @@ function btnAction(actionType) {
 	    	// 수정된 HTML을 다시 modal-content에 적용
 	    	$('.modal-content:last-child').html(updatedHtml);
 	    	var doc_content = $('.modal-content:last-child .content').html();
-	    	console.log("최종"+ doc_content);
 	    	
         	data.start_date = start_date;
             data.end_date = end_date;
@@ -515,6 +540,7 @@ function btnAction(actionType) {
 	// 마지막으로 doc_content를 업데이트된 HTML에서 추출하여 data 객체에 저장
 	var doc_content = $('.modal-content:last-child .content').html();
 	data.doc_content = doc_content;  
+	console.log("최종"+ doc_content);
 	
 	$.ajax({
         type: 'GET',

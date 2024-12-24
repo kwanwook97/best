@@ -54,17 +54,20 @@ public interface DocumentDAO {
 	List<Map<String, Object>> searchReferenceList(int emp_idx, int limit, int offset, String searchType, String query);
 	
 	// 읽음, 읽지않음 처리
-	boolean updateRead(int doc_idx, int doc_read);
+	boolean updateRead(int doc_idx, int doc_read, int approv_num);
 	
 	
 	// 전자결재 임시저장
 	int formSave(DocumentDTO docDTO);
 	// 전자결재 임시저장 상세보기
-	String draftDetail(String doc_idx);
+	String getDocument(String doc_idx);
+	// 전자결재 문서 번호
+	String getDocNumer(String doc_idx);
 	// 전자결재 임시저장 삭제
 	int draftDelete(String doc_idx);
-	// 전자결재 임시저장 수정
-	int formUpdate(String doc_subject, String doc_content, String doc_idx);
+	// 전재결재 임시저장 수정
+	int formUpdate(String doc_idx, String doc_content);
+	int formSub(String doc_idx, String doc_subject);
 	
 	// 전자결재 양식 불러오기
 	String getForm(String form_subject);
@@ -76,6 +79,9 @@ public interface DocumentDAO {
 
 	// 전자결재 기안자 정보
 	Map<String, Object> getEmpDetails(int emp_idx);
+
+
+
 
 
 

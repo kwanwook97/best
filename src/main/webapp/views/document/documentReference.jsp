@@ -287,10 +287,10 @@ function received(document) {
 		content += '<td>' + docDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		content += '<td>' + 
-	        (item.doc_read == false
-	         ? '<i class="fas fa-envelope" title="읽지 않음"></i>'
-	         : '<i class="fas fa-envelope-open-text" title="읽음"></i>') +
-	    '</td>';
+		    (item.doc_read == false
+		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+		'</td>';
     
 		content += '</tr>';
 	}

@@ -132,10 +132,10 @@ public class DocumentController {
 	// 읽음, 읽지않음 처리
 	@PostMapping(value="/updateRead.ajax")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> updateRead(Integer doc_idx, Integer doc_read) {
+	public ResponseEntity<Map<String, Object>> updateRead(int doc_idx, int doc_read, int approv_num) {
 		Map<String, Object> response = new HashMap<>();
 		
-		boolean success = documentService.updateRead(doc_idx, doc_read);
+		boolean success = documentService.updateRead(doc_idx, doc_read, approv_num);
 	
         if (success) {
             response.put("success", 1);
@@ -150,8 +150,10 @@ public class DocumentController {
 	// 임시저장 상세보기
 	@GetMapping(value="/draftDetail.ajax")
 	@ResponseBody
-	public String draftDetail(String doc_idx) {
+	public String draftDetail(@RequestParam("doc_idx") String doc_idx) {
+	    logger.info("번호번호!!!: "+doc_idx);
 		String Detail = documentService.draftDetail(doc_idx);
+		logger.info("바꾸고 난거: "+Detail);
 		return Detail;		
 	}
 	// 임시저장 삭제
@@ -159,7 +161,7 @@ public class DocumentController {
 	@ResponseBody
 	public Map<String, Object> draftDelete(String doc_idx) {
 		Map<String, Object> response = new HashMap<>();
-	    
+
 		int row = documentService.draftDelete(doc_idx);
 		if(row>0) {			
 			response.put("success", true);
@@ -219,11 +221,12 @@ public class DocumentController {
     
     
     
-	// 결재 기안, 임시저장
+	// 결재 기안, 임시저장, 수정
 	@GetMapping(value="/formType.ajax")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> formType(String form_idx,
 			String action, String doc_subject, String doc_content,
+			@RequestParam(required = false) String doc_idx,
 	        @RequestParam(required = false) String start_date,
 	        @RequestParam(required = false) String end_date) {
 		Map<String, String> response = new HashMap<String, String>();
@@ -237,24 +240,13 @@ public class DocumentController {
 			logger.info("doc cont : {}", doc_content);
 			documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "임시저장");
 			response.put("message", "임시저장 완료");
-		} 
+		} else if("수정".equals(action)) {
+			documentService.formUpdate(doc_idx, doc_content, doc_subject);
+			response.put("message", "수정 완료");
+		}
 		
 		return ResponseEntity.ok(response);
 	}	
-	
-	// 임시저장문서 수정
-	@PostMapping(value="/formUpdate.ajax")
-	@ResponseBody
-	public ResponseEntity<Map<String, String>> formUpdate(String form_idx,
-			String doc_subject, String doc_content,
-	        @RequestParam(required = false) String start_date,
-	        @RequestParam(required = false) String end_date, String doc_idx) {
-		
-		Map<String, String> response = new HashMap<String, String>();
-		documentService.formUpdate(doc_subject, doc_content, doc_idx);
-		response.put("message", "수정 완료");
-		
-		return ResponseEntity.ok(response);
-	}
+
 	
 }

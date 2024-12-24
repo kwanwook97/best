@@ -233,13 +233,13 @@ public class DocumentService {
 		int offset = (page-1) * cnt;
 		int emp_idx = 1;
 		
-		int receivedTotalPages = documentDao.referenceCount(emp_idx, cnt);
+		int receivedTotalPages = documentDao.searchReference(emp_idx, cnt, searchType, query);
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		result.put("receivedTotalPages", receivedTotalPages);
 		
-		List<Map<String, Object>> receivedList = documentDao.referenceList(emp_idx, limit, offset);
+		List<Map<String, Object>> receivedList = documentDao.searchReferenceList(emp_idx, limit, offset, searchType, query);
 	    result.put("receivedList", receivedList);
 		return result;
 	}
@@ -279,15 +279,20 @@ public class DocumentService {
 	}
 
 	// 읽음, 읽지않음 처리
-	public boolean updateRead(int doc_idx, int doc_read) {
-		return documentDao.updateRead(doc_idx, doc_read);
+	public boolean updateRead(int doc_idx, int doc_read, int approv_num) {
+		return documentDao.updateRead(doc_idx, doc_read, approv_num);
 	}
 
 	// 임시저장 상세보기
 	public String draftDetail(String doc_idx) {
-		String htmlContent = documentDao.draftDetail(doc_idx);
+		String htmlContent = documentDao.getDocument(doc_idx);
+		String doc_number = documentDao.getDocNumer(doc_idx);
+		logger.info("idx : "+doc_idx);
+		logger.info("번호 : "+ doc_number);
+		logger.info("idx : "+htmlContent);
 		return htmlContent
-				.replace("${doc_idx}", doc_idx);
+				.replace("${doc_idx}", doc_idx)
+				.replace("${doc_number}", doc_number);
 	}
 	
 	// 임시저장 삭제
@@ -362,8 +367,9 @@ public class DocumentService {
 
 
 	// 결재 임시저장 문서 수정
-	public void formUpdate(String doc_idx, String doc_subject, String doc_content) {
-		documentDao.formUpdate(doc_subject,doc_content,doc_idx);
+	public void formUpdate(String doc_idx, String doc_content, String doc_subject) {
+		documentDao.formUpdate(doc_idx, doc_content);
+		documentDao.formSub(doc_idx, doc_subject);
 	}
 
 

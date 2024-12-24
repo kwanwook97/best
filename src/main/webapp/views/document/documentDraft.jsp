@@ -284,6 +284,7 @@ function Print(document) {
 
 // 임시저장 상세보기
 function draftDetail(doc_idx) {
+	console.log("누른거 idx : ",doc_idx);
     $.ajax({
         type: 'GET',
         url: 'draftDetail.ajax',
@@ -300,7 +301,7 @@ function draftDetail(doc_idx) {
 }
 
 //모달 열기
-function open(cont) {
+function open(content) {
     var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
     // 모달 HTML 생성
     var Html = 
@@ -308,11 +309,11 @@ function open(cont) {
         '  <div class="modal-content">' +
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
-        '      <button class="modal-btn save" onclick="updateBtn()">수정</button>' +
-        '      <button class="modal-btn append" onclick="button3Action(\'결재선\')">결재선 추가</button>' +
+        '      <button class="modal-btn save" onclick="btnAction(\'수정\')">수정</button>' +
+        '      <button class="modal-btn append" onclick="addBtn()">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
-        '    <div class="cont" contenteditable="true">' + cont + '</div>' +
+        '    <div class="content" contenteditable="true">' + content + '</div>' +
         '  </div>' +
         '</div>';
 
@@ -329,7 +330,7 @@ function open(cont) {
     });
 }
 
-function updateBtn() {
+/* function updateBtn() {
     var doc_idx = $('input[name="doc_idx"]').val(); 
     var doc_subject = $('input[name="doc_subject"]').val();
     var textareaValue = $('.modal-content:last-child textarea').val();
@@ -406,7 +407,7 @@ function updateBtn() {
         }
     });
 }
-
+ */
 
 </script>
 </html>
