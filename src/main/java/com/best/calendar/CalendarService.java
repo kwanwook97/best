@@ -1,10 +1,13 @@
 package com.best.calendar;
 
-import java.io.File;
+import java.io.File; 
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +26,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
+
+import reactor.core.publisher.Mono;
 
 @Service
 public class CalendarService {
@@ -31,7 +39,11 @@ public class CalendarService {
 	Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired private RestTemplate restTemplate;
 
-	
+	private final String key = "TCuRmWq%2FaFsNLdJwyz%2BHkWCAMRVUPiYN0ucu6JUybxixygOPOMtXjAyPJPuYzVPPuUBUVtd9mDibVPXIy1xjpg%3D%3D";
+	private final String url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
+
+	private WebClient webClient = WebClient.create("https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService");
+
 	
 	@Transactional
 	public Map<String, Object> saveCalendar(Map<String, Object> params, List<Integer> quantityList, List<Integer> materialIdxList) {
@@ -267,6 +279,98 @@ public class CalendarService {
 		}
 		return map;
 	}
+
+	
+	public Map<String, Object> findById(int loginId) {
+		return calendarDAO.findById(loginId);
+	}
+
+	public int saveEvent(Map<String, Object> requestData) {
+		
+		int row = calendarDAO.saveEvent(requestData);
+		if (row >0 ) {
+	        return ((BigInteger) requestData.get("eventId")).intValue(); 
+		}
+		return 0;
+	}
+
+	public List<Map<String, Object>> getMyEvents() {
+		return calendarDAO.getMyEvents();
+	}
+
+	public Map<String, Object> updateMyEvent(Map<String, Object> params) {
+		logger.info("params:{}",params);
+		int row = calendarDAO.updateMyEvent(params);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("response", row);
+		return map;
+	}
+
+	public Map<String, Object> delEvent(Map<String, Object> params) {
+		logger.info("params:{}삭제 아이디 확인",params);
+		int row = calendarDAO.delEvent(params);
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (row>0) {
+			map.put("success", row);
+		}
+		map.put("msg","삭제 실패");
+		return map;
+	}
+
+    public void insertHolidays() {
+        int currentYear = LocalDate.now().getYear();
+
+        for (int month = 1; month <= 12; month++) {
+            try {
+                List<HolidayDTO> holidays = fetchHolidays(currentYear, month);
+
+                for (HolidayDTO holiday : holidays) {
+                    calendarDAO.saveHoliday(holiday);
+                }
+
+                System.out.println(month + "월 공휴일 데이터 저장 완료");
+            } catch (Exception e) {
+                System.err.println(month + "월 데이터 처리 중 오류 발생: " + e.getMessage());
+            }
+        }
+    }
+
+    private List<HolidayDTO> fetchHolidays(int year, int month) throws ParseException {
+        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(url);
+        factory.setEncodingMode(EncodingMode.VALUES_ONLY);
+
+        WebClient client = WebClient.builder()
+                .uriBuilderFactory(factory)
+                .baseUrl(url)
+                .build();
+
+        String param = String.format("?ServiceKey=%s&solYear=%d&solMonth=%02d&_type=json", key, year, month);
+
+        Mono<Map> mono = client.get()
+                .uri(param)
+                .retrieve()
+                .bodyToMono(Map.class);
+
+        Map<String, Object> responseMap = mono.flux().toStream().findFirst().orElse(new HashMap<>());
+
+        List<Map<String, Object>> items = (List<Map<String, Object>>) ((Map<String, Object>) responseMap.get("response"))
+                .get("body");
+        if (items == null) {
+            return new ArrayList<>();
+        }
+
+        List<HolidayDTO> holidays = new ArrayList<>();
+        for (Map<String, Object> item : items) {
+            HolidayDTO holiday = new HolidayDTO();
+            holiday.setHoliday_date(new java.sql.Date(new SimpleDateFormat("yyyyMMdd").parse((String) item.get("locdate")).getTime()));
+            holiday.setHoliday_name((String) item.get("dateName"));
+            holiday.setCreated_at(new Timestamp(System.currentTimeMillis()));
+            holidays.add(holiday);
+        }
+
+        return holidays;
+    }
+
 	
 	
 	//개인 캘린더 공휴일 api 사용
@@ -300,9 +404,13 @@ public class CalendarService {
 //        }
 
 	
-	
-	
-	
+
+//	https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/
+//	getRestDeInfo?
+//	serviceKey=TCuRmWq%2FaFsNLdJwyz%2BHkWCAMRVUPiYN0ucu6JUybxixygOPOMtXjAyPJPuYzVPPuUBUVtd9mDibVPXIy1xjpg%3D%3D
+//	&solYear=2018
+//	&solMonth=01
+// 	http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService
 	
 	
 	

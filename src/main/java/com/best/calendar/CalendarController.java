@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -177,6 +178,62 @@ public class CalendarController {
 	public Map<String, Object> getMaterial(){
 		return calendarService.getMaterial();
 	}
+	
+	
+    @PostMapping("/addMyCalendar.ajax")
+    @ResponseBody
+    public Map<String, Object> addEvent(@RequestBody Map<String, Object> requestData) {
+        // 요청 데이터 확인
+        
+        logger.info("requestData:{}종원 테스트1",requestData);
+        // 사원 정보 조회 (사원 ID 기준)
+        // 부서 정보 가져와 저장
+        int loginId = Integer.parseInt(requestData.get("loginId").toString());
+        Map<String, Object> employeeDepartmentIdx = calendarService.findById(loginId);
+        if (employeeDepartmentIdx == null) {
+            throw new RuntimeException("사원을 찾을 수 없습니다: " + loginId);
+        }
+        
+        
+        requestData.put("employeeDepartmentIdx", employeeDepartmentIdx);
+        
+        logger.info("requestData:{}종원 테스트2",requestData);
+       
+        // 이벤트 저장
+        Object savedEventId = (Object) calendarService.saveEvent(requestData);
+
+        // 응답 반환
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("eventId", savedEventId); // 저장된 이벤트 ID 반환
+        return response;
+    }
+    
+    @RequestMapping(value="/events.ajax")
+    @ResponseBody
+    public List<Map<String, Object>> getMyEvents(){
+    	
+    	
+    	
+    	return calendarService.getMyEvents();
+    }
+    
+    
+    @PostMapping(value="/updateEvent.ajax")
+    @ResponseBody
+    public Map<String, Object> updateMyEvent(@RequestBody Map<String, Object> params){
+    	return calendarService.updateMyEvent(params);
+    }
+    
+    
+    
+    @PostMapping(value="/delEvent.ajax")
+    @ResponseBody
+    public Map<String, Object> delEvent(@RequestBody Map<String, Object> params){
+    	return calendarService.delEvent(params);
+    }
+    
+    
 	
 	
 	
