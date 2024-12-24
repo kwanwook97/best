@@ -199,7 +199,6 @@
 	border-right: 1px solid var(--primary-color) !important;
 }
 
-
 .emp{
 	border-radius: 3px;
 	color:var(--primary-color); 
@@ -215,6 +214,16 @@
 .google-visualization-orgchart-node-medium:has(.emp-node) {
     /* .emp-node 요소를 포함한 부모 요소에 스타일 적용 */
     background-color: #8B6AA7 !important;
+}
+
+.google-visualization-orgchart-node-medium:has(.highlighted-node) {
+    background-color: #FFD700 !important; /* 강조할 색상 (노란색) */
+    color: #000 !important; /* 텍스트 색상 변경 */
+}
+
+.google-visualization-orgchart-node-medium.google-visualization-orgchart-nodesel{
+	background-color: #FFD700 !important; /* 노란색 강조 */
+    color: #000 !important; /* 텍스트 색상 */
 }
 
 
@@ -516,6 +525,10 @@ var groupedRoutes = []; // 기사부서 팀별 직원그룹
 var departIdx;      // 부서idx
 var routeName = '';     // 버스경로이름
 
+
+var data; // Google Charts DataTable 객체
+var chart; // Google Charts OrgChart 객체
+
 $(document).ready(function () {
     
     /* Google Charts 초기화 */
@@ -657,7 +670,7 @@ $(document).ready(function () {
 
     
     /* 부서별 사원 데이터 로드 함수 */
-    function loadTeamEmp() {
+    function loadTeamEmp(callback) {
 		
     	// 이미 데이터가 로드된 경우, 다시 호출하지 않도록 차단
         if (isteamEmpLoaded) {
@@ -697,6 +710,14 @@ $(document).ready(function () {
 
                 isteamEmpLoaded = true; // 데이터 로드 상태 플래그 업데이트
                 checkAndGenerate(1); // 데이터 로드 상태 확인
+                
+                
+             	// 콜백 함수 호출 (존재할 경우)
+                if (typeof callback === "function") {
+                    console.log("loadTeamEmp 완료 후 콜백 호출");
+                    callback();
+                }
+                
             },
             error: function () {
             	modal.showAlert('사원 데이터를 가져오는 중 오류가 발생했습니다.');
@@ -836,7 +857,12 @@ function generateFolders() {
 
                     // 데이터 로드 및 차트 생성
                     isteamEmpLoaded = false; // 초기화
-                    loadTeamEmp();
+                    
+                    loadTeamEmp(function () {
+                    	var employeeNodeId = 'emp-' + empId; // 사원의 노드 ID 생성
+                        highlightNode(employeeNodeId); // 로드 완료 후 강조
+                    });
+                    
                 } else {
                     console.error("사원을 찾을 수 없습니다: ID=", empId);
                 }
@@ -864,7 +890,7 @@ function generateFolders() {
         isteamEmpLoaded = false; // 부서별 사원 데이터 로드 상태 초기화
     	
     	
-        var data = new google.visualization.DataTable();
+        data = new google.visualization.DataTable();
         data.addColumn('string', 'Node ID'); // 노드 ID
         data.addColumn('string', 'Parent Node ID'); // 부모 노드 ID
         data.addColumn('string', 'ToolTip Info'); // 툴팁 정보
@@ -985,7 +1011,7 @@ function generateFolders() {
         
 
         // 조직도 그리기
-        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+        chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
         chart.draw(data, { 
         	allowHtml: true,
         });
@@ -1035,7 +1061,7 @@ function generateFolders() {
 drawTeamChart = function () {
     loadTeamEmp(); // 부서 또는 팀의 데이터 로드
     
-    var data = new google.visualization.DataTable();
+    data = new google.visualization.DataTable();
     data.addColumn("string", "Node ID");
     data.addColumn("string", "Parent Node ID");
     data.addColumn("string", "ToolTip Info");
@@ -1107,7 +1133,7 @@ drawTeamChart = function () {
     data.addRows(rows);
     
     
-    var chart = new google.visualization.OrgChart(document.getElementById("chart_div"));
+    chart = new google.visualization.OrgChart(document.getElementById("chart_div"));
     chart.draw(data, { 
     	allowHtml: true,
     });
@@ -1120,6 +1146,7 @@ drawTeamChart = function () {
 	        var selectedNode = selection[0];
 	        var nodeId = data.getValue(selectedNode.row, 0);
 	
+	        
 	        // nodeId에서 'emp-' 접두사 제거
 	        if (nodeId.startsWith('emp-')) {
 	            var employeeId = nodeId.replace('emp-', '');
@@ -1259,11 +1286,35 @@ function executeSearch(){
 
         // 데이터 로드 및 차트 생성
         isteamEmpLoaded = false; // 초기화
-        loadTeamEmp();
+        
+        loadTeamEmp(function () {
+            var employeeNodeId = 'emp-' + employee.id; // 사원의 노드 ID 생성
+            highlightNode(employeeNodeId); // 로드 완료 후 강조
+        });
+     	
+
     } else {
         modal.showAlert(searchKeyword + " 사원을 찾을 수 없습니다.")
     }
 }
+
+
+
+function highlightNode(nodeId) {
+
+    // Google Charts에서 노드 인덱스 검색
+    const nodeIndex = data.getFilteredRows([{ column: 0, value: nodeId }])[0];
+    if (typeof nodeIndex === "undefined") {
+        modal.showAlert("해당 사원을 찾을 수 없습니다.");
+        return;
+    }
+
+    // 노드 선택 이벤트 트리거
+    chart.setSelection([{ row: nodeIndex }]);
+    google.visualization.events.trigger(chart, 'select', {});
+}
+
+
     
 });
 </script>
