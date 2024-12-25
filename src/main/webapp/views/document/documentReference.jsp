@@ -223,99 +223,101 @@
  	</div>
 </body>
 <script>
-var showPage = 1;
-var text = "참조";
-pageCall(showPage);
-
-function pageCall(page){
-    console.log('pageCall');
-    $.ajax({
-        type: 'GET',
-        url: 'documentList.ajax',
-        data: {
-        	'text': text,
-            'page': page,  // 몇 페이지 보여줄지
-            'cnt': 15      // 페이지당 보여줄 게시물 수
-        },
-        dataType: 'JSON',
-        success: function(data) {
-            console.log(data);
-            if(data.receivedList.length>0){
-            	// 받은 문서
-                received(data.receivedList);
-	            // 받은 문서 페이징
-	            $('#receivedPage').twbsPagination({
-	                startPage: 1,
-	                totalPages: data.receivedTotalPages,
-	                visiblePages: 5,
-	                onPageClick: function(evt, page){
-	                    console.log("evt", evt);  // 클릭 이벤트
-	                    console.log("page", page);  // 클릭한 페이지 번호
-	                    receivedPageCall(page);
-	                }
-	            });
-            }else{
-            	var content = '<tr>';
-        		content += '<td colspan="8"> 참조된 문서가 없습니다. </td>';
-        		content += '</tr>';
-        		$('.receivedList').html(content);
-            }
-        },
-        error: function(e) {
-            console.log("오류 발생", e);
-        }
-    });
-}
-
-// 받은 문서 리스트
-function received(document) {
+$(document).ready(function() {
+	var text = "참조";
 	
-    var content = '';
-	var i = 1;
-	for(var item of document){
-		console.log(item.form_subject)
-		content += '<tr>';
-		content += '<td>' + i++ + '</td>';
-		content += '<td>' + item.doc_number + '</td>';
-		content += '<td>' + item.form_subject + '</td>';
-		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
-		content += '<td>' + item.name + '</td>';
-		
-		var doc_date = new Date(item.doc_date);
-		var docDate = doc_date.toISOString().split('T')[0];
-
-		content += '<td>' + docDate + '</td>';
-		content += '<td>' + item.status + '</td>';
-		content += '<td>' + 
-		    (item.doc_read == false
-		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
-		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
-		'</td>';
-    
-		content += '</tr>';
+	var showPage = 1;
+	pageCall(showPage);
+	
+	function pageCall(page){
+	    console.log('pageCall');
+	    $.ajax({
+	        type: 'GET',
+	        url: 'documentList.ajax',
+	        data: {
+	        	'text': text,
+	            'page': page,  // 몇 페이지 보여줄지
+	            'cnt': 15      // 페이지당 보여줄 게시물 수
+	        },
+	        dataType: 'JSON',
+	        success: function(data) {
+	            console.log(data);
+	            if(data.receivedList.length>0){
+	            	// 받은 문서
+	                received(data.receivedList);
+		            // 받은 문서 페이징
+		            $('#receivedPage').twbsPagination({
+		                startPage: 1,
+		                totalPages: data.receivedTotalPages,
+		                visiblePages: 5,
+		                onPageClick: function(evt, page){
+		                    console.log("evt", evt);  // 클릭 이벤트
+		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    receivedPageCall(page);
+		                }
+		            });
+	            }else{
+	            	var content = '<tr>';
+	        		content += '<td colspan="8"> 참조된 문서가 없습니다. </td>';
+	        		content += '</tr>';
+	        		$('.receivedList').html(content);
+	            }
+	        },
+	        error: function(e) {
+	            console.log("오류 발생", e);
+	        }
+	    });
 	}
-	$('.receivedList').html(content);
-}
-
-// 받은 문서
-function receivedPageCall(page) {
-    $.ajax({
-        type: 'GET',
-        url: 'documentList.ajax',
-        data: {
-        	'text': text,
-            'page': page,
-            'cnt': 15
-        },
-        dataType: 'JSON',
-        success: function(data) {
-        	received(data.receivedList);
-        },
-        error: function(e) {
-            console.log("오류 발생", e);
-        }
-    });
-}
-
+	
+	// 받은 문서 리스트
+	function received(document) {
+		
+	    var content = '';
+		var i = 1;
+		for(var item of document){
+			console.log(item.form_subject)
+			content += '<tr>';
+			content += '<td>' + i++ + '</td>';
+			content += '<td>' + item.doc_number + '</td>';
+			content += '<td>' + item.form_subject + '</td>';
+			content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+			content += '<td>' + item.name + '</td>';
+			
+			var doc_date = new Date(item.doc_date);
+			var docDate = doc_date.toISOString().split('T')[0];
+	
+			content += '<td>' + docDate + '</td>';
+			content += '<td>' + item.status + '</td>';
+			content += '<td>' + 
+			    (item.doc_read == false
+			        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+			        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+			'</td>';
+	    
+			content += '</tr>';
+		}
+		$('.receivedList').html(content);
+	}
+	
+	// 받은 문서
+	function receivedPageCall(page) {
+	    $.ajax({
+	        type: 'GET',
+	        url: 'documentList.ajax',
+	        data: {
+	        	'text': text,
+	            'page': page,
+	            'cnt': 15
+	        },
+	        dataType: 'JSON',
+	        success: function(data) {
+	        	received(data.receivedList);
+	        },
+	        error: function(e) {
+	            console.log("오류 발생", e);
+	        }
+	    });
+	}
+});
 </script>
 </html>

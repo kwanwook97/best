@@ -368,8 +368,7 @@ public class DocumentService {
 
 	// 결재 임시저장 문서 수정
 	public void formUpdate(String doc_idx, String doc_content, String doc_subject) {
-		documentDao.formUpdate(doc_idx, doc_content);
-		documentDao.formSub(doc_idx, doc_subject);
+		documentDao.formUpdate(doc_idx, doc_content, doc_subject);
 	}
 
 

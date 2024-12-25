@@ -1,7 +1,7 @@
 $(document).on('click', '.update', function() {
-    var doc_idx = $(this).data('doc-idx'); // 클릭된 요소의 data-doc-idx 값을 가져옴
-    var icon = $(this).find('i'); // 클릭된 요소의 아이콘을 찾음
-    var doc_read = icon.hasClass('fa-envelope') ? 1 : 0; // 아이콘 상태에 따라 doc_read 값을 설정
+    var doc_idx = $(this).data('doc-idx');
+    var icon = $(this).find('i');
+    var doc_read = icon.hasClass('fa-envelope') ? 1 : 0;
     var approv_num = $(this).data('approv-num');
     
     $.ajax({

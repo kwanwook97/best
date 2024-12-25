@@ -617,7 +617,7 @@
     	INSERT INTO document(form_idx, doc_subject, doc_content, emp_idx, status, doc_number)
     		VALUES(#{form_idx}, #{doc_subject}, #{doc_content}, #{emp_idx}, #{status}, #{doc_number})
     </insert>
-	<!-- 임시저장 상세보기, 임시저장 수정 -->
+	<!-- 임시저장 상세보기 -->
 	<select id="getDocument" resultType="String">
 		SELECT doc_content FROM document WHERE doc_idx = #{doc_idx}
 	</select>
@@ -628,12 +628,9 @@
 	<delete id="draftDelete">
 		DELETE FROM document where doc_idx = #{doc_idx}
 	</delete>
-	<!-- 임시저장 삭제 -->
-	<update id="formUpdate">
-		UPDATE document SET doc_content = #{doc_content} WHERE doc_idx = #{doc_idx}
-	</update>
-	<update id="formSub" parameterType="String">
-		UPDATE document SET doc_subject = #{doc_subject} WHERE doc_idx = #{doc_idx}
+	<!-- 임시저장 수정 -->
+	<update id="formUpdate" parameterType="String">
+		UPDATE document SET doc_content = #{doc_content}, doc_subject = #{doc_subject} WHERE doc_idx = #{doc_idx}
 	</update>
 	
 	

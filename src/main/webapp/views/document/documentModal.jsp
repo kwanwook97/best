@@ -251,7 +251,7 @@ input.manager, input.today2, input.today3{
 		<div class="searchbox">
 			    <select class="listSelect">
 			        <option class="listOpt" value="received">받은문서</option>
-			        <c:if test="${not (text eq '참조' || text eq '임시저장')}">
+			        <c:if test="${text != '참조' and text != '임시저장'}">
 				       <option class="listOpt" value="sent">보낸문서</option>
 					</c:if>
 			    </select>
@@ -454,7 +454,7 @@ function btnAction(actionType) {
     });
     if(actionType == '기안' || actionType == '수정'){
     	updatedHtml = updatedHtml.replace(
-   		    /(<input[^>]*\bname=["']doc_subject["'][^>]*)\s*value=["'][^"]*["']/i, // value가 존재하는 경우
+   		    /(<input[^>]*\bname=["']doc_subject["'][^>]*)\s*value=["'][^"]*["']/i,
    		    function(match, group) {
    		        return group + ' value="' + doc_subject + '"';  // 기존 value 속성 덮어쓰기
    		    }
@@ -495,24 +495,42 @@ function btnAction(actionType) {
 	
 	switch (form_idx) {
 	    case '1':
-	        // start_date 값 삽입
-	        updatedHtml = updatedHtml.replace(
-	            /<input([^>]*name=["']start_date["'][^>]*)>/,
-	            '<input$1 value="' + start_date + '">'
-	        );
+	    	if(actionType == '기안' || actionType == '수정'){
+	    		// start_date 값 삽입
+	    		updatedHtml = updatedHtml.replace(
+	    		    /(<input[^>]*\bname=["']start_date["'][^>]*)>/i, // start_date 필드 찾기
+	    		    function(match, group) {
+	    		        return group + ' value="' + start_date + '">'; // value 속성 추가 또는 덮어쓰기
+	    		    }
+	    		);
 
-	        // end_date 값 삽입
-	        updatedHtml = updatedHtml.replace(
-	            /<input([^>]*name=["']end_date["'][^>]*)>/,
-	            '<input$1 value="' + end_date + '">'
-	        );
-	    	// 수정된 HTML을 다시 modal-content에 적용
-	    	$('.modal-content:last-child').html(updatedHtml);
-	    	var doc_content = $('.modal-content:last-child .content').html();
-	    	
-        	data.start_date = start_date;
-            data.end_date = end_date;
-            data.doc_content = doc_content;
+	    		// end_date 값 삽입
+	    		updatedHtml = updatedHtml.replace(
+	    		    /(<input[^>]*\bname=["']end_date["'][^>]*)>/i, // end_date 필드 찾기
+	    		    function(match, group) {
+	    		        return group + ' value="' + end_date + '">'; // value 속성 추가 또는 덮어쓰기
+	    		    }
+	    		);
+	    	}else{
+		        // start_date 값 삽입
+		        updatedHtml = updatedHtml.replace(
+		            /<input([^>]*name=["']start_date["'][^>]*)>/,
+		            '<input$1 value="' + start_date + '">'
+		        );
+	
+		        // end_date 값 삽입
+		        updatedHtml = updatedHtml.replace(
+		            /<input([^>]*name=["']end_date["'][^>]*)>/,
+		            '<input$1 value="' + end_date + '">'
+		        );
+		    	// 수정된 HTML을 다시 modal-content에 적용
+		    	$('.modal-content:last-child').html(updatedHtml);
+		    	var doc_content = $('.modal-content:last-child .content').html();
+		    	
+	        	data.start_date = start_date;
+	            data.end_date = end_date;
+	            data.doc_content = doc_content;
+	    	}
 	        break;
 	    case '2':
 	        break;

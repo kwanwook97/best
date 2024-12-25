@@ -66,8 +66,7 @@ public interface DocumentDAO {
 	// 전자결재 임시저장 삭제
 	int draftDelete(String doc_idx);
 	// 전재결재 임시저장 수정
-	int formUpdate(String doc_idx, String doc_content);
-	int formSub(String doc_idx, String doc_subject);
+	int formUpdate(String doc_idx, String doc_content, String doc_subject);
 	
 	// 전자결재 양식 불러오기
 	String getForm(String form_subject);
@@ -79,6 +78,7 @@ public interface DocumentDAO {
 
 	// 전자결재 기안자 정보
 	Map<String, Object> getEmpDetails(int emp_idx);
+
 
 
 
