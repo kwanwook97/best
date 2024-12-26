@@ -13,18 +13,14 @@
 <link href="resources/css/sidebar-menu.css" rel="stylesheet"/>
 <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
 <!-- side-bar JS -->
+<script>
+var loginId = ${sessionScope.loginId};
+</script>
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 <script src="resources/js/sidebar-menu.js"></script>
 <script src="resources/js/simplebar.js"></script>
-<!-- <script src="resources/js/bootstrap.min.js"></script> -->
-
-<style>
-	/* 텍스트 선택 효과 */
-	::selection {
-	  background-color: #FFD700 !important; /* 선택 배경색 */
-	  color: #000000 !important; /* 선택된 텍스트 색상 */
-	}
-</style>
+<script src="resources/js/bootstrap.min.js"></script>
+<script src="resources/js/bestWS.js"></script>
 </head>
 
 <body>
