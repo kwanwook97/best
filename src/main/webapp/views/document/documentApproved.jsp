@@ -13,7 +13,7 @@
 		transform: scale(0.9);
 	    margin-left: 22vw;
 	    width: 70vw;
-	    margin-top: 7vh;
+	    margin-top: 4vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
@@ -136,11 +136,34 @@
 	table.sentTable th:nth-child(7) {
 	    width: 10%;
 	}
+	table.sentTable th:nth-child(8) {
+	    width: 10%;
+	}
+	table.sentTable th:nth-child(9) {
+	    width: 10%;
+	}
 	.table2{
 	    position: fixed;
     	top: 30.5rem;
 		width: 100%;
 	}
+    #status{
+		background-color: var(--primary-color);
+		border: none;
+		color: white;
+		font-weight: bold;
+    }
+    #status option{
+    	width: 20px;
+    	background-color: var(--primary-color);
+    	color: white;
+    	font-size: 14px;
+    	font-weight: bold;
+    	text-align: center;
+    }
+    #status option:hover{
+    	background-color: var(--secondary-color) !important;
+    }
 	.fa-arrow-alt-circle-left{
 		font-size: 20px;
 	    margin: 5px;
@@ -217,6 +240,13 @@
 							<th>상신 날짜</th>
 							<th>최종 결재 날짜</th>
 							<th>결재 상태</th>
+							<th>
+								<select id="status">
+						          <option value="all">전체</option>
+						          <option value="read">읽음</option>
+						          <option value="unread">안읽음</option>
+						        </select>
+							</th>
 						</tr>
 					</thead>
 					<tbody class="receivedList">
@@ -343,6 +373,11 @@ function received(document) {
 		content += '<td>' + docDate + '</td>';
 		content += '<td>' + approvDate + '</td>';
 		content += '<td>' + item.status + '</td>';
+		content += '<td>' + 
+		    (item.doc_read == false
+		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+		'</td>';
 		
 		content += '</tr>';
 	}

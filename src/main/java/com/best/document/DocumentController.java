@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -62,10 +63,10 @@ public class DocumentController {
 	}
 	
 	
-	// 전자결재 리스트 ajax
+	// 전자결재 리스트
 	@GetMapping(value="/documentList.ajax")
 	@ResponseBody
-	public Map<String, Object> inProgressList(String text, String page, String cnt) {
+	public Map<String, Object> documentList(String text, String page, String cnt) {
 	    int page_ = Integer.parseInt(page);
 	    int cnt_ = Integer.parseInt(cnt);
 	    String status = "";
@@ -91,16 +92,68 @@ public class DocumentController {
 	        	return documentService.draftList(page_, cnt_, status);
 	        default:
 	            logger.warn("알 수 없는 상태", text);
-	            return new HashMap<String, Object>(); // 기본값 반환
+	            return new HashMap<String, Object>();
 	    }
+	}
+	
+	
+	// 전자결재 리스트 검색
+	@PostMapping(value="/searchList.ajax")
+	@ResponseBody
+    public Map<String, Object> searchForm(String page, String cnt, String text, String listType, String searchType, String query) {
+	    int page_ = Integer.parseInt(page);
+	    int cnt_ = Integer.parseInt(cnt);
+		String status = "";
+		switch (text) {
+        case "대기":
+            status = "상신";
+            return documentService.searchPending(page_, cnt_, status, listType, searchType, query);
+		case "진행중":
+            status = "진행중";
+            return documentService.searchInProgress(page_, cnt_, status, listType, searchType, query);
+        case "완료":
+        	status = "완료";
+        	return documentService.searchApproved(page_, cnt_, status, listType, searchType, query);
+        case "반려":
+        	status = "반려";
+        	return documentService.searchReject(page_, cnt_, status, listType, searchType, query);
+        case "참조":
+        	status = "참조";
+        	return documentService.searchReference(page_, cnt_, status, listType, searchType, query);
+        case "임시저장":
+        	status = "임시저장";
+        	return documentService.searchDraft(page_, cnt_, status, listType, searchType, query);
+        default:
+            logger.warn("알 수 없는 상태", text);
+            return new HashMap<String, Object>();
+		}
+	}    
+	
+	// 읽음, 읽지않음 처리
+	@PostMapping(value="/updateRead.ajax")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> updateRead(String text, int doc_idx, int doc_read, int approv_num) {
+		Map<String, Object> response = new HashMap<>();
+		
+		boolean success = documentService.updateRead(text, doc_idx, doc_read, approv_num);
+	
+        if (success) {
+            response.put("success", 1);
+        } else {
+            response.put("success", 0);
+            response.put("message", "문서 상태 업데이트 실패");
+        }
+		return ResponseEntity.ok(response);
 	}
 	
 	
 	// 임시저장 상세보기
 	@GetMapping(value="/draftDetail.ajax")
 	@ResponseBody
-	public String draftDetail(String doc_idx) {
+	public String draftDetail(@RequestParam("doc_idx") String doc_idx) {
+	    logger.info("번호번호!!!: "+doc_idx);
 		String Detail = documentService.draftDetail(doc_idx);
+		logger.info("바꾸고 난거: "+Detail);
 		return Detail;		
 	}
 	// 임시저장 삭제
@@ -108,7 +161,7 @@ public class DocumentController {
 	@ResponseBody
 	public Map<String, Object> draftDelete(String doc_idx) {
 		Map<String, Object> response = new HashMap<>();
-	    
+
 		int row = documentService.draftDelete(doc_idx);
 		if(row>0) {			
 			response.put("success", true);
@@ -121,11 +174,17 @@ public class DocumentController {
 	@GetMapping(value="/getForm.ajax")
 	@ResponseBody
 	public String getForm(String form_subject) {
-	    // 양식 내용 가져오기
 	    String responseContent = documentService.getForm(form_subject);
 	    
 	    return responseContent;
 	}
+	// 전재결재 양식 검색
+	@PostMapping(value="/searchForm.ajax")
+	@ResponseBody
+    public List<Map<String, String>> searchForm(String query) {
+        return documentService.searchForm(query);
+    }
+	
 	
 	// 결재 라인 추가하기
 	@GetMapping(value = "/orgChartGet.ajax")
@@ -162,11 +221,12 @@ public class DocumentController {
     
     
     
-	// 결재 기안, 임시저장
+	// 결재 기안, 임시저장, 수정
 	@GetMapping(value="/formType.ajax")
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> formType(String form_idx,
 			String action, String doc_subject, String doc_content,
+			@RequestParam(required = false) String doc_idx,
 	        @RequestParam(required = false) String start_date,
 	        @RequestParam(required = false) String end_date) {
 		Map<String, String> response = new HashMap<String, String>();
@@ -180,24 +240,13 @@ public class DocumentController {
 			logger.info("doc cont : {}", doc_content);
 			documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "임시저장");
 			response.put("message", "임시저장 완료");
-		} 
+		} else if("수정".equals(action)) {
+			documentService.formUpdate(doc_idx, doc_content, doc_subject);
+			response.put("message", "수정 완료");
+		}
 		
 		return ResponseEntity.ok(response);
 	}	
-	
-	// 임시저장문서 수정
-	@PostMapping(value="/formUpdate.ajax")
-	@ResponseBody
-	public ResponseEntity<Map<String, String>> formUpdate(String form_idx,
-			String doc_subject, String doc_content,
-	        @RequestParam(required = false) String start_date,
-	        @RequestParam(required = false) String end_date, String doc_idx) {
-		
-		Map<String, String> response = new HashMap<String, String>();
-		documentService.formUpdate(doc_subject, doc_content, doc_idx);
-		response.put("message", "수정 완료");
-		
-		return ResponseEntity.ok(response);
-	}
+
 	
 }
