@@ -46,6 +46,30 @@ public class DocumentService {
 	    result.put("sentList", sentList);
 		return result;
 	}
+	// 전자결재 대기 리스트 검색
+	public Map<String, Object> searchPending(int page, int cnt, String status, String listType,
+			String searchType, String query) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1; // 사원 번호
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		if(listType.equals("received")) {
+			
+			int receivedTotalPages = documentDao.searchPending(emp_idx, cnt, searchType, query);
+			List<Map<String, Object>> receivedList = documentDao.searchPendingList(emp_idx, limit, offset, searchType, query);
+			result.put("receivedTotalPages", receivedTotalPages);
+			result.put("receivedList", receivedList);
+			
+		}else if(listType.equals("sent")) {
+			int sentTotalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
+			List<Map<String, Object>> sentList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
+			result.put("sentTotalPages", sentTotalPages);			
+			result.put("sentList", sentList);
+		}
+		return result;
+	}
 	
 	
 	// 전자결재 진행중 리스트
@@ -68,6 +92,32 @@ public class DocumentService {
 	    result.put("sentList", sentList);
 		return result;
 	}
+	// 전자결재 진행중 리스트 검색
+	public Map<String, Object> searchInProgress(int page, int cnt, String status, String listType, String searchType,
+			String query) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1; // 사원 번호
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		if(listType.equals("received")) {
+			
+			int receivedTotalPages = documentDao.searchInProgress(emp_idx, cnt, searchType, query);
+			List<Map<String, Object>> receivedList = documentDao.searchInProgressList(emp_idx, limit, offset, searchType, query);
+			result.put("receivedTotalPages", receivedTotalPages);
+			result.put("receivedList", receivedList);
+			
+		}else if(listType.equals("sent")) {
+			int sentTotalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
+			List<Map<String, Object>> sentList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
+			result.put("sentTotalPages", sentTotalPages);			
+			result.put("sentList", sentList);
+		}
+		return result;
+	}
+	
+	
 	// 전자결재 완료 리스트
 	public Map<String, Object> approvedList(int page, int cnt, String status) {
 		int limit = cnt;
@@ -88,6 +138,32 @@ public class DocumentService {
 	    result.put("sentList", sentList);
 		return result;
 	}
+	// 전자결재 완료 리스트 검색
+	public Map<String, Object> searchApproved(int page, int cnt, String status, String listType, String searchType,
+			String query) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1; // 사원 번호
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		if(listType.equals("received")) {
+			
+			int receivedTotalPages = documentDao.searchApproved(emp_idx, cnt, searchType, query);
+			List<Map<String, Object>> receivedList = documentDao.searchApprovedList(emp_idx, limit, offset, searchType, query);
+			result.put("receivedTotalPages", receivedTotalPages);
+			result.put("receivedList", receivedList);
+			
+		}else if(listType.equals("sent")) {
+			int sentTotalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
+			List<Map<String, Object>> sentList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
+			result.put("sentTotalPages", sentTotalPages);			
+			result.put("sentList", sentList);
+		}
+		return result;
+	}
+
+	
 	// 전자결재 반려 리스트
 	public Map<String, Object> rejectList(int page, int cnt, String status) {
 		int limit = cnt;
@@ -108,6 +184,32 @@ public class DocumentService {
 	    result.put("sentList", sentList);
 		return result;
 	}
+	// 전자결재 반려 리스트 검색
+	public Map<String, Object> searchReject(int page, int cnt, String status, String listType, String searchType,
+			String query) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1; // 사원 번호
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		if(listType.equals("received")) {
+			
+			int receivedTotalPages = documentDao.searchReject(emp_idx, cnt, searchType, query);
+			List<Map<String, Object>> receivedList = documentDao.searchRejectList(emp_idx, limit, offset, searchType, query);
+			result.put("receivedTotalPages", receivedTotalPages);
+			result.put("receivedList", receivedList);
+			
+		}else if(listType.equals("sent")) {
+			int sentTotalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
+			List<Map<String, Object>> sentList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
+			result.put("sentTotalPages", sentTotalPages);			
+			result.put("sentList", sentList);
+		}
+		return result;
+	}
+	
+	
 	// 전자결재 참조 리스트
 	public Map<String, Object> referenceList(int page, int cnt, String status) {
 		int limit = cnt;
@@ -124,6 +226,24 @@ public class DocumentService {
 	    result.put("receivedList", receivedList);
 		return result;
 	}
+	// 전자결재 참조 리스트 검색
+	public Map<String, Object> searchReference(int page, int cnt, String status, String listType, String searchType,
+			String query) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1;
+		
+		int receivedTotalPages = documentDao.searchReference(emp_idx, cnt, searchType, query);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		result.put("receivedTotalPages", receivedTotalPages);
+		
+		List<Map<String, Object>> receivedList = documentDao.searchReferenceList(emp_idx, limit, offset, searchType, query);
+	    result.put("receivedList", receivedList);
+		return result;
+	}
+
 	// 임시저장 리스트
 	public Map<String, Object> draftList(int page, int cnt, String status) {
 		int limit = cnt;
@@ -140,12 +260,45 @@ public class DocumentService {
 		
 		return result;
 	}
+	// 임시저장 리스트 검색
+	public Map<String, Object> searchDraft(int page, int cnt, String status, String listType, String searchType,
+			String query) {
+		int limit = cnt;
+		int offset = (page-1) * cnt;
+		int emp_idx = 1;
+		
+		int totalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
+		logger.info("토탈페이지:", totalPages);
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("totalPages", totalPages);
+		
+		List<Map<String, Object>> saveList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
+	    result.put("saveList", saveList);
+		
+		return result;
+	}
+
+	// 읽음, 읽지않음 처리
+	public boolean updateRead(String text, int doc_idx, int doc_read, int approv_num) {
+		boolean success = false;
+		if(text.equals("참조")) {
+			success = documentDao.updateReject(doc_idx, doc_read, approv_num);
+		}else {			
+			success = documentDao.updateapprov(doc_idx, doc_read, approv_num);
+		}
+		return success;
+	}
 
 	// 임시저장 상세보기
 	public String draftDetail(String doc_idx) {
-		String htmlContent = documentDao.draftDetail(doc_idx);
+		String htmlContent = documentDao.getDocument(doc_idx);
+		String doc_number = documentDao.getDocNumer(doc_idx);
+		logger.info("idx : "+doc_idx);
+		logger.info("번호 : "+ doc_number);
+		logger.info("idx : "+htmlContent);
 		return htmlContent
-				.replace("${doc_idx}", doc_idx);
+				.replace("${doc_idx}", doc_idx)
+				.replace("${doc_number}", doc_number);
 	}
 	
 	// 임시저장 삭제
@@ -181,6 +334,10 @@ public class DocumentService {
 
     }
 
+    // 전자결재 양식 검색
+	public List<Map<String, String>> searchForm(String query) {
+        return documentDao.searchForm(query);
+	}
 
 	// 결재 임시저장
 	@Transactional
@@ -216,9 +373,15 @@ public class DocumentService {
 
 
 	// 결재 임시저장 문서 수정
-	public void formUpdate(String doc_idx, String doc_subject, String doc_content) {
-		documentDao.formUpdate(doc_subject,doc_content,doc_idx);
+	public void formUpdate(String doc_idx, String doc_content, String doc_subject) {
+		documentDao.formUpdate(doc_idx, doc_content, doc_subject);
 	}
+
+
+
+
+
+
 
 
 

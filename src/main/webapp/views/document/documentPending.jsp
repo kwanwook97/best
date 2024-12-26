@@ -12,7 +12,7 @@
 		transform: scale(0.9);
 	    margin-left: 22vw;
         width: 70vw;
-	    margin-top: 7vh;
+	    margin-top: 4vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    display: flex;
@@ -284,6 +284,7 @@
 var showPage = 1;
 var text = "대기";
 pageCall(showPage);
+var receivedData = []; 
 
 function pageCall(page){
     console.log('pageCall');
@@ -299,7 +300,7 @@ function pageCall(page){
         success: function(data) {
             console.log(data);
             if(data.receivedList.length>0){
-            	// 받은 문서
+            	receivedData = data.receivedList;
                 received(data.receivedList);
 	            // 받은 문서 페이징
 	            $('#receivedPage').twbsPagination({
@@ -366,10 +367,10 @@ function received(document) {
 		content += '<td>' + docDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		content += '<td>' + 
-	        (item.doc_read == false
-	         ? '<i class="fas fa-envelope" title="읽지 않음"></i>'
-	         : '<i class="fas fa-envelope-open-text" title="읽음"></i>') +
-        '</td>';
+		    (item.doc_read == false
+		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+		'</td>';
 		
 		content += '</tr>';
 	}

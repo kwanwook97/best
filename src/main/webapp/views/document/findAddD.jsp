@@ -5,6 +5,7 @@
 <head>
 <meta charset="utf-8" />
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
 /* 폴더 영역 스타일 */
 .userbox {
