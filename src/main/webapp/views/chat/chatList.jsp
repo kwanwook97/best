@@ -96,11 +96,125 @@
 <jsp:include page="../modal/modal.jsp"></jsp:include>
 
 <script>
+window.updateChatList = function(messageDataList) {
+    const sidebar = $(".sidebar");
+
+    for (const messageData of messageDataList) {
+        const chatIdx = messageData.chat_idx;
+        const chatTitle = messageData.chat_subject ? messageData.chat_subject : messageData.participants;
+
+        // chat_idx에 해당하는 대화방 항목 찾기
+        const chatItem = sidebar.find('.chat-item[data-chat-idx="' + chatIdx + '"]');
+
+        if (chatItem.length > 0) {
+            // 기존 항목 업데이트
+            chatItem.find(".chat-preview").text(messageData.latest_message);
+            chatItem.find(".chat-time").text(formatTime(messageData.latest_time));
+
+            // 읽지 않은 메시지 숫자 업데이트
+            const unreadCountContainer = chatItem.find(".unread-message-count");
+            if (messageData.unread_count && messageData.unread_count > 0) {
+                if (unreadCountContainer.length > 0) {
+                    unreadCountContainer.text(messageData.unread_count); // 기존 엘리먼트가 있으면 업데이트
+                } else {
+                    const unreadCountText = '<div class="unread-count-list"><span class="unread-message-count" id="unread-count-' + chatIdx + '">' 
+                                            + messageData.unread_count + '</span></div>';
+                    chatItem.find(".chat-preview").append(unreadCountText); // 없으면 새로 추가
+                }
+            } else {
+                unreadCountContainer.remove(); // 읽지 않은 메시지가 없으면 제거
+            }
+
+            // 항목을 리스트 맨 위로 이동
+            chatItem.prependTo(sidebar);
+			
+            
+            // 새로운 항목 추가
+            const newChatItem =
+                '<div class="chat-item" data-chat-idx="' + chatIdx + '">' +
+                    '<div class="chat-avatar">' +
+                        '<img src="/photo/' + messageData.photo + '" alt="Avatar">' +
+                    '</div>' +
+                    '<div class="chat-details">' +
+                        '<div class="chat-header">' +
+                            '<span class="chat-title">' + chatTitle + '</span>' +
+                            '<span class="chat-time">' + formatTime(messageData.latest_time) + '</span>' +
+                        '</div>' +
+                        '<div class="chat-preview">' + messageData.latest_message + '</div>' +
+                        unreadCountText +
+                    '</div>' +
+                '</div>';
+            sidebar.prepend(newChatItem);
+        }
+    }
+};
+
+
+
+// 시간 포맷팅 함수
+function formatTime(timestamp) {
+    var options = { hour: "numeric", minute: "numeric", hour12: true };
+    var formattedTime = new Date(timestamp).toLocaleTimeString("ko-KR", options);
+    return formattedTime.replace("AM", "오전").replace("PM", "오후");
+}
+
+var loginId = ${sessionScope.loginId};
+loginId = parseInt(loginId);
+
 $(document).ready(function () {
+
+	/* function updateChatList(messageData) {
+	    const chatIdx = messageData.chat_idx;
+	    const sidebar = $(".sidebar");
+
+	    // chat_idx에 해당하는 대화방 항목 찾기
+	    const chatItem = sidebar.find('.chat-item[data-chat-idx="' + chatIdx + '"]');
+
+	    if (chatItem.length > 0) {
+	        // 기존 항목 업데이트
+	        chatItem.find(".chat-preview").text(messageData.latest_message);
+	        chatItem.find(".chat-time").text(formatTime(messageData.latest_time));
+
+	        const unreadCountText = messageData.unread_count > 0 ? messageData.unread_count : "";
+	        chatItem.find(".unread-message-count").text(unreadCountText);
+
+	        // 항목을 리스트 맨 위로 이동
+	        chatItem.prependTo(sidebar);
+	    } else {
+	        // 새로운 항목 추가
+	        const newChatItem =
+	            '<div class="chat-item" data-chat-idx="' + chatIdx + '">' +
+	                '<div class="chat-avatar">' +
+	                    '<img src="/photo/default-avatar.png" alt="Avatar">' +
+	                '</div>' +
+	                '<div class="chat-details">' +
+	                    '<div class="chat-header">' +
+	                        '<span class="chat-title">대화방 ' + chatIdx + '</span>' +
+	                        '<span class="chat-time">' + formatTime(messageData.latest_time) + '</span>' +
+	                    '</div>' +
+	                    '<div class="chat-preview">' + messageData.latest_message + '</div>' +
+	                '</div>' +
+	            '</div>';
+	        sidebar.prepend(newChatItem);
+	    }
+	} */
+
+
+    // 시간 포맷팅 함수
+    /* function formatTimeToAmPm(timeString) {
+        const options = { hour: "numeric", minute: "numeric", hour12: true };
+        const formattedTime = new Date(timeString).toLocaleTimeString("ko-KR", options);
+        return formattedTime.replace("AM", "오전").replace("PM", "오후");
+    } */
+	
+	
+	
+	
     // 대화방 및 사원 목록 가져오기
     $.ajax({
         type: "GET",
         url: "chatList.ajax",
+        data: {emp_idx : loginId},
         success: function (response) {
             var sidebar = $(".sidebar");
             var memberListWrapper = $(".member-list-wrapper .member-list");
@@ -146,6 +260,13 @@ $(document).ready(function () {
                     } else {
                         chatTitle = chat.chat_subject;
                     }
+                    
+                    var unreadCountText = "";
+                    if (chat.unread_count > 0) {
+                        unreadCountText = '<div class="unread-count-list"><span class="unread-message-count">' + chat.unread_count + '</span></div>';
+                    } else {
+                        unreadCountText = '<span class="unread-message-count"></span>';
+                    }
 
                     var chatItem =
                         '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="location.href=\'chat.go?chat_idx=' + chat.chat_idx + '\'">' +
@@ -158,8 +279,9 @@ $(document).ready(function () {
                         '<span class="chat-time">' + latestTime + '</span>' +
                         '</div>' +
                         '<div class="chat-preview">' +
-                        latestMessage +
-                        '</div>' +
+                        '<span>' + chat.latest_message + '</span>' +
+                        unreadCountText +
+                    	'</div>' +
                         '</div>' +
                         '</div>';
                     sidebar.append(chatItem);

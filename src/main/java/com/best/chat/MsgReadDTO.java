@@ -3,13 +3,19 @@ package com.best.chat;
 import java.util.Date;
 
 public class MsgReadDTO {
-
+	
+	private int msg_read_idx;
 	private int msg_idx;
 	private int emp_idx;
 	private boolean is_read;
 	private Date read_at;
 	
-	
+	public int getMsg_read_idx() {
+		return msg_read_idx;
+	}
+	public void setMsg_read_idx(int msg_read_idx) {
+		this.msg_read_idx = msg_read_idx;
+	}
 	public int getMsg_idx() {
 		return msg_idx;
 	}

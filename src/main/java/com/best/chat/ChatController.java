@@ -1,5 +1,6 @@
 package com.best.chat;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import com.best.emp.EmployeeDTO;
 @Controller
 public class ChatController {
 	@Autowired ChatService chatService;
+	@Autowired GlobalWebsocketHandler globalWs;
 	
 	/*
 	 * 메신져 기능
@@ -100,18 +102,13 @@ public class ChatController {
 	        message.setChat_idx(chatIdx);
 	        message.setMsg_send_idx(senderIdx);
 	        message.setContent(content);
-	        message.setTime(new Date()); // 현재 시간
 
-	        // 메시지 저장 및 msg_idx 반환
+	        // 메시지 저장 후 msg_idx 반환
 	        int msgIdx = chatService.message(message);
 
-	        // 저장된 메시지와 msg_idx를 클라이언트로 반환
+	        // msg_idx 반환
 	        Map<String, Object> response = new HashMap<>();
 	        response.put("msg_idx", msgIdx);
-	        response.put("chat_idx", chatIdx);
-	        response.put("content", content);
-	        response.put("time", message.getTime());
-
 	        return ResponseEntity.ok(response);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -124,24 +121,37 @@ public class ChatController {
 	
 	/* 메신져 리스트 이동*/
 	@RequestMapping(value="/chatList.go")
-	public String chatList() {
+	public String chatListGo() {
 		return "chat/chatList";
 	}
 	
 	/* 내가 참여중인 메신져 리스트 보여주기 */
 	@GetMapping(value = "/chatList.ajax")
 	@ResponseBody
-	public Map<String, Object> chatList(HttpSession session) {
-	    Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
-	    List<Map<String, Object>> chatList = chatService.chatList(emp_idx);
-	    List<EmployeeDTO> employeeList = chatService.getEmployeeList(); // 사원 목록 조회 서비스 호출
+    public Map<String, Object> chatList(int emp_idx) {
+        List<Map<String, Object>> chatList = chatService.chatList(emp_idx);
+        List<EmployeeDTO> employeeList = chatService.getEmployeeList(); // 사원 목록 조회 서비스 호출
 
-	    Map<String, Object> response = new HashMap<>();
-	    response.put("chatList", chatList);
-	    response.put("employeeList", employeeList);
-
-	    return response;
-	}
+        Map<String, Object> response = new HashMap<>();
+        response.put("chatList", chatList);
+        response.put("employeeList", employeeList);
+        
+        return response;
+    }
+	
+//	@GetMapping(value = "/chatList.ajax")
+//	@ResponseBody
+//	public Map<String, Object> chatList(HttpSession session) {
+//	    Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+//	    List<Map<String, Object>> chatList = chatService.chatList(emp_idx);
+//	    List<EmployeeDTO> employeeList = chatService.getEmployeeList(); // 사원 목록 조회 서비스 호출
+//
+//	    Map<String, Object> response = new HashMap<>();
+//	    response.put("chatList", chatList);
+//	    response.put("employeeList", employeeList);
+//
+//	    return response;
+//	}
 	
 	/* 회원 리스트 보여주기 */
 	@GetMapping("/memberList.ajax")
@@ -206,26 +216,33 @@ public class ChatController {
 	
 	
 	
-	// 메지시 읽지 않음 씨빨!!!!!
-	@PostMapping("/markAsRead")
+	@PostMapping("/updateConnectionTime")
 	@ResponseBody
-	public ResponseEntity<?> markAsRead(@RequestParam int msgIdx, HttpSession session) {
-	    int empIdx = Integer.parseInt((String) session.getAttribute("loginId"));
-	    chatService.markMessageAsRead(msgIdx, empIdx);
-	    return ResponseEntity.ok("Message marked as read");
-	}
-	@GetMapping("/unreadMessageCountByChat.ajax")
-	@ResponseBody
-	public int getUnreadMessageCountByChat(@RequestParam int chat_idx, HttpSession session) {
+	public ResponseEntity<?> updateConnectionTime(
+	    @RequestBody Map<String, Object> payload,
+	    HttpSession session
+	) {
+	    int chat_idx = Integer.parseInt(payload.get("chat_idx").toString());
+	    String action = payload.get("action").toString();
 	    int emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
-	    return chatService.getUnreadMessageCountByChat(chat_idx, emp_idx);
+	    LocalDateTime currentTime = LocalDateTime.now();
+
+	    if ("connect".equals(action)) {
+	        chatService.updateConnectionStart(chat_idx, emp_idx, currentTime);
+	    } else if ("disconnect".equals(action)) {
+	        chatService.updateConnectionEnd(chat_idx, emp_idx, currentTime);
+	    }
+	    return ResponseEntity.ok("Connection time updated");
 	}
+
+
 	
+	// 메지시 읽지 않음 씨빨!!!!!
 	@GetMapping("/unreadUserCount.ajax")
 	@ResponseBody
 	public int getUnreadUserCount(@RequestParam int msg_idx) {
 	    return chatService.getUnreadUserCount(msg_idx);
 	}
-
+	
 
 }

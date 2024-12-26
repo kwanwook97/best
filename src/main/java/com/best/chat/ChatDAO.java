@@ -1,5 +1,6 @@
 package com.best.chat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public interface ChatDAO {
 
 	void insertParty(PartyDTO loginPartyDTO);
 
-	List<Map<String, Object>> chatList(Integer emp_idx);
+	//List<Map<String, Object>> chatList(Integer emp_idx);
 
 	List<EmployeeDTO> getEmployeeList();
 
@@ -48,12 +49,26 @@ public interface ChatDAO {
 	
 	
 	// 메시지 읽지 않음 씨빨!!!!!!
-	int getUnreadMessageCountByChat(Map<String, Object> params);
+	
 
-	int getUnreadUserCount(int msg_idx);
+
+
+	int getUnreadUserCount(int msgIdx);
 
 	void insertDefaultMsgRead(Map<String, Object> params);
 
-	void updateMsgRead(Map<String, Object> params);
+	int checkConnectionStatusExists(int chatIdx, int empIdx);
+
+	void markMessagesAsRead(int chatIdx, int empIdx, LocalDateTime currentTime);
+
+	void insertConnectionStatus(int chatIdx, int empIdx, LocalDateTime startTime);
+
+	void updateConnectionTime(int chatIdx, int empIdx, LocalDateTime time, String action);
+
+	void markMessageAsRead(int msgIdx, int empIdx);
+
+	List<Integer> getMsgIdxListByChatIdx(int chatIdx);
+
+	List<Map<String, Object>> chatListWithUnread(Integer emp_idx);
 
 }

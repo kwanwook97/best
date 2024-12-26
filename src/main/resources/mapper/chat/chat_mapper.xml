@@ -5,7 +5,7 @@
 <mapper namespace="com.best.chat.ChatDAO">
 
 	<!-- 참여중인 대화방 리스트 -->
-	<select id="chatList" resultType="map">
+	<!-- <select id="chatList" resultType="map">
     	SELECT 
         	c.chat_idx,
         	c.chat_subject,
@@ -23,7 +23,91 @@
     	JOIN party p ON c.chat_idx = p.chat_idx
     	WHERE p.emp_idx = #{emp_idx}
     	ORDER BY latest_time DESC
-	</select>
+	</select> -->
+	<!-- <select id="chatListWithUnread" resultType="map">
+    SELECT 
+        c.chat_idx,
+        c.chat_subject,
+        (
+            SELECT m.content
+            FROM message m
+            WHERE m.chat_idx = c.chat_idx
+            ORDER BY m.time DESC 
+            LIMIT 1
+        ) AS latest_message,
+        (
+            SELECT m.time
+            FROM message m
+            WHERE m.chat_idx = c.chat_idx 
+            ORDER BY m.time DESC
+            LIMIT 1
+        ) AS latest_time,
+
+        (
+            SELECT COUNT(*) 
+            FROM message m
+            LEFT JOIN msg_read mr 
+                ON m.msg_idx = mr.msg_idx 
+                AND mr.emp_idx = #{emp_idx}
+            WHERE m.chat_idx = c.chat_idx 
+              AND mr.is_read = 0
+              AND mr.msg_idx IS NOT NULL
+        ) AS unread_count
+
+    FROM chat c
+    JOIN party p ON c.chat_idx = p.chat_idx
+    WHERE p.emp_idx = #{emp_idx}
+    ORDER BY latest_time DESC
+</select> -->
+
+
+<select id="chatListWithUnread" resultType="map">
+    SELECT 
+        c.chat_idx,
+        c.chat_subject,
+        (
+            SELECT m.content
+            FROM message m
+            WHERE m.chat_idx = c.chat_idx
+            ORDER BY m.time DESC 
+            LIMIT 1
+        ) AS latest_message,
+        (
+            SELECT m.time
+            FROM message m
+            WHERE m.chat_idx = c.chat_idx 
+            ORDER BY m.time DESC
+            LIMIT 1
+        ) AS latest_time,
+        (
+            SELECT COUNT(*) 
+            FROM message m
+            LEFT JOIN msg_read mr 
+                ON m.msg_idx = mr.msg_idx 
+                AND mr.emp_idx = #{emp_idx}
+            WHERE m.chat_idx = c.chat_idx 
+              AND (mr.is_read = 0 AND mr.msg_idx IS NOT NULL)
+        ) AS unread_count
+    FROM chat c
+    JOIN party p ON c.chat_idx = p.chat_idx
+    WHERE p.emp_idx = #{emp_idx}
+    ORDER BY latest_time DESC
+</select>
+
+
+	
+	<select id="getTotalUnreadCountForUser" parameterType="int" resultType="int">
+    SELECT COUNT(*) AS total_unread
+      FROM msg_read mr
+      JOIN party p ON mr.msg_idx IN (
+          SELECT m.msg_idx
+            FROM message m
+           WHERE m.chat_idx = p.chat_idx
+      )
+     WHERE p.emp_idx = #{emp_idx}
+       AND mr.emp_idx = #{emp_idx}
+       AND mr.is_read = 0;
+</select>
 	
 	<!-- 나를 제외한 참여중인 대화방 참여자 리스트 -->
 	<select id="getParticipantNames" resultType="string">
@@ -107,29 +191,34 @@
 	
 	<!-- 메시지 뿌려주기 -->
 	<select id="getMessagesByChatIdx" resultType="map">
-    	SELECT 
-    		m.msg_idx,
-        	m.content, 
-        	m.time, 
-        	e.name, 
-        	m.msg_send_idx,
-        	m.message_type,
-        	e.photo
-    	FROM 
-        	message m
-    	LEFT JOIN 
-        	employee e ON m.msg_send_idx = e.emp_idx
-    	WHERE 
-        	m.chat_idx = #{chatIdx}
-    	ORDER BY 
-        	m.time ASC
-	</select>
+    SELECT
+        m.msg_idx,
+        m.content,
+        m.time,
+        m.msg_send_idx,
+        m.message_type,
+        e.name,
+        e.photo,
+
+        (
+          SELECT COUNT(*)
+          FROM msg_read mr
+          WHERE mr.msg_idx = m.msg_idx
+            AND mr.is_read = 0
+        ) AS unread_count
+
+    FROM message m
+    LEFT JOIN employee e ON m.msg_send_idx = e.emp_idx
+    WHERE m.chat_idx = #{chatIdx}
+    ORDER BY m.time ASC
+</select>
 	
 	
 	
 	<!-- 참여중인 대화방 참여자 리스트 -->
 	<select id="getChatParticipants" resultType="map">
     	SELECT 
+    		e.emp_idx,
        		e.name, 
         	e.photo
     	FROM 
@@ -158,34 +247,92 @@
 	
 	
 	
-	
-	<!-- 메시지 읽음 표시!!!!!!!!!!!!씨빨 -->
-	<insert id="insertDefaultMsgRead" parameterType="map">
-    INSERT INTO msg_read (msg_idx, emp_idx, is_read, read_at)
-    SELECT #{msg_idx}, emp_idx, 0, NULL
-    FROM party
-    WHERE chat_idx = #{chat_idx}
-    AND emp_idx != #{sender_idx}
+<!-- 연결 상태 존재 여부 확인 -->
+<select id="checkConnectionStatusExists" resultType="int">
+    SELECT COUNT(*)
+    FROM connection_status
+    WHERE chat_idx = #{chatIdx} AND emp_idx = #{empIdx}
+</select>
+
+<!-- 연결 상태 INSERT -->
+<insert id="insertConnectionStatus">
+    INSERT INTO connection_status (chat_idx, emp_idx, connection_start)
+    VALUES (#{chatIdx}, #{empIdx}, #{startTime})
 </insert>
-	<update id="updateMsgRead" parameterType="map">
+
+<!-- 연결 상태 UPDATE -->
+<update id="updateConnectionTime">
+    UPDATE connection_status
+    <choose>
+        <when test="action == 'start'">
+            SET connection_start = #{time}, connection_end = '2038-01-19 03:14:07'
+        </when>
+        <when test="action == 'end'">
+            SET connection_end = #{time}
+        </when>
+    </choose>
+    WHERE chat_idx = #{chatIdx}
+      AND emp_idx = #{empIdx};
+</update>
+
+<!-- 읽음 상태 업데이트 -->
+<update id="markMessagesAsRead">
     UPDATE msg_read
     SET is_read = 1, read_at = NOW()
-    WHERE msg_idx = #{msg_idx}
-    AND emp_idx = #{emp_idx}
+    WHERE emp_idx = #{empIdx}
+      AND msg_idx IN (
+          SELECT m.msg_idx
+          FROM message m
+          JOIN connection_status cs
+            ON cs.emp_idx = #{empIdx} 
+            AND cs.chat_idx = m.chat_idx 
+          WHERE 
+              m.chat_idx = #{chatIdx} 
+              AND (
+                  m.time &lt;= cs.connection_start 
+                  OR m.time BETWEEN cs.connection_start AND cs.connection_end
+              )
+      )
 </update>
-	<select id="getUnreadUserCount" parameterType="int" resultType="int">
-    SELECT COUNT(*) 
-    FROM msg_read 
-    WHERE msg_idx = #{msg_idx} 
-      AND is_read = 0;
+
+
+
+<select id="getMsgIdxListByChatIdx" resultType="int">
+    SELECT msg_idx
+      FROM message
+     WHERE chat_idx = #{chatIdx}
 </select>
-<select id="getUnreadMessageCountByChat" parameterType="map" resultType="int">
-    SELECT COUNT(*) 
-    FROM message m
-    LEFT JOIN msg_read r ON m.msg_idx = r.msg_idx
-    WHERE m.chat_idx = #{chat_idx} 
-      AND r.emp_idx = #{emp_idx} 
-      AND r.is_read = 0;
-</select>
+
+	<!-- 메시지 읽음 표시!!!!!!!!!!!!씨빨 -->
+	<select id="getUnreadUserCount" resultType="int">
+        SELECT COUNT(*)
+          FROM msg_read
+         WHERE msg_idx = #{msgIdx}
+           AND is_read = 0
+    </select>
+
+	<!-- 메시지 읽음 표시!!!!!!!!!!!!씨빨 -->
+<insert id="insertDefaultMsgRead" parameterType="map">
+    INSERT INTO msg_read (msg_idx, emp_idx, is_read, read_at)
+    SELECT 
+      #{msg_idx}, 
+      p.emp_idx,
+      CASE 
+        WHEN cs.emp_idx IS NOT NULL THEN 1 
+        ELSE 0
+      END,
+      CASE 
+        WHEN cs.emp_idx IS NOT NULL THEN NOW() 
+        ELSE NULL
+      END
+    FROM party p
+    LEFT JOIN connection_status cs 
+           ON cs.chat_idx = #{chat_idx}
+          AND cs.emp_idx = p.emp_idx
+          AND cs.connection_start IS NOT NULL
+          AND (cs.connection_end IS NULL OR cs.connection_end > NOW())
+    WHERE p.chat_idx = #{chat_idx}
+      AND p.emp_idx != #{sender_idx}; 
+</insert>
 
 </mapper>  

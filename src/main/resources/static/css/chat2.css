@@ -201,7 +201,9 @@ purple{
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	max-width: 276px;
+	max-width: 238px;
+	display: flex;
+    justify-content: space-between;
 }
 
 /* 참여자리스트 */
@@ -459,4 +461,14 @@ purple{
 }
 .number{
 	font-size: 12px;
+}
+
+.unread-count-list{
+	background-color: #E9396B;
+	border-radius: 50%;
+	width: 20px;
+	text-align: center;
+}
+.unread-message-count{
+	color: #FFF5E2;
 }

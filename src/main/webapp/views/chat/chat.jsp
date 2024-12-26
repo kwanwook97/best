@@ -18,7 +18,7 @@
  	<div class="dashboard-body">
  	
  		<div class="naviPath bold f32 w100 tm2">
-			<span class="lPurple">메신져</span> <i class="fa-solid fa-angle-right"
+			<span class="lPurple" onclick="switchPage()">메신져</span> <i class="fa-solid fa-angle-right"
 				style="color: #8B6AA7;"></i> <span class="purple"></span>
 		</div>
 
@@ -92,10 +92,95 @@
 
 
 <script>
+
+window.updateChatList = function(messageDataList) {
+    const sidebar = $(".sidebar");
+
+    for (const messageData of messageDataList) {
+        const chatIdx = messageData.chat_idx;
+        const chatTitle = messageData.chat_subject ? messageData.chat_subject : messageData.participants;
+
+        // chat_idx에 해당하는 대화방 항목 찾기
+        const chatItem = sidebar.find('.chat-item[data-chat-idx="' + chatIdx + '"]');
+
+        if (chatItem.length > 0) {
+            // 기존 항목 업데이트
+            chatItem.find(".chat-preview").text(messageData.latest_message);
+            chatItem.find(".chat-time").text(formatTime(messageData.latest_time));
+
+            // 읽지 않은 메시지 숫자 업데이트
+            const unreadCountContainer = chatItem.find(".unread-message-count");
+            if (messageData.unread_count && messageData.unread_count > 0) {
+                if (unreadCountContainer.length > 0) {
+                    unreadCountContainer.text(messageData.unread_count); // 기존 엘리먼트가 있으면 업데이트
+                } else {
+                    const unreadCountText = '<div class="unread-count-list"><span class="unread-message-count" id="unread-count-' + chatIdx + '">' 
+                                            + messageData.unread_count + '</span></div>';
+                    chatItem.find(".chat-preview").append(unreadCountText); // 없으면 새로 추가
+                }
+            } else {
+                unreadCountContainer.remove(); // 읽지 않은 메시지가 없으면 제거
+            }
+
+            // 항목을 리스트 맨 위로 이동
+            chatItem.prependTo(sidebar);
+
+            // 새로운 항목 추가
+            const newChatItem =
+                '<div class="chat-item" data-chat-idx="' + chatIdx + '">' +
+                    '<div class="chat-avatar">' +
+                        '<img src="/photo/' + messageData.photo + '" alt="Avatar">' +
+                    '</div>' +
+                    '<div class="chat-details">' +
+                        '<div class="chat-header">' +
+                            '<span class="chat-title">' + chatTitle + '</span>' +
+                            '<span class="chat-time">' + formatTime(messageData.latest_time) + '</span>' +
+                        '</div>' +
+                        '<div class="chat-preview">' + messageData.latest_message + '</div>' +
+                        unreadCountText +
+                    '</div>' +
+                '</div>';
+            sidebar.prepend(newChatItem);
+        }
+    }
+};
+
+
+
+// 시간 포맷팅 함수
+function formatTime(timestamp) {
+    var options = { hour: "numeric", minute: "numeric", hour12: true };
+    var formattedTime = new Date(timestamp).toLocaleTimeString("ko-KR", options);
+    return formattedTime.replace("AM", "오전").replace("PM", "오후");
+}
+
+
+
+
+window.socket = null;
+
+function switchPage(){
+	if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+		 console.log("Closing old WebSocket before moving to new chat room...");
+		 window.socket.close(1000, "Switching chat room");
+		}
+	location.href = "chatList.go";
+}
+//전역 함수
+function switchChatRoom(newChatIdx) {
+if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+ console.log("Closing old WebSocket before moving to new chat room...");
+ window.socket.close(1000, "Switching chat room");
+}
+location.href = "chat.go?chat_idx=" + newChatIdx;
+}
+
+
 $(document).ready(function() {
     var chatIdx = new URLSearchParams(window.location.search).get("chat_idx"); // URL에서 chat_idx 가져오기
     var loginId = ${sessionScope.loginId};
     loginId = parseInt(loginId);
+
 
     var isFirstConnection = true; // 최초 WebSocket 연결 확인용
 
@@ -114,14 +199,13 @@ $(document).ready(function() {
 
         if (messageData.message_type === "system") {
             // 시스템 메시지
-            messageElement = '<div class="system-message">' + messageData.content + '</div>';
+            messageElement = '<div class="system-message" data-msg-idx="' + messageData.msg_idx + '" data-is-read="false">' + messageData.content + '</div>';
         } else if (isMyMessage) {
             // 내가 보낸 메시지
             messageElement =
-                '<div class="send-messages">' +
-                '<input type="hidden" class="msg-idx" value="' + messageData.msg_idx + '">' +
+                '<div class="send-messages" data-msg-idx="' + messageData.msg_idx + '" data-is-read="false">' +
                 '<div class="time-and-number">' +
-                '<div class="number" id="unread-user-count-' + messageData.msg_idx + '"></div>' +
+                '<div class="number">' + (messageData.unread_count > 0 ? messageData.unread_count : "") + '</div>' +
                 '<div class="sent-time">' + currentMessageTime + '</div>' +
                 '</div>' +
                 '<div class="chat-bubble send-message">' + messageData.content + '</div>' +
@@ -129,8 +213,7 @@ $(document).ready(function() {
         } else {
             // 다른 사람이 보낸 메시지
             messageElement =
-                '<div class="chat-message">' +
-                '<input type="hidden" class="msg-idx" value="' + messageData.msg_idx + '">' +
+                '<div class="chat-message" data-msg-idx="' + messageData.msg_idx + '" data-is-read="false">' +
                 '<div class="chat-profile">' +
                 '<div class="profile-image">' +
                 '<img src="/photo/' + messageData.photo + '" alt="프로필 사진" class="custom-image">' +
@@ -143,7 +226,7 @@ $(document).ready(function() {
                 '<div class="content-div">' +
                 '<div class="chat-bubble">' + messageData.content + '</div>' +
                 '<div class="time-and-number2">' +
-                '<div class="number" id="unread-user-count-' + messageData.msg_idx + '"></div>' +
+                '<div class="number">' + (messageData.unread_count > 0 ? messageData.unread_count : "") + '</div>' +
                 '<div class="message-time">' + currentMessageTime + '</div>' +
                 '</div>' +
                 '</div>' +
@@ -157,123 +240,61 @@ $(document).ready(function() {
         // 메시지를 UI에 추가
         messagesContainer.append(messageElement);
 
-        // 읽지 않은 사용자 수 가져오기
-        fetchUnreadUserCount(messageData.msg_idx, "#unread-user-count-" + messageData.msg_idx);
-
         // 메시지 컨테이너 스크롤을 아래로 이동
         messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
     }
-
-
-    function markMessageAsRead(msgIdx) {
-        $.ajax({
-            type: "POST",
-            url: "markAsRead",
-            data: { msg_idx: msgIdx },
-            success: function() {
-                console.log("메시지 " + msgIdx + "를 읽음으로 표시했습니다.");
-            },
-            error: function() {
-                console.error("메시지 " + msgIdx + " 읽음 표시 중 오류 발생.");
-            }
-        });
-    }
-
-    $(window).on("scroll", function() {
-        $(".message").each(function() {
-            var msgIdx = $(this).data("msg-idx");
-            var isRead = $(this).data("is-read");
-
-            if ($(this).isInViewport() && !isRead) {
-                markMessageAsRead(msgIdx);
-                $(this).data("is-read", true);
-            }
-        });
-    });
-
-    // jQuery 헬퍼 함수: 요소가 뷰포트에 있는지 확인
-    $.fn.isInViewport = function() {
-        var elementTop = $(this).offset().top;
-        var elementBottom = elementTop + $(this).outerHeight();
-        var viewportTop = $(window).scrollTop();
-        var viewportBottom = viewportTop + $(window).height();
-        return elementBottom > viewportTop && elementTop < viewportBottom;
-    };
-
-    
-    
-    function fetchUnreadUserCount(msgIdx, targetDiv) {
-    $.ajax({
-        type: "GET",
-        url: "unreadUserCount.ajax", // 읽지 않은 사용자 수를 반환하는 API
-        data: { msg_idx: msgIdx },
-        success: function(count) {
-            // 타겟 div에 읽지 않은 사용자 수를 표시
-            $(targetDiv).text(count > 0 ? count : "");
-        },
-        error: function() {
-            console.error("오류발생");
-        }
-    });
-}
-
-
-function fetchUnreadMessageCountByChat(chatIdx) {
-    $.ajax({
-        type: "GET",
-        url: "unreadMessageCountByChat.ajax",
-        data: { chat_idx: chatIdx },
-        success: function(count) {
-            $("#unread-count-" + chatIdx).text(count > 0 ? `(${count})` : "");
-        },
-        error: function() {
-            console.error(`대화방 ${chatIdx}의 읽지 않은 메시지 수를 가져오는 중 오류 발생.`);
-        }
-    });
-}
-
-
-
-
-    
-    
-    
-    
-    
-
-
-
 
 
 
     if (chatIdx) {
         console.log("선택된 chat_idx:", chatIdx);
 
-        var socket = new WebSocket("ws://localhost:8080/BEST/chat/chat?chat_idx=" + chatIdx);
+        window.socket = new WebSocket("ws://localhost:8080/BEST/chat/chat?chat_idx=" + chatIdx);
 
         socket.onopen = function() {
             console.log("WebSocket 연결 성공 - chat_idx:", chatIdx);
+            $.ajax({
+                type: "POST",
+                url: "updateConnectionTime",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    chat_idx: chatIdx,
+                    action: "connect"
+                }),
+                success: function() {
+                    console.log("Connection time recorded successfully.");
+                },
+                error: function() {
+                    console.error("Error recording connection time.");
+                }
+            });
         };
 
         var isFirstConnection = true; // 최초 WebSocket 연결 확인용
 
-        socket.onmessage = function (event) {
+        socket.onmessage = function(event) {
             try {
                 var messageData = JSON.parse(event.data); // JSON 메시지 파싱
                 console.log("수신 메시지 데이터:", messageData);
+                if (messageData.chat_idx !== parseInt(chatIdx)) {
+                    console.warn("다른 방 메시지 감지, 무시:", messageData.chat_idx, "내 방:", chatIdx);
+                    return;
+                }
+                
+                
+                if (messageData.type === "UPDATE_UNREAD_COUNT") {
+                    var msgIdx = messageData.msg_idx;
+                    var newCount = messageData.unread_count;
+                    var $msgDiv = $("[data-msg-idx='" + msgIdx + "']");
+                    $msgDiv.find(".number").text(newCount > 0 ? newCount : "");
 
-                if (messageData && messageData.content) {
-                    // 메시지를 메시지 창에 추가
-                    var isMyMessage = messageData.msg_send_idx === loginId; 
+                } else if (messageData && messageData.content) {
+                    // WebSocket으로 수신된 새 메시지 처리
+                    var isMyMessage = messageData.msg_send_idx === loginId;
                     addMessageToUI(messageData, isMyMessage);
-                    
-                	// 메시지별 읽지 않은 사용자 수 업데이트
-                	console.log("msgIdx:", messageData.msg_idx);
-                    fetchUnreadUserCount(messageData.msg_idx);
 
-                    // 대화방별 읽지 않은 메시지 수 업데이트
-                    fetchUnreadMessageCountByChat(chatIdx);
-
+                    // 최신 메시지 갱신
+                    /* updateChatListWithLatestMessage(messageData); */
                 } else {
                     console.error("메시지 데이터에 content 필드가 없습니다:", messageData);
                 }
@@ -284,14 +305,122 @@ function fetchUnreadMessageCountByChat(chatIdx) {
 
         socket.onclose = function() {
             console.log("WebSocket 연결 종료");
+            $.ajax({
+                type: "POST",
+                url: "updateConnectionTime",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    chat_idx: chatIdx,
+                    action: "disconnect"
+                }),
+                success: function() {
+                    console.log("Connection time recorded successfully.");
+                },
+                error: function() {
+                    console.error("Error recording connection time.");
+                }
+            });
         };
 
         socket.onerror = function(error) {
             console.error("WebSocket 에러 발생:", error);
         };
+        
+
+            $.ajax({
+                type: "GET",
+                url: "chatList.ajax",
+                data: {emp_idx : loginId},
+                success: function (response) {
+                    var sidebar = $(".sidebar");
+
+                    // 날짜 및 시간 포맷팅 함수
+                    function formatDateTime(latestTime) {
+                        if (!latestTime) return "";
+                        const now = new Date();
+                        const messageDate = new Date(latestTime);
+                        const isToday =
+                            now.getFullYear() === messageDate.getFullYear() &&
+                            now.getMonth() === messageDate.getMonth() &&
+                            now.getDate() === messageDate.getDate();
+                        const isThisYear = now.getFullYear() === messageDate.getFullYear();
+
+                        if (isToday) {
+                            return messageDate.toLocaleString("ko-KR", {
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                            });
+                        } else if (isThisYear) {
+                            return (messageDate.getMonth() + 1) + "월 " + messageDate.getDate() + "일";
+                        } else {
+                            return messageDate.getFullYear() + ". " + (messageDate.getMonth() + 1) + ". " + messageDate.getDate();
+                        }
+                    }
+
+                    // 대화방 리스트가 있을 때
+                    if (response.chatList && response.chatList.length > 0) {
+                        sidebar.empty();
+                        response.chatList.forEach(function (chat) {
+                            var latestMessage = chat.latest_message || "메시지가 없습니다.";
+                            var latestTime = chat.latest_time ? formatDateTime(chat.latest_time) : "";
+
+                            // 제목이 null인지 확인하여 제목 또는 참여자 표시
+                            var chatTitle;
+                            if (chat.chat_subject === null || chat.chat_subject === "") {
+                                chatTitle = chat.participants;
+                            } else {
+                                chatTitle = chat.chat_subject;
+                            }
+
+                            // 현재 페이지의 chatIdx
+                            // (만약 전역 변수로 chatIdx가 있다면 그대로 사용)
+                            var currentChatIdx = new URLSearchParams(window.location.search).get("chat_idx");
+
+                            if (chat.chat_idx.toString() === currentChatIdx) {
+                                // 상단 .purple 표시 갱신
+                                $(".naviPath .purple").text(chatTitle);
+                            }
+
+                            // "읽지 않은 메시지 수"를 표시할 수 있는 필드
+                            var unreadCountText = "";
+                            if (chat.unread_count && chat.unread_count > 0) {
+                                unreadCountText = '<div class="unread-count-list"><span class="unread-message-count" id="unread-count-' + chat.chat_idx + '">' 
+                                                  + chat.unread_count + '</span></div>';
+                            } else {
+                                unreadCountText = '<span class="unread-message-count" id="unread-count-' + chat.chat_idx + '"></span>';
+                            }
+
+                            var chatItem =
+                                '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="switchChatRoom(' + chat.chat_idx + ')">' +
+                                  '<div class="chat-avatar">' +
+                                    '<img src="/photo/' + chat.photo + '" alt="프로필 사진" class="custom-image">' +
+                                  '</div>' +
+                                  '<div class="chat-details">' +
+                                    '<div class="chat-header">' +
+                                      '<span class="chat-title">' + chatTitle + '</span>' +
+                                      '<span class="chat-time">' + latestTime + '</span>' +
+                                    '</div>' +
+                                    '<div class="chat-preview">' +
+                                      '<span id="latest-message-' + chat.chat_idx + '">' + latestMessage + '</span>' +
+                                       unreadCountText +
+                                    '</div>' +
+                                  '</div>' +
+                                '</div>';
+                            sidebar.append(chatItem);
+                        });
+                    } else {
+                        sidebar.html("<p>참여 중인 대화방이 없습니다.</p>");
+                    }
+                },
+                error: function () {
+                    console.warn("대화방 리스트를 불러오는 데 실패했습니다.");
+                }
+            });
+
 
         
-        $.ajax({
+        /* $.ajax({
             type: "GET",
             url: "chatList.ajax",
             success: function (response) {
@@ -324,17 +453,26 @@ function fetchUnreadMessageCountByChat(chatIdx) {
                     }
                 }
 
-                // 대화방 리스트 렌더링
+             // 대화방 리스트 렌더링
                 if (response.chatList && response.chatList.length > 0) {
                     sidebar.empty();
-                    response.chatList.forEach(function(chat) {
+                    response.chatList.forEach(function (chat) {
                         var latestMessage = chat.latest_message || "메시지가 없습니다.";
                         var latestTime = chat.latest_time ? formatDateTime(chat.latest_time) : "";
 
-                        var chatTitle = chat.chat_subject || chat.participants;
+                        // 제목이 null인지 확인하여 제목 또는 참여자 표시
+                        var chatTitle;
+                        if (chat.chat_subject === null || chat.chat_subject === "") {
+                            chatTitle = chat.participants;
+                        } else {
+                            chatTitle = chat.chat_subject;
+                        }
+                        if (chat.chat_idx.toString() === chatIdx) {
+                            $(".naviPath .purple").text(chatTitle);
+                        }
 
                         var chatItem =
-                            '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="location.href=\'chat.go?chat_idx=' + chat.chat_idx + '\'">' +
+                            '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="switchChatRoom(' + chat.chat_idx + ')">' +
                             '<div class="chat-avatar">' +
                             '<img src="/photo/' + chat.photo + '" alt="프로필 사진" class="custom-image">' +
                             '</div>' +
@@ -351,8 +489,6 @@ function fetchUnreadMessageCountByChat(chatIdx) {
                             '</div>';
                         sidebar.append(chatItem);
 
-                        // 읽지 않은 메시지 수 가져오기
-                        fetchUnreadMessageCountByChat(chat.chat_idx);
                     });
                     
                 } else {
@@ -362,7 +498,32 @@ function fetchUnreadMessageCountByChat(chatIdx) {
             error: function () {
                 alert("대화방 리스트를 불러오는 데 실패했습니다.");
             }
-        });
+        }); */
+        
+        
+        
+        /* function updateChatListWithLatestMessage(messageData) {
+            var chatIdx = messageData.chat_idx;
+            var latestMessage = messageData.content;
+            var sidebar = $(".sidebar");
+
+            // 대화방 리스트에서 해당 chat_idx를 가진 항목 찾기
+            var chatItem = sidebar.find(".chat-item[data-chat-idx='" + chatIdx + "']");
+            if (chatItem.length > 0) {
+                // 최신 메시지 갱신
+                chatItem.find(".chat-preview").text(latestMessage);
+
+                // 최신 메시지 시간 갱신
+                var formattedTime = formatTimeToAmPm(messageData.time);
+                chatItem.find(".chat-time").text(formattedTime);
+
+                // 대화방을 맨 위로 이동 (선택 사항)
+                chatItem.prependTo(sidebar);
+            } else {
+                console.warn("chat_idx " + chatIdx + "에 해당하는 대화방을 찾을 수 없습니다.");
+            }
+        } */
+
 
         if (chatIdx) {
             // 참여자 리스트 가져오기
@@ -408,6 +569,7 @@ function fetchUnreadMessageCountByChat(chatIdx) {
                         addMessageToUI(message, false);
                     } else {
                         // 일반 메시지 렌더링
+                        
                         addMessageToUI(message, message.msg_send_idx === loginId);
                     }
                 });
@@ -434,6 +596,7 @@ function fetchUnreadMessageCountByChat(chatIdx) {
                     msg_send_idx: loginId
                 };
 
+                // 메시지 저장 AJAX 호출
                 $.ajax({
                     type: "POST",
                     url: "message.ajax",
@@ -441,17 +604,25 @@ function fetchUnreadMessageCountByChat(chatIdx) {
                     data: JSON.stringify(messageData),
                     success: function (response) {
                         console.log("저장된 메시지 데이터:", response);
+                        
+                     // 메시지 ID 추가
+                        messageData.msg_idx = response.msg_idx;
+                        // 읽지 않은 사용자 수 조회
+                        $.ajax({
+                            type: "GET",
+                            url: "unreadUserCount.ajax",
+                            data: { msg_idx: response.msg_idx },
+                            success: function(count) {
+                                // 읽지 않은 사용자 수 추가
+                                messageData.unread_count = count;
 
-                        // 새로 저장된 메시지를 UI에 추가
-                        addMessageToUI({
-                            msg_idx: response.msg_idx,
-                            chat_idx: response.chat_idx,
-                            content: response.content,
-                            time: response.time
-                        }, true);
-
-                        // WebSocket 메시지 전송
-                        socket.send(JSON.stringify(response));
+                                // WebSocket으로 메시지와 count 전송
+                                socket.send(JSON.stringify(messageData));
+                            },
+                            error: function() {
+                                console.error("읽지 않은 사용자 수 조회 실패");
+                            }
+                        });
 
                         // 입력창 초기화
                         messageInput.val("");
@@ -465,6 +636,7 @@ function fetchUnreadMessageCountByChat(chatIdx) {
                 console.log("빈 메시지는 전송되지 않습니다.");
             }
         });
+
 
 
 
