@@ -1,5 +1,6 @@
 package com.best.chat;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import com.best.emp.EmployeeDTO;
 @Controller
 public class ChatController {
 	@Autowired ChatService chatService;
+	@Autowired GlobalWebsocketHandler globalWs;
 	
 	/*
 	 * 메신져 기능
@@ -88,50 +90,68 @@ public class ChatController {
     }
 	
 	/* 메시지 저장 */
-	 @PostMapping(value="/message.ajax")
-	 @ResponseBody
-	    public ResponseEntity<?> message(@RequestBody Map<String, Object> payload, HttpSession session) {
-	        try {
-	            int chatIdx = Integer.parseInt(payload.get("chat_idx").toString());
-	            String content = payload.get("content").toString();
-	            int senderIdx = Integer.parseInt((String) session.getAttribute("loginId"));
+	@PostMapping(value = "/message.ajax")
+	@ResponseBody
+	public ResponseEntity<?> message(@RequestBody Map<String, Object> payload, HttpSession session) {
+	    try {
+	        int chatIdx = Integer.parseInt(payload.get("chat_idx").toString());
+	        String content = payload.get("content").toString();
+	        int senderIdx = Integer.parseInt((String) session.getAttribute("loginId"));
 
-	            MessageDTO message = new MessageDTO();
-	            message.setChat_idx(chatIdx);
-	            message.setMsg_send_idx(senderIdx);
-	            message.setContent(content);
-	            message.setTime(new Date()); // 현재 시간
+	        MessageDTO message = new MessageDTO();
+	        message.setChat_idx(chatIdx);
+	        message.setMsg_send_idx(senderIdx);
+	        message.setContent(content);
 
-	            chatService.message(message);
+	        // 메시지 저장 후 msg_idx 반환
+	        int msgIdx = chatService.message(message);
 
-	            return ResponseEntity.ok("Message saved successfully");
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving message");
-	        }
-	 }
-	
+	        // msg_idx 반환
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("msg_idx", msgIdx);
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving message");
+	    }
+	}
+
+	 
+	 
 	
 	/* 메신져 리스트 이동*/
 	@RequestMapping(value="/chatList.go")
-	public String chatList() {
+	public String chatListGo() {
 		return "chat/chatList";
 	}
 	
 	/* 내가 참여중인 메신져 리스트 보여주기 */
 	@GetMapping(value = "/chatList.ajax")
 	@ResponseBody
-	public Map<String, Object> chatList(HttpSession session) {
-	    Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
-	    List<Map<String, Object>> chatList = chatService.chatList(emp_idx);
-	    List<EmployeeDTO> employeeList = chatService.getEmployeeList(); // 사원 목록 조회 서비스 호출
+    public Map<String, Object> chatList(int emp_idx) {
+        List<Map<String, Object>> chatList = chatService.chatList(emp_idx);
+        List<EmployeeDTO> employeeList = chatService.getEmployeeList(); // 사원 목록 조회 서비스 호출
 
-	    Map<String, Object> response = new HashMap<>();
-	    response.put("chatList", chatList);
-	    response.put("employeeList", employeeList);
-
-	    return response;
-	}
+        Map<String, Object> response = new HashMap<>();
+        response.put("chatList", chatList);
+        response.put("employeeList", employeeList);
+        
+        return response;
+    }
+	
+//	@GetMapping(value = "/chatList.ajax")
+//	@ResponseBody
+//	public Map<String, Object> chatList(HttpSession session) {
+//	    Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+//	    List<Map<String, Object>> chatList = chatService.chatList(emp_idx);
+//	    List<EmployeeDTO> employeeList = chatService.getEmployeeList(); // 사원 목록 조회 서비스 호출
+//
+//	    Map<String, Object> response = new HashMap<>();
+//	    response.put("chatList", chatList);
+//	    response.put("employeeList", employeeList);
+//
+//	    return response;
+//	}
 	
 	/* 회원 리스트 보여주기 */
 	@GetMapping("/memberList.ajax")
@@ -163,5 +183,66 @@ public class ChatController {
 	    }
 	    return result;
 	}
+	
+	/* 방 나가기 */
+	@PostMapping("/leaveChat.ajax")
+	@ResponseBody
+	public Map<String, Object> leaveChat(HttpSession session, @RequestParam int chat_idx) {
+	    Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+	    String loginName = (String) session.getAttribute("loginName"); // 로그인한 사용자 이름
+
+	    boolean success = chatService.leaveChat(chat_idx, emp_idx);
+
+	    // 시스템 메시지 저장 및 WebSocket 전송
+	    if (success) {
+	        String systemMessage = loginName + " 님이 나갔습니다.";
+	        chatService.saveAndBroadcastSystemMessage(chat_idx, systemMessage);
+	    }
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("success", success);
+	    if (!success) {
+	        response.put("message", "방 나가기에 실패했습니다.");
+	    }
+	    return response;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@PostMapping("/updateConnectionTime")
+	@ResponseBody
+	public ResponseEntity<?> updateConnectionTime(
+	    @RequestBody Map<String, Object> payload,
+	    HttpSession session
+	) {
+	    int chat_idx = Integer.parseInt(payload.get("chat_idx").toString());
+	    String action = payload.get("action").toString();
+	    int emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+	    LocalDateTime currentTime = LocalDateTime.now();
+
+	    if ("connect".equals(action)) {
+	        chatService.updateConnectionStart(chat_idx, emp_idx, currentTime);
+	    } else if ("disconnect".equals(action)) {
+	        chatService.updateConnectionEnd(chat_idx, emp_idx, currentTime);
+	    }
+	    return ResponseEntity.ok("Connection time updated");
+	}
+
+
+	
+	// 메지시 읽지 않음 씨빨!!!!!
+	@GetMapping("/unreadUserCount.ajax")
+	@ResponseBody
+	public int getUnreadUserCount(@RequestParam int msg_idx) {
+	    return chatService.getUnreadUserCount(msg_idx);
+	}
+	
 
 }

@@ -206,6 +206,8 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	max-width: 529px;
+	display: flex;
+    justify-content: space-between;
 }
 
 /* 참여자리스트 */
@@ -239,7 +241,6 @@
 	width: 30px; /* 이미지 크기 */
 	height: 30px;
 	border-radius: 5px; /* 이미지 둥글게 */
-	border: 2px solid #30005A; /* 이미지 외곽선 */
 	margin-right: 10px; /* 텍스트와의 간격 */
 }
 
@@ -355,3 +356,13 @@
       font-size: 20px;
       color: #333;
   }
+  
+  .unread-count-list{
+	background-color: #E9396B;
+	border-radius: 50%;
+	width: 20px;
+	text-align: center;
+}
+.unread-message-count{
+	color: #FFF5E2;
+}

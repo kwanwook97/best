@@ -192,7 +192,7 @@ purple{
 
 .chat-time {
 	font-size: 12px;
-	color: #8B6AA7;
+	color: #8B6AA7;	
 }
 
 .chat-preview {
@@ -201,7 +201,9 @@ purple{
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	max-width: 276px;
+	max-width: 238px;
+	display: flex;
+    justify-content: space-between;
 }
 
 /* 참여자리스트 */
@@ -228,11 +230,11 @@ purple{
 }
 
 .custom-image {
-	width: 30px; /* 이미지 크기 */
-	height: 30px;
+	width: 40px; /* 이미지 크기 */
+	height: 40px;
 	border-radius: 5px; /* 이미지 둥글게 */
-	border: 2px solid #30005A; /* 이미지 외곽선 */
 	margin-right: 10px; /* 텍스트와의 간격 */
+	display: inline-block;
 }
 
 .custom-label {
@@ -348,7 +350,7 @@ purple{
 .chat-bubble {
     background-color: #8B6AA7;
     color: #FFF5E2;
-    padding: 4px 10px;
+    padding: 7px 10px;
     border-radius: 5px;
     font-size: 14px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -365,19 +367,20 @@ purple{
 .message-time {
 	font-size: 12px; /* 시간 글씨 크기 */
 	color: #bbb5a6; /* 시간 텍스트 색상 */
-	white-space: nowrap; /* 줄바꿈 방지 */
+    margin-right: 3px;
+	
 }
 /* send message css */
 .send-messages {
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-end;
-	align-items: flex-end;
+    align-items: flex-end;
 }
 .send-message{
 	background-color: #FFF5E2;
     color: #30005A;
-    padding: 4px 10px;
+    padding: 7px 10px;
     border-radius: 5px;
     font-size: 14px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -393,7 +396,8 @@ purple{
 .sent-time {
 	font-size: 12px;
 	color: #bbb5a6;
-	white-space: nowrap;
+    margin-left: 3px;
+    
 }
 
 #memberModal {
@@ -406,13 +410,19 @@ purple{
     background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 */
     z-index: 1000;
 }
+#memberList{
+	list-style: none;
+	padding: 0px;
+}
+#memberList li{
+	display: flex;
+    justify-content: space-between;
+	list-style: none;
+}
 
 /* 모달 콘텐츠 */
 #memberModal .modal-content {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* 정중앙 배치 */
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
@@ -420,7 +430,13 @@ purple{
     width: 400px;
     max-width: 90%;
     text-align: center;
+    height: 500px;
+    overflow-y: auto; 
 }
+#memberModal .modal-content::-webkit-scrollbar {
+    display: none; /* Chrome/Edge에서 기본 스크롤 숨김 */
+}
+
 
   /* 닫기 버튼 */
   #memberModal .close {
@@ -431,3 +447,28 @@ purple{
       font-size: 20px;
       color: #333;
   }
+  
+  
+  .time-and-number {
+ 	display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+  .time-and-number2 {
+ 	display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.number{
+	font-size: 12px;
+}
+
+.unread-count-list{
+	background-color: #E9396B;
+	border-radius: 50%;
+	width: 20px;
+	text-align: center;
+}
+.unread-message-count{
+	color: #FFF5E2;
+}

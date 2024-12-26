@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -19,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class WebsocketHandler extends TextWebSocketHandler {
     Logger log = LoggerFactory.getLogger(getClass());
+    @Autowired ChatService chatService;
+    @Autowired GlobalWebsocketHandler globalWebsocketHandler;
     private static final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
     private static final ObjectMapper objectMapper = new ObjectMapper(); // JSON 변환기
 
@@ -41,17 +44,35 @@ public class WebsocketHandler extends TextWebSocketHandler {
     }
 
     public static void broadcast(Map<String, Object> messagePayload) {
+        // payload에 chat_idx 정보가 들어 있어야 함
+        Object payloadChatIdxObj = messagePayload.get("chat_idx");
+        if (payloadChatIdxObj == null) {
+            // chat_idx 자체가 없으면 일단 모든 세션에 보내거나, 
+            // 혹은 로그 찍고 return 하는 식으로 처리
+        }
+
         sessions.stream()
             .filter(WebSocketSession::isOpen)
             .forEach(session -> {
+                // 이 세션의 chat_idx
+                Integer sessionChatIdx = (Integer) session.getAttributes().get("chat_idx");
                 try {
-                    String jsonMessage = objectMapper.writeValueAsString(messagePayload);
-                    session.sendMessage(new TextMessage(jsonMessage));
+                    // 여기서 필터링: 세션의 chat_idx와 payload chat_idx가 같은지
+                    if (sessionChatIdx != null 
+                        && payloadChatIdxObj instanceof Integer
+                        && sessionChatIdx.equals(payloadChatIdxObj)) {
+                        
+                        // 같으면 브로드캐스트
+                        String jsonMessage = objectMapper.writeValueAsString(messagePayload);
+                        session.sendMessage(new TextMessage(jsonMessage));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
     }
+    
+    
 
 
     @Override
@@ -62,7 +83,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
         try {
             Map<String, Object> messagePayload = objectMapper.readValue(payload, Map.class);
 
-            // 세션에서 사용자 정보 가져오기
             Integer chatIdx = (Integer) session.getAttributes().get("chat_idx");
             Integer empIdx = (Integer) session.getAttributes().get("emp_idx");
             String empName = (String) session.getAttributes().get("emp_name");
@@ -72,14 +92,17 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 return;
             }
 
-            // 메시지에 데이터 추가
             messagePayload.put("chat_idx", chatIdx);
-            messagePayload.put("msg_send_idx", empIdx); // 보낸 사람 ID
+            messagePayload.put("msg_send_idx", empIdx);
             messagePayload.put("name", empName);
             messagePayload.put("time", System.currentTimeMillis());
 
-            // 브로드캐스트
+            // 개별 방 브로드캐스트
             broadcast(messagePayload);
+           
+            chatService.broadcastUnreadCount(chatIdx);
+            
+
         } catch (Exception e) {
             log.error("메시지 처리 중 오류 발생: {}", e.getMessage(), e);
         }
