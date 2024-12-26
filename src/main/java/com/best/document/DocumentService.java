@@ -267,20 +267,26 @@ public class DocumentService {
 		int offset = (page-1) * cnt;
 		int emp_idx = 1;
 		
-		int totalPages = documentDao.sentCount(emp_idx, cnt, status);
+		int totalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
 		logger.info("토탈페이지:", totalPages);
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("totalPages", totalPages);
 		
-		List<Map<String, Object>> saveList = documentDao.sentList(emp_idx, limit, offset, status);
+		List<Map<String, Object>> saveList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
 	    result.put("saveList", saveList);
 		
 		return result;
 	}
 
 	// 읽음, 읽지않음 처리
-	public boolean updateRead(int doc_idx, int doc_read, int approv_num) {
-		return documentDao.updateRead(doc_idx, doc_read, approv_num);
+	public boolean updateRead(String text, int doc_idx, int doc_read, int approv_num) {
+		boolean success = false;
+		if(text.equals("참조")) {
+			success = documentDao.updateReject(doc_idx, doc_read, approv_num);
+		}else {			
+			success = documentDao.updateapprov(doc_idx, doc_read, approv_num);
+		}
+		return success;
 	}
 
 	// 임시저장 상세보기

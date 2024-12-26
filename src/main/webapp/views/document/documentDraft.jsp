@@ -12,7 +12,7 @@
 		transform: scale(0.9);
 	    margin-left: 22vw;
         width: 70vw;
-	    margin-top: 7vh;
+	    margin-top: 4vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    display: flex;
@@ -310,7 +310,7 @@ function open(content) {
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
         '      <button class="modal-btn save" onclick="btnAction(\'수정\')">수정</button>' +
-        '      <button class="modal-btn append" onclick="addBtn()">결재선 추가</button>' +
+        '      <button class="modal-btn append" onclick="openUserBoxModal()">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
         '    <div class="content" contenteditable="true">' + content + '</div>' +

@@ -3,11 +3,13 @@ $(document).on('click', '.update', function() {
     var icon = $(this).find('i');
     var doc_read = icon.hasClass('fa-envelope') ? 1 : 0;
     var approv_num = $(this).data('approv-num');
+    console.log("시발"+$('.text').html());
     
     $.ajax({
         url: 'updateRead.ajax',
         method: 'POST',
         data: {
+        	text : text,
         	approv_num: approv_num,
             doc_idx: doc_idx,
             doc_read: doc_read

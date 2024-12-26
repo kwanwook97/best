@@ -286,6 +286,7 @@ input.manager, input.today2, input.today3{
 			</ul>
 		</div>
 	</div>
+	<jsp:include page="../modal/findAdd.jsp"></jsp:include>
 </body>
 <script>
 
@@ -351,7 +352,8 @@ function documentForm(form_subject) {
         data: { form_subject: form_subject },
         dataType: 'text',
         success: function(response) {
-        	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
+        	console.log("Response HTML: ", response);
+        	$("#customModal").fadeOut();
             openModal(response, form_subject); 
         },
         error: function(xhr, status, error) {
@@ -385,7 +387,7 @@ function openModal(content, form_subject) {
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
         '      <button class="modal-btn save" onclick="btnAction(\'임시저장\')">임시저장</button>' +
-        '      <button class="modal-btn append" onclick="addBtn()">결재선 추가</button>' +
+        '      <button class="modal-btn append" onclick="openUserBoxModal()">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
         '    <div class="content" contenteditable="true">' + content + '</div>' +
@@ -575,7 +577,7 @@ function btnAction(actionType) {
         }
     });
 }
-function addBtn() {
+/*function addBtn() {
 	$.ajax({
         type: 'GET',
         url: 'orgChartGet.ajax',
@@ -605,7 +607,7 @@ function addBtn() {
         }
     });
     // 기존 signBox 테이블을 찾음
-/*     var signBox = $('.signBox');
+     var signBox = $('.signBox');
     var managerName1 = '${managerName1}';
     var todayDate3 = '${todayDate3}';
     // 새로운 table HTML 생성
@@ -624,8 +626,8 @@ function addBtn() {
         '</table>';
 
     // signBox 테이블 뒤에 새로운 table 추가
-    signBox.after(newTableHtml); */
-}
+    signBox.after(newTableHtml);
+} */
 
 // 양식 검색
 $(document).ready(function() {

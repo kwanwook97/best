@@ -165,10 +165,11 @@
 		    d.status,
 		    e.name, 
 		    f.form_subject,
-		    a1.approv_num
+		    a1.approv_num,
+		    a1.doc_read
 		FROM document d
 		JOIN (
-		    SELECT doc_idx, approv_date, approv_num
+		    SELECT doc_idx, approv_date, approv_num, doc_read
 		    FROM approv a
 		    WHERE emp_idx = #{emp_idx}
 		      AND approv_order = 1
@@ -213,7 +214,6 @@
     <!-- 전자결재 진행중 리스트 검색 -->
    	<select id="searchInProgressList" resultType="map">
 		SELECT 
-			a.approv_num,
 		    d.doc_idx,
 		    d.doc_number, 
 		    d.doc_subject, 
@@ -221,10 +221,11 @@
 		    d.status,
 		    e.name, 
 		    f.form_subject,
-		    a1.approv_num
+		    a1.approv_num,
+   		    a1.doc_read
 		FROM document d
 		JOIN (
-		    SELECT doc_idx, approv_date, approv_num
+		    SELECT doc_idx, approv_date, approv_num, doc_read
 		    FROM approv a
 		    WHERE emp_idx = #{emp_idx}
 		      AND approv_order = 1
@@ -272,7 +273,8 @@
 		    e.name,
 		    f.form_subject,
 		    a.approv_date,
-		    a.approv_num
+		    a.approv_num,
+		    a.doc_read
 		FROM document d
 		JOIN employee e ON d.emp_idx = e.emp_idx
 		JOIN form f ON d.form_idx = f.form_idx
@@ -319,7 +321,8 @@
 		    e.name,
 		    f.form_subject,
 		    a.approv_date,
-		    a.approv_num
+		    a.approv_num,
+		    a.doc_read
 		FROM document d
 		JOIN employee e ON d.emp_idx = e.emp_idx
 		JOIN form f ON d.form_idx = f.form_idx
@@ -359,6 +362,7 @@
     <select id="rejectList" resultType="map">
 		SELECT 
 		    a.doc_idx,
+		    a.doc_read,
 		    a.approv_date,
 		    a.approv_num,
 		    d.status,    
@@ -422,6 +426,7 @@
     <select id="searchRejectList" resultType="map">
 		SELECT 
 		    a.doc_idx,
+		    a.doc_read,
 		    a.approv_date,
 		    a.approv_num,
 		    d.status,    
@@ -482,7 +487,7 @@
 		    e.name, 
 		    f.form_subject,
 		    r.doc_read,
-		    r.ref_idx
+		    r.ref_idx AS approv_num
 		FROM document d
 		JOIN employee e ON d.emp_idx = e.emp_idx
 		JOIN form f ON d.form_idx = f.form_idx
@@ -524,7 +529,7 @@
 		    e.name, 
 		    f.form_subject,
 		    r.doc_read,
-		    r.ref_idx
+		    r.ref_idx AS approv_num
 		FROM document d
 		JOIN employee e ON d.emp_idx = e.emp_idx
 		JOIN form f ON d.form_idx = f.form_idx
@@ -553,7 +558,7 @@
 	</select>
 	<!-- 전자결재 보낸 문서 리스트 -->
    	<select id="sentList" resultType="map">
-   		SELECT 
+		 SELECT 
 		    d.doc_idx, 
 		    d.form_idx,
 		    d.doc_subject,
@@ -561,9 +566,16 @@
 		    d.status,
 		    d.doc_number,
 		    f.form_subject
+		    <if test="status != '임시저장'">
+		        , a.approv_date
+		    </if>
 		FROM document d
 		LEFT JOIN form f ON d.form_idx = f.form_idx
-		WHERE d.emp_idx = #{emp_idx} AND d.status = #{status}
+		<if test="status != '임시저장'">
+		    LEFT JOIN approv a ON d.doc_idx = a.doc_idx
+		</if>
+		WHERE d.emp_idx = #{emp_idx} 
+		  AND d.status = #{status}
 		ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
    	</select>
@@ -583,7 +595,7 @@
 	</select>
 	<!-- 전자결재 보낸 문서 리스트 검색 -->
    	<select id="searchList" resultType="map">
-   		SELECT 
+		 SELECT 
 		    d.doc_idx, 
 		    d.form_idx,
 		    d.doc_subject,
@@ -591,15 +603,21 @@
 		    d.status,
 		    d.doc_number,
 		    f.form_subject
+		    <if test="status != '임시저장'">
+		        , a.approv_date
+		    </if>
 		FROM document d
-		JOIN form f ON d.form_idx = f.form_idx
-		WHERE d.emp_idx = #{emp_idx} AND status = #{status}
+		LEFT JOIN form f ON d.form_idx = f.form_idx
+		<if test="status != '임시저장'">
+		    LEFT JOIN approv a ON d.doc_idx = a.doc_idx
+		</if>
+		WHERE d.emp_idx = #{emp_idx} AND d.status = #{status}
         <choose>
             <when test="searchType == 'subject'">
-                AND doc_subject LIKE CONCAT('%', #{query}, '%')
+                AND d.doc_subject LIKE CONCAT('%', #{query}, '%')
             </when>
             <when test="searchType == 'docNum'">
-                AND doc_number LIKE CONCAT('%', #{query}, '%')
+                AND d.doc_number LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
 		ORDER BY d.doc_date DESC
@@ -607,8 +625,11 @@
    	</select>
    	
 	<!-- 읽음, 읽지않음 처리 -->
-    <update id="updateRead">
+    <update id="updateapprov">
     	UPDATE approv SET doc_read = #{doc_read} WHERE doc_idx = #{doc_idx} AND approv_num = #{approv_num}
+    </update>
+    <update id="updateReject">
+    	UPDATE reference SET doc_read = #{doc_read} WHERE doc_idx = #{doc_idx} AND ref_idx = #{ref_idx}
     </update>
     
    

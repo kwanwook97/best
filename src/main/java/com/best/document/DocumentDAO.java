@@ -14,8 +14,7 @@ public interface DocumentDAO {
 	List<Map<String, Object>> sentList(int emp_idx, int limit, int offset, String status);
 	// 검색
 	int searchCount(int emp_idx, int cnt, String status, String searchType, String query);
-	List<Map<String, Object>> searchList(int emp_idx, int limit, int offset, 
-			String status, String searchType, String query);
+	List<Map<String, Object>> searchList(int emp_idx, int limit, int offset, String status, String searchType, String query);
 	
 	/* 받은 문서 */
 	// 전자결재 대기 토탈 페이지 / 리스트
@@ -52,9 +51,11 @@ public interface DocumentDAO {
 	// 검색
 	int searchReference(int emp_idx, int cnt, String searchType, String query);
 	List<Map<String, Object>> searchReferenceList(int emp_idx, int limit, int offset, String searchType, String query);
+
 	
 	// 읽음, 읽지않음 처리
-	boolean updateRead(int doc_idx, int doc_read, int approv_num);
+	boolean updateapprov(int doc_idx, int doc_read, int approv_num);
+	boolean updateReject(int doc_idx, int doc_read, int ref_idx);
 	
 	
 	// 전자결재 임시저장
@@ -78,6 +79,8 @@ public interface DocumentDAO {
 
 	// 전자결재 기안자 정보
 	Map<String, Object> getEmpDetails(int emp_idx);
+
+
 
 
 

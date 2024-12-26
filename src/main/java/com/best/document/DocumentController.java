@@ -132,10 +132,10 @@ public class DocumentController {
 	// 읽음, 읽지않음 처리
 	@PostMapping(value="/updateRead.ajax")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> updateRead(int doc_idx, int doc_read, int approv_num) {
+	public ResponseEntity<Map<String, Object>> updateRead(String text, int doc_idx, int doc_read, int approv_num) {
 		Map<String, Object> response = new HashMap<>();
 		
-		boolean success = documentService.updateRead(doc_idx, doc_read, approv_num);
+		boolean success = documentService.updateRead(text, doc_idx, doc_read, approv_num);
 	
         if (success) {
             response.put("success", 1);

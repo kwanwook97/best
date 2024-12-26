@@ -13,7 +13,7 @@
 		transform: scale(0.9);
 	    margin-left: 22vw;
 	    width: 70vw;
-	    margin-top: 7vh;
+	    margin-top: 4vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
@@ -359,9 +359,9 @@ function received(document) {
 		content += '<td>' + docDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		content += '<td>' + 
-	    (item.doc_read == false
-		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
-		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+		    (item.doc_read == false
+		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
 		'</td>';
 		
 		content += '</tr>';

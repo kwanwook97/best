@@ -13,7 +13,7 @@
 		transform: scale(0.9);
 	    margin-left: 22vw;
 	    width: 70vw;
-	    margin-top: 7vh;
+	    margin-top: 4vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
