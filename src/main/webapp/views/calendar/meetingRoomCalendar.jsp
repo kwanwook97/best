@@ -7,7 +7,6 @@
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
   <script src="resources/js/index.global.js"></script>
   
   <style>
@@ -558,6 +557,7 @@
 </div>
 </body> 
 <script>
+var specialDays = ${specialDaysJson};
 let calendar;
 document.addEventListener('DOMContentLoaded', function loadEvt() {
     var calendarEl = document.getElementById('calendar-room');
@@ -792,6 +792,59 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                         '<span>시간: ' + startTime + ' - ' + endTime + '</span>' +
                     '</div>'
             };
+        },
+        dayCellDidMount: function(info) {
+            const localDate = new Date(info.date.getTime() - info.date.getTimezoneOffset() * 60000);
+            const formattedDate = localDate.toISOString().split('T')[0];
+            const viewType = info.view.type;
+            const day = info.date.getDay();
+
+/*             const specialDays = {
+                    '2024-01-01': '신정',
+                    '2024-02-10': '설날',
+                    '2024-02-11': '설날 연휴',
+                    '2024-02-12': '설날 연휴',
+                    '2024-03-01': '삼일절',
+                    '2024-05-05': '어린이날',
+                    '2024-05-15': '스승의 날',
+                    '2024-12-25': '크리스마스'
+                }; */
+            
+            // 특별한 날이 있는 경우
+            if (specialDays[formattedDate]) {
+                // 날짜 셀에 텍스트 추가
+                const dayNumberElement = info.el.querySelector('.fc-daygrid-day-frame');
+                if (dayNumberElement) {
+                    const label = document.createElement('span');
+                    label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
+                    label.style.color = '#D32F2F'; // 텍스트 색상
+                    label.style.fontSize = '0.8em'; // 텍스트 크기
+                    dayNumberElement.appendChild(label);
+                }
+            }
+
+            if (viewType === 'timeGridWeek') {
+                if (day === 6 || day === 0) {
+                    const timeSlots = document.querySelectorAll(
+                        '.fc-timegrid-col[data-date="' + formattedDate + '"]'
+                    );
+                    timeSlots.forEach(slot => {
+                        slot.style.setProperty('background-color', '#FFEBEE', 'important');
+                    });
+                }
+                return;
+            }
+
+            const dayCellElement = info.el;
+            if (dayCellElement) {
+                if (day === 6 || day === 0) {
+                    const dayNumberElement = info.el.querySelector('.fc-daygrid-day-number');
+                    if (dayNumberElement) {
+                        dayNumberElement.style.setProperty('color', '#D32F2F', 'important');
+                    }
+                    info.el.style.setProperty('background-color', '#FFEBEE', 'important');
+                }
+            }
         }
 
     });

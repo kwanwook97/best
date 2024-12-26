@@ -232,6 +232,74 @@
 	<delete id="delRoomMaterial" parameterType="int">
 		DELETE FROM room_material WHERE room_idx = #{roomIdx}
 	</delete>
+	
+	<!-- 부서 정보 사원 가져오기 -->
+	<select id="findById" parameterType="map" resultType="map">
+		select depart_idx from employee where emp_idx = #{loginId}
+	</select>
+	<!-- 캘린더 정보 저장 -->
+	<insert id="saveEvent" parameterType="map" useGeneratedKeys="true" keyProperty="eventId">
+	    INSERT INTO schedule (emp_idx, subject, start_datetime, end_datetime, all_day, visibility,depart_idx)
+	    VALUES (
+	        #{loginId},
+	        #{title},
+	        STR_TO_DATE(#{start}, '%Y-%m-%dT%H:%i:%s.%fZ'),
+	        STR_TO_DATE(#{end}, '%Y-%m-%dT%H:%i:%s.%fZ'),
+	        #{allDay},
+	        #{visibility},
+	        #{employeeDepartmentIdx.depart_idx}
+	    )
+	</insert>
+	
+	<!-- 저장된 캘린더 정보 가져오기 -->
+	<select id="getMyEvents" resultType="map">
+		SELECT 
+		    s.schedule_idx AS id, 
+		    s.subject AS title, 
+		    s.start_datetime AS start, 
+		    s.end_datetime AS end, 
+		    s.visibility,
+		    s.depart_idx AS department, 
+		    s.all_day AS allDay,
+		    s.emp_idx AS employeeIdx,
+		    e.name AS employeeName
+		FROM 
+		    schedule s
+		JOIN 
+		    employee e ON s.emp_idx = e.emp_idx;
+	</select>
+	
+	<!-- 캘린더 업데이트 -->
+	<update id="updateMyEvent" parameterType="map">
+	    UPDATE schedule
+	    SET 
+	        start_datetime = STR_TO_DATE(REPLACE(REPLACE(REPLACE(#{start}, 'T', ' '), 'Z', ''), '.000', ''), '%Y-%m-%d %H:%i:%s'),
+	        end_datetime = STR_TO_DATE(REPLACE(REPLACE(REPLACE(#{end}, 'T', ' '), 'Z', ''), '.000', ''), '%Y-%m-%d %H:%i:%s'),
+	        visibility = #{visibility}, 
+	        all_day = #{allDay}
+	    WHERE schedule_idx = #{id};
+	</update>
+	<!-- 캘린더 이벤트 삭제 -->
+	<delete id="delEvent" parameterType="map">
+		DELETE FROM schedule WHERE schedule_idx = #{id}
+	</delete>
+	
+	<!-- 홀리데이 저장 -->
+	<insert id="saveHoliday" parameterType="String">
+        INSERT INTO holiday (holiday_date, holiday_name)
+        VALUES (#{date}, #{name})
+	</insert>
+	
+	<!-- 홀리데이 가져오기 -->
+	<select id="getAllHolidays" resultType="com.best.calendar.HolidayDTO">
+	    SELECT holiday_date, holiday_name FROM holiday
+	</select>
+	
+	<!-- 홀리데이 날짜 가져오기 -->
+	<select id="getHolidayCalculate" resultType="java.time.LocalDate">
+		select holiday_date from holiday
+	</select>
+	
 </mapper>  
 
 

@@ -5,11 +5,13 @@
   <meta charset="utf-8"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <style>
 	
 	.body {
-	    height: auto;
-	    width: 83%;
+	    height: 90%;
+	    width: 78%;
         margin-top: 110px;
     	margin-left: 320px;
     	margin-right: 100%;
@@ -215,14 +217,14 @@
 			<div class="contentTop">
 				<!-- 날짜 및 출퇴근시간 -->
 				<div class="attendRecord pLine inBlock p18">
-					<span class="bold m5 f16">2024/12/18(수)</span>
-					<h2 class="bold m5 f48">11:08</h2>
+					<span class="bold m5 f16" id="day">2024/12/18(수)</span>
+					<h2 class="bold m5 f48" id="clock">11:08</h2>
 					<div class="w100 bold f16">
 						<div class="w100 m10">
-							<span class="m20 lPurple">출근 시간 : </span><span>09:00</span>
+							<span class="m20 lPurple start-time">출근 시간 : </span><span>09:00</span>
 						</div>
 						<div class="w100">
-							<span class="m20 lPurple">퇴근 시간 : </span><span>00:00</span>
+							<span class="m20 lPurple end-time">퇴근 시간 : </span><span>00:00</span>
 						</div>
 					</div>
 				</div>
@@ -363,6 +365,55 @@
 	</div>
 </body>
 <script>
+var loginId = 3;
+
+
+setInterval(updateClock, 1000)
+updateClock()
+function updateClock() {
+    const curtime = new Date()
+    const timeString = String(curtime.getHours()).padStart(2, "0") + ":" +
+        String(curtime.getMinutes()).padStart(2, "0") + ":" +
+        String(curtime.getSeconds()).padStart(2, "0")
+    const year = curtime.getFullYear();
+    const month = String(curtime.getMonth() + 1).padStart(2, "0");
+    const date = String(curtime.getDate()).padStart(2, "0");
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    const dayName = dayNames[curtime.getDay()];
+    const dateString = year + "/" + month + "/" + date + "(" + dayName + ")";
+
+    $('#clock').text(timeString)
+    $('#day').text(dateString)
+}
+
+updateTime()
+
+function updateTime(){
+    $.ajax({
+        url: "updateTime.ajax",
+        type: "GET",
+        data: { loginId:loginId}, 
+        dataType: "json", 
+        success: function (response) {
+            if (response.startTime) {
+                $(".start-time").next("span").text(response.startTime.split(" ")[1]);
+            } else {
+                $(".start-time").next("span").text("출근 시간 없음");
+            }
+            if (response.endTime) {
+                $(".end-time").next("span").text(response.endTime.split(" ")[1]);
+            } else {
+                $(".end-time").next("span").text("퇴근 시간 없음");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("에러:", error);
+        }
+    });
+}
+
+
+
 
 </script>
 </html>

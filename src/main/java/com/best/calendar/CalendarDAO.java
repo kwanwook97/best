@@ -53,6 +53,22 @@ public interface CalendarDAO {
 
 	int delRoomMaterial(int roomIdx);
 
+	Map<String, Object> findById(int loginId);
+
+	int saveEvent(Map<String, Object> requestData);
+
+	List<Map<String, Object>> getMyEvents();
+
+	int updateMyEvent(Map<String, Object> params);
+
+	int delEvent(Map<String, Object> params);
+
+	void saveHoliday(String date, String name);
+
+	List<HolidayDTO> getAllHolidays();
+
+	List<LocalDate> getHolidayCalculate();
+
 
 
 
