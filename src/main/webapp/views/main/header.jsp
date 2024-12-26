@@ -18,6 +18,11 @@
 <script src="resources/js/simplebar.js"></script>
 <script src="resources/js/bootstrap.min.js"></script>
 </head>
+<style>
+.btn-finish-work {
+	display: none;
+}
+</style>
 
 <body>
    <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
@@ -364,7 +369,8 @@
     <li>
 		<div class="work-time">
    			<i class="bi bi-clock-history"></i>
-   			<button>출근</button>
+   			<button class="btn-start-work" onclick="updateStartTime()">출근</button>
+   			<button class="btn-finish-work" onclick="">퇴근</button>
    		</div>
     </li>
   </ul>
@@ -387,6 +393,60 @@
 </nav>
 </header>
 <script>
+var loginId = 3;
+let date;
+let formattedDate
+function updateClock(){
+	date = new Date()
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+	formattedDate = year+'-'+month+'-'+day+' '+hours+':'+minutes+':'+seconds;
+}
+
+setInterval(updateClock, 1000)
+updateClock()
+
+function updateStartTime(){
+    const data = {
+            loginId: loginId,
+            startWork: formattedDate  
+        };
+	console.log("날짜:"+formattedDate);
+     
+       fetch('updateStartTime.ajax', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('출근 처리 중 문제가 발생했습니다.');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const button = document.querySelector('.btn-start-work');
+        const finish = document.querySelector('.btn-finish-work');
+            button.style.display = 'none';
+            finish.style.display = 'block';
+        
+    })
+    .catch(error => {
+        console.error('출근 처리 오류:', error);
+        alert(error.message);
+    });   
+     
+	
+}
+
+
+
 </script>
 
 </body>

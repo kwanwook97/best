@@ -29,6 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Mono;
 
@@ -40,9 +44,8 @@ public class CalendarService {
     @Autowired private RestTemplate restTemplate;
 
 	private final String key = "TCuRmWq%2FaFsNLdJwyz%2BHkWCAMRVUPiYN0ucu6JUybxixygOPOMtXjAyPJPuYzVPPuUBUVtd9mDibVPXIy1xjpg%3D%3D";
-	private final String url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
+	private final String url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService";
 
-	private WebClient webClient = WebClient.create("https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService");
 
 	
 	@Transactional
@@ -317,59 +320,119 @@ public class CalendarService {
 		return map;
 	}
 
-    public void insertHolidays() {
-        int currentYear = LocalDate.now().getYear();
+	public void insertHolidays() {
+	    int currentYear = LocalDate.now().getYear();
 
-        for (int month = 1; month <= 12; month++) {
-            try {
-                List<HolidayDTO> holidays = fetchHolidays(currentYear, month);
+	    for (int month = 1; month <= 12; month++) {
+	        try {
+	            List<Map<String, Object>> holidays = getHolidaysForMonth(currentYear, month);
 
-                for (HolidayDTO holiday : holidays) {
-                    calendarDAO.saveHoliday(holiday);
-                }
+	            holidays.forEach(holiday -> {
+	                String date = holiday.get("locdate").toString(); // 타입 안전하게 처리
+	                String name = holiday.get("dateName").toString();
+	                calendarDAO.saveHoliday(date, name);
+	            });
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 
-                System.out.println(month + "월 공휴일 데이터 저장 완료");
-            } catch (Exception e) {
-                System.err.println(month + "월 데이터 처리 중 오류 발생: " + e.getMessage());
-            }
-        }
-    }
+	private List<Map<String, Object>> getHolidaysForMonth(int year, int month) throws Exception {
+	    String response = fetchHolidaysFromAPI(year, month);
+	    return parseHolidays(response);
+	}
 
-    private List<HolidayDTO> fetchHolidays(int year, int month) throws ParseException {
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(url);
-        factory.setEncodingMode(EncodingMode.VALUES_ONLY);
+	private String fetchHolidaysFromAPI(int year, int month) {
+	    String baseUrl = url;
 
-        WebClient client = WebClient.builder()
-                .uriBuilderFactory(factory)
-                .baseUrl(url)
-                .build();
+	    DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
+	    factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
 
-        String param = String.format("?ServiceKey=%s&solYear=%d&solMonth=%02d&_type=json", key, year, month);
+	    WebClient webClient = WebClient.builder()
+	            .uriBuilderFactory(factory)
+	            .build();
 
-        Mono<Map> mono = client.get()
-                .uri(param)
-                .retrieve()
-                .bodyToMono(Map.class);
+	    String response = webClient.get()
+	            .uri(uriBuilder -> uriBuilder
+	                    .path("/getRestDeInfo")
+	                    .queryParam("serviceKey", key) // 실제 API 키
+	                    .queryParam("solYear", year)
+	                    .queryParam("solMonth", String.format("%02d", month))
+	                    .queryParam("_type", "json")
+	                    .build())
+	            .retrieve()
+	            .bodyToMono(String.class)
+	            .block();
 
-        Map<String, Object> responseMap = mono.flux().toStream().findFirst().orElse(new HashMap<>());
 
-        List<Map<String, Object>> items = (List<Map<String, Object>>) ((Map<String, Object>) responseMap.get("response"))
-                .get("body");
-        if (items == null) {
-            return new ArrayList<>();
-        }
+	    return response;
+	}
 
-        List<HolidayDTO> holidays = new ArrayList<>();
-        for (Map<String, Object> item : items) {
-            HolidayDTO holiday = new HolidayDTO();
-            holiday.setHoliday_date(new java.sql.Date(new SimpleDateFormat("yyyyMMdd").parse((String) item.get("locdate")).getTime()));
-            holiday.setHoliday_name((String) item.get("dateName"));
-            holiday.setCreated_at(new Timestamp(System.currentTimeMillis()));
-            holidays.add(holiday);
-        }
 
-        return holidays;
-    }
+	private List<Map<String, Object>> parseHolidays(String response) throws Exception {
+	    ObjectMapper objectMapper = new ObjectMapper();
+
+	    // JSON 문자열을 Map으로 변환
+	    Map<String, Object> responseMap = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {});
+
+	    // "response" -> "body" -> "items" 탐색
+	    Map<String, Object> responseNode = (Map<String, Object>) responseMap.get("response");
+	    Map<String, Object> bodyNode = (Map<String, Object>) responseNode.get("body");
+	    Object itemsNode = bodyNode.get("items");
+
+	    List<Map<String, Object>> holidays = new ArrayList<>();
+
+	    if (itemsNode == null || (itemsNode instanceof String && ((String) itemsNode).isEmpty())) {
+	        // "items"가 null이거나 빈 문자열인 경우 빈 리스트 반환
+	        return holidays;
+	    }
+
+	    if (itemsNode instanceof Map) {
+	        // "items"가 단일 객체인 경우
+	        Map<String, Object> itemMap = (Map<String, Object>) itemsNode;
+	        Object item = itemMap.get("item");
+	        if (item instanceof Map) {
+	            holidays.add((Map<String, Object>) item);
+	        } else if (item instanceof List) {
+	            holidays.addAll((List<Map<String, Object>>) item);
+	        }
+	    } else if (itemsNode instanceof List) {
+	        // "items" 자체가 리스트인 경우
+	        holidays.addAll((List<Map<String, Object>>) itemsNode);
+	    } else {
+	        throw new IllegalArgumentException("Unexpected items type: " + itemsNode.getClass().getName());
+	    }
+
+
+	    return holidays;
+	}
+
+	public List<HolidayDTO> getAllHolidays() {
+		return calendarDAO.getAllHolidays();
+	}
+
+	public List<LocalDate> getHolidayCalculate() {
+		return calendarDAO.getHolidayCalculate();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	
 	

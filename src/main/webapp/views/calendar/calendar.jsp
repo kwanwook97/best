@@ -190,12 +190,11 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<h2 id="clock">00:00:00</h2>
- 		<button onclick="test1()"></button>
 		  <div class="container">
 		    <div id="calendar-container">
 				<select id="visibilityFilter">
-				    <option value="public">공개</option>
-				    <option value="private">비공개</option>
+				    <option value="public">부서</option>
+				    <option value="private">개인</option>
 		    	</select>
 		      <div id="calendar"></div>
 		    </div>
@@ -211,11 +210,13 @@
  	</div>
 </body> 
 <script>
-
-
+var userDepartment = 4;
+var loginId = 4;
+var specialDays = ${specialDaysJson};
 document.addEventListener('DOMContentLoaded', function() {
-    const userDepartment = 4;
-    var loginId = 3;
+
+	
+
     const calendarEl = document.getElementById('calendar');
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -533,8 +534,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const viewType = info.view.type;
             const day = info.date.getDay();
             const formattedDate = info.date.toISOString().split('T')[0];
-            
-            const specialDays = {
+
+/*             const specialDays = {
                     '2024-01-01': '신정',
                     '2024-02-10': '설날',
                     '2024-02-11': '설날 연휴',
@@ -543,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     '2024-05-05': '어린이날',
                     '2024-05-15': '스승의 날',
                     '2024-12-25': '크리스마스'
-                };
+                }; */
             
             // 특별한 날이 있는 경우
             if (specialDays[formattedDate]) {

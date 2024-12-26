@@ -63,7 +63,11 @@ public interface CalendarDAO {
 
 	int delEvent(Map<String, Object> params);
 
-	void saveHoliday(HolidayDTO holiday);
+	void saveHoliday(String date, String name);
+
+	List<HolidayDTO> getAllHolidays();
+
+	List<LocalDate> getHolidayCalculate();
 
 
 

@@ -4,4 +4,31 @@
 >
 <mapper namespace="com.best.attendance.AttendanceDAO">
 
+	<insert id="insertAttendance">
+	  INSERT INTO attendance (emp_idx, status, content)
+	  SELECT 
+	    e.emp_idx,
+	    CASE 
+	        WHEN lh.start_date &lt;= CURDATE() AND lh.end_date >= CURDATE() THEN '연차'
+	        ELSE '정상'
+	    END AS status,
+	    'SYSTEM' AS content
+	  FROM employee e
+	  LEFT JOIN leave_history lh ON e.emp_idx = lh.emp_idx
+	  WHERE e.end_date = '9999-12-31';
+	</insert>
+	
+	<select id="checkHistory" parameterType="java.time.LocalDate">
+		SELECT COUNT(attend_idx)FROM attendance WHERE date = #{today}		
+	</select>
+	<!-- 출근버튼 -->
+	<update id="updateStartTime" parameterType="map">
+		update attendance 
+		SET start_time = #{startWork}, content = '본인'
+    	WHERE date = CURDATE() and emp_idx = #{loginId}
+	</update>
+	<!-- 출퇴근 시간 가져오기 -->
+	<select id="getWorkTime" parameterType="map" resultType="map">
+		SELECT start_time,end_time FROM attendance WHERE emp_idx = #{loginId} AND date = CURDATE()
+	</select>
 </mapper>  

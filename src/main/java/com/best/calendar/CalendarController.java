@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.best.attendance.AttendanceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class CalendarController {
@@ -36,11 +38,51 @@ public class CalendarController {
 		//List<String> departName = calendarService.meetingRoomCalendarDo();
 		List<RoomDTO> roomList = calendarService.getRoomList();
 		model.addAttribute("roomList",roomList);
+		
+		// 홀리데이 가져오기
+        Map<String, Object> specialDays = new HashMap<>();
+        List<HolidayDTO> holidays = calendarService.getAllHolidays(); 
+
+        for (HolidayDTO holiday : holidays) {
+            specialDays.put(holiday.getHoliday_date().toString(), holiday.getHoliday_name());
+        }
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+			String specialDaysJson = objectMapper.writeValueAsString(specialDays);
+	        model.addAttribute("specialDaysJson", specialDaysJson);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    model.addAttribute("specialDays", specialDays);
+
+		
 		return "calendar/meetingRoomCalendar";
 	}
 	
 	@RequestMapping(value="/calendar.go")
-	public String calendarGo() {
+	public String calendarGo(Model model) {
+		
+	    
+        List<HolidayDTO> holidays = calendarService.getAllHolidays(); 
+        Map<String, Object> specialDays = new HashMap<>();
+
+        for (HolidayDTO holiday : holidays) {
+            specialDays.put(holiday.getHoliday_date().toString(), holiday.getHoliday_name());
+        }
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+			String specialDaysJson = objectMapper.writeValueAsString(specialDays);
+	        model.addAttribute("specialDaysJson", specialDaysJson);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    model.addAttribute("specialDays", specialDays);
+		
 		return "calendar/calendar";
 	}
 	
