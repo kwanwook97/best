@@ -57,4 +57,10 @@ public class MailService {
 		return result;
 	}
 
+	// 사원정보 가져오기(메일, 이름, idx) 
+	public Map<String, Object> empInfo(Map<String, String> map) {
+		
+		return mailDao.empInfo(map);
+	}
+
 }

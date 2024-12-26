@@ -58,11 +58,22 @@ RTE_DefaultConfig.pasteMode = "Auto"; // Specifies the manner in which the edito
 RTE_DefaultConfig.floatParagraphPos = "left";//left or right
 RTE_DefaultConfig.floatParagraphPosX = 0; //x offset
 RTE_DefaultConfig.floatParagraphPosY = 0; //y offset
-RTE_DefaultConfig.url_base = "/richtexteditor"; // Specifies a base URL of richtexteditor
-RTE_DefaultConfig.contentCssUrl = "%url_base%/runtime/richtexteditor_content.css"; // Specifies the location of the style sheet that will be used by the editable area.
-RTE_DefaultConfig.previewCssUrl = "%url_base%/runtime/richtexteditor_preview.css"; // Specifies the location of the style sheet that will be used by the preview window.
-RTE_DefaultConfig.previewScriptUrl = "%url_base%/runtime/richtexteditor_preview.js"; // Specifies the location of javascript file that will be used by the preview window.
-RTE_DefaultConfig.helpUrl = "%url_base%/runtime/help.htm"
+
+
+// 관욱 수정시작 2024.12.25==================================== (url_base에 'resources/' 경로 추가)
+// RTE_DefaultConfig.url_base = "/richtexteditor"; // Specifies a base URL of richtexteditor
+// RTE_DefaultConfig.contentCssUrl = "%url_base%/runtime/richtexteditor_content.css"; // Specifies the location of the style sheet that will be used by the editable area.
+// RTE_DefaultConfig.previewCssUrl = "%url_base%/runtime/richtexteditor_preview.css"; // Specifies the location of the style sheet that will be used by the preview window.
+// RTE_DefaultConfig.previewScriptUrl = "%url_base%/runtime/richtexteditor_preview.js"; // Specifies the location of javascript file that will be used by the preview window.
+// RTE_DefaultConfig.helpUrl = "%url_base%/runtime/help.htm"; // Specifies the location of the help file
+
+RTE_DefaultConfig.url_base = "resources/richtexteditor"; // Base URL 수정 (정적 리소스 경로 기준)
+
+RTE_DefaultConfig.contentCssUrl = RTE_DefaultConfig.url_base + "/runtime/richtexteditor_content.css"; // 에디터 스타일 경로
+RTE_DefaultConfig.previewCssUrl = RTE_DefaultConfig.url_base + "/runtime/richtexteditor_preview.css"; // 미리보기 스타일 경로
+RTE_DefaultConfig.previewScriptUrl = RTE_DefaultConfig.url_base + "/runtime/richtexteditor_preview.js"; // 미리보기 스크립트 경로
+RTE_DefaultConfig.helpUrl = RTE_DefaultConfig.url_base + "/runtime/help.htm"; // 도움말 파일 경로
+// 관욱 수정 끝 2024.12.25====================================
 
 RTE_DefaultConfig.contentCssText = "";//"body{background-color:#eee}"; 	Gets or sets inline CSS text that will be used by the editable area. 	//TODO:add api example
 RTE_DefaultConfig.previewCssText = "";//"body{background-color:#eee}"; 	Gets or sets inline CSS text that will be used by the preview window. //TODO:add api example

@@ -749,7 +749,6 @@ $(document).ready(function () {
         }
 
     }
-
     
     
     /* 폴더 생성 함수 */

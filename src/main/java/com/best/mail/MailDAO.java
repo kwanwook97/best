@@ -13,6 +13,9 @@ public interface MailDAO {
 
 	// 전체 페이지 수 계산
 	int allCount(Map<String, Object> condition);
+
+	// 사원정보 가져오기(메일, 이름, idx) 
+	Map<String, Object> empInfo(Map<String, String> map);
 	
 	
 }
