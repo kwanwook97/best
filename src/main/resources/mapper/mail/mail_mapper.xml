@@ -4,4 +4,77 @@
 >
 <mapper namespace="com.best.mail.MailDAO">
 
+
+
+    <select id="mailList" resultType="map" parameterType="map">
+        SELECT 
+            ee.emp_idx, 
+            ee.name, 
+            ee.email, 
+            ee.phone, 
+            ee.mobile, 
+            ee.photo, 
+            ee.enable, 
+            ee.state, 
+            dt.depart_name, 
+            rp.rank_name
+        FROM
+            employee ee 
+        INNER JOIN 
+            department dt 
+            ON ee.depart_idx = dt.depart_idx
+        INNER JOIN 
+            rank_emp rp 
+            ON ee.rank_idx = rp.rank_idx
+        WHERE state = #{state}
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchFilter == 'name'">
+                    AND ee.name LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+                <when test="searchFilter == 'department'">
+                    AND dt.depart_name LIKE CONCAT('%', #{searchKeyword}, '%')
+                </when>
+            </choose>
+        </if>
+        ORDER BY ee.emp_idx DESC 
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+
+	<!-- 받은메일함, 보낸메일함, 임시저장, 휴지통 -->
+    <select id="allCount" resultType="int" parameterType="map">
+        SELECT 
+        	<if test="table == 'mail_send'">
+	            CEIL(COUNT(mail_send_idx)/#{cnt}) AS pages      <!-- 발신메일 idx --> 
+        	</if>
+        	<if test="table == 'mail_receive'">
+	            CEIL(COUNT(mail_receive_idx)/#{cnt}) AS pages     <!-- 수신메일 idx --> 
+        	</if>
+        FROM 
+            ${table}                     <!-- 발신mail_send 또는 수신mail_receive -->
+        WHERE emp_idx = #{emp_idx}       <!-- 수신인 경우 수신자 또는 참조자 -->
+        <if test="table == 'mail_receive'">      
+        	AND category = #{category}   <!-- 0: 수신자, 1: 참조자 -->
+        </if> 
+        <!-- 임시저장여부에 따른 조건필요 -->
+        <if test="table == 'mail_send'">      
+        	AND status = #{status}   <!-- 0: 임시저장, 1: 발송 -->
+        </if> 
+        <!-- 휴지통여부에 따른 조건 -->    
+        AND delete_flag = #{delete_flag} <!-- 0: 정상, 1: 휴지통 2: 완전삭제 -->
+        
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchFilter == 'name'">
+                </when>
+                <when test="searchFilter == 'department'">
+                </when>
+            </choose>
+        </if>
+    </select>
+
+
+
 </mapper>  
