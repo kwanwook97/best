@@ -184,15 +184,20 @@
 	
 	table {
 	    width: 100%;
-	    height: 100%;
+	    /* height: 100%; */
 	    border-collapse: collapse;
 	    text-align: center;
 	    font-size: 24px;
+	    max-height: 374px;
+	    overflow-y:auto;
+	    display: flex;
+	    align-items: center;
+	    flex-direction: column;
     }
     
-    thead{
+ /*    thead{
     	height: 15%;
-    }
+    } */
 
     th, td {
         /* padding: 5px; */
@@ -208,6 +213,16 @@
         color: #8B6AA7; /* 연 보라색 글씨 */
         font-weight: bold;
     }
+/*     .attendanceList {
+    	overflow-y:auto;
+    	max-height: 336px;
+    } */
+    
+    thead, tbody tr {
+	    display: table; /* 테이블 형태 유지 */
+	    width: 100%;
+	    table-layout: fixed; /* 각 열의 비율 고정 */
+	}
 
   </style>
 </head>
@@ -308,7 +323,7 @@
 			                <th>연장근무 시간</th>
 			            </tr>
 			        </thead>
-			        <tbody>
+			        <tbody class="attendanceList">
 			            <tr>
 			                <td>2024-12-17</td>
 			                <td>08:50</td>
@@ -365,7 +380,7 @@
 	</div>
 </body>
 <script>
-var loginId = 3;
+
 
 
 setInterval(updateClock, 1000)
@@ -395,16 +410,36 @@ function updateTime(){
         data: { loginId:loginId}, 
         dataType: "json", 
         success: function (response) {
-            if (response.startTime) {
+        	console.log('response:'+response.startTime);
+        	console.log('response:'+response.endTime);
+            if (response.startTime != null) {
                 $(".start-time").next("span").text(response.startTime.split(" ")[1]);
             } else {
                 $(".start-time").next("span").text("출근 시간 없음");
             }
-            if (response.endTime) {
+            if (response.endTime != null) {
                 $(".end-time").next("span").text(response.endTime.split(" ")[1]);
             } else {
                 $(".end-time").next("span").text("퇴근 시간 없음");
             }
+            
+            $(".attendanceList").empty(); 
+            
+            response.list.forEach(function (item) {
+                const row =
+                    "<tr>" +
+                        "<td>" + (item.date || "*") + "</td>" +
+                        "<td>" + (item.start_time?  item.start_time.split(" ")[1] : "*") + "</td>" +
+                        "<td>" + (item.end_time? item.end_time.split(" ")[1] : "*") + "</td>" +
+                        "<td>" + (item.status || "*") + "</td>" +
+                        "<td>" + (item.calculate_time || "*") + "</td>" +
+                        "<td>" + (item.over_time || "*") + "</td>" +
+                    "</tr>";
+                $(".attendanceList").append(row);
+            });
+            
+           	
+            
         },
         error: function (xhr, status, error) {
             console.error("에러:", error);

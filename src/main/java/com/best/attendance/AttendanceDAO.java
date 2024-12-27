@@ -1,6 +1,7 @@
 package com.best.attendance;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -15,5 +16,12 @@ public interface AttendanceDAO {
 	int updateStartTime(Map<String, Object> params);
 
 	Map<String, Object> getWorkTime(Map<String, Object> params);
+
+	List<Map<String, Object>> getAttendanceList(Map<String, Object> params);
+
+	Map<String, Object> checkButton(Map<String, Object> params);
+
+	int updateEndTime(Map<String, Object> params);
+
 
 }
