@@ -180,8 +180,10 @@ tr input[type='text'] {
 	
 	
 	label{
-		color: #30005A !important;
-		width: 70px;
+		font-size: 18px !important;
+		color: var(--primary-color) !important;
+		width: 100%;
+		margin-bottom: 0 !important;
 	}
 	
 	.specialChk{
@@ -195,7 +197,7 @@ tr input[type='text'] {
 	      padding: 5px 10px; /* 내부 여백 */
 	      font-size: 16px; /* 버튼 내부 폰트 크기 */
 	      font-weight: bold; /* 폰트 굵기 */
-	      background-color: var(--secondary-color); /* 기본 배경색 */
+	      background-color: #8B6AA7;
 	      border: none; /* 테두리 제거 */
 	      border-radius: 5px; /* 둥근 모서리 */
 	      color: white; /* 폰트 색상 */
@@ -205,6 +207,7 @@ tr input[type='text'] {
 	  }
 	  button[type="button"]:hover {
 	      background-color: var(--primary-color); /* 호버 시 배경색 변경 */
+	      color: white; /* 폰트 색상 */
 	  }
 	  button[type="button"] i {
 	      margin-right: 5px; /* 아이콘과 텍스트 간격 */
@@ -323,6 +326,49 @@ tr input[type='text'] {
 }
 	
 	
+	
+.autoComplete {
+    position: absolute;
+    z-index: 1000;
+    width: 15%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-height: 200px; /* 스크롤을 위한 최대 높이 */
+    overflow-y: auto; /* 스크롤 활성화 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+autoComplete div {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+autoComplete div:hover {
+    background-color: #f0f0f0; /* 항목에 마우스를 올렸을 때 */
+    color: #30005A;
+}	
+
+#sender_name {
+	width: auto !important;
+}
+#sender_email {
+	width: auto !important;
+}
+
+	
+.mailForm td:first-child {
+    width: 10%; /* 작성자, 제목 등 첫 번째 열 */
+    background-color: #FFFBF2;
+}
+
+.mailForm td:not(:first-child) {
+    width: 90%; /* 입력 필드가 들어갈 두 번째 열 */
+    background-color: #FFFBF2;
+}	
+
   </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -338,34 +384,43 @@ tr input[type='text'] {
 			<form action="mailWrite.do" method="POST">
 				<table class="mailForm">
 					<tr>
-						<td>
+						<td class="purple">
 							<label>작성자</label>
-							<input type="text" name="sender_name" value="에이스" readonly/>
 						</td>
+						<td>
+							<input type="text" id="sender_info" readonly/>
+						</td>
+						<input type="text" id="sender_name" name="sender_name" value="" readonly hidden/>
+						<input type="text" id="sender_email" name="sender_email" value="" readonly hidden/>
 						<!-- 보낸사람idx -->
-						<input type="text" name="sender_idx" value="1" hidden/>
-						<!-- 보낸사람 email -->
-						<input type="text" name="sender_email" value="naver@naver.com" hidden/>
+						<input type="text" id="sender_idx" name="sender_idx" value="" readonly hidden/>
 					</tr>
 					<tr>
 						<td>
+							<label>제목</label>
+						</td>
+						<td>
 							<div id="subject-container">
-								<label>제목</label>
 								<input type="text" name="subject" placeholder="제목을 입력 하세요! 50자 이내 작성" maxlength="50"/>
 								<div class="chkArea">
-									<input type="checkbox" name="specail_flag" id="mailType" value="1">
-									<span class="specialChk">&nbsp;&nbsp;중요!</span>
+								    <!-- 기본값은 hidden input으로 설정 -->
+								    <input type="hidden" name="special_flag" id="hidden_special_flag" value="0">
+								    <input type="checkbox" id="mailType" value="1" onclick="setSpecialFlag(this);">
+								    <span class="specialChk">&nbsp;&nbsp;중요!</span>
 								</div>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>
+							<label>받는사람</label>
+						</td>
+						<td>
 							<!-- 받는사람 입력 -->
 							<div class="form-group">
 							  <div id="receiver-container">
-							  	<label>받는사람</label>
 							    <input type="text" id="receiver-input" placeholder="이름 또는 이메일을 입력하세요" maxlength="50" />
+							    <div id="autocomplete-list0" class="autoComplete" style="display:none; position:absolute;"></div>
 							    <button type="button" id="add-receiver-btn" onclick="findAdd(0)"><i class="bi bi-person-add"></i></button>
 							  </div>
 							  <div id="receiver-list" class="mt-3"></div> <!-- 수신자가 표시될 영역 -->
@@ -374,11 +429,14 @@ tr input[type='text'] {
 					</tr>
 					<tr>
 						<td>
+							<label>참조</label>
+						</td>
+						<td>
 							<!-- 참조 입력 -->
 							<div class="form-group">
 							  <div id="refer-container">
-							  	<label>참조</label>
 							    <input type="text" id="refer-input" placeholder="이름 또는 이메일을 입력하세요" maxlength="50" />
+							    <div id="autocomplete-list1" class="autoComplete" style="display:none; position:absolute;"></div>
 							    <button type="button" id="add-refer-btn" onclick="findAdd(1)"><i class="bi bi-person-add"></i></button>
 							  </div>
 							  <div id="refer-list" class="mt-3"></div> <!-- 참조자가 표시될 영역 -->
@@ -389,34 +447,38 @@ tr input[type='text'] {
 					<input type="hidden" name="receiver_data" id="receiver-data" />
 					<tr>
 						<td>
+							<label>파일 첨부</label>
+						</td>
+						<td>
 		                    <!-- 파일 첨부 -->
 							<div class="form-group">
-							  <label>파일 첨부</label> <span><small>첨부파일은 최대 5개까지 가능합니다.</small></span>
-							  
 							  <input type="file" name="file" id="upfile" class="form-control-file" multiple onchange="addFile();" />
 							  <div id="file-list" class="file-list mt-2"></div> <!-- 파일 목록 표시 영역 -->
 							</div>
+							<span><small>첨부파일은 최대 5개까지 가능합니다.</small></span>
 						</td>
 					</tr>
 					<tr>
-						<td class="editor-td">
+						<td class="editor-td" colspan="2">
 							<div id="div_editor">
 							</div>
 							<input type="hidden" name="content"/>
 						</td>
 					</tr>
 					<tr>
-						<th class="btnArea">
+						<td class="btnArea" colspan="2">
 							<button type="button" class="btn btn-primary" onclick="history.go(-1);">
 								<i class="fas fa-undo"></i> 취소
 							</button>
-							<button type="button" class="btn btn-secondary" onclick="saveMail()">
+							<button type="button" class="btn btn-secondary" onclick="sendMail(0)">
 							    <i class="far fa-save"></i> 임시저장
 							</button>
-							<button type="button" class="btn btn-third" onclick="sendMail()">
+							<button type="button" class="btn btn-third" onclick="sendMail(1)">
 							    <i class="fas fa-paper-plane"></i> 메일전송
 							</button>
-						</th>
+						</td>
+						<!-- 0: 발송 1: 임시저장 -->
+						<input type="hidden" name="status"/>
 					</tr>
 				</table>
 			</form>
@@ -428,35 +490,112 @@ tr input[type='text'] {
 /* 전역변수 */
 var receiverList = []; // 수신자 데이터 저장용 배열
 
-var emp_idx; // 작성자 사번
+var emp_idx = 1; // 작성자 사번
 var receiver_idx = []; // 수신자 또는 참조자의 사번
 
-/* 작성자 정보가져와서 input태그에 넣어주기..? 이름, 사번, 이메일 */
+// 작성자 정보가져오기
+empInfo(emp_idx, 2, 'sender');
+
+
+
 // 사원 이메일, idx, 이름가져오기
+// type 0: 받는사람, 1: 참조, 2: 작성자
+function empInfo(inputVal, type, listContainerId){
 
-
-/* 
-$.ajax({
-	url: 'empInfo.ajax'
-	method: 'POST',
-	dataType: 'JSON',
-	data: {
-		'name' = 'name',
-		'email' = 'email'
-	},
-	success: function(list){
-		$.each(list, function(index, item){
-			name = item.name;
-			email = item.email;
-			emp_idx = item.emp_idx;
-		});
-	},
-	error: function(e){
-		console.log(e);
+	// 변수 초기화
+	name = '';
+	email = '';
+	var dataType = '';
+	
+	var selectUser = [];  // 동일한 이름을 가진 사람이 많은경우 뿌려주기 위한 객체
+	
+	
+	if(type !== 2){ // 받는사람, 참조 인경우
+		if (!validateEmail(inputVal)) {       // 이메일 입력받은 경우
+			name = inputVal;
+			dataType = 'name';
+	    } else {                             // 이름 입력받은 경우
+			email = inputVal;
+	    	dataType = 'email';
+	    }
+	}else{          // 작성자인 경우
+		dataType = 'emp_idx';
 	}
 	
-});
-		 */
+	
+    $.ajax({
+        url: 'empInfo.ajax',
+        method: 'POST',
+        dataType: 'JSON',
+        data: {
+            'name': name,
+            'email': email,
+            'emp_idx': emp_idx,
+            'dataType': dataType,
+        },
+        success: function(list) {
+            if (list.length > 0) {
+            	
+            	if(type !== 2){  // 받는사람, 참조 인경우
+            		var $list = $("#autocomplete-list" + type);
+                    $list.empty().show();
+            	}
+            	
+
+                $.each(list, function(index, item) {
+                	if(type !== 2){ // 받는사람, 참조인경우
+	                    var $option = $("<div>")
+	                        .text(item.name + " <" + item.email + ">")
+	                        .data(item);
+	
+	                    $option.on("click", function() {
+	                        var selected = $(this).data();
+	
+	                        var newEntry = {
+	                            'email': selected.email,
+	                            'type': type,
+	                            'name': selected.name,
+	                            'emp_idx': selected.emp_idx
+	                        };
+	
+	                     	// UI 업데이트 및 전달 form데이터 담기
+	                        if (listContainerId && $("#" + listContainerId).length > 0) {
+	                        	receiverList.push(newEntry);
+	                            addReceiverOrRefer(newEntry, listContainerId); // 호출
+	                        } else {
+	                            console.error("유효하지 않은 listContainerId:", listContainerId);
+	                        }
+	
+	                        $("#receiver-input").val('');
+	                        $list.hide();
+	                    });
+	                	                   
+	                    $list.append($option);
+                	}else{           // 작성자인 경우 
+                		
+                		$("#" + listContainerId + "_info").val(item.name + ' < ' +item.email+ ' >'); 
+                		
+                		// 작성자 필드에 이름과 이메일 설정
+                		$("#" + listContainerId + "_name").val(item.name); 
+                		$("#" + listContainerId + "_email").val(item.email); 
+                		$("#" + listContainerId + "_idx").val(item.emp_idx); 
+                	}
+                	
+                	
+                });
+            } else {
+                alert("해당 사원을 찾을 수 없습니다.");
+                $("#autocomplete-list").hide();
+            }
+        },
+        error: function(e) {
+            console.log(e);
+        },
+    });
+    
+}
+
+		 
 
 
 var config = {};
@@ -511,8 +650,15 @@ function validateEmail(email) {
 
 // 수신자 및 참조자 항목 추가
 function addReceiverOrRefer(entry, listContainerId) {
+	
+    if (!entry || !entry.name || !entry.email) {
+        return; // 잘못된 entry가 전달되면 함수 종료
+    }else{
+    	var displayText = entry.name + " <" + entry.email + ">";
+    }
+	
     // 항목 표시를 위한 텍스트 생성
-    var displayText = entry.name + " <" + entry.email + ">";
+    
 
     // HTML 요소 생성
     var $newDiv = $("<div>").addClass("receiver-item").text(displayText);
@@ -544,18 +690,23 @@ function addReceiverOrRefer(entry, listContainerId) {
 
 // 데이터 갱신 함수
 function updateHiddenField() {
-    // hidden input에 데이터를 업데이트
-    $("#receiver-data").val(receiverList);
+	// receiverList를 JSON 문자열로 변환 후 hidden input에 설정
+    const jsonData = JSON.stringify(receiverList);
+    $("#receiver-data").val(jsonData);
+
+    // 디버깅 로그 추가
+    console.log("Receiver Data JSON:", jsonData);
 }
 
 // 수신자 및 참조자 추가 핸들러
 function addReceiverOrReferHandler(input, listContainerId, type) {
     var inputVal, isObjectInput = typeof input === "object";
 
-    if (isObjectInput) {
+    if (isObjectInput) {        // 사원목록에서 추가한 경우
         inputVal = input.email;
-    } else {
-        inputVal = $(input).val().trim();
+    } else {                    // 텍스트로 추가한 경우
+		// 공백제거
+    	inputVal = $(input).val().trim();
     }
 
     // 입력값 유효성 검사
@@ -574,33 +725,27 @@ function addReceiverOrReferHandler(input, listContainerId, type) {
         return;
     }
 
+    
     // 입력값 처리
     var newEntry;
-    if (isObjectInput) {
+    
+    if (isObjectInput) { // 사원목록에서 추가한 경우
         newEntry = {
-            name: input.name,
-            email: input.email,
-            type: type
+            'name': input.name,
+            'email': input.email,
+            'emp_idx': input.emp_idx,
+            'type': type
         };
-    } else {
-        if (validateEmail(inputVal)) {
-            newEntry = {
-                name: "알 수 없음",
-                email: inputVal,
-                type: type
-            };
-        } else {
-            newEntry = {
-                name: inputVal,
-                email: "unknown@example.com",
-                type: type
-            };
-        }
+    
+     	// 배열에 추가
+        receiverList.push(newEntry);
+        console.log('receiverList : ', receiverList);
+    } else {             // 텍스트로 추가한 경우
+    	// 사원정보 가져오기
+        empInfo(inputVal, type, listContainerId);
+    
     }
-
-    // 배열에 추가
-    receiverList.push(newEntry);
-    console.log('receiverList : ', receiverList);
+    
 
     // UI 업데이트
     addReceiverOrRefer(newEntry, listContainerId);
@@ -641,7 +786,7 @@ $(document).on('input', '#div_editor', function() {
 
 
 // 메일 '전송'시 실행하는 함수
-function sendMail() {
+function sendMail(status) {
     // RichTextEditor 내용 가져오기
     var content = editor.getHTMLCode();
 
@@ -655,64 +800,24 @@ function sendMail() {
     $('input[name="content"]').val(content);
 
     // 필수 항목 검증
-    if ($("#receiver-input").val().trim() === "") {
+    if (receiverList.length === 1) {
         alert("받는 사람 주소를 입력해 주세요.");
         return;
     }
 
     if ($('input[name="subject"]').val().trim() === "") {
         let confirmResult = confirm("제목이 지정되지 않았습니다. 제목 없이 메일을 보내시겠습니까?");
-        if (!confirmResult) {
-            $('input[name="subject"]').focus();
-            return;
-        }
+        alert("제목을 입력해 주세요.");
+        return;
     }
 
+    
+ 	// 메일의 상태를 hidden input 필드에 설정
+    $('input[name="status"]').val(status);
+    
     // 폼 전송
     $('form').submit();
 }
-
-
-
-// 메일 '임시저장'시 실행하는 함수
-function saveMail() {
-    // RichTextEditor 내용 가져오기
-    var content = editor.getHTMLCode();
-
-    // 에디터 내용이 100MB 이상인 경우 처리
-    if (content.length > 100 * 1024 * 1024) {
-        alert("100MB 이상의 크기는 저장할 수 없습니다.");
-        return;
-    }
-
-    // 필수 항목 검증
-    if ($("#receiver-input").val().trim() === "") {
-        alert("받는 사람을 입력해 주세요.");
-        $("#receiver-input").focus();
-        return;
-    }
-
-    if ($('input[name="subject"]').val().trim() === "") {
-        alert("제목을 입력해 주세요.");
-        $('input[name="subject"]').focus();
-        return;
-    }
-
-    // 에디터 내용을 hidden input 필드에 설정
-    $('input[name="content"]').val(content);
-
-    // 폼의 action 경로를 임시저장용으로 설정
-    $('form').attr('action', 'saveTemporaryMail.do');
-
-    // 폼 제출
-    $('form').submit();
-}
-
-
-
-
-
-
 
 
 
@@ -753,31 +858,39 @@ function renderFileList() {
 
 /* 첨부파일 추가 */
 function addFile() {
-	
-	// 안내문 삭제
-	$(".fileMsg").remove();
-	
-	var maxFileCnt = 5; // 첨부파일 최대 개수
-	var attFileCnt = document.querySelectorAll('.filebox').length; // 기존 추가된 첨부파일 개수
-	var remainFileCnt = maxFileCnt - attFileCnt; // 추가로 첨부가능한 개수
-	var files = $('#upfile')[0].files; // 현재 선택된 첨부파일 리스트 FileList
+    // 안내문 삭제
+    $(".fileMsg").remove();
 
-	// 첨부파일 개수 확인
-	if (files.length > remainFileCnt) {
-		alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
-		
-		fileDataTransfer();
-	}else{
-		// 파일 배열에 담기
-		let currFileArr = Array.from(files); // FileList => Array로 변환
-		filesArr = filesArr.concat(currFileArr); // 추가한 fileList에 또 추가할 수 있도록 설정
-		
-		fileDataTransfer();
-	    
-	}
-	renderingFileDiv(); // 추가 및 삭제할 때 마다 호출해서 index번호 초기화
-	
+    var maxFileCnt = 5; // 첨부파일 최대 개수
+    var attFileCnt = document.querySelectorAll('.filebox').length; // 기존 추가된 첨부파일 개수
+    var remainFileCnt = maxFileCnt - attFileCnt; // 추가로 첨부가능한 개수
+    var files = $('#upfile')[0].files; // 현재 선택된 첨부파일 리스트 FileList
+
+    // 중복 파일 방지 확인
+    let duplicateFiles = Array.from(files).filter(file => 
+        filesArr.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)
+    );
+
+    if (duplicateFiles.length > 0) {
+        alert("이미 추가된 파일이 있습니다: " + duplicateFiles.map(file => file.name).join(", "));
+        return; // 중복된 파일이 있으면 추가를 중단
+    }
+
+    // 첨부파일 개수 확인
+    if (files.length > remainFileCnt) {
+        alert("첨부파일은 최대 " + maxFileCnt + "개 까지 첨부 가능합니다.");
+        fileDataTransfer(); // 현재 파일 상태를 유지
+        return;
+    }
+
+    // 새로운 파일들을 배열에 추가
+    let currFileArr = Array.from(files); // FileList => Array로 변환
+    filesArr = filesArr.concat(currFileArr); // 기존 파일 배열에 새 파일 추가
+
+    fileDataTransfer(); // 파일 상태를 업데이트
+    renderingFileDiv(); // 추가 및 삭제할 때 마다 호출해서 목록 갱신
 }
+
 
 /* 첨부파일 목록 html */
 function renderingFileDiv(){
@@ -857,7 +970,14 @@ function findAdd(type) {
 
 
 
-
+//체크박스 상태에 따라 hidden input 값을 업데이트
+function setSpecialFlag(checkbox) {
+    if (checkbox.checked) {
+        $("#hidden_special_flag").val("1");
+    } else {
+        $("#hidden_special_flag").val("0");
+    }
+}
 
 
 

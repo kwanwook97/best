@@ -15,7 +15,16 @@ public interface MailDAO {
 	int allCount(Map<String, Object> condition);
 
 	// 사원정보 가져오기(메일, 이름, idx) 
-	Map<String, Object> empInfo(Map<String, String> map);
+	List<Map<String, Object>> empInfo(Map<String, Object> map);
+
+	// 메일전송자 정보저장하기
+	int mailSender(MailSendDTO sendDto);
+
+	// 메일수신자 정보저장하기
+	int mailReceiver(List<MailReceiveDTO> receiveList);
+
+	// 메일 첨부파일업로드
+	int fileUpload(Map<String, Object> condition);
 	
 	
 }
