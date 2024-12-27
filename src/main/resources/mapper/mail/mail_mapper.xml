@@ -8,25 +8,24 @@
 
     <select id="mailList" resultType="map" parameterType="map">
         SELECT 
-            ee.emp_idx, 
-            ee.name, 
-            ee.email, 
-            ee.phone, 
-            ee.mobile, 
-            ee.photo, 
-            ee.enable, 
-            ee.state, 
-            dt.depart_name, 
-            rp.rank_name
+            ms.sender_name, 
+            ms.subject, 
+            ms.content, 
+            ms.date, 
+            mr.receive_name, 
+            mr.receive_idx, 
+            mr.receive_email, 
+            mr.read_flag, 
+            mr.special_flag, 
+            mr.receiver_type,
+            mr.delete_flag
         FROM
-            employee ee 
+            mail_receive mr 
         INNER JOIN 
-            department dt 
-            ON ee.depart_idx = dt.depart_idx
-        INNER JOIN 
-            rank_emp rp 
-            ON ee.rank_idx = rp.rank_idx
-        WHERE state = #{state}
+            mail_send ms 
+            ON mr.mail_send_idx = ms.mail_send_idx
+        WHERE status = #{status}
+        <!-- 
         <if test="searchKeyword != null and searchKeyword != ''">
             <choose>
                 <when test="searchFilter == 'name'">
@@ -37,7 +36,8 @@
                 </when>
             </choose>
         </if>
-        ORDER BY ee.emp_idx DESC 
+         -->
+        ORDER BY ms.date, mail_send_idx 
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
@@ -54,7 +54,7 @@
         	</if>
         FROM 
             ${table}                     <!-- 발신mail_send 또는 수신mail_receive -->
-        WHERE emp_idx = #{emp_idx}       <!-- 수신인 경우 수신자 또는 참조자 -->
+        WHERE receiver_idx = #{emp_idx}       <!-- 수신인 경우 수신자 또는 참조자 -->
         <if test="table == 'mail_receive'">      
         	AND category = #{category}   <!-- 0: 수신자, 1: 참조자 -->
         </if> 
@@ -64,17 +64,84 @@
         </if> 
         <!-- 휴지통여부에 따른 조건 -->    
         AND delete_flag = #{delete_flag} <!-- 0: 정상, 1: 휴지통 2: 완전삭제 -->
-        
-        <if test="searchKeyword != null and searchKeyword != ''">
-            <choose>
-                <when test="searchFilter == 'name'">
-                </when>
-                <when test="searchFilter == 'department'">
-                </when>
-            </choose>
-        </if>
     </select>
-
+    
+    
+    <!-- 이메일 작성시 송신자, 수신자, 참조자의 사번, email, 사원명 가져오기 (자동완성) -->
+    <select id="empInfo" parameterType="map" resultType="map">
+    	SELECT 
+    		emp_idx,
+    		name,
+    		email
+   		FROM
+   			employee
+  		WHERE
+ 			<choose>
+ 				<when test="dataType == 'name'">
+ 					name LIKE CONCAT('%', #{name}, '%')
+ 				</when>
+ 				<when test="dataType == 'email'">
+ 					email LIKE CONCAT('%', #{email}, '%')
+ 				</when>
+ 				<when test="dataType == 'emp_idx'">
+ 					emp_idx = #{emp_idx}
+ 				</when>
+ 			</choose>
+  		ORDER BY name
+    </select>
+    
+	<!-- 메일전송자 정보저장하기 -->
+	<insert id="mailSender"
+	        parameterType="com.best.mail.MailSendDTO"
+	        useGeneratedKeys="true"
+	        keyColumn="mail_send_idx"     
+	        keyProperty="mail_send_idx"> 	
+		INSERT INTO mail_send(
+			sender_name,
+			sender_idx,
+			sender_email,
+			subject,
+			content,
+			status,
+			special_flag
+		)VALUES(
+			#{sender_name},
+			#{sender_idx},
+			#{sender_email},
+			#{subject},
+			#{content},
+			#{status},
+			#{special_flag}
+		)
+	</insert>
+	
+	<!-- 메일수신자 정보저장하기 -->
+	<insert id="mailReceiver" parameterType="java.util.List">
+	    INSERT INTO mail_receive (
+	    	mail_send_idx,
+	        receiver_idx,
+	        receiver_name,
+	        receiver_email,
+	        special_flag,
+	        receiver_type
+	    ) VALUES
+	    <foreach collection="list" item="item" separator=",">
+	        (
+	            #{item.mail_send_idx},
+	            #{item.receiver_idx},
+	            #{item.receiver_name},
+	            #{item.receiver_email},
+	            #{item.special_flag},
+	            #{item.receiver_type}
+	        )
+	    </foreach>
+	</insert>
+	
+	<!-- 메일 첨부파일업로드 -->
+	<insert id="fileUpload" parameterType="map">
+		INSERT INTO attachment(attach_category, idx_num, file_name, newfile_Name)
+		VALUES(1, #{idx_num}, #{fileName}, #{newFileName})
+	</insert>
 
 
 </mapper>  

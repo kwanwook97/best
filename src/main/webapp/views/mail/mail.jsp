@@ -201,7 +201,7 @@
 						<td>2024-12-07 10:30</td>
 						<td><i class="fas fa-trash-alt"></i></td>
 					</tr>
-					
+					<!-- 이메일 데이터 추가될 곳 -->
 				</tbody>
 			</table>
 		</div>
@@ -240,12 +240,17 @@ $('.opt div').click(function(){
 
 	
 	/* 페이지네이션 관련 전역변수 */
-	var empIdx = '${emp_idx}'; // 사번
+	var empIdx = 1; // 사번
 	var category = 0; // 0: 수신자, 1: 참조자
 	var delete_flag = 0; // 0: 정상, 1: 휴지통, 2: 완전삭제
-	var status = 1; // 0: 임시저장, 1: 발송
-
+	var special_flag = 0; // 중요여부
+	var receiver_type = 0;
 	
+	var status = 1; // 0: 임시저장, 1: 발송
+	var table = 'mail_receive'
+	
+	// 초기 페이지네이션 생성.
+	/* pageCall(showPage, tabNum); */
 	
 	
 	// 페이지네이션 함수
@@ -269,12 +274,15 @@ $('.opt div').click(function(){
 	        type: 'POST',
 	        url: 'mailList.ajax', 
 	        data:{
+	        	'table' : table, // 어떤.. 테이블... 보낸사람..? 받는사람..?
 	        	'page' : page,  // 몇페이지 보여줘?
 	        	'cnt' : 16,     // 페이지당 몇개의 게시물을 보여줘?
 	        	'status' : status, // 임시저장여부 0:임시저장, 1:발송
 	        	'emp_idx' : empIdx, // 사번
 	        	'category' : category, // 0: 수신자, 1: 참조자
 	        	'delete_flag' : delete_flag, // 휴지통여부 0: 정상, 1: 휴지통, 2: 완전삭제
+	        	'special_flag' : special_flag, // 중요여부
+	        	'receiver_type' : receiver_type, // 수신자유형
 	        	'searchFilter' : searchFilter,   // 검색필터
 	        	'searchKeyword' : searchKeyword // 검색 키워드
 	        },
@@ -289,7 +297,7 @@ $('.opt div').click(function(){
 	                return;
 	            }
 				
-				listPrint(data.list, tabNum);
+				/* listPrint(data.list, tabNum); */
 				
 				// 페이징 플러그인 처리
 	    		// 기존 페이지네이션 초기화 (이미 초기화된 경우에만 destroy 호출)

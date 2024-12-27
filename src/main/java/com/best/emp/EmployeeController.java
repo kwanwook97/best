@@ -164,7 +164,8 @@ public class EmployeeController {
 	// 조직도 페이지로 이동
 	@RequestMapping(value="/orgChart.go")
 	public String orgChart() {
-		return "emp/orgChart";
+		/* return "emp/orgChart"; */
+		return "modal/findAdd";
 	}
 	
 	

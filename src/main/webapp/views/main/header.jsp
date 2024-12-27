@@ -397,7 +397,6 @@ var loginId = ${sessionScope.loginId};
 </nav>
 </header>
 <script>
-var loginId = 3;
 let date;
 let formattedDate
 function updateClock(){
