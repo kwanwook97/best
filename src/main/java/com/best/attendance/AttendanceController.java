@@ -37,5 +37,17 @@ public class AttendanceController {
 		return attendanceService.getWorkTime(params);
 	}
 	
+	@PostMapping(value="/checkButton.ajax")
+	@ResponseBody
+	public Map<String, Object> checkButton (@RequestBody Map<String, Object> params){
+		return attendanceService.checkButton(params);
+	}
+	
+	// 퇴근 버튼 로직
+	@PostMapping(value="/updateEndTime.ajax")
+	@ResponseBody
+	public Map<String, Object> updateEndTime (@RequestBody Map<String, Object> params){
+		return attendanceService.updateEndTime(params);
+	}
 	
 }

@@ -10,7 +10,7 @@
 	    e.emp_idx,
 	    CASE 
 	        WHEN lh.start_date &lt;= CURDATE() AND lh.end_date >= CURDATE() THEN '연차'
-	        ELSE '정상'
+	        ELSE NULL 
 	    END AS status,
 	    'SYSTEM' AS content
 	  FROM employee e
@@ -24,11 +24,100 @@
 	<!-- 출근버튼 -->
 	<update id="updateStartTime" parameterType="map">
 		update attendance 
-		SET start_time = #{startWork}, content = '본인'
+		SET start_time = NOW(), content = '본인'
     	WHERE date = CURDATE() and emp_idx = #{loginId}
+    	AND start_time IS NULL;
 	</update>
 	<!-- 출퇴근 시간 가져오기 -->
 	<select id="getWorkTime" parameterType="map" resultType="map">
-		SELECT start_time,end_time FROM attendance WHERE emp_idx = #{loginId} AND date = CURDATE()
+		SELECT 
+			DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') AS start_time,
+			DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') AS end_time
+		FROM attendance WHERE emp_idx = #{loginId} AND date = CURDATE()
 	</select>
+	<!-- 출퇴근 리스트 반환 -->
+	<select id="getAttendanceList" parameterType="map" resultType="map">
+	    SELECT
+	        DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') AS start_time,
+	        DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
+	        calculate_time,
+	        status,
+	        date,
+		    CASE 
+		        WHEN calculate_time - 9 &lt; 0 THEN 0
+		        ELSE calculate_time - 9
+		    END AS over_time
+	    FROM attendance
+	    WHERE emp_idx = #{loginId}
+	    ORDER BY date DESC
+	</select>
+	
+	<!-- 출근 버튼 누른 유저인지 체크용 -->
+	<select id="checkButton" parameterType="map">
+		SELECT count(start_time)as startTime , count(end_time)as endTime  FROM attendance WHERE emp_idx = #{loginId} AND date = CURDATE()
+	</select>
+	
+	<!-- 퇴근 버튼 누를때 업데이트 -->
+	<update id="updateEndTime" parameterType="map">
+		UPDATE attendance
+		SET 
+		    end_time = NOW(), 
+		    content = '본인',
+		    calculate_time = TRUNCATE(TIMESTAMPDIFF(MINUTE, start_time, NOW()) / 60, 1),
+		    status = CASE 
+		                 WHEN HOUR(start_time) &lt;= 9 AND HOUR(NOW()) >= 18 THEN '정상'
+		                 WHEN HOUR(start_time) > 9 AND HOUR(NOW()) >= 18 THEN '지각'
+		                 WHEN HOUR(start_time) > 9 AND HOUR(NOW()) &lt; 18 THEN '비정상'
+		                 WHEN HOUR(start_time) &lt;= 9 AND HOUR(NOW()) &lt; 18 THEN '조퇴'
+		             END
+		WHERE 
+		    date = CURDATE() 
+		    AND emp_idx = #{loginId}
+		    AND end_time IS NULL;
+	</update>
+	
+
 </mapper>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
