@@ -382,7 +382,7 @@ var loginId = ${sessionScope.loginId};
   <ul class="navbar-nav align-items-center right-nav-link">
     <li class="nav-item dropdown-lg">
       <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
-      <i class="fa fa-envelope-open-o"></i></a>
+      <i class="fa-regular fa-message"></i></a>
     </li>
     <li class="nav-item dropdown-lg">
       <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
@@ -397,7 +397,6 @@ var loginId = ${sessionScope.loginId};
 </nav>
 </header>
 <script>
-var loginId = 3;
 let date;
 let formattedDate
 function updateClock(){

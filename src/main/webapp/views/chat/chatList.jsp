@@ -29,8 +29,8 @@
 					<i class="fas fa-comment-alt"></i> 대화하기
 				</button>
 				<div class="searchbar">
-					<input type="text" placeholder="검색"> <i
-						class="fas fa-search"></i>
+					<input type="text" name="keyword" id="searchBar" placeholder="검색"> 
+					<i class="fas fa-search"></i>
 				</div>
 		 </div>
 		
@@ -39,26 +39,6 @@
 		<div class="messenger-container">
 			<div class="line-box">
 				<div class="sidebar">
-
-					<!-- 참여중인 대화방 리스트 -->
-					<!-- <div class="chat-item">
-						<div class="chat-avatar">
-							<img src="" alt="Avatar">
-						</div>
-						<div class="chat-details">
-							<div class="chat-header">
-								<span class="chat-title">
-									대화방 리스트
-								</span> 
-								<span class="chat-time">
-									해당 대화방 최신 메시지 시간
-								</span>
-							</div>
-							<div class="chat-preview">
-								해당 대화방 최신 메시지 내용 
-							</div>
-						</div>
-					</div> -->
 
 
 				</div>
@@ -81,19 +61,28 @@
 		</div>
 	</div>
 </body>
-<div id="createChatModal" class="modal" style="display: none;">
-	<div class="modal-content">
-		<span class="close" onclick="closeModal();">&times;</span>
-		<h3>대화방 생성</h3>
-		<form id="createChatForm">
-			<label for="chatSubject">대화방 제목</label> <input type="text"
-				id="chatSubject" name="chatSubject" required>
-			<button type="button" id="createChatButton">대화방 생성</button>
-		</form>
-	</div>
+<div id="memberModal" class="modal" style="display: none;">
+  <div class="modal-content">
+  	<div class="modal-header">
+    	<span class="close-modal" onclick="closeModal();">&times;</span>
+    	<h5>메신져 생성</h5>
+    	<button id="createChatButton">확인</button>
+    </div>
+    <div class="subject-div">
+    	<input type="text" id="chatSubject" name="chat_subject" placeholder="제목을 작성하세요. " value=""/>
+    	<i class="fas fa-edit"></i>
+    </div>
+    <div class="search_bar-container">
+        <input type="text" id="memberSearchBar" name="keyword" class="search_bar" placeholder="이름 검색" value=""> 
+        <i class="fas fa-search search-icon"></i>
+      </div>
+    <div class="member-list-container">
+      <ul id="memberList">
+        <!-- 회원 리스트가 여기에 추가됩니다 -->
+      </ul>
+    </div>
+  </div>
 </div>
-
-<jsp:include page="../modal/modal.jsp"></jsp:include>
 
 <script>
 window.updateChatList = function(messageDataList) {
@@ -161,60 +150,35 @@ function formatTime(timestamp) {
 var loginId = ${sessionScope.loginId};
 loginId = parseInt(loginId);
 
+
 $(document).ready(function () {
+	
+	chatList(null);
+	
+	$(document).on('click', '.fa-search', function() {
+	    executeSearch();
+	});
 
-	/* function updateChatList(messageData) {
-	    const chatIdx = messageData.chat_idx;
-	    const sidebar = $(".sidebar");
-
-	    // chat_idx에 해당하는 대화방 항목 찾기
-	    const chatItem = sidebar.find('.chat-item[data-chat-idx="' + chatIdx + '"]');
-
-	    if (chatItem.length > 0) {
-	        // 기존 항목 업데이트
-	        chatItem.find(".chat-preview").text(messageData.latest_message);
-	        chatItem.find(".chat-time").text(formatTime(messageData.latest_time));
-
-	        const unreadCountText = messageData.unread_count > 0 ? messageData.unread_count : "";
-	        chatItem.find(".unread-message-count").text(unreadCountText);
-
-	        // 항목을 리스트 맨 위로 이동
-	        chatItem.prependTo(sidebar);
-	    } else {
-	        // 새로운 항목 추가
-	        const newChatItem =
-	            '<div class="chat-item" data-chat-idx="' + chatIdx + '">' +
-	                '<div class="chat-avatar">' +
-	                    '<img src="/photo/default-avatar.png" alt="Avatar">' +
-	                '</div>' +
-	                '<div class="chat-details">' +
-	                    '<div class="chat-header">' +
-	                        '<span class="chat-title">대화방 ' + chatIdx + '</span>' +
-	                        '<span class="chat-time">' + formatTime(messageData.latest_time) + '</span>' +
-	                    '</div>' +
-	                    '<div class="chat-preview">' + messageData.latest_message + '</div>' +
-	                '</div>' +
-	            '</div>';
-	        sidebar.prepend(newChatItem);
+	// 엔터키 이벤트
+	$(document).on("keypress", "#searchBar", function (e) {
+	    if (e.which === 13) {
+	        executeSearch();
 	    }
-	} */
+	});
 
-
-    // 시간 포맷팅 함수
-    /* function formatTimeToAmPm(timeString) {
-        const options = { hour: "numeric", minute: "numeric", hour12: true };
-        const formattedTime = new Date(timeString).toLocaleTimeString("ko-KR", options);
-        return formattedTime.replace("AM", "오전").replace("PM", "오후");
-    } */
-	
-	
-	
+	//검색 실행 함수
+	function executeSearch() {
+	    var keyword = $("#searchBar").val().trim(); // 검색어 가져오기
+	    chatList(keyword); // 검색 실행
+	}
 	
     // 대화방 및 사원 목록 가져오기
+    function chatList(keyword){
     $.ajax({
         type: "GET",
         url: "chatList.ajax",
-        data: {emp_idx : loginId},
+        data: {emp_idx : loginId,
+        	keyword : keyword || ''},
         success: function (response) {
             var sidebar = $(".sidebar");
             var memberListWrapper = $(".member-list-wrapper .member-list");
@@ -297,7 +261,7 @@ $(document).ready(function () {
                     var memberItem =
                         '<div class="image-label-wrapper member-item" data-emp-idx="' + employee.emp_idx + '">' +
                         '<img src="/photo/' + employee.photo + '" alt="프로필 사진" class="custom-image">' +
-                        '<span class="custom-label">' + employee.name + '</span>' +
+                        '<span class="custom-label">' + employee.name + ' / ' + employee.rank_name + '</span>' +
                         '</div>';
                     memberListWrapper.append(memberItem);
                 });
@@ -322,55 +286,135 @@ $(document).ready(function () {
             alert("대화방 및 사원 목록을 불러오는 데 실패했습니다.");
         }
     });
-
-    // 대화방 생성 함수
-    function createChat(chat_subject, emp_idx) {
-        $.ajax({
-            type: "POST",
-            url: "createChat.do",
-            data: {
-                chat_subject: chat_subject, // 제목이 비어 있으면 빈 문자열 전달
-                emp_idx: emp_idx // 상대방 emp_idx 전달
-            },
-            success: function (response) {
-                if (response.success) {
-                    alert("대화방이 생성되었습니다!");
-                    location.href = "chat.go?chat_idx=" + response.chatIdx; // 생성된 방으로 이동
-                } else {
-                    alert("대화방 생성에 실패했습니다. 다시 시도해주세요.");
-                }
-            },
-            error: function () {
-                alert("서버와 통신 중 문제가 발생했습니다.");
-            }
-        });
     }
+    
     $("#createChatButton").on("click", function () {
         var chatSubject = $("#chatSubject").val().trim();
+        var selectedMembers = [];
 
-        if (!chatSubject) {
-            alert("대화방 제목을 입력하세요.");
+        // 체크된 체크박스의 emp_idx 값을 수집
+        $("input[name='member']:checked").each(function () {
+            selectedMembers.push(parseInt($(this).val())); // emp_idx를 숫자로 변환
+        });
+
+        if (!chatSubject && selectedMembers.length === 0) {
+            alert("대화방 제목을 입력하거나 회원을 선택하세요.");
             return;
         }
 
-        createChat(chatSubject, null);
+        // 대화방 생성 함수 호출
+        createChat(chatSubject, selectedMembers);
     });
+    // 대화방 생성 함수
+    function createChat(chat_subject, emp_idx_list) {
+    $.ajax({
+        type: "POST",
+        url: "createChat.do",
+        contentType: "application/json; charset=UTF-8", // Content-Type을 JSON으로 설정
+        data: JSON.stringify({
+            chat_subject: chat_subject, 
+            emp_idx_list: emp_idx_list // 선택된 사용자 리스트 전달
+        }),
+        success: function (response) {
+            if (response.success) {
+                alert("대화방이 생성되었습니다!");
+                location.href = "chat.go?chat_idx=" + response.chatIdx; // 생성된 방으로 이동
+            } else {
+                alert("대화방 생성에 실패했습니다. 다시 시도해주세요.");
+            }
+        },
+        error: function () {
+            alert("서버와 통신 중 문제가 발생했습니다.");
+        }
+    });
+}
 });
 
+//모달 열기
 function openModal() {
-    $("#createChatModal").fadeIn();
-}
-//모달 닫기
-function closeModal() {
-    $("#createChatModal").fadeOut();
+    $("#memberModal").fadeIn(200, function () { 
+        centerModal(); // 애니메이션 완료 후 중앙 정렬
+    });
+    loadMemberList(null);
 }
 
-// 바깥 영역 클릭 시 모달 닫기
+function closeModal() {
+    $("#memberModal").fadeOut();
+}
+
 $(document).on("click", function (e) {
-    if ($(e.target).is("#createChatModal")) {
+    if ($(e.target).is("#memberModal")) {
         closeModal();
     }
 });
+
+$(window).on("resize", function () {
+    if ($("#memberModal").is(":visible")) {
+        centerModal();
+    }
+});
+
+function centerModal() {
+    var modal = $("#memberModal .modal-content");
+    var top = Math.max(($(window).height() - modal.outerHeight()) / 2, 0); 
+    var left = Math.max(($(window).width() - modal.outerWidth()) / 2, 0); 
+    modal.css({
+        top: top + "px",
+        left: left + "px",
+    });
+}
+
+$(document).on('click', '.search-icon', function () {
+    executeSearch();
+});
+
+$(document).on("keypress", "#memberSearchBar", function (e) {
+    if (e.which === 13) {
+        executeSearch();
+    }
+});
+
+function executeSearch() {
+    var keyword = $("#memberSearchBar").val().trim(); // 검색어 가져오기
+    loadMemberList(keyword); // 검색 실행
+}
+
+function loadMemberList(keyword) {
+    $.ajax({
+        type: "GET",
+        url: "memberList.ajax",
+        data: { keyword: keyword || '' }, // 검색어 전달
+        success: function (members) {
+            var memberList = $("#memberList");
+            memberList.empty(); // 기존 리스트 초기화
+
+            if (members && members.length > 0) {
+                members.forEach(function (member) {
+                    var memberItem = 
+                        '<div class="radio-container">' +
+                            '<label>' +
+                                '<div>' +
+                                    '<img src="/photo/' + member.photo + '" alt="프로필 사진" class="custom-image"> ' +
+                                    '<span>' + member.name + ' / ' + member.rank_name + '</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<input type="checkbox" name="member" value="' + member.emp_idx + '">' +
+                                '</div>' +
+                            '</label>' +
+                        '</div>';
+                    memberList.append(memberItem);
+                });
+            } else {
+                memberList.html("<p>검색된 회원이 없습니다.</p>");
+            }
+        },
+        error: function () {
+            alert("회원 리스트를 불러오는 데 실패했습니다.");
+        }
+    });
+}
+
+
 
 
 

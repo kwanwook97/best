@@ -7,7 +7,7 @@
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- <script src="resources/js/chat.js"></script> -->
-  <link href="resources/css/chat2.css" rel="stylesheet"/>
+  <link href="resources/css/chat.css" rel="stylesheet"/>
 
   <style>
 
@@ -79,8 +79,15 @@
 
 <div id="memberModal" class="modal" style="display: none;">
   <div class="modal-content">
-    <span class="close-modal" onclick="closeModal();">&times;</span>
-    <h3>메신져 초대</h3>
+  	<div class="modal-header">
+    	<span class="close-modal" onclick="closeModal();">&times;</span>
+    	<h5>메신져 초대</h5>
+    	<button onclick="addSelectedMembersToChat()">확인</button>
+    </div>
+    <div class="search_bar-container">
+        <input type="text" id="memberSearchBar" name="keyword" class="search_bar" placeholder="이름 검색" value=""> 
+        <i class="fas fa-search search-icon"></i>
+      </div>
     <div class="member-list-container">
       <ul id="memberList">
         <!-- 회원 리스트가 여기에 추가됩니다 -->
@@ -419,112 +426,6 @@ $(document).ready(function() {
             });
 
 
-        
-        /* $.ajax({
-            type: "GET",
-            url: "chatList.ajax",
-            success: function (response) {
-                var sidebar = $(".sidebar");
-
-                // 날짜 및 시간 포맷팅 함수
-                function formatDateTime(latestTime) {
-                    if (!latestTime) return "";
-
-                    const now = new Date();
-                    const messageDate = new Date(latestTime);
-
-                    const isToday =
-                        now.getFullYear() === messageDate.getFullYear() &&
-                        now.getMonth() === messageDate.getMonth() &&
-                        now.getDate() === messageDate.getDate();
-
-                    const isThisYear = now.getFullYear() === messageDate.getFullYear();
-
-                    if (isToday) {
-                        return messageDate.toLocaleString("ko-KR", {
-                            hour: "numeric",
-                            minute: "numeric",
-                            hour12: true,
-                        });
-                    } else if (isThisYear) {
-                        return (messageDate.getMonth() + 1) + "월 " + messageDate.getDate() + "일";
-                    } else {
-                        return messageDate.getFullYear() + ". " + (messageDate.getMonth() + 1) + ". " + messageDate.getDate();
-                    }
-                }
-
-             // 대화방 리스트 렌더링
-                if (response.chatList && response.chatList.length > 0) {
-                    sidebar.empty();
-                    response.chatList.forEach(function (chat) {
-                        var latestMessage = chat.latest_message || "메시지가 없습니다.";
-                        var latestTime = chat.latest_time ? formatDateTime(chat.latest_time) : "";
-
-                        // 제목이 null인지 확인하여 제목 또는 참여자 표시
-                        var chatTitle;
-                        if (chat.chat_subject === null || chat.chat_subject === "") {
-                            chatTitle = chat.participants;
-                        } else {
-                            chatTitle = chat.chat_subject;
-                        }
-                        if (chat.chat_idx.toString() === chatIdx) {
-                            $(".naviPath .purple").text(chatTitle);
-                        }
-
-                        var chatItem =
-                            '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="switchChatRoom(' + chat.chat_idx + ')">' +
-                            '<div class="chat-avatar">' +
-                            '<img src="/photo/' + chat.photo + '" alt="프로필 사진" class="custom-image">' +
-                            '</div>' +
-                            '<div class="chat-details">' +
-                            '<div class="chat-header">' +
-                            '<span class="chat-title">' + chatTitle + '</span>' +
-                            '<span class="chat-time">' + latestTime + '</span>' +
-                            '</div>' +
-                            '<div class="chat-preview">' +
-                            '<span id="latest-message-' + chat.chat_idx + '">' + latestMessage + '</span>' +
-                            '<span class="unread-message-count" id="unread-count-' + chat.chat_idx + '"></span>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>';
-                        sidebar.append(chatItem);
-
-                    });
-                    
-                } else {
-                    sidebar.html("<p>참여 중인 대화방이 없습니다.</p>");
-                }
-            },
-            error: function () {
-                alert("대화방 리스트를 불러오는 데 실패했습니다.");
-            }
-        }); */
-        
-        
-        
-        /* function updateChatListWithLatestMessage(messageData) {
-            var chatIdx = messageData.chat_idx;
-            var latestMessage = messageData.content;
-            var sidebar = $(".sidebar");
-
-            // 대화방 리스트에서 해당 chat_idx를 가진 항목 찾기
-            var chatItem = sidebar.find(".chat-item[data-chat-idx='" + chatIdx + "']");
-            if (chatItem.length > 0) {
-                // 최신 메시지 갱신
-                chatItem.find(".chat-preview").text(latestMessage);
-
-                // 최신 메시지 시간 갱신
-                var formattedTime = formatTimeToAmPm(messageData.time);
-                chatItem.find(".chat-time").text(formattedTime);
-
-                // 대화방을 맨 위로 이동 (선택 사항)
-                chatItem.prependTo(sidebar);
-            } else {
-                console.warn("chat_idx " + chatIdx + "에 해당하는 대화방을 찾을 수 없습니다.");
-            }
-        } */
-
-
         if (chatIdx) {
             // 참여자 리스트 가져오기
             $.ajax({
@@ -691,7 +592,7 @@ $(document).ready(function () {
 //모달 열기
 function openModal() {
     $("#memberModal").fadeIn();
-    loadMemberList(); // 회원 리스트 불러오기
+    loadMemberList(null); // 회원 리스트 불러오기
     centerModal(); // 모달 중앙 정렬
 }
 
@@ -723,11 +624,30 @@ function centerModal() {
     });
 }
 
+// 서치 아이콘 클릭 이벤트
+$(document).on('click', '.search-icon', function() {
+    executeSearch();
+});
+
+// 엔터키 이벤트
+$(document).on("keypress", "#memberSearchBar", function (e) {
+    if (e.which === 13) {
+        executeSearch();
+    }
+});
+
+//검색 실행 함수
+function executeSearch() {
+    var keyword = $("#memberSearchBar").val().trim(); // 검색어 가져오기
+    loadMemberList(keyword); // 검색 실행
+}
+
 // 회원 리스트 불러오기
-function loadMemberList() {
+function loadMemberList(keyword) {
     $.ajax({
         type: "GET",
-        url: "memberList.ajax", // 회원 리스트를 반환하는 URL
+        url: "memberList.ajax",
+        data: { keyword: keyword || '' }, // 검색어 전달
         success: function (members) {
             var memberList = $("#memberList");
             memberList.empty(); // 기존 리스트 초기화
@@ -735,18 +655,23 @@ function loadMemberList() {
             if (members && members.length > 0) {
                 members.forEach(function (member) {
                     var memberItem = 
-                        '<li>' +
-                        	'<div onclick="addMemberToChat(' + member.emp_idx + ');">' +
-                            '<img src="/photo/' + member.photo + '" alt="프로필 사진" class="custom-image">' +
-                            '<span>' + member.name + '</span>' +
-                            '</div>' +
-                        '</li>';
+                        '<div class="radio-container">' +
+                            '<label>' +
+                                '<div>' +
+                                    '<img src="/photo/' + member.photo + '" alt="프로필 사진" class="custom-image"> ' +
+                                    '<span>' + member.name + ' / ' + member.rank_name + '</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<input type="checkbox" name="member" value="' + member.emp_idx + '">' +
+                                '</div>' +
+                            '</label>' +
+                        '</div>';
                     memberList.append(memberItem);
                 });
             } else {
-                memberList.html("<p>회원이 없습니다.</p>");
+                memberList.html("<p>검색된 회원이 없습니다.</p>");
             }
-        }, // success 끝
+        },
         error: function () {
             alert("회원 리스트를 불러오는 데 실패했습니다.");
         }
@@ -755,13 +680,26 @@ function loadMemberList() {
 
 
 // 대화방에 회원 추가
-function addMemberToChat(empIdx) {
+function addSelectedMembersToChat() {
     var chatIdx = new URLSearchParams(window.location.search).get("chat_idx");
+    var selectedMembers = [];
 
+    // 체크된 체크박스의 emp_idx 값을 수집
+    $("input[name='member']:checked").each(function () {
+        selectedMembers.push(parseInt($(this).val())); // emp_idx를 숫자로 변환
+    });
+
+    if (selectedMembers.length === 0) {
+        alert("추가할 회원을 선택해주세요.");
+        return;
+    }
+
+    // AJAX 요청
     $.ajax({
         type: "POST",
         url: "addParty.ajax",
-        data: { chat_idx: chatIdx, emp_idx: empIdx },
+        contentType: "application/json; charset=UTF-8", // Content-Type을 JSON으로 설정
+        data: JSON.stringify({ chat_idx: chatIdx, emp_idx_list: selectedMembers }),
         success: function (response) {
             if (response.success) {
                 closeModal();

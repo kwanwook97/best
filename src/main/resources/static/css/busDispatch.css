@@ -91,7 +91,7 @@
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-    height: 100%;
+	height: 100%;
 }
 
 .bus-card {
@@ -101,24 +101,24 @@
 	display: flex;
 	flex-direction: column;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 100%;
+	height: 100%;
 	font-weight: bold;
 }
 
 .route-filter {
-    border-bottom: 3px solid #FFFBF2;
-    cursor: pointer;
-    font-size: 24px;
-    text-align: center;
-    font-weight: bold;
+	border-bottom: 3px solid #FFFBF2;
+	cursor: pointer;
+	font-size: 24px;
+	text-align: center;
+	font-weight: bold;
 }
 
 .route-filter.active {
-    border-bottom: 3px solid #E9396B;
+	border-bottom: 3px solid #E9396B;
 }
 
 .route-filter:hover {
-    border-bottom: 3px solid #E9396B;
+	border-bottom: 3px solid #E9396B;
 }
 
 /* 초록색 글씨 */
@@ -192,16 +192,17 @@ select option {
 	width: 100%;
 	height: 4vh;
 }
-.editable{
+
+.editable {
 	cursor: pointer;
 }
 
 .updatebtn {
 	color: #FFFBF2;
-    background-color:#8B6AA7;
-    width: 100%;
+	background-color: #8B6AA7;
+	width: 100%;
 	height: 4vh;
-    border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
 }
 
 .tm2 {
@@ -229,16 +230,16 @@ select option {
 .dispatch-insert {
 	width: 25%;
 	display: flex;
-    flex-direction: column;
-    justify-content: center;
+	flex-direction: column;
+	justify-content: center;
 }
 
 .body-content {
 	width: 100%;
 	display: flex;
 	flex-direction: row;
-    justify-content: space-evenly;
-    height: 71%;
+	justify-content: space-evenly;
+	height: 71%;
 }
 
 .content {
@@ -277,8 +278,8 @@ select option {
 	margin-right: 15%;
 	width: 100%;
 	display: flex;
-    justify-content: center;
-    flex-direction: column;
+	justify-content: center;
+	flex-direction: column;
 }
 
 .bus-details p {
@@ -295,9 +296,9 @@ select option {
 	font-weight: bold; /* Bold 효과 추가 */
 }
 
-select{
+select {
 	width: 11vw;
-    border-radius: 5px;
+	border-radius: 5px;
 	padding: 3 10px;
 	color: #30005A;
 }
@@ -329,36 +330,41 @@ select{
 	color: #30005A;
 }
 
-
-#operation_date{
+#operation_date {
 	padding: 5px;
 	font-size: 14px;
 	border: 1px solid #30005A;
 	border-radius: 5px;
 	width: 11vw;
 }
-.bus-filter{
-    display: flex;
-    width: 50%;
-    flex-direction: column;
+
+.bus-filter {
+	display: flex;
+	width: 50%;
+	flex-direction: column;
 }
-.route-filters{
-    width: 28%;
-    display: flex;
-    justify-content: space-between;
-    margin-left: 1vw;
+
+.route-filters {
+	width: 28%;
+	display: flex;
+	justify-content: space-between;
+	margin-left: 1vw;
 }
-table{
-    text-align: center;
+
+table {
+	text-align: center;
 }
-thead{
+
+thead {
 	background-color: #30005A;
 	color: #FFFBF2;
 }
-thead tr{
+
+thead tr {
 	height: 41px;
 }
-tbody tr{
-    height: 30px;
-    border-bottom: 1px solid #8B6AA7;
+
+tbody tr {
+	height: 30px;
+	border-bottom: 1px solid #8B6AA7;
 }
