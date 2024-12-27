@@ -19,7 +19,7 @@ var loginId = ${sessionScope.loginId};
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 <script src="resources/js/sidebar-menu.js"></script>
 <script src="resources/js/simplebar.js"></script>
-<script src="resources/js/bootstrap.min.js"></script>
+<!-- <script src="resources/js/bootstrap.min.js"></script> -->
 <script src="resources/js/bestWS.js"></script>
 </head>
 <style>
@@ -374,7 +374,7 @@ var loginId = ${sessionScope.loginId};
 		<div class="work-time">
    			<i class="bi bi-clock-history"></i>
    			<button class="btn-start-work" onclick="updateStartTime()">출근</button>
-   			<button class="btn-finish-work" onclick="">퇴근</button>
+   			<button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
    		</div>
     </li>
   </ul>
@@ -397,29 +397,51 @@ var loginId = ${sessionScope.loginId};
 </nav>
 </header>
 <script>
-let date;
-let formattedDate
-function updateClock(){
-	date = new Date()
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-	formattedDate = year+'-'+month+'-'+day+' '+hours+':'+minutes+':'+seconds;
+checkButton()
+
+function checkButton(){
+    const data = {
+            loginId: loginId,
+        };
+    fetch('checkButton.ajax', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('버튼오류');
+        }
+        return response.json();
+    })
+    .then(data => {
+    	console.log(data.row)
+        const button = document.querySelector('.btn-start-work');
+        const finish = document.querySelector('.btn-finish-work');
+    	if (data.startTime) {
+            button.style.display = 'none';
+            finish.style.display = 'block';
+		}
+    	if (data.startTime && data.endTime) {
+			finish.disabled = true;
+		}
+        
+    })
+    .catch(error => {
+        console.error('출근 처리 오류:', error);
+        alert(error.message);
+    });   
+    
 }
 
-setInterval(updateClock, 1000)
-updateClock()
+
 
 function updateStartTime(){
     const data = {
-            loginId: loginId,
-            startWork: formattedDate  
+            loginId: loginId
         };
-	console.log("날짜:"+formattedDate);
-     
        fetch('updateStartTime.ajax', {
         method: 'POST',
         headers: {
@@ -434,20 +456,54 @@ function updateStartTime(){
         return response.json();
     })
     .then(data => {
-        const button = document.querySelector('.btn-start-work');
-        const finish = document.querySelector('.btn-finish-work');
-            button.style.display = 'none';
-            finish.style.display = 'block';
+    	console.log("콘솔확인:"+ data.msg);
+    	if (data.msg == '성공') {
+    		checkButton();
+    		
+    		
+            if (typeof updateTime === 'function') {
+                updateTime();
+            } 
+		}
         
     })
     .catch(error => {
         console.error('출근 처리 오류:', error);
         alert(error.message);
     });   
-     
-	
 }
 
+/* 퇴근 버튼 */
+function updateEndTime(){
+    const data = {
+            loginId: loginId
+        };
+    
+    fetch('updateEndTime.ajax', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('출근 처리 중 문제가 발생했습니다.');
+        }
+        return response.json();
+    })
+    .then(data => {
+    		checkButton()
+            if (typeof updateTime === 'function') {
+                updateTime();
+            } 
+        
+    })
+    .catch(error => {
+        console.error('출근 처리 오류:', error);
+        alert(error.message);
+    }); 
+}
 
 
 </script>
