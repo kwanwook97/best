@@ -25,7 +25,7 @@
 
 		<div class="content-size">
 			<div class="chat-controls">
-				<button class="start-chat-button" onclick="openModal();">
+				<button class="start-chat-button" onclick="openMemberModal();">
 					<i class="fas fa-comment-alt"></i> 대화하기
 				</button>
 				<div class="searchbar">
@@ -61,10 +61,25 @@
 		</div>
 	</div>
 </body>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close-modal" onclick="closeModal('profileModal');">&times;</button>
+            <button type="button" class="btn-secondary" id="profileChat"><i class="fas fa-comment-alt"></i></button>
+        </div>
+        <div class="modal-body">
+        
+        </div>
+    </div>
+</div>
+
+<!-- Member Modal -->
 <div id="memberModal" class="modal" style="display: none;">
   <div class="modal-content">
   	<div class="modal-header">
-    	<span class="close-modal" onclick="closeModal();">&times;</span>
+    	<span class="close-modal" onclick="closeModal('memberModal');">&times;</span>
     	<h5>메신져 생성</h5>
     	<button id="createChatButton">확인</button>
     </div>
@@ -72,17 +87,38 @@
     	<input type="text" id="chatSubject" name="chat_subject" placeholder="제목을 작성하세요. " value=""/>
     	<i class="fas fa-edit"></i>
     </div>
+    <div id="selectedMembersContainer">
+    
+    </div>
     <div class="search_bar-container">
         <input type="text" id="memberSearchBar" name="keyword" class="search_bar" placeholder="이름 검색" value=""> 
         <i class="fas fa-search search-icon"></i>
       </div>
     <div class="member-list-container">
       <ul id="memberList">
-        <!-- 회원 리스트가 여기에 추가됩니다 -->
+      
       </ul>
     </div>
   </div>
 </div>
+
+<!-- Confirm Modal -->
+<div id="confirmModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close-modal" onclick="closeModal('confirmModal');">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn confirmBtn" id="confirmYes">확인</button>
+            <button type="button" class="btn confirmBtn" onclick="closeModal('confirmModal');">취소</button>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
 window.updateChatList = function(messageDataList) {
@@ -271,12 +307,8 @@ $(document).ready(function () {
                     var empIdx = $(this).data("emp-idx");
                     var empName = $(this).find(".custom-label").text();
 
-                    modal.showConfirm(
-                        empName + "님과 대화를 시작하시겠습니까?",
-                        function () {
-                            createChat(null, empIdx); // 사원의 emp_idx 전달
-                        }
-                    );
+                    // 프로필 모달 열기
+                    openProfileModal(empIdx, empName);
                 });
             } else {
                 memberListWrapper.html("<p>등록된 사원이 없습니다.</p>");
@@ -288,7 +320,54 @@ $(document).ready(function () {
     });
     }
     
-    $("#createChatButton").on("click", function () {
+    
+    function openProfileModal(empIdx, empName) {
+        openModal("profileModal", function () {
+            // AJAX를 통해 데이터 가져오기
+            $.ajax({
+                url: "profile.ajax",
+                type: "GET",
+                data: { emp_idx: empIdx },
+                success: function (profile) {
+                    $("#profileModal .modal-body").html(
+                   		'<div class="profile-header">' +
+                        	'<img src="/photo/' + profile.photo + '" alt="프로필 사진" class="custom-image">' +
+                        	'<div>' +
+                        		'<span>' + empName + '</span>' +
+                        		'<span>' + (profile.state == 1 ? '근무 중' : '근무 종료') + '</span>' +
+                        	'</div>' +
+                        '</div>' +
+                        '<ul>' +
+                        	'<li><span>부서</span><span>'  + profile.depart_name + '</span></li>' +
+                        	'<li><span>이메일</span><span>'  + profile.email + '</span></li>' +
+                        	'<li><span>연락처</span><span>'  + profile.phone + '</span></li>' +
+                        	'<li><span>핸드폰</span><span>'  + profile.mobile + '</span></li>' +
+                        '</ul>'
+                    );
+                    $("#profileChat").off("click").on("click", function () {
+                        openConfirmModal(profile.name + " 님과 대화를 시작하시겠습니까?", function () {
+                            createChat("", [empIdx]); // 확인 후 방 생성
+                        });
+                    });
+                },
+                error: function () {
+                    alert("프로필 정보를 가져오는 데 실패했습니다.");
+                }
+            });
+        });
+    }
+    
+    function openConfirmModal(message, onConfirm) {
+        $("#confirmMessage").text(message); // 메시지 설정
+        $("#confirmYes")
+            .on("click", function () {
+                onConfirm(); // 확인 작업 실행
+                closeModal("confirmModal"); // 모달 닫기
+            });
+        openModal("confirmModal"); // 모달 열기
+    }
+    
+    $("#createChatButton").off("click").on("click", function () {
         var chatSubject = $("#chatSubject").val().trim();
         var selectedMembers = [];
 
@@ -298,12 +377,13 @@ $(document).ready(function () {
         });
 
         if (!chatSubject && selectedMembers.length === 0) {
-            alert("대화방 제목을 입력하거나 회원을 선택하세요.");
             return;
         }
 
-        // 대화방 생성 함수 호출
-        createChat(chatSubject, selectedMembers);
+        // 확인 모달 열기
+        openConfirmModal("대화방을 생성하시겠습니까?", function () {
+            createChat(chatSubject, selectedMembers); // 확인 후 대화방 생성
+        });
     });
     // 대화방 생성 함수
     function createChat(chat_subject, emp_idx_list) {
@@ -317,7 +397,6 @@ $(document).ready(function () {
         }),
         success: function (response) {
             if (response.success) {
-                alert("대화방이 생성되었습니다!");
                 location.href = "chat.go?chat_idx=" + response.chatIdx; // 생성된 방으로 이동
             } else {
                 alert("대화방 생성에 실패했습니다. 다시 시도해주세요.");
@@ -330,37 +409,53 @@ $(document).ready(function () {
 }
 });
 
-//모달 열기
-function openModal() {
-    $("#memberModal").fadeIn(200, function () { 
-        centerModal(); // 애니메이션 완료 후 중앙 정렬
+
+
+function openModal(modalId, contentUpdater) {
+    // 필요한 데이터 업데이트 (contentUpdater는 콜백 함수)
+    if (typeof contentUpdater === "function") {
+        contentUpdater();
+    }
+
+    // 모달 열기
+    $("#" + modalId).fadeIn(200, function () {
+        centerModal(modalId); // 중앙 정렬
     });
-    loadMemberList(null);
 }
 
-function closeModal() {
-    $("#memberModal").fadeOut();
+function closeModal(modalId) {
+    $("#" + modalId).fadeOut();
 }
 
-$(document).on("click", function (e) {
-    if ($(e.target).is("#memberModal")) {
-        closeModal();
-    }
-});
-
-$(window).on("resize", function () {
-    if ($("#memberModal").is(":visible")) {
-        centerModal();
-    }
-});
-
-function centerModal() {
-    var modal = $("#memberModal .modal-content");
-    var top = Math.max(($(window).height() - modal.outerHeight()) / 2, 0); 
-    var left = Math.max(($(window).width() - modal.outerWidth()) / 2, 0); 
+function centerModal(modalId) {
+    var modal = $("#" + modalId + " .modal-content");
+    var top = Math.max(($(window).height() - modal.outerHeight()) / 2, 0);
+    var left = Math.max(($(window).width() - modal.outerWidth()) / 2, 0);
     modal.css({
         top: top + "px",
         left: left + "px",
+    });
+}
+
+$(document).on("click", function (e) {
+    $(".modal").each(function () {
+        if ($(e.target).is(this)) {
+            closeModal($(this).attr("id"));
+        }
+    });
+});
+
+// 화면 크기 변경 시 모든 모달 중앙 정렬
+$(window).on("resize", function () {
+    $(".modal:visible").each(function () {
+        centerModal($(this).attr("id"));
+    });
+});
+
+
+function openMemberModal() {
+    openModal("memberModal", function () {
+        loadMemberList(null); // 회원 리스트 로드
     });
 }
 
@@ -413,7 +508,52 @@ function loadMemberList(keyword) {
         }
     });
 }
+$(document).ready(function () {
+    // 체크박스 상태 변경 이벤트
+    $(document).on("change", "input[name='member']", function () {
+        var selectedMembersContainer = $("#selectedMembersContainer"); // 선택된 회원 표시 영역
+        var memberName = $(this).closest("label").find("span").text(); // 체크박스 옆의 회원 이름
+        var memberId = $(this).val(); // 체크박스의 값 (emp_idx)
+        var memberPhoto = $(this).closest("label").find("img").attr("src"); // 회원 프로필 사진 경로
 
+        if ($(this).is(":checked")) {
+            // 체크박스 선택 시
+            var memberElement = 
+            	'<div class="selected-member-container" data-member-id="' + memberId + '">' +
+                    '<span><img src="/photo/' + memberPhoto + '" class="custom-image">' +
+                    '<i class="fas fa-times remove-member" data-member-id="' + memberId + '"></i></span>' +
+                	'<span class="selected-member" data-member-id="' + memberId + '">' + memberName +
+                	'</span>' +
+                '</div>';
+            selectedMembersContainer.append(memberElement);
+        } else {
+            // 체크박스 선택 해제 시
+        	selectedMembersContainer.find('.selected-member-container[data-member-id="' + memberId + '"]').remove();
+        }
+    });
+
+    // 선택된 회원의 제거 아이콘 클릭 이벤트
+    $(document).on("click", ".remove-member", function () {
+        var memberId = $(this).data("member-id");
+        // 체크박스 선택 해제
+        $('input[name="member"][value="' + memberId + '"]').prop("checked", false).trigger("change");
+        // 선택된 멤버 제거
+        $(this).closest('.selected-member-container').remove();
+    });
+    $(document).on("click", ".close-modal", function () {
+        $(".selected-member-container").empty(); // 선택된 멤버 표시 영역 초기화
+        $("input[name='member']").prop("checked", false).trigger("change"); // 모든 체크박스 선택 해제
+    });
+
+    // 바깥 영역 클릭 시 모달 닫히는 경우 처리
+    $(document).on("click", function (e) {
+        if ($(e.target).is("#memberModal")) {
+            $(".selected-member-container").empty(); // 선택된 멤버 표시 영역 초기화
+            $("input[name='member']").prop("checked", false).trigger("change"); // 모든 체크박스 선택 해제
+            $("#memberModal").fadeOut();
+        }
+    });
+});
 
 
 

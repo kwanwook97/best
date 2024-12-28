@@ -1,4 +1,4 @@
-package com.best.chat;
+package com.best.websocket;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +15,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.best.chat.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component

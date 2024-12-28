@@ -11,15 +11,18 @@
 		c.chat_subject,
 		(
 		SELECT m.content
-		FROM message m
+		FROM message
+		m
 		WHERE m.chat_idx = c.chat_idx
 		ORDER BY m.time DESC
 		LIMIT 1
-		) AS latest_message,
+		) AS
+		latest_message,
 		(
 		SELECT m.time
 		FROM message m
-		WHERE m.chat_idx = c.chat_idx
+		WHERE m.chat_idx =
+		c.chat_idx
 		ORDER BY m.time DESC
 		LIMIT 1
 		) AS latest_time,
@@ -28,12 +31,15 @@
 		FROM message m
 		LEFT JOIN msg_read mr
 		ON m.msg_idx = mr.msg_idx
-		AND mr.emp_idx = #{emp_idx}
+		AND
+		mr.emp_idx = #{emp_idx}
 		WHERE m.chat_idx = c.chat_idx
-		AND (mr.is_read = 0 AND mr.msg_idx IS NOT NULL)
+		AND (mr.is_read =
+		0 AND mr.msg_idx IS NOT NULL)
 		) AS unread_count
 		FROM chat c
-		JOIN party p ON c.chat_idx = p.chat_idx
+		JOIN party p
+		ON c.chat_idx = p.chat_idx
 		JOIN employee e ON p.emp_idx = e.emp_idx
 		<where>
 			p.emp_idx = #{emp_idx}
@@ -45,7 +51,8 @@
 				FROM party p2
 				JOIN employee e2 ON p2.emp_idx = e2.emp_idx
 				WHERE p2.chat_idx = c.chat_idx
-				AND e2.name LIKE CONCAT('%', #{keyword}, '%')
+				AND e2.name LIKE CONCAT('%',
+				#{keyword}, '%')
 				)
 				)
 			</if>
@@ -55,10 +62,12 @@
 
 	<!-- 나를 제외한 참여중인 대화방 참여자 리스트 -->
 	<select id="getParticipantNames" resultType="string">
-		SELECT e.name, e.photo
+		SELECT e.name,
+		e.photo
 		FROM employee e
 		JOIN party p ON e.emp_idx = p.emp_idx
-		WHERE p.chat_idx = #{chat_idx} AND e.emp_idx != #{emp_idx}
+		WHERE
+		p.chat_idx = #{chat_idx} AND e.emp_idx != #{emp_idx}
 	</select>
 
 	<!-- 모든 회원 리스트 -->
@@ -97,7 +106,8 @@
 	<!-- 참여자 확인 -->
 	<select id="checkPartyExists" resultType="int">
 		SELECT COUNT(*)
-		FROM party
+		FROM
+		party
 		WHERE chat_idx = #{chat_idx}
 		AND emp_idx = #{emp_idx}
 	</select>
@@ -124,15 +134,18 @@
 
 	<!-- 입장 시스템 메시지 -->
 	<insert id="insertEnterMessage">
-		INSERT INTO message (chat_idx, content, time, message_type)
+		INSERT INTO message (chat_idx, content, time,
+		message_type)
 		VALUES (#{chat_idx}, #{content}, NOW(), 'system')
 	</insert>
 
 	<!-- 메시지 저장 -->
 	<insert id="message" parameterType="com.best.chat.MessageDTO"
 		useGeneratedKeys="true" keyProperty="msg_idx">
-		INSERT INTO message (chat_idx, msg_send_idx, content, time)
-		VALUES (#{chat_idx}, #{msg_send_idx}, #{content}, NOW())
+		INSERT INTO message (chat_idx,
+		msg_send_idx, content, time)
+		VALUES (#{chat_idx}, #{msg_send_idx},
+		#{content}, NOW())
 	</insert>
 
 	<!-- 메시지 날짜 확인 -->
@@ -141,7 +154,8 @@
 		SELECT COUNT(*)
 		FROM message
 		WHERE chat_idx = #{chat_idx}
-		AND DATE(time) = CURRENT_DATE;
+		AND
+		DATE(time) = CURRENT_DATE;
 	</select>
 
 	<!-- 메시지 뿌려주기 -->
@@ -156,14 +170,16 @@
 		e.photo,
 
 		(
-		SELECT COUNT(*)
+		SELECT
+		COUNT(*)
 		FROM msg_read mr
 		WHERE mr.msg_idx = m.msg_idx
 		AND mr.is_read = 0
 		) AS unread_count
 
 		FROM message m
-		LEFT JOIN employee e ON m.msg_send_idx = e.emp_idx
+		LEFT JOIN employee e ON m.msg_send_idx
+		= e.emp_idx
 		WHERE m.chat_idx = #{chatIdx}
 		ORDER BY m.time ASC
 	</select>
@@ -173,32 +189,39 @@
 		SELECT
 		e.emp_idx,
 		e.name,
-		e.photo
+		e.photo,
+		r.rank_name
 		FROM
 		employee e
+		LEFT JOIN
+		rank_emp r ON e.rank_idx = r.rank_idx
 		JOIN
 		party p ON e.emp_idx = p.emp_idx
 		WHERE
 		p.chat_idx = #{chat_idx}
 	</select>
-
+	
 	<!-- 대화방 나가기 -->
 	<delete id="removeParticipant">
 		DELETE FROM party
 		WHERE chat_idx = #{chat_idx}
-		AND emp_idx = #{emp_idx}
+		AND
+		emp_idx = #{emp_idx}
 	</delete>
 
 	<!-- 연결 상태 존재 여부 확인 -->
 	<select id="checkConnectionStatusExists" resultType="int">
-		SELECT COUNT(*)
+		SELECT
+		COUNT(*)
 		FROM connection_status
-		WHERE chat_idx = #{chatIdx} AND emp_idx = #{empIdx}
+		WHERE chat_idx = #{chatIdx} AND emp_idx
+		= #{empIdx}
 	</select>
 
 	<!-- 연결 상태 INSERT -->
 	<insert id="insertConnectionStatus">
-		INSERT INTO connection_status (chat_idx, emp_idx, connection_start)
+		INSERT INTO connection_status (chat_idx, emp_idx,
+		connection_start)
 		VALUES (#{chatIdx}, #{empIdx}, #{startTime})
 	</insert>
 
@@ -207,7 +230,8 @@
 		UPDATE connection_status
 		<choose>
 			<when test="action == 'start'">
-				SET connection_start = #{time}, connection_end = '2038-01-19 03:14:07'
+				SET connection_start = #{time}, connection_end =
+				'2038-01-19 03:14:07'
 			</when>
 			<when test="action == 'end'">
 				SET connection_end = #{time}
@@ -221,40 +245,47 @@
 	<update id="markMessagesAsRead">
 		UPDATE msg_read
 		SET is_read = 1, read_at = NOW()
-		WHERE emp_idx = #{empIdx}
+		WHERE
+		emp_idx = #{empIdx}
 		AND msg_idx IN (
 		SELECT m.msg_idx
 		FROM message m
-		JOIN connection_status cs
+		JOIN
+		connection_status cs
 		ON cs.emp_idx = #{empIdx}
-		AND cs.chat_idx = m.chat_idx
+		AND cs.chat_idx =
+		m.chat_idx
 		WHERE
 		m.chat_idx = #{chatIdx}
 		AND (
-		m.time &lt;= cs.connection_start
-		OR m.time BETWEEN cs.connection_start AND cs.connection_end
+		m.time &lt;=
+		cs.connection_start
+		OR m.time BETWEEN cs.connection_start AND
+		cs.connection_end
 		)
 		)
 	</update>
-	
+
 	<!-- msg_idx 를 chat_idx 별로 뽑기 -->
 	<select id="getMsgIdxListByChatIdx" resultType="int">
 		SELECT msg_idx
 		FROM message
 		WHERE chat_idx = #{chatIdx}
 	</select>
-	
+
 	<!-- 메시지 발송 즉시 메시지 옆에 안읽은 사용자 숫자 -->
 	<select id="getUnreadUserCount" resultType="int">
 		SELECT COUNT(*)
-		FROM msg_read
+		FROM
+		msg_read
 		WHERE msg_idx = #{msgIdx}
 		AND is_read = 0
 	</select>
 
 	<!-- 메시지 발송하면서 기본 안읽음처리 등록 -->
 	<insert id="insertDefaultMsgRead" parameterType="map">
-		INSERT INTO msg_read (msg_idx, emp_idx, is_read, read_at)
+		INSERT INTO
+		msg_read (msg_idx, emp_idx, is_read, read_at)
 		SELECT
 		#{msg_idx},
 		p.emp_idx,
@@ -263,17 +294,65 @@
 		ELSE 0
 		END,
 		CASE
-		WHEN cs.emp_idx IS NOT NULL THEN NOW()
+		WHEN
+		cs.emp_idx IS NOT NULL THEN NOW()
 		ELSE NULL
 		END
 		FROM party p
-		LEFT JOIN connection_status cs
+		LEFT JOIN
+		connection_status cs
 		ON cs.chat_idx = #{chat_idx}
-		AND cs.emp_idx = p.emp_idx
+		AND cs.emp_idx =
+		p.emp_idx
 		AND cs.connection_start IS NOT NULL
-		AND (cs.connection_end IS NULL OR cs.connection_end > NOW())
+		AND (cs.connection_end IS
+		NULL OR cs.connection_end > NOW())
 		WHERE p.chat_idx = #{chat_idx}
-		AND p.emp_idx != #{sender_idx};
+		AND
+		p.emp_idx != #{sender_idx};
 	</insert>
-
+	
+	<!-- 회원 프로필 -->
+	<select id="profile" parameterType="int"
+		resultType="map">
+		SELECT
+		e.emp_idx,
+		e.name,
+		e.email,
+		e.phone,
+		e.photo,
+		e.mobile,
+		e.state,
+		r.rank_name,
+		d.depart_name
+		FROM
+		employee e
+		LEFT JOIN
+		rank_emp r ON e.rank_idx = r.rank_idx
+		LEFT JOIN
+		department d ON e.depart_idx = d.depart_idx
+		WHERE
+		e.emp_idx = #{empIdx}
+	</select>
+	
+	<!-- 대화방 제목 변경 -->
+	<update id="updateChatSubject" parameterType="com.best.chat.ChatDTO">
+    	UPDATE chat
+    	SET chat_subject = #{chat_subject}
+    	WHERE chat_idx = #{chat_idx}
+	</update>
+	
+	<!-- 대화방 공지사항 등록 -->
+	<update id="updateChatNotice" parameterType="map">
+    	UPDATE chat
+    	SET chat_notice = #{noticeContent}
+    	WHERE chat_idx = #{chatIdx}
+	</update>
+	
+	<!-- 대화방 공지사항 가져오기 -->
+	<select id="getChatNotice" resultType="string">
+    	SELECT chat_notice
+    	FROM chat
+    	WHERE chat_idx = #{chat_idx}
+	</select>
 </mapper>  

@@ -238,6 +238,7 @@
 	border-radius: 10px; /* 둥근 모서리 */
 	padding: 5px 10px; /* 내부 여백 */
 	width: auto; /* 내용에 맞게 크기 조정 */
+	cursor: pointer;
 }
 
 .custom-image {
@@ -454,7 +455,7 @@ search {
 	opacity: 1; /* 체크 시 아이콘 표시 */
 }
 
-#memberModal {
+#memberModal, #profileModal {
 	display: none;
 	position: fixed;
 	top: 0;
@@ -477,7 +478,7 @@ search {
 }
 
 /* 모달 콘텐츠 */
-#memberModal .modal-content {
+.modal-content {
 	position: fixed;
 	background-color: #FFF5E2;
 	padding: 10px;
@@ -490,16 +491,108 @@ search {
 	overflow-y: auto;
 }
 
-#memberModal .modal-content::-webkit-scrollbar {
-	display: none; /* Chrome/Edge에서 기본 스크롤 숨김 */
+.modal-content::-webkit-scrollbar {
+	display: none;
 }
 
 /* 닫기 버튼 */
-#memberModal .close {
+.close {
 	position: absolute;
 	top: 10px;
 	right: 10px;
 	cursor: pointer;
 	font-size: 20px;
 	color: #333;
+}
+.modal-header{
+	display: flex;
+    align-items: center !important;
+}
+#profileModal .custom-image{
+    width: 70px;
+    height: 70px;
+	
+}
+#profileModal .modal-content{
+	height: 320px !important;
+}
+.btn-secondary {
+    color: #E9396B !important;
+    font-size: 20px;
+}
+.btn-secondary:hover {
+    color: #EF7597 !important;
+    background-color: #FFF5E2 !important;
+}
+.profile-header{
+	display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 15px;
+}
+.profile-header div{
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#profileModal ul{
+	width: 100%;
+	margin-left: 0px;
+	padding: 0px;
+}
+#profileModal li{
+	list-style: none;
+	display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #6C0F6C;
+}
+#profileModal li span:first-child{
+	color: #6C0F6C;
+	text-align: end;
+	width: 15%;
+}
+#profileModal li span:last-child{
+	text-align: start;
+	width: 45%;
+}
+#confirmModal .modal-content{
+    width: 300px !important;
+    height: 200px !important;
+}
+.modal-footer{
+	display: flex;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.modal-footer button:first-child{
+	background-color: #6C0F6C;
+	color: #FFF5E2 !important;
+}
+.modal-footer button:first-child:hover{
+	background-color: #981798;
+}
+.modal-footer button:last-child{
+	background-color: #E9396B;
+	color: #FFF5E2 !important;
+}
+.modal-footer button:last-child:hover{
+	background-color: #EF7597;
+}
+#selectedMembersContainer{
+	display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap; /* 너비 초과 시 다음 줄로 넘기기 */
+    gap: 10px; /* 멤버 간격 추가 */
+    max-width: 100%; /* 컨테이너의 최대 너비 제한 */
+    overflow: hidden;
+}
+.selected-member-container{
+	display: flex;
+    flex-direction: column;
+}
+.selected-member-container span:first-child{
+	display: flex;
+}
+.selected-member{
+	font-size: 12px;
 }

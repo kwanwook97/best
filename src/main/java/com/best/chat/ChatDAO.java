@@ -59,4 +59,12 @@ public interface ChatDAO {
 
 	List<Map<String, Object>> getEmployeeList(String keyword);
 
+	Map<String, Object> profile(int empIdx);
+
+	int updateChatSubject(ChatDTO chatDTO);
+
+	void updateChatNotice(int chatIdx, String noticeContent);
+
+	String getChatNotice(int chat_idx);
+
 }

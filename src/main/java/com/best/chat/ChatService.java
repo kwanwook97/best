@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.best.emp.EmployeeDTO;
+import com.best.websocket.GlobalWebsocketHandler;
+import com.best.websocket.WebsocketHandler;
 
 @Service
 public class ChatService {
@@ -298,6 +300,60 @@ public class ChatService {
 	// 메시지 읽지 않음 씨빨!!!!
 	public int getUnreadUserCount(int msgIdx) {
 		return chatDAO.getUnreadUserCount(msgIdx);
+	}
+
+	public Map<String, Object> profile(int empIdx) {
+		return chatDAO.profile(empIdx);
+	}
+	
+	/* 대화방 제목 변경 & 시스템 메시지 * 브로드캐스트 */
+	public boolean updateChatSubject(ChatDTO chatDTO, String empName) {
+	    boolean isUpdated = chatDAO.updateChatSubject(chatDTO) > 0;
+
+	    if (isUpdated) {
+	        // 시스템 메시지 생성
+	        String content = empName + " 님이 대화방 제목을 '" + chatDTO.getChat_subject() + "' (으)로 변경하셨습니다.";
+
+	        // 시스템 메시지 저장
+	        MessageDTO messageDTO = new MessageDTO();
+	        messageDTO.setChat_idx(chatDTO.getChat_idx());
+	        messageDTO.setContent(content);
+	        messageDTO.setMessage_type("system");
+	        chatDAO.insertEnterMessage(messageDTO);
+
+	        // WebSocket 브로드캐스트
+	        broadcastEnterMessage(chatDTO.getChat_idx(), content);
+	    }
+
+	    return isUpdated;
+	}
+	
+	/* 대화방 공지사항 등록 & 시스템 메시지 & 브로드캐스트 */
+	public void addNotice(int chatIdx, String noticeContent, String empName) {
+		chatDAO.updateChatNotice(chatIdx, noticeContent);
+
+		// 시스템 메시지 생성
+	    String systemMessageContent = empName + " 님이 공지사항을 등록하셨습니다.";
+	    MessageDTO systemMessage = new MessageDTO();
+	    systemMessage.setChat_idx(chatIdx);
+	    systemMessage.setContent(systemMessageContent);
+	    systemMessage.setMessage_type("system");
+	    chatDAO.insertEnterMessage(systemMessage);
+
+	    // WebSocket 브로드캐스트
+	    broadcastEnterMessage(chatIdx, systemMessageContent);
+	    
+	    Map<String, Object> broadcastPayload = new HashMap<>();
+	    broadcastPayload.put("chat_idx", chatIdx);
+	    broadcastPayload.put("type", "NOTICE_UPDATE");
+	    broadcastPayload.put("notice", noticeContent); // 공지사항 내용
+	    broadcastPayload.put("systemMessage", systemMessageContent); // 시스템 메시지
+
+	    WebsocketHandler.broadcast(broadcastPayload);
+	}
+
+	public String getChatNotice(int chat_idx) {
+		return chatDAO.getChatNotice(chat_idx);
 	}
 
 }

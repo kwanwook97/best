@@ -1,4 +1,4 @@
-package com.best.chat;
+package com.best.websocket;
 
 import java.io.IOException;
 import java.util.HashMap;

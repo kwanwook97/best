@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.best.emp.EmployeeDTO;
+import com.best.websocket.GlobalWebsocketHandler;
 
 @Controller
 public class ChatController {
@@ -142,12 +143,22 @@ public class ChatController {
 	}
 
 	/* 회원 리스트 보여주기 */
-	@GetMapping("/memberList.ajax")
+	@GetMapping(value="/memberList.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> getMemberList(@RequestParam(value = "keyword", required = false) String keyword) {
 		return chatService.getEmployeeList(keyword); // 회원 리스트를 반환하는 서비스 호출
 	}
+	
+	@GetMapping(value="/profile.ajax")
+	@ResponseBody
+	public Map<String, Object> profile(@RequestParam(value = "emp_idx", required = false) String emp_idx){
+		int empIdx = Integer.parseInt(emp_idx);
+		Map<String, Object> profileData = chatService.profile(empIdx);
 
+	    return profileData;
+	}
+	
+	
 	/* 대화방 생성 */
 	@PostMapping(value = "/createChat.do")
 	@ResponseBody
@@ -172,7 +183,7 @@ public class ChatController {
 	}
 
 	/* 방 나가기 */
-	@PostMapping("/leaveChat.ajax")
+	@PostMapping(value="/leaveChat.ajax")
 	@ResponseBody
 	public Map<String, Object> leaveChat(HttpSession session, @RequestParam int chat_idx) {
 		Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
@@ -194,7 +205,7 @@ public class ChatController {
 		return response;
 	}
 
-	@PostMapping("/updateConnectionTime")
+	@PostMapping(value="/updateConnectionTime")
 	@ResponseBody
 	public ResponseEntity<?> updateConnectionTime(@RequestBody Map<String, Object> payload, HttpSession session) {
 		int chat_idx = Integer.parseInt(payload.get("chat_idx").toString());
@@ -211,10 +222,74 @@ public class ChatController {
 	}
 
 	// 메지시 읽지 않음 씨빨!!!!!
-	@GetMapping("/unreadUserCount.ajax")
+	@GetMapping(value="/unreadUserCount.ajax")
 	@ResponseBody
 	public int getUnreadUserCount(@RequestParam int msg_idx) {
 		return chatService.getUnreadUserCount(msg_idx);
 	}
+	
+	/* 대화방 제목 변경 */
+	@PostMapping(value="/updateChatSubject.ajax")
+	@ResponseBody
+	public Map<String, Object> updateChatSubject(@RequestBody Map<String, Object> requestBody, HttpSession session) {
+	    Map<String, Object> response = new HashMap<>();
+	    String chatIdxStr = (String) requestBody.get("chat_idx");
+	    String chatSubject = (String) requestBody.get("chat_subject");
+	    String empName = (String) session.getAttribute("loginName"); // 세션에서 emp_name 가져오기
 
+	    try {
+	        Integer chatIdx = Integer.valueOf(chatIdxStr); // String을 Integer로 변환
+
+	        ChatDTO chatDTO = new ChatDTO();
+	        chatDTO.setChat_idx(chatIdx);
+	        chatDTO.setChat_subject(chatSubject);
+
+	        boolean isUpdated = chatService.updateChatSubject(chatDTO, empName);
+
+	        if (isUpdated) {
+	            response.put("success", true);
+	        } else {
+	            response.put("success", false);
+	            response.put("message", "대화방 제목 수정에 실패했습니다.");
+	        }
+	    } catch (NumberFormatException e) {
+	        response.put("success", false);
+	        response.put("message", "chat_idx가 올바르지 않습니다.");
+	    }
+
+	    return response;
+	}
+	
+	/* 대화방 공지사항 등록 */
+	@PostMapping("/registerNotice.ajax")
+	@ResponseBody
+	public Map<String, Object> registerNotice(@RequestBody Map<String, Object> requestBody, HttpSession session) {
+	    Map<String, Object> response = new HashMap<>();
+	    try {
+	        String noticeContent = (String) requestBody.get("content");
+	        String empName = (String) session.getAttribute("loginName");
+	        Integer chatIdx = Integer.valueOf(requestBody.get("chat_idx").toString());
+
+	        chatService.addNotice(chatIdx, noticeContent, empName);
+
+	        response.put("success", true);
+	    } catch (Exception e) {
+	        response.put("success", false);
+	        response.put("message", "공지사항 등록 중 오류 발생: " + e.getMessage());
+	    }
+	    return response;
+	}
+	
+	@GetMapping(value = "/getChatNotice.ajax")
+	@ResponseBody
+	public Map<String, Object> getChatNotice(@RequestParam int chat_idx) {
+	    String chatNotice = chatService.getChatNotice(chat_idx);
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("success", true);
+	    response.put("chat_idx", chat_idx);
+	    response.put("notice", chatNotice);
+
+	    return response;
+	}
 }
