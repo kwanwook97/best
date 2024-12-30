@@ -5,76 +5,251 @@
 <mapper namespace="com.best.mail.MailDAO">
 
 
+	
 
-    <select id="mailList" resultType="map" parameterType="map">
-        SELECT 
-            ee.emp_idx, 
-            ee.name, 
-            ee.email, 
-            ee.phone, 
-            ee.mobile, 
-            ee.photo, 
-            ee.enable, 
-            ee.state, 
-            dt.depart_name, 
-            rp.rank_name
-        FROM
-            employee ee 
-        INNER JOIN 
-            department dt 
-            ON ee.depart_idx = dt.depart_idx
-        INNER JOIN 
-            rank_emp rp 
-            ON ee.rank_idx = rp.rank_idx
-        WHERE state = #{state}
-        <if test="searchKeyword != null and searchKeyword != ''">
-            <choose>
-                <when test="searchFilter == 'name'">
-                    AND ee.name LIKE CONCAT('%', #{searchKeyword}, '%')
-                </when>
-                <when test="searchFilter == 'department'">
-                    AND dt.depart_name LIKE CONCAT('%', #{searchKeyword}, '%')
-                </when>
-            </choose>
-        </if>
-        ORDER BY ee.emp_idx DESC 
-        LIMIT #{limit} OFFSET #{offset}
+
+<!-- 메일 종류(table) 및 검색 조건(searchKeyword, searchFilter)에 따라 WHERE 절을 구성. -->
+	<sql id="mailWhere">
+	    <choose>
+	        <!-- 받은 메일함 조건 -->
+	        <when test="table == 'mail_receive'">
+	            AND mr.receiver_idx = #{emp_idx}
+	            
+	            AND mr.delete_flag = #{delete_flag}     
+	        </when>
+	        <!-- 보낸 메일함 조건 (임시저장, 발송) -->
+	        <when test="table == 'mail_send'">
+	            AND ms.sender_idx = #{emp_idx}
+	            
+	            AND ms.delete_flag = #{delete_flag}
+	        </when>
+	        <!-- 휴지통 조건 -->
+	        <when test="table == 'mail_trash'">
+	            AND ms.sender_idx = #{emp_idx}
+	            
+	            AND ms.delete_flag = #{delete_flag}
+	        </when>
+	    </choose>
+	
+	    <!-- 검색 조건 처리 -->
+	    <if test="searchKeyword != null and searchKeyword != ''">
+	        <choose>
+	            <!-- 발신자 검색 -->
+	            <when test="searchFilter == 'sender'">
+	                AND ms.sender_name LIKE CONCAT('%', #{searchKeyword}, '%')
+	            </when>
+	            <!-- 수신자 검색 -->
+	            <when test="searchFilter == 'receiver'">
+	                AND mr.receiver_name LIKE CONCAT('%', #{searchKeyword}, '%')
+	            </when>
+	            <!-- 제목 검색 -->
+	            <when test="searchFilter == 'subject'">
+	                AND ms.subject LIKE CONCAT('%', #{searchKeyword}, '%')
+	            </when>
+	            <!-- 내용 검색 -->
+	            <when test="searchFilter == 'content'">
+	                AND ms.content LIKE CONCAT('%', #{searchKeyword}, '%')
+	            </when>
+	        </choose>
+	    </if>
+	
+	    AND ms.status = #{status}            
+	</sql>
+
+
+<!-- 메일 목록 가져오기: 받은 메일, 보낸 메일, 임시저장, 휴지통 등 다양한 메일함 데이터를 조회. -->
+<select id="mailList" resultType="map" parameterType="map">
+    SELECT 
+        <choose>
+            <when test="table == 'mail_receive'">
+                mr.mail_receive_idx, <!-- mail_receive_idx 포함 -->
+            </when>
+            <otherwise>
+                NULL AS mail_receive_idx, <!-- 다른 테이블에서는 NULL로 반환 -->
+            </otherwise>
+        </choose>
+        ms.mail_send_idx,    
+        ms.sender_idx,       
+        ms.sender_name,      
+        ms.sender_email,     
+        ms.subject,          
+        ms.content,          
+        ms.date,             
+        ms.status,
+        ms.special_flag AS send_special_flag,     
+        ms.delete_flag AS send_delete_flag,
+        MAX(mr.read_flag) AS read_flag, <!-- 수신자 정보 중 가장 중요한 값 선택 -->
+        MAX(mr.special_flag) AS receive_special_flag,
+        MAX(mr.delete_flag) AS receive_delete_flag
+    FROM
+        mail_send ms
+    LEFT JOIN 
+        mail_receive mr 
+        ON ms.mail_send_idx = mr.mail_send_idx        
+    <where>
+        <include refid="mailWhere"/> <!-- 공통 WHERE 조건 삽입 -->
+    </where>
+    GROUP BY 
+        <choose>
+            <when test="table == 'mail_receive'">
+                mr.mail_receive_idx, <!-- mail_receive_idx 포함 -->
+            </when>
+        </choose>
+        ms.mail_send_idx, 
+        ms.sender_idx, 
+        ms.sender_name, 
+        ms.sender_email, 
+        ms.subject, 
+        ms.content, 
+        ms.date, 
+        ms.status, 
+        ms.special_flag, 
+        ms.delete_flag
+    ORDER BY ms.date DESC       
+    LIMIT #{limit} OFFSET #{offset}       
+</select>
+
+
+
+
+<!-- 메일 페이지 계산: 각 메일함(받은메일, 보낸메일 등)의 전체 페이지 수를 계산. -->
+<select id="allCount" resultType="int" parameterType="map">
+    SELECT 
+        CEIL(COUNT(DISTINCT ms.mail_send_idx) / #{cnt}) AS pages  
+    FROM
+        mail_receive mr 
+	INNER JOIN 
+        mail_send ms 
+        ON mr.mail_send_idx = ms.mail_send_idx             
+    <where>
+        <include refid="mailWhere"/> <!-- 공통 WHERE 조건 삽입 -->
+    </where>
+</select>
+
+
+
+
+<!-- 메일 읽음여부 업데이트 -->
+<update id="updateReadStatus" parameterType="map">
+	UPDATE mail_receive SET read_flag = #{read_flag}
+	<where>
+		<if test="mailIdxType == 'mail_send_idx'">
+			AND mail_send_idx = #{mail_idx}
+		</if>
+		<if test="mailIdxType == 'mail_receive_idx'">
+			AND mail_receive_idx = #{mail_idx}
+		</if>
+	</where>
+</update>
+
+
+<!-- 중요여부 업데이트 -->
+<update id="updateSpecialStatus" parameterType="map">
+    <choose>
+        <when test="mailIdxType == 'mail_send_idx'">
+            UPDATE mail_send SET special_flag = #{special_flag}
+            WHERE mail_send_idx = #{mail_idx}
+        </when>
+        <when test="mailIdxType == 'mail_receive_idx'">
+            UPDATE mail_receive SET special_flag = #{special_flag}
+            WHERE mail_receive_idx = #{mail_idx}
+        </when>
+    </choose>
+</update>
+
+
+<!-- 메일 휴지통이동, 복구, 완전삭제 -->
+<update id="moveToTrash" parameterType="map">
+  <choose>
+        <when test="mailIdxType == 'mail_send_idx'">
+            UPDATE mail_send SET delete_flag = #{delete_flag}
+            WHERE mail_send_idx = #{mail_idx}
+        </when>
+        <when test="mailIdxType == 'mail_receive_idx'">
+            UPDATE mail_receive SET delete_flag = #{delete_flag}
+            WHERE mail_receive_idx = #{mail_idx}
+        </when>
+    </choose>
+</update>
+
+
+
+
+    <!-- 이메일 작성시 송신자, 수신자, 참조자의 사번, email, 사원명 가져오기 (자동완성) -->
+    <select id="empInfo" parameterType="map" resultType="map">
+    	SELECT 
+    		emp_idx,
+    		name,
+    		email
+   		FROM
+   			employee
+  		WHERE
+ 			<choose>
+ 				<when test="dataType == 'name'">
+ 					name LIKE CONCAT('%', #{name}, '%')
+ 				</when>
+ 				<when test="dataType == 'email'">
+ 					email LIKE CONCAT('%', #{email}, '%')
+ 				</when>
+ 				<when test="dataType == 'emp_idx'">
+ 					emp_idx = #{emp_idx}
+ 				</when>
+ 			</choose>
+  		ORDER BY name
     </select>
-
-
-
-	<!-- 받은메일함, 보낸메일함, 임시저장, 휴지통 -->
-    <select id="allCount" resultType="int" parameterType="map">
-        SELECT 
-        	<if test="table == 'mail_send'">
-	            CEIL(COUNT(mail_send_idx)/#{cnt}) AS pages      <!-- 발신메일 idx --> 
-        	</if>
-        	<if test="table == 'mail_receive'">
-	            CEIL(COUNT(mail_receive_idx)/#{cnt}) AS pages     <!-- 수신메일 idx --> 
-        	</if>
-        FROM 
-            ${table}                     <!-- 발신mail_send 또는 수신mail_receive -->
-        WHERE emp_idx = #{emp_idx}       <!-- 수신인 경우 수신자 또는 참조자 -->
-        <if test="table == 'mail_receive'">      
-        	AND category = #{category}   <!-- 0: 수신자, 1: 참조자 -->
-        </if> 
-        <!-- 임시저장여부에 따른 조건필요 -->
-        <if test="table == 'mail_send'">      
-        	AND status = #{status}   <!-- 0: 임시저장, 1: 발송 -->
-        </if> 
-        <!-- 휴지통여부에 따른 조건 -->    
-        AND delete_flag = #{delete_flag} <!-- 0: 정상, 1: 휴지통 2: 완전삭제 -->
-        
-        <if test="searchKeyword != null and searchKeyword != ''">
-            <choose>
-                <when test="searchFilter == 'name'">
-                </when>
-                <when test="searchFilter == 'department'">
-                </when>
-            </choose>
-        </if>
-    </select>
-
+    
+	<!-- 메일전송자 정보저장하기 -->
+	<insert id="mailSender"
+	        parameterType="com.best.mail.MailSendDTO"
+	        useGeneratedKeys="true"
+	        keyColumn="mail_send_idx"     
+	        keyProperty="mail_send_idx"> 	
+		INSERT INTO mail_send(
+			sender_name,
+			sender_idx,
+			sender_email,
+			subject,
+			content,
+			status,
+			special_flag
+		)VALUES(
+			#{sender_name},
+			#{sender_idx},
+			#{sender_email},
+			#{subject},
+			#{content},
+			#{status},
+			#{special_flag}
+		)
+	</insert>
+	
+	<!-- 메일수신자 정보저장하기 -->
+	<insert id="mailReceiver" parameterType="java.util.List">
+	    INSERT INTO mail_receive (
+	    	mail_send_idx,
+	        receiver_idx,
+	        receiver_name,
+	        receiver_email,
+	        special_flag,
+	        receiver_type
+	    ) VALUES
+	    <foreach collection="list" item="item" separator=",">
+	        (
+	            #{item.mail_send_idx},
+	            #{item.receiver_idx},
+	            #{item.receiver_name},
+	            #{item.receiver_email},
+	            #{item.special_flag},
+	            #{item.receiver_type}
+	        )
+	    </foreach>
+	</insert>
+	
+	<!-- 메일 첨부파일업로드 -->
+	<insert id="fileUpload" parameterType="map">
+		INSERT INTO attachment(attach_category, idx_num, file_name, newfile_Name)
+		VALUES(1, #{idx_num}, #{fileName}, #{newFileName})
+	</insert>
 
 
 </mapper>  

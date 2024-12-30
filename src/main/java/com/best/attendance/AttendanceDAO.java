@@ -23,5 +23,9 @@ public interface AttendanceDAO {
 
 	int updateEndTime(Map<String, Object> params);
 
+	Integer getLeave(Map<String, Object> params);
+
+	void updateAbsent(LocalDate today);
+
 
 }

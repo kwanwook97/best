@@ -15,10 +15,6 @@ public interface ChatDAO {
 
 	void insertParty(PartyDTO loginPartyDTO);
 
-	//List<Map<String, Object>> chatList(Integer emp_idx);
-
-	List<EmployeeDTO> getEmployeeList();
-
 	void message(MessageDTO message);
 
 	List<Map<String, Object>> getMessagesByChatIdx(int chatIdx);
@@ -42,16 +38,6 @@ public interface ChatDAO {
 	int removeParticipant(int chat_idx, int emp_idx);
 
 	int checkMessageExistsForToday(int chat_idx, String today);
-	
-	
-	
-	
-	
-	
-	// 메시지 읽지 않음 씨빨!!!!!!
-	
-
-
 
 	int getUnreadUserCount(int msgIdx);
 
@@ -69,6 +55,20 @@ public interface ChatDAO {
 
 	List<Integer> getMsgIdxListByChatIdx(int chatIdx);
 
-	List<Map<String, Object>> chatListWithUnread(Integer emp_idx);
+	List<Map<String, Object>> chatListWithUnread(Integer emp_idx, String keyword);
+
+	List<Map<String, Object>> getEmployeeList(String keyword);
+
+	Map<String, Object> profile(int empIdx);
+
+	int updateChatSubject(ChatDTO chatDTO);
+
+	void updateChatNotice(int chatIdx, String noticeContent);
+
+	String getChatNotice(int chat_idx);
+
+	String getSenderPhoto(Integer empIdx);
+
+	int unreadTotal(int emp_idx);
 
 }

@@ -7,7 +7,7 @@
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- <script src="resources/js/chat.js"></script> -->
-  <link href="resources/css/chat2.css" rel="stylesheet"/>
+  <link href="resources/css/chat.css" rel="stylesheet"/>
 
   <style>
 
@@ -45,6 +45,9 @@
 			
 			    <div class="chat-window">
 			      <div class="messages" id="messages">
+			      	<div class="chat-notice" id="chatNotice">
+    					<!-- 공지사항 내용이 여기에 표시됩니다 -->
+					</div>
 					
 			      </div>
 			      <div class="message-input">
@@ -65,8 +68,8 @@
 					<div class="footer-menu">
 					    <i class="fas fa-door-open"></i> <!-- 문 아이콘 -->
 					    <i class="fa-solid fa-user-plus"></i>
-					    <i class="fas fa-star"></i> <!-- 별표 -->
-					    <i class="fas fa-cog"></i> <!-- 설정 -->
+					    <i class="bi bi-megaphone-fill"></i>
+					    <i class="fas fa-cog"></i>
 					</div>
 				</div>
 				
@@ -74,13 +77,33 @@
 		  </div>
 	</div>
 </body>
+<!-- Profile Modal -->
+<div id="profileModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close-modal" onclick="closeModal('profileModal');">&times;</button>
+        </div>
+        <div class="modal-body">
+        
+        </div>
+    </div>
+</div>
 
-
-
+<!-- Member Modal -->
 <div id="memberModal" class="modal" style="display: none;">
   <div class="modal-content">
-    <span class="close-modal" onclick="closeModal();">&times;</span>
-    <h3>메신져 초대</h3>
+  	<div class="modal-header">
+    	<span class="close-modal" onclick="closeModal(memberModal);">&times;</span>
+    	<h5>메신져 초대</h5>
+    	<button onclick="addSelectedMembersToChat()">확인</button>
+    </div>
+    <div id="selectedMembersContainer">
+        <!-- 선택된 회원 정보가 여기에 표시됩니다 -->
+    </div>
+    <div class="search_bar-container">
+        <input type="text" id="memberSearchBar" name="keyword" class="search_bar" placeholder="이름 검색" value=""> 
+        <i class="fas fa-search search-icon"></i>
+      </div>
     <div class="member-list-container">
       <ul id="memberList">
         <!-- 회원 리스트가 여기에 추가됩니다 -->
@@ -89,6 +112,55 @@
   </div>
 </div>
 
+<!-- Edit Chat Subject Modal -->
+<div id="editChatSubjectModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close-modal" onclick="closeModal('editChatSubjectModal');">&times;</span>
+            <h5><i class="fas fa-edit"></i> 메신져 이름</h5>
+        </div>
+        <div class="subject-div">
+    		<input type="text" id="chatSubject" name="chat_subject" placeholder="제목을 작성하세요. " value=""/>
+    	</div>
+        <div class="modal-footer">
+            <button type="button" class="btn confirmBtn" onclick="updateChatSubject()">수정</button>
+            <button type="button" class="btn confirmBtn" onclick="closeModal('editChatSubjectModal');">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- Notice Modal -->
+<div id="noticeModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close-modal" onclick="closeModal('noticeModal');">&times;</span>
+            <h5><i class="bi bi-megaphone-fill"></i> 공지사항</h5>
+        </div>
+        <div class="subject-div">
+            <textarea id="noticeContent" placeholder="공지사항 내용을 입력하세요" rows="5" style="width: 100%;"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn confirmBtn" onclick="submitNotice()">등록</button>
+            <button type="button" class="btn confirmBtn" onclick="closeModal('noticeModal');">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn confirmBtn" id="confirmYes">확인</button>
+            <button type="button" class="btn confirmBtn">취소</button>
+        </div>
+    </div>
+</div>
 
 
 <script>
@@ -121,6 +193,7 @@ window.updateChatList = function(messageDataList) {
             } else {
                 unreadCountContainer.remove(); // 읽지 않은 메시지가 없으면 제거
             }
+            
 
             // 항목을 리스트 맨 위로 이동
             chatItem.prependTo(sidebar);
@@ -419,112 +492,6 @@ $(document).ready(function() {
             });
 
 
-        
-        /* $.ajax({
-            type: "GET",
-            url: "chatList.ajax",
-            success: function (response) {
-                var sidebar = $(".sidebar");
-
-                // 날짜 및 시간 포맷팅 함수
-                function formatDateTime(latestTime) {
-                    if (!latestTime) return "";
-
-                    const now = new Date();
-                    const messageDate = new Date(latestTime);
-
-                    const isToday =
-                        now.getFullYear() === messageDate.getFullYear() &&
-                        now.getMonth() === messageDate.getMonth() &&
-                        now.getDate() === messageDate.getDate();
-
-                    const isThisYear = now.getFullYear() === messageDate.getFullYear();
-
-                    if (isToday) {
-                        return messageDate.toLocaleString("ko-KR", {
-                            hour: "numeric",
-                            minute: "numeric",
-                            hour12: true,
-                        });
-                    } else if (isThisYear) {
-                        return (messageDate.getMonth() + 1) + "월 " + messageDate.getDate() + "일";
-                    } else {
-                        return messageDate.getFullYear() + ". " + (messageDate.getMonth() + 1) + ". " + messageDate.getDate();
-                    }
-                }
-
-             // 대화방 리스트 렌더링
-                if (response.chatList && response.chatList.length > 0) {
-                    sidebar.empty();
-                    response.chatList.forEach(function (chat) {
-                        var latestMessage = chat.latest_message || "메시지가 없습니다.";
-                        var latestTime = chat.latest_time ? formatDateTime(chat.latest_time) : "";
-
-                        // 제목이 null인지 확인하여 제목 또는 참여자 표시
-                        var chatTitle;
-                        if (chat.chat_subject === null || chat.chat_subject === "") {
-                            chatTitle = chat.participants;
-                        } else {
-                            chatTitle = chat.chat_subject;
-                        }
-                        if (chat.chat_idx.toString() === chatIdx) {
-                            $(".naviPath .purple").text(chatTitle);
-                        }
-
-                        var chatItem =
-                            '<div class="chat-item" data-chat-idx="' + chat.chat_idx + '" onclick="switchChatRoom(' + chat.chat_idx + ')">' +
-                            '<div class="chat-avatar">' +
-                            '<img src="/photo/' + chat.photo + '" alt="프로필 사진" class="custom-image">' +
-                            '</div>' +
-                            '<div class="chat-details">' +
-                            '<div class="chat-header">' +
-                            '<span class="chat-title">' + chatTitle + '</span>' +
-                            '<span class="chat-time">' + latestTime + '</span>' +
-                            '</div>' +
-                            '<div class="chat-preview">' +
-                            '<span id="latest-message-' + chat.chat_idx + '">' + latestMessage + '</span>' +
-                            '<span class="unread-message-count" id="unread-count-' + chat.chat_idx + '"></span>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>';
-                        sidebar.append(chatItem);
-
-                    });
-                    
-                } else {
-                    sidebar.html("<p>참여 중인 대화방이 없습니다.</p>");
-                }
-            },
-            error: function () {
-                alert("대화방 리스트를 불러오는 데 실패했습니다.");
-            }
-        }); */
-        
-        
-        
-        /* function updateChatListWithLatestMessage(messageData) {
-            var chatIdx = messageData.chat_idx;
-            var latestMessage = messageData.content;
-            var sidebar = $(".sidebar");
-
-            // 대화방 리스트에서 해당 chat_idx를 가진 항목 찾기
-            var chatItem = sidebar.find(".chat-item[data-chat-idx='" + chatIdx + "']");
-            if (chatItem.length > 0) {
-                // 최신 메시지 갱신
-                chatItem.find(".chat-preview").text(latestMessage);
-
-                // 최신 메시지 시간 갱신
-                var formattedTime = formatTimeToAmPm(messageData.time);
-                chatItem.find(".chat-time").text(formattedTime);
-
-                // 대화방을 맨 위로 이동 (선택 사항)
-                chatItem.prependTo(sidebar);
-            } else {
-                console.warn("chat_idx " + chatIdx + "에 해당하는 대화방을 찾을 수 없습니다.");
-            }
-        } */
-
-
         if (chatIdx) {
             // 참여자 리스트 가져오기
             $.ajax({
@@ -538,11 +505,18 @@ $(document).ready(function() {
                     if (participants && participants.length > 0) {
                         participants.forEach(function(participant) {
                             var participantElement =
-                                '<div class="image-label-wrapper">' +
+                                '<div class="image-label-wrapper member-item" data-emp-idx="' + participant.emp_idx + '">' +
                                 '<img src="/photo/' + participant.photo + '" alt="프로필 사진" class="custom-image">' +
-                                '<span class="custom-label">' + participant.name + '</span>' +
+                                '<span class="custom-label">' + participant.name + ' / ' + participant.rank_name + '</span>' +
                                 '</div>';
                             memberListContainer.append(participantElement);
+                        });
+                        $(".member-item").on("click", function () {
+                            var empIdx = $(this).data("emp-idx");
+                            var empName = $(this).find(".custom-label").text();
+
+                            // 프로필 모달 열기
+                            openProfileModal(empIdx, empName);
                         });
                     } else {
                         memberListContainer.html("<p>참여자가 없습니다.</p>");
@@ -555,7 +529,80 @@ $(document).ready(function() {
         } else {
             console.error("chat_idx가 URL에 없습니다.");
         }
+        
+        function openProfileModal(empIdx, empName) {
+            openModal("profileModal", function () {
+                // AJAX를 통해 데이터 가져오기
+                $.ajax({
+                    url: "profile.ajax",
+                    type: "GET",
+                    data: { emp_idx: empIdx },
+                    success: function (profile) {
+                        $("#profileModal .modal-body").html(
+                       		'<div class="profile-header">' +
+                            	'<img src="/photo/' + profile.photo + '" alt="프로필 사진" class="custom-image">' +
+                            	'<div>' +
+                            		'<span>' + empName + '</span>' +
+                            		'<span>' + (profile.state == 1 ? '근무 중' : '근무 종료') + '</span>' +
+                            	'</div>' +
+                            '</div>' +
+                            '<ul>' +
+                            	'<li><span>부서</span><span>'  + profile.depart_name + '</span></li>' +
+                            	'<li><span>이메일</span><span>'  + profile.email + '</span></li>' +
+                            	'<li><span>연락처</span><span>'  + profile.phone + '</span></li>' +
+                            	'<li><span>핸드폰</span><span>'  + profile.mobile + '</span></li>' +
+                            '</ul>'
+                        );
+                        $("#profileChat").off("click").on("click", function () {
+                            openConfirmModal(profile.name + " 님과 대화를 시작하시겠습니까?", function () {
+                                createChat("", [empIdx]); // 확인 후 방 생성
+                            });
+                        });
+                    },
+                    error: function () {
+                        alert("프로필 정보를 가져오는 데 실패했습니다.");
+                    }
+                });
+            });
+        }
+        
+        $(document).ready(function () {
+            function updateChatNotice(noticeContent) {
+                const chatNoticeDiv = $(".chat-notice");
+                const messagesDiv = $(".messages"); // 메시지 영역
 
+                if (noticeContent && noticeContent.trim() !== "") {
+                    const noticeHtml = '<i class="bi bi-megaphone-fill"></i>' + noticeContent;
+                    chatNoticeDiv.html(noticeHtml); // 아이콘 포함하여 HTML 업데이트
+                    chatNoticeDiv.show(); // 내용이 있으면 보이기
+                    messagesDiv.css("margin-top", chatNoticeDiv.outerHeight() + "px"); // 메시지 영역 여백 추가
+                } else {
+                    chatNoticeDiv.hide(); // 내용이 없으면 숨기기
+                    messagesDiv.css("margin-top", "0"); // 여백 제거
+                }
+            }
+
+            // 초기 공지사항 설정
+            $.ajax({
+                type: "GET",
+                url: "getChatNotice.ajax",
+                data: { chat_idx: new URLSearchParams(window.location.search).get("chat_idx") },
+                success: function (response) {
+                    if (response.success) {
+                        updateChatNotice(response.notice);
+                    }
+                },
+                error: function () {
+                    console.error("공지사항을 가져오는 데 실패했습니다.");
+                },
+            });
+
+            // 공지사항 클릭 시 펼치기/접기
+            $(document).on("click", ".chat-notice", function () {
+                $(this).toggleClass("expanded"); // expanded 클래스 추가/제거
+            });
+        });
+        
 
         $.ajax({
             type: "POST",
@@ -605,8 +652,11 @@ $(document).ready(function() {
                     success: function (response) {
                         console.log("저장된 메시지 데이터:", response);
                         
-                     // 메시지 ID 추가
-                        messageData.msg_idx = response.msg_idx;
+                     	// 메시지 ID 추가
+                        // 저장된 메시지 데이터 업데이트
+                		messageData.msg_idx = response.msg_idx;
+                		messageData.photo = response.photo;
+                		messageData.name = response.name;
                         // 읽지 않은 사용자 수 조회
                         $.ajax({
                             type: "GET",
@@ -615,9 +665,12 @@ $(document).ready(function() {
                             success: function(count) {
                                 // 읽지 않은 사용자 수 추가
                                 messageData.unread_count = count;
-
-                                // WebSocket으로 메시지와 count 전송
+								
+                             // WebSocket으로 메시지와 count 전송
                                 socket.send(JSON.stringify(messageData));
+                             
+                                   
+                                
                             },
                             error: function() {
                                 console.error("읽지 않은 사용자 수 조회 실패");
@@ -650,7 +703,7 @@ $(document).ready(function() {
     }
 
     
-    $(".fa-door-open").on("click", function () {
+    $(".fa-door-open").off("click").on("click", function () {
         var chatIdx = new URLSearchParams(window.location.search).get("chat_idx");
 
         if (!chatIdx) {
@@ -658,76 +711,137 @@ $(document).ready(function() {
             return;
         }
 
-        $.ajax({
-            type: "POST",
-            url: "leaveChat.ajax",
-            data: { chat_idx: chatIdx },
-            success: function (response) {
-                if (response.success) {
-                    alert("방에서 나갔습니다.");
-                    location.href = "chatList.go"; // 방 나가기 후 이동할 페이지
-                } else {
-                    alert(response.message || "방 나가기에 실패했습니다.");
-                }
-            },
-            error: function () {
-                alert("방 나가기 요청 중 오류가 발생했습니다.");
-            },
+        // 확인 모달 열기
+        openConfirmModal("이 대화방에서 나가시겠습니까?", function () {
+            // 확인 버튼 클릭 시 방 나가기 AJAX 요청
+            $.ajax({
+                type: "POST",
+                url: "leaveChat.ajax",
+                data: { chat_idx: chatIdx },
+                success: function (response) {
+                    if (response.success) {
+                        location.href = "chatList.go"; // 방 나가기 후 이동할 페이지
+                    } else {
+                        alert(response.message || "방 나가기에 실패했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("방 나가기 요청 중 오류가 발생했습니다.");
+                },
+            });
         });
     });
-    
+
     
     
 });
 
+function openConfirmModal(message, onConfirm) {
+    // 확인 메시 설정과 콜백 정의를 contentUpdater로 전달
+    openModal("confirmModal", function () {
+        $("#confirmMessage").text(message); // 메시지 업데이트
 
+        // 확인 버튼 클릭 이벤트 설정
+        $("#confirmYes")
+            .on("click", function () {
+                onConfirm(); // 확인 작업 실행
+                closeModal("confirmModal"); // 모달 닫기
+            });
 
-$(document).ready(function () {
-    $(".fa-user-plus").on("click", function () {
-        openModal();
+        // 취소 버튼 클릭 이벤트 설정
+        $("#confirmModal .close-modal, #confirmModal .confirmBtn:last-child")
+            .on("click", function () {
+                closeModal("confirmModal"); // 모달 닫기
+            });
+    });
+}
+
+function openModal(modalId, contentUpdater) {
+    // 필요한 데이터 업데이트 (contentUpdater는 콜백 함수)
+    if (typeof contentUpdater === "function") {
+        contentUpdater();
+    }
+
+    // 모달 열기
+    $("#" + modalId).fadeIn(200, function () {
+        centerModal(modalId); // 중앙 정렬
+    });
+}
+
+function closeModal(modalId) {
+    $("#" + modalId).fadeOut();
+}
+
+function centerModal(modalId) {
+    var modal = $("#" + modalId + " .modal-content");
+    var top = Math.max(($(window).height() - modal.outerHeight()) / 2, 0);
+    var left = Math.max(($(window).width() - modal.outerWidth()) / 2, 0);
+    modal.css({
+        top: top + "px",
+        left: left + "px",
+    });
+}
+
+$(document).on("click", function (e) {
+    $(".modal").each(function () {
+        if ($(e.target).is(this)) {
+            closeModal($(this).attr("id"));
+        }
     });
 });
 
-//모달 열기
-function openModal() {
-    $("#memberModal").fadeIn();
-    loadMemberList(); // 회원 리스트 불러오기
-    centerModal(); // 모달 중앙 정렬
-}
+$(window).on("resize", function () {
+    $(".modal:visible").each(function () {
+        centerModal($(this).attr("id"));
+    });
+});
 
-// 모달 닫기
-function closeModal() {
-    $("#memberModal").fadeOut();
-}
+// 기존 코드에서 openModal 및 closeModal 사용
+$(document).ready(function () {
+    $(".fa-user-plus").on("click", function () {
+        openModal("memberModal", function () {
+            loadMemberList(null); // 데이터 업데이트
+        });
+    });
 
-// 바깥 영역 클릭 시 모달 닫기
-$(document).on("click", function (e) {
-    if ($(e.target).is("#memberModal")) {
-        closeModal();
+    $(".close-modal").on("click", function () {
+        var modalId = $(this).closest(".modal").attr("id");
+        closeModal(modalId);
+    });
+
+    $(document).on("click", function (e) {
+        $(".modal").each(function () {
+            if ($(e.target).is(this)) {
+                closeModal($(this).attr("id"));
+            }
+        });
+    });
+});
+
+// 서치 아이콘 클릭 이벤트
+$(document).on('click', '.search-icon', function() {
+    executeSearch();
+});
+
+// 엔터키 이벤트
+$(document).on("keypress", "#memberSearchBar", function (e) {
+    if (e.which === 13) {
+        executeSearch();
     }
 });
 
-// 윈도우 리사이즈 시 중앙 정렬 유지
-$(window).on("resize", function () {
-    centerModal();
-});
-
-// 모달 중앙 정렬 함수
-function centerModal() {
-    var modal = $("#memberModal .modal-content");
-    var top = ($(window).height() - modal.outerHeight()) / 2;
-    var left = ($(window).width() - modal.outerWidth()) / 2;
-    modal.css({
-        top: top > 0 ? top + "px" : "0px",
-        left: left > 0 ? left + "px" : "0px",
-    });
+//검색 실행 함수
+function executeSearch() {
+    var keyword = $("#memberSearchBar").val().trim(); // 검색어 가져오기
+    loadMemberList(keyword); // 검색 실행
 }
 
 // 회원 리스트 불러오기
-function loadMemberList() {
+function loadMemberList(keyword) {
     $.ajax({
         type: "GET",
-        url: "memberList.ajax", // 회원 리스트를 반환하는 URL
+        url: "memberList.ajax",
+        data: { keyword: keyword || '' }, // 검색어 전달
         success: function (members) {
             var memberList = $("#memberList");
             memberList.empty(); // 기존 리스트 초기화
@@ -735,46 +849,235 @@ function loadMemberList() {
             if (members && members.length > 0) {
                 members.forEach(function (member) {
                     var memberItem = 
-                        '<li>' +
-                        	'<div onclick="addMemberToChat(' + member.emp_idx + ');">' +
-                            '<img src="/photo/' + member.photo + '" alt="프로필 사진" class="custom-image">' +
-                            '<span>' + member.name + '</span>' +
-                            '</div>' +
-                        '</li>';
+                        '<div class="radio-container">' +
+                            '<label>' +
+                                '<div>' +
+                                    '<img src="/photo/' + member.photo + '" alt="프로필 사진" class="custom-image"> ' +
+                                    '<span>' + member.name + ' / ' + member.rank_name + '</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<input type="checkbox" name="member" value="' + member.emp_idx + '">' +
+                                '</div>' +
+                            '</label>' +
+                        '</div>';
                     memberList.append(memberItem);
                 });
             } else {
-                memberList.html("<p>회원이 없습니다.</p>");
+                memberList.html("<p>검색된 회원이 없습니다.</p>");
             }
-        }, // success 끝
+        },
         error: function () {
             alert("회원 리스트를 불러오는 데 실패했습니다.");
         }
     });
 }
 
+$(document).ready(function () {
+    // 체크박스 상태 변경 이벤트
+    $(document).on("change", "input[name='member']", function () {
+        var selectedMembersContainer = $("#selectedMembersContainer"); // 선택된 회원 표시 영역
+        var memberName = $(this).closest("label").find("span").text(); // 체크박스 옆의 회원 이름
+        var memberId = $(this).val(); // 체크박스의 값 (emp_idx)
+        var memberPhoto = $(this).closest("label").find("img").attr("src"); // 회원 프로필 사진 경로
+
+        if ($(this).is(":checked")) {
+            // 체크박스 선택 시
+            var memberElement = 
+            	'<div class="selected-member-container" data-member-id="' + memberId + '">' +
+                    '<span><img src="/photo/' + memberPhoto + '" class="custom-image">' +
+                    '<i class="fas fa-times remove-member" data-member-id="' + memberId + '"></i></span>' +
+                	'<span class="selected-member" data-member-id="' + memberId + '">' + memberName +
+                	'</span>' +
+                '</div>';
+            selectedMembersContainer.append(memberElement);
+        } else {
+            // 체크박스 선택 해제 시
+        	selectedMembersContainer.find('.selected-member-container[data-member-id="' + memberId + '"]').remove();
+        }
+    });
+
+    // 선택된 회원의 제거 아이콘 클릭 이벤트
+    $(document).on("click", ".remove-member", function () {
+        var memberId = $(this).data("member-id");
+        // 체크박스 선택 해제
+        $('input[name="member"][value="' + memberId + '"]').prop("checked", false).trigger("change");
+        // 선택된 멤버 제거
+        $(this).closest('.selected-member-container').remove();
+    });
+    $(document).on("click", ".close-modal", function () {
+        $(".selected-member-container").empty(); // 선택된 멤버 표시 영역 초기화
+        $("input[name='member']").prop("checked", false).trigger("change"); // 모든 체크박스 선택 해제
+    });
+
+    // 바깥 영역 클릭 시 모달 닫히는 경우 처리
+    $(document).on("click", function (e) {
+        if ($(e.target).is("#memberModal")) {
+            $(".selected-member-container").empty(); // 선택된 멤버 표시 영역 초기화
+            $("input[name='member']").prop("checked", false).trigger("change"); // 모든 체크박스 선택 해제
+            $("#memberModal").fadeOut();
+        }
+    });
+});
+
+
 
 // 대화방에 회원 추가
-function addMemberToChat(empIdx) {
+function addSelectedMembersToChat() {
     var chatIdx = new URLSearchParams(window.location.search).get("chat_idx");
+    var selectedMembers = [];
 
-    $.ajax({
-        type: "POST",
-        url: "addParty.ajax",
-        data: { chat_idx: chatIdx, emp_idx: empIdx },
-        success: function (response) {
-            if (response.success) {
-                closeModal();
-                location.reload(); // 페이지 새로고침
-            } else {
-                alert(response.message || "회원 추가에 실패했습니다.");
-            }
-        },
-        error: function () {
-            alert("회원 추가 중 오류가 발생했습니다.");
-        },
+    // 체크된 체크박스의 emp_idx 값을 수집
+    $("input[name='member']:checked").each(function () {
+        selectedMembers.push(parseInt($(this).val())); // emp_idx를 숫자로 변환
+    });
+
+    if (selectedMembers.length === 0) {
+        alert("추가할 회원을 선택해주세요.");
+        return;
+    }
+
+    // 확인 모달 열기
+    openConfirmModal("대화방에 초대하시겠습니까?", function () {
+        // 확인 버튼 클릭 시 회원 추가 AJAX 요청
+        $.ajax({
+            type: "POST",
+            url: "addParty.ajax",
+            contentType: "application/json; charset=UTF-8", // Content-Type을 JSON으로 설정
+            data: JSON.stringify({ chat_idx: chatIdx, emp_idx_list: selectedMembers }),
+            success: function (response) {
+                if (response.success) {
+                    location.reload(); // 페이지 새로고침
+                } else {
+                    alert(response.message || "회원 추가에 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("회원 추가 중 오류가 발생했습니다.");
+            },
+        });
     });
 }
 
+
+$(document).on("click", ".fa-cog", function () {
+    // 수정 모달 열기
+    openModal("editChatSubjectModal", function () {
+        var currentChatTitle = $(".naviPath .purple").text();
+        $("#chatSubject").val(currentChatTitle); // 현재 제목을 입력 필드에 표시
+    });
+});
+
+// 수정 버튼 클릭 이벤트
+function updateChatSubject() {
+    var chatIdx = new URLSearchParams(window.location.search).get("chat_idx");
+    var newChatSubject = $("#chatSubject").val().trim();
+
+    if (!newChatSubject) {
+        alert("제목을 입력해주세요.");
+        return;
+    }
+
+    // 확인 모달 열기
+    openConfirmModal("대화방 제목을 '" + newChatSubject + "'(으)로 변경하시겠습니까?", function () {
+        // 확인 버튼 클릭 시 AJAX 요청
+        $.ajax({
+            type: "POST",
+            url: "updateChatSubject.ajax",
+            contentType: "application/json; charset=UTF-8",
+            data: JSON.stringify({ chat_idx: chatIdx, chat_subject: newChatSubject }),
+            success: function (response) {
+                if (response.success) {
+                    $(".naviPath .purple").text(newChatSubject);
+                    closeModal("editChatSubjectModal"); // 수정 모달 닫기
+                    location.reload();
+                } else {
+                    alert(response.message || "대화방 제목 수정에 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("대화방 제목 수정 중 오류가 발생했습니다.");
+            },
+        });
+    });
+}
+
+$(document).ready(function () {
+    // 공지사항 등록 버튼 클릭 이벤트
+    $(".bi-megaphone-fill").on("click", function () {
+        openModal("noticeModal");
+    });
+
+    // 공지사항 등록 함수
+    window.submitNotice = function () {
+        const noticeContent = $("#noticeContent").val().trim();
+        const chatIdx = new URLSearchParams(window.location.search).get("chat_idx"); // URL에서 chat_idx 가져오기
+
+        if (!noticeContent) {
+            alert("공지사항 내용을 입력해주세요.");
+            return;
+        }
+
+        if (!chatIdx) {
+            alert("채팅방 정보(chat_idx)가 없습니다.");
+            return;
+        }
+
+        openConfirmModal("공지사항을 등록하시겠습니까?", function () {
+            // 공지사항 등록 AJAX 요청
+            $.ajax({
+                type: "POST",
+                url: "registerNotice.ajax",
+                contentType: "application/json",
+                data: JSON.stringify({ content: noticeContent, chat_idx: chatIdx }), // chat_idx 포함
+                success: function (response) {
+                    if (response.success) {
+                        closeModal("noticeModal");
+                        location.reload();
+                    } else {
+                        alert(response.message || "공지사항 등록에 실패했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("공지사항 등록 중 오류가 발생했습니다.");
+                },
+            });
+        });
+    };
+});
+
+$(document).ready(function () {
+    // 제목 글자 수 제한
+    $("#chatSubject").on("input", function () {
+        const maxLength = 20;
+        const currentLength = $(this).val().length;
+
+        if (currentLength > maxLength) {
+            alert("제목은 최대 20글자까지 입력 가능합니다.");
+            $(this).val($(this).val().substring(0, maxLength)); // 초과된 내용 제거
+        }
+    });
+
+    // 공지사항 글자 수 제한
+    $("#noticeContent").on("input", function () {
+        const maxLength = 50;
+        const currentLength = $(this).val().length;
+
+        if (currentLength > maxLength) {
+            alert("공지사항은 최대 50글자까지 입력 가능합니다.");
+            $(this).val($(this).val().substring(0, maxLength)); // 초과된 내용 제거
+        }
+    });
+    
+    // 메시지 글자 수 제한
+    $("#messageInput").on("input", function () {
+        const maxLength = 50;
+        const currentLength = $(this).val().length;
+
+        if (currentLength > maxLength) {
+            alert("메시지는 최대 50글자까지 입력 가능합니다.");
+            $(this).val($(this).val().substring(0, maxLength)); // 초과된 내용 제거
+        }
+    });
+});
 </script>
 </html>

@@ -24,6 +24,7 @@ public class LoginController {
 		if(employee != null) {
 			session.setAttribute("loginId", id);
 			session.setAttribute("loginName", employee.getName());
+			session.setAttribute("employee", employee);
 			page = "redirect:/main.go";
 		}else {
 			page = "redirect:/login.go";

@@ -37,19 +37,19 @@
 	</select>
 	<!-- 출퇴근 리스트 반환 -->
 	<select id="getAttendanceList" parameterType="map" resultType="map">
-	    SELECT
-	        DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') AS start_time,
-	        DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
-	        calculate_time,
-	        status,
-	        date,
+		SELECT
+		    DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') AS start_time,
+		    DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
+		    calculate_time,
+		    status,
+		    date,
 		    CASE 
-		        WHEN calculate_time - 9 &lt; 0 THEN 0
-		        ELSE calculate_time - 9
+		        WHEN HOUR(end_time) > 18 THEN TRUNCATE(TIMESTAMPDIFF(MINUTE, CONCAT(DATE(end_time), ' 18:00:00'), end_time) / 60, 1)
+		        ELSE 0
 		    END AS over_time
-	    FROM attendance
-	    WHERE emp_idx = #{loginId}
-	    ORDER BY date DESC
+		FROM attendance
+		WHERE emp_idx = #{loginId}
+		ORDER BY date DESC;
 	</select>
 	
 	<!-- 출근 버튼 누른 유저인지 체크용 -->
@@ -76,7 +76,18 @@
 		    AND end_time IS NULL;
 	</update>
 	
-
+	<!-- 로그인 사원 연차 가져오기 -->
+	<select id="getLeave" parameterType="map">
+		select remain_leave from leave_emp where emp_idx = #{loginId}	
+	</select>
+	
+	<!-- 스케쥴러 결근 처리 -->
+	<update id="updateAbsent">
+	    UPDATE attendance
+	    SET status = '결근'
+	    WHERE date = #{date}
+	      AND start_time IS NULL
+	</update>
 </mapper>  
 
 
