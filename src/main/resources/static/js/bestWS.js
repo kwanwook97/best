@@ -1,4 +1,4 @@
-loginId = parseInt(loginId);
+//loginId = parseInt(loginId);
 
 // 글로벌 WebSocket 연결
 window.globalSocket = new WebSocket("ws://localhost:8080/BEST/ws");

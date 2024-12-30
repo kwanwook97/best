@@ -308,7 +308,7 @@ function open(content) {
         '<div id="' + modalId + '" class="modal" style="display: none;">' +
         '  <div class="modal-content">' +
         '    <div class="modal-box">' +
-        '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
+        '      <button class="modal-btn Approve" onclick="btnAction(\'수정기안\')">기안</button>' +
         '      <button class="modal-btn save" onclick="btnAction(\'수정\')">수정</button>' +
         '      <button class="modal-btn append" onclick="openUserBoxModal()">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +

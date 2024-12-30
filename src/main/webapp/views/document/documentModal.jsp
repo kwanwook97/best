@@ -8,8 +8,9 @@
 <link rel="stylesheet" href="resources/css/root.css" />
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="resources/js/read-unread.js" type="text/javascript"></script>
+<script src="resources/js/documentDetail.js" type="text/javascript"></script>
 <style>
-input, textarea, #approvalModal{
+input, textarea, #approvalModal, button{
 	pointer-events: auto;  /* input과 textarea는 마우스 이벤트 허용 */
 }
 .docnav {
@@ -165,10 +166,6 @@ a.button{
     z-index: 1000;
     pointer-events: none;
 }
-.modal div,
-.modal table{
-    pointer-events: none;
-}
 /* 모달 내용 */
 .modal-content {
     border: 2px solid var(--primary-color);
@@ -286,7 +283,7 @@ input.manager, input.today2, input.today3{
 			</ul>
 		</div>
 	</div>
-	<jsp:include page="../modal/findAdd.jsp"></jsp:include>
+	<jsp:include page="findAddD.jsp"></jsp:include>
 </body>
 <script>
 
@@ -431,203 +428,176 @@ function openModal(content, form_subject) {
        	}
    	});
 }
-
+var isApprovalLineAdded = false;
 // 결재 기안, 임시저장
 function btnAction(actionType) {
-	console.log(actionType);
-	var doc_idx = $('input[name="doc_idx"]').val();
-	console.log("문서번호 "+doc_idx);
-	var form_idx = $('input[name="form_idx"]').val();
-	console.log("폼idx "+form_idx);
-	var doc_subject = $('input[name="doc_subject"]').val();
-	console.log("제목 :"+ doc_subject);
-	var textareaValue = $('.modal-content:last-child textarea').val();
-	console.log("본문", textareaValue);
-	var updatedHtml = $('.modal-content:last-child').html();
-	console.log("html : ", updatedHtml);
-    var start_date = $('input[name="start_date"]').val();
-    console.log("연차 시작", start_date);
-    var end_date = $('input[name="end_date"]').val();
-    console.log("연차 끝", end_date);
-    // input[data-index]의 값들을 values 배열에 저장
-    var values = [];
-    $('input[data-index]').each(function() {
-        values.push($(this).val());
-    });
-    if(actionType == '기안' || actionType == '수정'){
-    	updatedHtml = updatedHtml.replace(
-   		    /(<input[^>]*\bname=["']doc_subject["'][^>]*)\s*value=["'][^"]*["']/i,
-   		    function(match, group) {
-   		        return group + ' value="' + doc_subject + '"';  // 기존 value 속성 덮어쓰기
-   		    }
-   		);
-    	// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 덮어씁니다
-    	updatedHtml = updatedHtml.replace(
-    	    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
-    	    function(match) {
-    	        // 기존 내용이 있을 경우, 그 내용을 덮어씁니다
-    	        return match.replace(/<textarea[^>]*>(.*?)<\/textarea>/, '<textarea>' + textareaValue + '</textarea>');
-    	    }
-    	);
-    }else{    	
-		// HTML에서 <input name="doc_subject"> 부분 찾아서 그 안의 값을 doc_subject로 변경
-		updatedHtml = updatedHtml.replace(
-		    /<input([^>]*\bname=["']doc_subject["'][^>]*)>/i,
-		    '<input$1 value="' + doc_subject + '">'
-		);
-		console.log("After Replace: ", updatedHtml);
-		// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경합니다
-		updatedHtml = updatedHtml.replace(
-		    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
-		    '<textarea>' + textareaValue + '</textarea>'  // textarea 값을 새로 덮어씌움
-		);
+	if (actionType === '기안' && !isApprovalLineAdded || actionType === '기안수정' && !isApprovalLineAdded) {
+        alert('결재선을 추가해주세요!');
+    } else {
+		console.log(actionType);
+		var doc_idx = $('input[name="doc_idx"]').val();
+		console.log("문서번호 "+doc_idx);
+		var form_idx = $('input[name="form_idx"]').val();
+		console.log("폼idx "+form_idx);
+		var doc_subject = $('input[name="doc_subject"]').val();
+		console.log("제목 :"+ doc_subject);
+		var textareaValue = $('.modal-content:last-child textarea').val();
+		console.log("본문", textareaValue);
+		var updatedHtml = $('.modal-content:last-child').html();
+		console.log("html : ", updatedHtml);
+	    var start_date = $('input[name="start_date"]').val();
+	    console.log("연차 시작", start_date);
+	    var end_date = $('input[name="end_date"]').val();
+	    console.log("연차 끝", end_date);
+	    // input[data-index]의 값들을 values 배열에 저장
+	    var values = [];
+	    $('input[data-index]').each(function() {
+	        values.push($(this).val());
+	    });
+	    if(actionType == '수정기안' || actionType == '수정'){
+	    	updatedHtml = updatedHtml.replace(
+	   		    /(<input[^>]*\bname=["']doc_subject["'][^>]*)\s*value=["'][^"]*["']/i,
+	   		    function(match, group) {
+	   		        return group + ' value="' + doc_subject + '"';  // 기존 value 속성 덮어쓰기
+	   		    }
+	   		);
+	    	// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 덮어씁니다
+	    	updatedHtml = updatedHtml.replace(
+	    	    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
+	    	    function(match) {
+	    	        // 기존 내용이 있을 경우, 그 내용을 덮어씁니다
+	    	        return match.replace(/<textarea[^>]*>(.*?)<\/textarea>/, '<textarea>' + textareaValue + '</textarea>');
+	    	    }
+	    	);
+	    }else{    	
+			// HTML에서 <input name="doc_subject"> 부분 찾아서 그 안의 값을 doc_subject로 변경
+			updatedHtml = updatedHtml.replace(
+			    /<input([^>]*\bname=["']doc_subject["'][^>]*)>/i,
+			    '<input$1 value="' + doc_subject + '">'
+			);
+			console.log("After Replace: ", updatedHtml);
+			// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경합니다
+			updatedHtml = updatedHtml.replace(
+			    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
+			    '<textarea>' + textareaValue + '</textarea>'  // textarea 값을 새로 덮어씌움
+			);
+	    }
+	    
+		// 수정된 HTML을 다시 modal-content에 적용
+		$('.modal-content:last-child').html(updatedHtml);
+		var doc_content = $('.modal-content:last-child .content').html();
+	
+		console.log("최최종 : "+doc_content);	
+		var data = {
+			doc_idx: doc_idx,
+		    form_idx: form_idx,
+		    action: actionType,
+		    doc_subject: doc_subject,
+	        doc_content: doc_content
+		};
+		
+		switch (form_idx) {
+		    case '1':
+		    	if(actionType == '수정기안' || actionType == '수정'){
+		    		console.log("이거 누름");
+		    		// start_date 값 삽입
+		    		updatedHtml = updatedHtml.replace(
+					    /(<input[^>]*\bname=["']start_date["'][^>]*)\s*value=["'][^"']*["']/i,
+					    function(match, group) {
+					        return group + ' value="' + start_date + '"';
+					    }
+					);
+					updatedHtml = updatedHtml.replace(
+					    /(<input[^>]*\bname=["']end_date["'][^>]*)\s*value=["'][^"']*["']/i,
+					    function(match, group1) {
+					        return group1 + ' value="' + end_date + '"';
+					    }
+					);
+			    	$('.modal-content:last-child').html(updatedHtml);
+			    	var doc_content = $('.modal-content:last-child .content').html();
+			    	
+		        	data.start_date = start_date;
+		            data.end_date = end_date;
+		            data.doc_content = doc_content;
+		            data.managerName = $('.managerName').html();
+		            data.managerName1 = $('.manager').val();
+		    	}else{
+			        // start_date 값 삽입
+			        updatedHtml = updatedHtml.replace(
+			            /<input([^>]*name=["']start_date["'][^>]*)>/,
+			            '<input$1 value="' + start_date + '">'
+			        );
+		
+			        // end_date 값 삽입
+			        updatedHtml = updatedHtml.replace(
+			            /<input([^>]*name=["']end_date["'][^>]*)>/,
+			            '<input$1 value="' + end_date + '">'
+			        );
+			    	// 수정된 HTML을 다시 modal-content에 적용
+			    	$('.modal-content:last-child').html(updatedHtml);
+			    	var doc_content = $('.modal-content:last-child .content').html();
+			    	
+		        	data.start_date = start_date;
+		            data.end_date = end_date;
+		            data.doc_content = doc_content;
+		            data.managerName = $('.managerName').html();
+		            data.managerName1 = $('.manager').val();
+		    	}
+		        break;
+		    case '2':
+		        break;
+		        
+		    case '3':
+		        // 동적으로 추가된 input 값들을 updatedHtml에 반영
+				for (var i = 0; i < values.length; i++) { 
+				    var value = values[i];  // values 배열에서 값 가져오기
+				    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
+				
+				    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
+				
+				    // updatedHtml에서 해당 input 값을 수정
+				    updatedHtml = updatedHtml.replace(
+				        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
+				        '<input$1 value="' + value + '">'
+				    );
+				}
+	
+		        // 수정된 HTML을 다시 modal-content에 적용
+		        $('.modal-content:last-child').html(updatedHtml);
+		        break;
+		        
+		}
+		if(actionType == '수정기안' || actionType == '기안'){
+			$('.modal-content:last-child .content').find('input').each(function () {
+			    $(this).attr('readonly', true);
+			});
+			// 모든 textarea 태그에 readonly 속성 추가
+			$('.modal-content:last-child .content').find('textarea').each(function () {
+			    $(this).attr('readonly', true);
+			});
+		}else{			
+			// 마지막으로 doc_content를 업데이트된 HTML에서 추출하여 data 객체에 저장
+			var doc_content = $('.modal-content:last-child .content').html();
+			data.doc_content = doc_content;  
+			console.log("최종"+ doc_content);
+		}
+		
+		$.ajax({
+	        type: 'GET',
+	        url: 'formType.ajax',
+	        data: data,
+	        success: function(response) {
+	        	alert(response.message);
+	        	location.reload();
+	            if (response.success) {
+	                // 성공 처리
+	            } else {
+	                // 실패 처리
+	            }
+	        }
+	    });
     }
-	// 수정된 HTML을 다시 modal-content에 적용
-	$('.modal-content:last-child').html(updatedHtml);
-	var doc_content = $('.modal-content:last-child .content').html();
-
-	console.log("시발롬 : "+doc_content);	
-	var data = {
-		doc_idx: doc_idx,
-	    form_idx: form_idx,
-	    action: actionType,
-	    doc_subject: doc_subject,
-        doc_content: doc_content
-	};
-	
-	switch (form_idx) {
-	    case '1':
-	    	if(actionType == '기안' || actionType == '수정'){
-	    		// start_date 값 삽입
-	    		updatedHtml = updatedHtml.replace(
-	    		    /(<input[^>]*\bname=["']start_date["'][^>]*)>/i, // start_date 필드 찾기
-	    		    function(match, group) {
-	    		        return group + ' value="' + start_date + '">'; // value 속성 추가 또는 덮어쓰기
-	    		    }
-	    		);
-
-	    		// end_date 값 삽입
-	    		updatedHtml = updatedHtml.replace(
-	    		    /(<input[^>]*\bname=["']end_date["'][^>]*)>/i, // end_date 필드 찾기
-	    		    function(match, group) {
-	    		        return group + ' value="' + end_date + '">'; // value 속성 추가 또는 덮어쓰기
-	    		    }
-	    		);
-	    	}else{
-		        // start_date 값 삽입
-		        updatedHtml = updatedHtml.replace(
-		            /<input([^>]*name=["']start_date["'][^>]*)>/,
-		            '<input$1 value="' + start_date + '">'
-		        );
-	
-		        // end_date 값 삽입
-		        updatedHtml = updatedHtml.replace(
-		            /<input([^>]*name=["']end_date["'][^>]*)>/,
-		            '<input$1 value="' + end_date + '">'
-		        );
-		    	// 수정된 HTML을 다시 modal-content에 적용
-		    	$('.modal-content:last-child').html(updatedHtml);
-		    	var doc_content = $('.modal-content:last-child .content').html();
-		    	
-	        	data.start_date = start_date;
-	            data.end_date = end_date;
-	            data.doc_content = doc_content;
-	    	}
-	        break;
-	    case '2':
-	        break;
-	        
-	    case '3':
-	        // 동적으로 추가된 input 값들을 updatedHtml에 반영
-			for (var i = 0; i < values.length; i++) { 
-			    var value = values[i];  // values 배열에서 값 가져오기
-			    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
-			
-			    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
-			
-			    // updatedHtml에서 해당 input 값을 수정
-			    updatedHtml = updatedHtml.replace(
-			        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
-			        '<input$1 value="' + value + '">'
-			    );
-			}
-
-	        // 수정된 HTML을 다시 modal-content에 적용
-	        $('.modal-content:last-child').html(updatedHtml);
-	        break;
-	        
-	}
-	// 마지막으로 doc_content를 업데이트된 HTML에서 추출하여 data 객체에 저장
-	var doc_content = $('.modal-content:last-child .content').html();
-	data.doc_content = doc_content;  
-	console.log("최종"+ doc_content);
-	
-	$.ajax({
-        type: 'GET',
-        url: 'formType.ajax',
-        data: data,
-        success: function(response) {
-        	alert(response.message);
-        	location.reload();
-            if (response.success) {
-                // 성공 처리
-            } else {
-                // 실패 처리
-            }
-        }
-    });
 }
-/*function addBtn() {
-	$.ajax({
-        type: 'GET',
-        url: 'orgChartGet.ajax',
-        success: function(response) {
-        	// 이미 모달이 열려있는지 확인
-            if ($('.modal').length === 0) {
-                // 서버에서 받은 HTML을 모달 창에 삽입
-                var modalHtml = 
-                    '<div class="modal" style="display: block;">' +
-                    '  <div class="modal-content">' +
-                    '    <span class="close-btn">X</span>' +
-                    '    <div class="userbox">' + response + '</div>' +
-                    '  </div>' +
-                    '</div>';
-
-                // body에 모달 추가
-                $('body').append(modalHtml);
-
-                // 모달 닫기 기능 추가
-                $('.close-btn').click(function() {
-                    $(this).closest('.modal').remove();
-                });
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX 요청 실패:', error);
-        }
-    });
-    // 기존 signBox 테이블을 찾음
-     var signBox = $('.signBox');
-    var managerName1 = '${managerName1}';
-    var todayDate3 = '${todayDate3}';
-    // 새로운 table HTML 생성
-    var newTableHtml = 
-        '<table style="width: 7vw; height: 14vh; border: 1px solid black; border-collapse: collapse;">' +
-        '  <tr>' +
-        '    <td rowspan="3" style="text-align: center; width: 1.2vw; border: 1px solid black; background-color: gainsboro;">결재</td>' +
-        '    <td class="managerName1" style="text-align: center; height: 0.5vh; border: 1px solid black;"><input type="text" class="manager" value="'+managerName1+'" readonly/></td>' +
-        '  </tr>' +
-        '  <tr>' +
-        '    <td class="sign" style="text-align: center; border: 1px solid black;"></td>' +
-        '  </tr>' +
-        '  <tr>' +
-        '    <td class="todayDate3" style="text-align: center; height: 0.5vh; border: 1px solid black;"><input type ="text" class="today3" value="'+todayDate3+'"readonly/></td>' +
-        '  </tr>' +
-        '</table>';
-
-    // signBox 테이블 뒤에 새로운 table 추가
-    signBox.after(newTableHtml);
-} */
 
 // 양식 검색
 $(document).ready(function() {

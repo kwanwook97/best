@@ -8,6 +8,22 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
 <style>
+	div.content_emp div.modal-box{
+		display: none;
+	}
+	div.content_emp,
+	div.modal div.modal-content{
+	    pointer-events: none !important;
+	}
+	div.content_emp td.sign,
+	div.content_emp table.signBox2 td.signTwo {
+	    pointer-events: auto !important;
+	}	
+	div.content_emp td.sign {
+		caret-color: transparent;
+		cursor: pointer;	
+	    user-select: none;
+	}
 	.dashboard-body{
 		transform: scale(0.9);
 	    margin-left: 22vw;
@@ -220,6 +236,7 @@
 		<div class="maintext">
 			<h3 class="document">결재문서</h3>
 			<h3 class="text">>&nbsp;&nbsp;대기</h3>
+			<a href="sign.go">서명</a>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
@@ -281,6 +298,9 @@
  	</div>
 </body>
 <script>
+var emp_idx = "${sessionScope.loginId}";
+var emp_name = "${sessionScope.loginName}";
+
 var showPage = 1;
 var text = "대기";
 pageCall(showPage);
@@ -358,7 +378,7 @@ function received(document) {
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
 		content += '<td>' + item.form_subject + '</td>';
-		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		content += '<td onclick="receivedDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
 		content += '<td>' + item.name + '</td>';
 		
 		var doc_date = new Date(item.doc_date);
@@ -440,7 +460,167 @@ function sentPageCall(page) {
     });
 }
 
+//모달 열기
+function receivedOpen(content) {
+    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+    // 모달 HTML 생성
+    var Html = 
+        '<div id="' + modalId + '" class="modal" style="display: none;">' +
+        '  <div class="modal-content">' +
+        '    <div class="modal-box">' +
+        '      <button class="modal-btn Approve" onclick="docAction(\'승인\')">승인</button>' +
+        '      <button class="modal-btn save" onclick="docAction(\'반려\')">반려</button>' +
+        '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
+        '    </div>' +
+        '    <div class="content_emp" contenteditable="true">' + content + '</div>' +
+        '  </div>' +
+        '</div>';
+        
+    // body에 추가
+    $('body').append(Html);
 
+    // 모달 표시
+    $('#' + modalId).show();
+
+    // 닫기 버튼 이벤트 등록 (이벤트 위임)
+    $(document).on('click', '.close-btn', function() {
+        var targetModalId = $(this).data('modal-id');
+        $('#' + targetModalId).remove();
+    });
+}
+
+var empSign = false;
+var doc_content;
+
+function signAdd(td){
+    var tableClass = $(td).closest('table').attr('class');
+    console.log("테이블 뭔데;" +tableClass);
+    var nameText;
+    
+    // table이 signBox이면 name을 가져오고, signBox2이면 manager 값을 가져옵니다.
+    if (tableClass === 'signBox') {
+        nameText = $(td).closest('tr').siblings().find('td[class="name"]').text();
+    } else if (tableClass === 'signBox2') {
+        nameText = $(td).closest('tr').siblings().find('input[class="manager"]').val();
+    }
+	console.log("이름 뭔데;" +nameText);
+	if(nameText !== emp_name || nameText == null){
+		alert("권한이 없습니다.");
+	}else{
+		$.ajax({
+            type: 'GET',
+            url: 'getSign.ajax',
+            data: { emp_idx: emp_idx },
+            dataType: 'json',
+            success: function(response) {
+                if ($(td).closest('table').hasClass('signBox')) {
+                	console.log("1실행");
+                	var signBox = $('table.signBox td.sign');
+                    
+                    // 이미 서명이 있는지 확인
+                    if (signBox.find('img').length > 0) {
+                    	empSign = false;
+                        signBox.empty();
+                    } else {
+                        // 서명이 없으면 추가
+                        if (response.sign != null) {
+                        	empSign = true;
+                            var signHtml = "<img src='" + response.sign + "' alt='서명' style='max-width: 90px; max-height: 70px;' />";
+                            signBox.html(signHtml);
+                            
+                            // 전체 HTML을 업데이트하여 서버로 전송
+                            var updatedHtml = $('.modal-content:last-child').html();  // 모달 콘텐츠의 HTML 가져오기
+
+                            updatedHtml = updatedHtml.replace(
+                           	    /(<table class="signBox"[^>]*>[\s\S]*?<td class="sign"[^>]*>)[^<]*<\/td>/,
+                           	    '$1' + signHtml + '</td>'
+                           	);
+                            $('.modal-content:last-child').html(updatedHtml);
+                            doc_content = $('.modal-content:last-child').html();
+                            console.log("tq~~"+doc_content);
+                        }else{
+                            alert("서명을 등록해 주세요");
+                        }
+                   }
+                } else if ($(td).closest('table').hasClass('signBox2')) {
+                	var signBox2 = $('table.signBox2 td.signTwo');
+                	console.log("2실행");
+                    // 이미 서명이 있는지 확인
+                    if (signBox2.find('img').length > 0) {
+                    	empSign = false;
+                        signBox2.empty();
+                    } else {
+                        // 서명이 없으면 추가
+                        if (response.sign != null) {
+                        	empSign = true;
+                            var signHtml = "<img src='" + response.sign + "' alt='서명' style='max-width: 90px; max-height: 70px;' />";
+                            signBox2.html(signHtml);
+                            
+                            // 전체 HTML을 업데이트하여 서버로 전송
+                            var updatedHtml = $('.modal-content:last-child').html();  // 모달 콘텐츠의 HTML 가져오기
+
+                            // 여기서 updatedHtml을 수정할 수 있습니다. 예를 들어, 서명 부분만 덮어쓰거나 필요한 부분을 수정할 수 있습니다.
+                            updatedHtml = updatedHtml.replace(
+							    /(<table class="signBox2"[^>]*>[\s\S]*?<td class="sign"[^>]*>)[^<]*<\/td>/,
+							    '$1' + signHtml + '</td>'
+							);
+                            $('.modal-content:last-child').html(updatedHtml);
+                            doc_content = $('.modal-content:last-child').html();
+                            
+                        } else {
+                            alert("서명을 등록해 주세요");
+                        }
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('문서 요청 실패:', error);
+            }
+        });
+	}
+}
+
+//승인
+function docAction(actionType) {
+	if (actionType === '승인') {	
+		if(empSign=== true){
+	        var nameText = $('table.signBox td[class="name"]').text();
+	        console.log("첫번째 "+nameText);
+	        var manager = $('input[class="manager"]').val();
+	        console.log("두번째 "+manager);
+			var doc_idx = $('input[name="doc_idx"]').val();
+			console.log("문서번호 "+doc_idx);
+			console.log("수정됐냐?"+doc_content);
+			
+			var approv_order = (manager === emp_name) ? 2 : 1;
+			console.log("야 "+approv_order);
+			
+			$.ajax({
+	            type: 'POST',
+	            url: 'approveDoc.ajax',
+	            data: {
+	            	doc_idx: doc_idx,
+	            	approv_order: approv_order,
+	                actionType: actionType,
+	                doc_content: doc_content
+	            },
+	            success: function(response) {
+	            	alert("승인 완료");
+		        	location.reload();
+	            },
+	            error: function(xhr, status, error) {
+	                console.error("서버 요청 실패:", error);
+	            }
+	        });
+			
+		}else{
+			alert("결재란이 비어있습니다.");
+		}
+		
+	}else if(actionType === '반려'){
+		
+	}
+}
 
 </script>
 </html>

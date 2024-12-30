@@ -81,6 +81,14 @@
 		background-color: var(--primary-color);
 		color: white;
 	}
+	.receivedList tr td:hover:nth-child(4) {
+	    color: var(--accent-color);
+	    cursor: pointer;
+	}
+	.sentList tr td:hover:nth-child(4) {
+	    color: var(--accent-color);
+	    cursor: pointer;
+	}
 	table.myTable thead tr th:first-child{
 		border-top-left-radius: 10px;
 	}
