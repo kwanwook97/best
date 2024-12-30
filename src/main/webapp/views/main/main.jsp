@@ -10,8 +10,8 @@
 
   </style>
 </head>
-<body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
+<body class="bg-theme bg-theme1">
  	<div class="dashboard-body">
  		<div class="dash-profile">
  		<div class="user-profile"></div>

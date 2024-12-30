@@ -67,4 +67,8 @@ public interface ChatDAO {
 
 	String getChatNotice(int chat_idx);
 
+	String getSenderPhoto(Integer empIdx);
+
+	int unreadTotal(int emp_idx);
+
 }

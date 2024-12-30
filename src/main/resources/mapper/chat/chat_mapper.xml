@@ -355,4 +355,16 @@
     	FROM chat
     	WHERE chat_idx = #{chat_idx}
 	</select>
+	
+	<!-- 메시지 발송자 사진뽑기 -->
+	<select id="getSenderPhoto" resultType="String">
+		SELECT photo FROM employee WHERE emp_idx = #{empIdx}
+	</select>
+	
+	<!-- 안 읽은 메시지 총 갯수 -->
+	<select id="unreadTotal" parameterType="int" resultType="int">
+    	SELECT COUNT(*)
+    	FROM msg_read
+    	WHERE emp_idx = #{emp_idx} AND is_read = 0
+	</select>
 </mapper>  

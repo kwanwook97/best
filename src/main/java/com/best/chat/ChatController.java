@@ -149,6 +149,7 @@ public class ChatController {
 		return chatService.getEmployeeList(keyword); // 회원 리스트를 반환하는 서비스 호출
 	}
 	
+	/* 회원 프로필 가져오기 */
 	@GetMapping(value="/profile.ajax")
 	@ResponseBody
 	public Map<String, Object> profile(@RequestParam(value = "emp_idx", required = false) String emp_idx){
@@ -204,7 +205,8 @@ public class ChatController {
 		}
 		return response;
 	}
-
+	
+	/* 웹소켓 연결 & 종료 시간 업데이트 */
 	@PostMapping(value="/updateConnectionTime")
 	@ResponseBody
 	public ResponseEntity<?> updateConnectionTime(@RequestBody Map<String, Object> payload, HttpSession session) {
@@ -221,7 +223,7 @@ public class ChatController {
 		return ResponseEntity.ok("Connection time updated");
 	}
 
-	// 메지시 읽지 않음 씨빨!!!!!
+	/* 읽지않은 유저 수 */
 	@GetMapping(value="/unreadUserCount.ajax")
 	@ResponseBody
 	public int getUnreadUserCount(@RequestParam int msg_idx) {
@@ -280,6 +282,7 @@ public class ChatController {
 	    return response;
 	}
 	
+	/* 공지사항 가져오기 */
 	@GetMapping(value = "/getChatNotice.ajax")
 	@ResponseBody
 	public Map<String, Object> getChatNotice(@RequestParam int chat_idx) {
@@ -291,5 +294,16 @@ public class ChatController {
 	    response.put("notice", chatNotice);
 
 	    return response;
+	}
+	
+	/* 안읽은 메시지 총 갯수 */
+	@GetMapping(value = "/unreadTotal.ajax")
+	@ResponseBody
+	public int unreadTotal(HttpSession session) {
+	    // 세션에서 로그인 ID 가져오기
+	    Integer emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+
+	    // 서비스 호출하여 읽지 않은 메시지 수 계산
+	    return chatService.unreadTotal(emp_idx);
 	}
 }

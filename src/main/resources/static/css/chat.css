@@ -143,8 +143,11 @@
 	cursor: pointer;
 }
 
-purple {
-	width: fit-contet;
+.purple {
+	max-width: 600px;
+	overflow: hidden; /* 넘치는 내용을 숨김 */
+    white-space: nowrap; /* 한 줄로 표시 */
+    text-overflow: ellipsis; 
 }
 
 .chat-item {
@@ -194,6 +197,10 @@ purple {
 	font-weight: bold;
 	font-size: 16px;
 	color: #30005A;
+	max-width: 215px;
+	overflow: hidden; /* 넘치는 내용을 숨김 */
+    white-space: nowrap; /* 한 줄로 표시 */
+    text-overflow: ellipsis;
 }
 
 .chat-time {
@@ -237,11 +244,15 @@ purple {
 .image-label-wrapper {
 	display: flex;
 	align-items: center;
-	background-color: #fdf6e4; /* 배경색 */
+	background-color: #FFFBF2; /* 배경색 */
 	border: 2px solid #30005A; /* 외곽선 */
 	border-radius: 10px; /* 둥근 모서리 */
 	padding: 5px 10px; /* 내부 여백 */
 	width: auto; /* 내용에 맞게 크기 조정 */
+	cursor: pointer;
+}
+.image-label-wrapper:hover {
+	background-color: #FFF3D9;
 	cursor: pointer;
 }
 
@@ -541,11 +552,11 @@ search {
 }
 
 .search_bar::placeholder {
-	color: #6C0F6C;
+	color: #8B6AA7 !important;
 }
 
-.search_bar::-webkit-input-placeholder { /* Chrome, Safari, Opera */
-	color: #6C0F6C;
+#chatSubject::placeholder { /* Chrome, Safari, Opera */
+	color: #8B6AA7 !important;
 }
 
 .radio-container {
@@ -622,10 +633,16 @@ search {
 	display: none;
 }
 
-#confirmModal .modal-content,
-#editChatSubjectModal .modal-content{
+#confirmModal .modal-content{
     width: 300px !important;
     height: 200px !important;
+}
+#editChatSubjectModal .modal-content{
+	width: 300px !important;
+    height: 180px !important;
+}
+#noticeModal .modal-content{
+    height: 245px !important;
 }
 .modal-footer{
 	display: flex;
@@ -718,16 +735,6 @@ search {
 	padding: 5px;
 	border-radius: 5px;
 }
-.fa-edit {
-	position: absolute;
-	right: 8px;
-	top: 35%;
-	transform: translateY(-50%);
-	color: #E9396B; /* 핑크색 */
-	font-size: 18px;
-	z-index: 1;
-	cursor: pointer;
-}
 
 .chat-notice {
     display: flex;
@@ -760,8 +767,13 @@ search {
     height: auto; /* 높이 자동 조정 */
 }
 
-.chat-notice i{
+.modal-header i, #chatNotice i{
 	margin-right: 10px;
 	color: #E9396B;
 	font-size: 20px;
 }
+
+#noticeContent::placeholder {
+    color: #8B6AA7 !important;
+}
+

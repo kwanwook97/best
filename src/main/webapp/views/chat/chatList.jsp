@@ -556,7 +556,18 @@ $(document).ready(function () {
 });
 
 
+$(document).ready(function () {
+    // 제목 글자 수 제한
+    $("#chatSubject").on("input", function () {
+        const maxLength = 50;
+        const currentLength = $(this).val().length;
 
+        if (currentLength > maxLength) {
+            alert("제목은 최대 50글자까지 입력 가능합니다.");
+            $(this).val($(this).val().substring(0, maxLength)); // 초과된 내용 제거
+        }
+    });
+});
 
 </script>
 </html>

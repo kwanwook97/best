@@ -117,10 +117,10 @@
     <div class="modal-content">
         <div class="modal-header">
             <span class="close-modal" onclick="closeModal('editChatSubjectModal');">&times;</span>
+            <h5><i class="fas fa-edit"></i> 메신져 이름</h5>
         </div>
         <div class="subject-div">
     		<input type="text" id="chatSubject" name="chat_subject" placeholder="제목을 작성하세요. " value=""/>
-    		<i class="fas fa-edit"></i>
     	</div>
         <div class="modal-footer">
             <button type="button" class="btn confirmBtn" onclick="updateChatSubject()">수정</button>
@@ -134,11 +134,10 @@
     <div class="modal-content">
         <div class="modal-header">
             <span class="close-modal" onclick="closeModal('noticeModal');">&times;</span>
-            <h5>공지사항 등록</h5>
+            <h5><i class="bi bi-megaphone-fill"></i> 공지사항</h5>
         </div>
         <div class="subject-div">
-            <textarea id="noticeContent" placeholder="공지사항 내용을 입력하세요..." rows="5" style="width: 100%;"></textarea>
-            <i class="fas fa-edit"></i>
+            <textarea id="noticeContent" placeholder="공지사항 내용을 입력하세요" rows="5" style="width: 100%;"></textarea>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn confirmBtn" onclick="submitNotice()">등록</button>
@@ -194,6 +193,7 @@ window.updateChatList = function(messageDataList) {
             } else {
                 unreadCountContainer.remove(); // 읽지 않은 메시지가 없으면 제거
             }
+            
 
             // 항목을 리스트 맨 위로 이동
             chatItem.prependTo(sidebar);
@@ -652,8 +652,11 @@ $(document).ready(function() {
                     success: function (response) {
                         console.log("저장된 메시지 데이터:", response);
                         
-                     // 메시지 ID 추가
-                        messageData.msg_idx = response.msg_idx;
+                     	// 메시지 ID 추가
+                        // 저장된 메시지 데이터 업데이트
+                		messageData.msg_idx = response.msg_idx;
+                		messageData.photo = response.photo;
+                		messageData.name = response.name;
                         // 읽지 않은 사용자 수 조회
                         $.ajax({
                             type: "GET",
@@ -662,9 +665,12 @@ $(document).ready(function() {
                             success: function(count) {
                                 // 읽지 않은 사용자 수 추가
                                 messageData.unread_count = count;
-
-                                // WebSocket으로 메시지와 count 전송
+								
+                             // WebSocket으로 메시지와 count 전송
                                 socket.send(JSON.stringify(messageData));
+                             
+                                   
+                                
                             },
                             error: function() {
                                 console.error("읽지 않은 사용자 수 조회 실패");
@@ -931,7 +937,7 @@ function addSelectedMembersToChat() {
     }
 
     // 확인 모달 열기
-    openConfirmModal("선택한 사원들을 대화방에 추가하시겠습니까?", function () {
+    openConfirmModal("대화방에 초대하시겠습니까?", function () {
         // 확인 버튼 클릭 시 회원 추가 AJAX 요청
         $.ajax({
             type: "POST",
@@ -1039,6 +1045,39 @@ $(document).ready(function () {
     };
 });
 
+$(document).ready(function () {
+    // 제목 글자 수 제한
+    $("#chatSubject").on("input", function () {
+        const maxLength = 20;
+        const currentLength = $(this).val().length;
 
+        if (currentLength > maxLength) {
+            alert("제목은 최대 20글자까지 입력 가능합니다.");
+            $(this).val($(this).val().substring(0, maxLength)); // 초과된 내용 제거
+        }
+    });
+
+    // 공지사항 글자 수 제한
+    $("#noticeContent").on("input", function () {
+        const maxLength = 50;
+        const currentLength = $(this).val().length;
+
+        if (currentLength > maxLength) {
+            alert("공지사항은 최대 50글자까지 입력 가능합니다.");
+            $(this).val($(this).val().substring(0, maxLength)); // 초과된 내용 제거
+        }
+    });
+    
+    // 메시지 글자 수 제한
+    $("#messageInput").on("input", function () {
+        const maxLength = 50;
+        const currentLength = $(this).val().length;
+
+        if (currentLength > maxLength) {
+            alert("메시지는 최대 50글자까지 입력 가능합니다.");
+            $(this).val($(this).val().substring(0, maxLength)); // 초과된 내용 제거
+        }
+    });
+});
 </script>
 </html>

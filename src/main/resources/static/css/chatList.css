@@ -194,6 +194,10 @@
 	font-weight: bold;
 	font-size: 16px;
 	color: #30005A;
+	max-width: 440px;
+	overflow: hidden; /* 넘치는 내용을 숨김 */
+    white-space: nowrap; /* 한 줄로 표시 */
+    text-overflow: ellipsis; 
 }
 
 .chat-time {
@@ -233,11 +237,16 @@
 .image-label-wrapper {
 	display: flex;
 	align-items: center;
-	background-color: #fdf6e4; /* 배경색 */
+	background-color: #FFFBF2; /* 배경색 */
 	border: 2px solid #30005A; /* 외곽선 */
 	border-radius: 10px; /* 둥근 모서리 */
 	padding: 5px 10px; /* 내부 여백 */
 	width: auto; /* 내용에 맞게 크기 조정 */
+	cursor: pointer;
+}
+
+.image-label-wrapper:hover {
+	background-color: #FFF3D9;
 	cursor: pointer;
 }
 
@@ -384,12 +393,7 @@ search {
 }
 
 .subject-div::placeholder, .search_bar::placeholder {
-	color: #6C0F6C;
-}
-
-.subject-div::-webkit-input-placeholder, .search_bar::-webkit-input-placeholder
-	{ /* Chrome, Safari, Opera */
-	color: #6C0F6C;
+	color: #8B6AA7 !important;
 }
 
 .radio-container {

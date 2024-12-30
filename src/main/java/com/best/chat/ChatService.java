@@ -7,11 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.best.emp.EmployeeDTO;
 import com.best.websocket.GlobalWebsocketHandler;
@@ -19,6 +24,7 @@ import com.best.websocket.WebsocketHandler;
 
 @Service
 public class ChatService {
+	@Autowired HttpSession session;
 
 	@Autowired
 	ChatDAO chatDAO;
@@ -60,7 +66,6 @@ public class ChatService {
 			chat.put("photo", photo);
 		}
 
-		log.info("아작스 chatList {}", chatList);
 		return chatList;
 	}
 	
@@ -69,32 +74,26 @@ public class ChatService {
 		// 참여자 목록 가져오기
 		List<Map<String, Object>> participants = getChatParticipants(chatIdx);
 		if (participants == null || participants.isEmpty()) {
-			log.warn("참여자가 없습니다. chatIdx: {}", chatIdx);
 			return;
 		}
 
-		log.info("참여자 목록: {}", participants);
 
 		// 각 참여자 emp_idx로 chatList 생성 및 브로드캐스트
 		for (Map<String, Object> participant : participants) {
 			Integer empIdx = (Integer) participant.get("emp_idx");
 			if (empIdx == null) {
-				log.warn("참여자 정보에 emp_idx가 없습니다: {}", participant);
 				continue;
 			}
 
 			try {
 				// emp_idx를 기준으로 chatList 가져오기
 				List<Map<String, Object>> chatList = chatList(empIdx, null);
-				log.info("emp_idx={}의 chatList: {}", empIdx, chatList);
 
 				// 브로드캐스트 데이터 구성
 				Map<String, Object> broadcastPayload = new HashMap<>();
 				broadcastPayload.put("type", "CHAT_LIST_UPDATE");
 				broadcastPayload.put("emp_idx", empIdx); // 해당 emp_idx 추가
 				broadcastPayload.put("chatList", chatList);
-
-				log.info("브로드캐스트 페이로드: {}", broadcastPayload);
 
 				// 브로드캐스트
 				globalWs.broadcastUpdate(broadcastPayload);
@@ -220,7 +219,7 @@ public class ChatService {
 		params.put("chat_idx", message.getChat_idx());
 		params.put("sender_idx", message.getMsg_send_idx());
 		chatDAO.insertDefaultMsgRead(params);
-
+		
 		return msgIdx;
 	}
 
@@ -258,7 +257,8 @@ public class ChatService {
 		// WebSocket으로 메시지 전송
 		broadcastEnterMessage(chat_idx, content);
 	}
-
+	
+	/* 웹소켓 연결 업데이트 & 연결하면서 바로 읽음 처리*/
 	@Transactional
 	public void updateConnectionStart(int chatIdx, int empIdx, LocalDateTime startTime) {
 		int exists = chatDAO.checkConnectionStatusExists(chatIdx, empIdx);
@@ -271,10 +271,11 @@ public class ChatService {
 		// 읽음 상태 업데이트
 		chatDAO.markMessagesAsRead(chatIdx, empIdx, LocalDateTime.now()); // 현재 시간 전달
 
-		// broadcastUnreadCount(chatIdx);
+		broadcastUnreadCount(chatIdx);
 		broadcastUpdatedUnreadCounts(chatIdx);
 	}
-
+	
+	/* 읽지 않은 메시지 수 브로드캐스트 */
 	public void broadcastUpdatedUnreadCounts(int chatIdx) {
 		List<Integer> msgIdxList = chatDAO.getMsgIdxListByChatIdx(chatIdx);
 
@@ -290,18 +291,19 @@ public class ChatService {
 			WebsocketHandler.broadcast(payload);
 		}
 	}
-
+	
+	/* 웹소켓 종료시간 업데이트 */
 	@Transactional
 	public void updateConnectionEnd(int chatIdx, int empIdx, LocalDateTime endTime) {
-		// 데이터가 있으면 endTime만 업데이트
 		chatDAO.updateConnectionTime(chatIdx, empIdx, endTime, "end");
 	}
 
-	// 메시지 읽지 않음 씨빨!!!!
+	/* 읽지않은 유저 수 */
 	public int getUnreadUserCount(int msgIdx) {
 		return chatDAO.getUnreadUserCount(msgIdx);
 	}
-
+	
+	/* 프로필 가져오기 */
 	public Map<String, Object> profile(int empIdx) {
 		return chatDAO.profile(empIdx);
 	}
@@ -351,9 +353,46 @@ public class ChatService {
 
 	    WebsocketHandler.broadcast(broadcastPayload);
 	}
-
+	
+	/* 공지사항 가져오기 */
 	public String getChatNotice(int chat_idx) {
 		return chatDAO.getChatNotice(chat_idx);
 	}
+	
+	/* 전송자 사진 가져오기 */
+	public String getSenderPhoto(Integer empIdx) {
+		return chatDAO.getSenderPhoto(empIdx);
+	}
+	
+	/* 안읽은 메시지 총 갯수 */
+	public int unreadTotal(int emp_idx) {
+        return chatDAO.unreadTotal(emp_idx);
+    }
+	
+	/* 읽지 않은 메시지 총 갯수 브로드캐스트 */
+	public void broadcastUnreadTotal() {
+	    try {
+	        // 세션에서 로그인 ID 가져오기
+	        Integer empIdx = Integer.parseInt((String) session.getAttribute("loginId"));
+
+	        // 서비스 호출하여 읽지 않은 메시지 수 계산
+	        int unreadTotal = unreadTotal(empIdx);
+
+	        // 브로드캐스트 데이터 구성
+	        Map<String, Object> payload = new HashMap<>();
+	        payload.put("type", "UPDATE_UNREAD_TOTAL");
+	        payload.put("emp_idx", empIdx);
+	        payload.put("unread_total", unreadTotal);
+
+	        log.info("브로드캐스트 페이로드: {}", payload);
+
+	        // WebSocket 브로드캐스트
+	        globalWs.broadcastUpdate(payload);
+
+	    } catch (Exception e) {
+	        log.error("로그인 사용자 읽지 않은 메시지 총 갯수 브로드캐스트 실패", e);
+	    }
+	}
+
 
 }

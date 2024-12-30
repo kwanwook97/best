@@ -1,4 +1,4 @@
-package com.best.websocket;
+package com.best.chat;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,20 +37,6 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
     public void broadcastUpdate(Map<String, Object> payload) {
         sessions.stream()
             .filter(WebSocketSession::isOpen)
-            .forEach(session -> {
-                try {
-                    String jsonMessage = new ObjectMapper().writeValueAsString(payload);
-                    session.sendMessage(new TextMessage(jsonMessage));
-                } catch (IOException e) {
-                    log.error("글로벌 WebSocket 메시지 전송 실패", e);
-                }
-            });
-    }
-    
-    
-    public void broadcastAll(Map<String, Object> payload, WebSocketSession senderSession) {
-        sessions.stream()
-            .filter(s -> s.isOpen() && s != senderSession) // 전송자 제외
             .forEach(session -> {
                 try {
                     String jsonMessage = new ObjectMapper().writeValueAsString(payload);

@@ -11,16 +11,25 @@ globalSocket.onopen = function () {
 globalSocket.onmessage = function (event) {
     const messageData = JSON.parse(event.data);
 
-    console.log("수신된 데이터:", messageData);
-
-    if (
-        messageData.type === "CHAT_LIST_UPDATE" &&
-        Array.isArray(messageData.chatList) &&
-        messageData.emp_idx === loginId // 자신의 emp_idx에 해당하는 데이터만 처리
-    ) {
-        updateChatList(messageData.chatList); // UI 업데이트
+    // 읽지 않은 메시지 수 처리
+    if (messageData.type === "UPDATE_UNREAD_TOTAL") {
+        window.updateUnreadMessageCount(messageData.unread_total);
+        console.log("읽지 않은 메시지 수", messageData.unread_total);
+    }
+    
+    if (messageData.type === "CHAT_LIST_UPDATE") {
+        // 챗 리스트 업데이트
+        if (Array.isArray(messageData.chatList) && messageData.emp_idx === loginId) {
+            updateChatList(messageData.chatList); // UI 업데이트
+        }
+    } else if (messageData.msg_send_idx && messageData.msg_send_idx !== loginId) {
+        // 알림 로직: 본인이 보낸 메시지는 제외
+        if (messageData.content && messageData.photo) {
+            showNotification(messageData.photo, messageData.name, messageData.content, messageData.chat_idx);
+            updateMessageDropdown(messageData.photo, messageData.name, messageData.content, messageData.chat_idx);
+        }
     } else {
-        console.warn("유효하지 않은 메시지 또는 다른 사용자 데이터:", messageData);
+        console.warn("유효하지 않은 데이터:", messageData);
     }
 };
 

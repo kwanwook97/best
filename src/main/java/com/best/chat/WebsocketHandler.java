@@ -1,4 +1,4 @@
-package com.best.websocket;
+package com.best.chat;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,7 +15,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.best.chat.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -42,43 +41,36 @@ public class WebsocketHandler extends TextWebSocketHandler {
         log.info("WebSocket 연결 - chat_idx: {}, emp_idx: {}, emp_name: {}", chatIdx, empIdx, empName);
         sessions.add(session);
         log.info("현재 연결된 세션 수: {}", sessions.size());
-        
     }
 
     public static void broadcast(Map<String, Object> messagePayload) {
-        String messageType = (String) messagePayload.get("type");
+        // payload에 chat_idx 정보가 들어 있어야 함
+        Object payloadChatIdxObj = messagePayload.get("chat_idx");
+        if (payloadChatIdxObj == null) {
+            // chat_idx 자체가 없으면 일단 모든 세션에 보내거나, 
+            // 혹은 로그 찍고 return 하는 식으로 처리
+        }
 
         sessions.stream()
             .filter(WebSocketSession::isOpen)
             .forEach(session -> {
+                // 이 세션의 chat_idx
+                Integer sessionChatIdx = (Integer) session.getAttributes().get("chat_idx");
                 try {
-                    // 메시지를 JSON 형식으로 변환
-                    String jsonMessage = objectMapper.writeValueAsString(messagePayload);
-
-                    // "UPDATE_UNREAD_TOTAL" 메시지는 모든 세션에 전송
-                    if ("UPDATE_UNREAD_TOTAL".equals(messageType)) {
+                    // 여기서 필터링: 세션의 chat_idx와 payload chat_idx가 같은지
+                    if (sessionChatIdx != null 
+                        && payloadChatIdxObj instanceof Integer
+                        && sessionChatIdx.equals(payloadChatIdxObj)) {
+                        
+                        // 같으면 브로드캐스트
+                        String jsonMessage = objectMapper.writeValueAsString(messagePayload);
                         session.sendMessage(new TextMessage(jsonMessage));
-                    } 
-                    // 다른 메시지에 대해 chat_idx 필터링
-                    else {
-                        Integer sessionChatIdx = (Integer) session.getAttributes().get("chat_idx");
-                        Object payloadChatIdxObj = messagePayload.get("chat_idx");
-
-                        if (sessionChatIdx != null 
-                            && payloadChatIdxObj instanceof Integer
-                            && sessionChatIdx.equals(payloadChatIdxObj)) {
-                            
-                            session.sendMessage(new TextMessage(jsonMessage));
-                        }
                     }
                 } catch (IOException e) {
-                	e.printStackTrace();
+                    e.printStackTrace();
                 }
             });
     }
-
-
-
     
     
 
@@ -104,20 +96,11 @@ public class WebsocketHandler extends TextWebSocketHandler {
             messagePayload.put("msg_send_idx", empIdx);
             messagePayload.put("name", empName);
             messagePayload.put("time", System.currentTimeMillis());
-            
-            String senderPhoto = chatService.getSenderPhoto(empIdx); // empIdx로 사진 경로 가져오기
-            messagePayload.put("photo", senderPhoto);
 
             // 개별 방 브로드캐스트
             broadcast(messagePayload);
            
             chatService.broadcastUnreadCount(chatIdx);
-            
-            chatService.broadcastUnreadTotal();
-
-            if (!"CHAT_LIST_UPDATE".equals(messagePayload.get("type"))) {
-                globalWebsocketHandler.broadcastAll(messagePayload, session);
-            }
             
 
         } catch (Exception e) {
