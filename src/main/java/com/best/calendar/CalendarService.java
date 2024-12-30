@@ -325,7 +325,7 @@ public class CalendarService {
 
 	    for (int month = 1; month <= 12; month++) {
 	        try {
-	            List<Map<String, Object>> holidays = getHolidaysForMonth(currentYear, month);
+	            List<Map<String, Object>> holidays = getHolidaysForMonth(2021, month);
 
 	            holidays.forEach(holiday -> {
 	                String date = holiday.get("locdate").toString(); // 타입 안전하게 처리

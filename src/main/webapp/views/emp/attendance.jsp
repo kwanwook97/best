@@ -15,6 +15,9 @@
         margin-top: 110px;
     	margin-left: 320px;
     	margin-right: 100%;
+    	position: absolute;
+    	top: 0;
+    	left: 0;
 	}
 
 
@@ -223,12 +226,34 @@
 	    width: 100%;
 	    table-layout: fixed; /* 각 열의 비율 고정 */
 	}
+	.naviPath {
+		font-size: 27px;
+		font-weight: bold;
+		margin: -17px 0 0 19px;
+	}
+	.editable {
+		width: 100px;
+	}
+	
+
 
   </style>
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
+ <jsp:include page="../modal/modal.jsp"></jsp:include>
  	<div class="body">
+	    <div class="naviPath">
+		    <c:if test="${ empty empIdx}">
+				<span class="lPurple">근태관리</span>	
+		     	<span class="cPurple">&gt; 출퇴근 기록</span>
+		    </c:if>
+		    <c:if test="${not empty empIdx}">
+		      <span class="lPurple">근태관리</span>
+		      <span class="cPurple">&gt; 사원목록</span>
+		      <span class="cPurple">&gt; ${name}님</span>
+		    </c:if>
+	    </div>
 			<div class="contentTop">
 				<!-- 날짜 및 출퇴근시간 -->
 				<div class="attendRecord pLine inBlock p18">
@@ -255,13 +280,13 @@
 					
 					<div class="center h72 bold f16">
 						<div class="w100 m5">
-							<span class="lPurple wr50">근무일수</span><span class="wl50">13일</span>
+							<span class="lPurple wr50 workdays">근무일수</span><span class="wl50">13일</span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50">연장 근무시간</span><span class="wl50">7시간</span>
+							<span class="lPurple wr50 totalOverTime">연장 근무시간</span><span class="wl50">7시간</span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50">총 근무시간</span><span class="wl50">103시간</span>
+							<span class="lPurple wr50 totalWorkTime">총 근무시간</span><span class="wl50">103시간</span>
 						</div>
 					</div>
 				</div>
@@ -277,13 +302,13 @@
 					
 					<div class="center h72 bold f16">
 						<div class="w100 m5">
-							<span class="lPurple wr50">지각</span><span class="wl50">13일</span>
+							<span class="lPurple wr50 lateCount">지각</span><span class="wl50">13회</span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50">결근</span><span class="wl50">7시간</span>
+							<span class="lPurple wr50 leaveCount">연차</span><span class="wl50">7회</span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50">연차</span><span class="wl50">103시간</span>
+							<span class="lPurple wr50 absentCount">결근</span><span class="wl50">103회</span>
 						</div>
 					</div>
 					
@@ -299,7 +324,7 @@
 					
 					<div class="center h72 bold f16">
 						<div class="w100 m5">
-							<span class="lPurple wr50">잔여 연차</span><span class="wl50">12일</span>
+							<span class="lPurple wr50 remainLeave">잔여 연차</span><span class="wl50">12일</span>
 						</div>
 					</div>
 				</div>
@@ -308,7 +333,7 @@
  		
  		<div class="contentBottom purple p1 f24">
  			<div class="h10 bold">
-				<span><i class="bi bi-clock-history"></i>&nbsp;&nbsp;출퇴근 기록</span>
+				<span><i class="bi bi-clock-history"></i>&nbsp;&nbsp;출퇴근 기록</span> <button onclick="enableEditMode()">수정하기</button>
 			</div>
 			<!-- 출퇴근 기록 -->
 			<div class="bgColor h90">
@@ -379,9 +404,13 @@
 		</div>
 	</div>
 </body>
+
 <script>
-
-
+var key = "${empIdx}";
+if (key) {
+	loginId = key;
+}
+console.log("loginId: "+loginId);
 
 setInterval(updateClock, 1000)
 updateClock()
@@ -438,6 +467,41 @@ function updateTime(){
                 $(".attendanceList").append(row);
             });
             
+            if (response.workdays != null) {
+				$(".workdays").next("span").text(response.workdays + "일");
+			}else{
+				$(".workdays").next("span").text("없음");
+			}
+            if (response.totalOverTime != null) {
+				$(".totalOverTime").next("span").text(response.totalOverTime + "시간");
+			}else{
+				$(".totalOverTime").next("span").text("없음");
+			}
+            if (response.totalWorkTime != null) {
+				$(".totalWorkTime").next("span").text(response.totalWorkTime + "시간");
+			}else{
+				$(".totalWorkTime").next("span").text("없음");
+			}
+            if (response.lateCount != null) {
+				$(".lateCount").next("span").text(response.lateCount + "회");
+			}else{
+				$(".lateCount").next("span").text("없음");
+			}
+            if (response.leaveCount != null) {
+				$(".leaveCount").next("span").text(response.leaveCount + "회");
+			}else{
+				$(".leaveCount").next("span").text("없음");
+			}
+            if (response.absentCount != null) {
+				$(".absentCount").next("span").text(response.absentCount + "회");
+			}else{
+				$(".absentCount").next("span").text("없음");
+			}
+            if (response.remainLeave != null) {
+				$(".remainLeave").next("span").text(response.remainLeave + "일");
+			}else {
+				$(".remainLeave").next("span").text("없음");
+			}
            	
             
         },
@@ -446,6 +510,83 @@ function updateTime(){
         }
     });
 }
+
+function enableEditMode() {
+    if ($(".attendanceList input").length > 0) {
+        modal.showAlert('이미 수정 모드입니다!');
+        $(".attendanceList input").each(function () {
+            const value = $(this).val().trim(); // 입력된 값 가져오기
+            $(this).parent().text(value); // 입력 필드 제거 후 값 설정
+        });
+
+        // 저장 버튼 제거
+        $("#saveChanges").remove();
+        return;
+    }
+	
+    $(".attendanceList tr").each(function () {
+        $(this).find("td").each(function (index) {
+            if (index === 1 || index === 2 || index === 3 || index === 4 || index === 5 ) { 
+                const value = $(this).text().trim(); 
+                $(this).html('<input type="text" value="' + value + '" class="editable" />');
+            }
+        });
+    });
+
+    // 수정 완료 버튼 표시 (수정 모드에서만 나타남)
+    if ($("#saveChanges").length === 0) {
+        $(".h10").append('<button id="saveChanges">저장하기</button>');
+    }
+
+    // 저장 버튼 이벤트 추가
+    $("#saveChanges").on("click", function () {
+        saveEditedData();
+    });
+}
+
+function saveEditedData() {
+    const updatedList = [];
+
+    $(".attendanceList tr").each(function () {
+        const row = {
+            date: $(this).find("td").eq(0).text().trim(),
+            start_time: $(this).find("td").eq(1).find("input").val() || "*",
+            end_time: $(this).find("td").eq(2).find("input").val() || "*",
+            status: $(this).find("td").eq(3).text().trim(),
+            calculate_time: $(this).find("td").eq(4).text().trim(),
+            over_time: $(this).find("td").eq(5).text().trim(),
+        };
+        updatedList.push(row);
+    });
+
+    console.log("Updated List:", updatedList);
+
+    // 수정된 데이터를 서버로 전송
+    $.ajax({
+        url: "updateAttendance.ajax",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ attendanceList: updatedList }),
+        success: function (response) {
+            console.log("수정 성공:", response);
+            alert("출퇴근 기록이 저장되었습니다!");
+            updateTime();
+            // 수정 모드 종료: 버튼과 입력 필드 제거
+            $(".attendanceList input").each(function () {
+                const value = $(this).val().trim(); // 입력된 값 가져오기
+                $(this).parent().text(value); // 입력 필드 제거 후 값 설정
+            });
+
+            // 저장 버튼 제거
+            $("#saveChanges").remove();
+        },
+        error: function (xhr, status, error) {
+            console.error("에러:", error);
+        }
+    });
+}
+
+
 
 
 

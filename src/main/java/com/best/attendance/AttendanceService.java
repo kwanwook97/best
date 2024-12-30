@@ -1,15 +1,20 @@
 package com.best.attendance;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +32,7 @@ public class AttendanceService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
 	// 출근전 근태 테이블 늘리기용
-	public void insertAttendance() {
-	    LocalDate today = LocalDate.now();
+	public void insertAttendance(LocalDate today) {
 		int row = attendanceDAO.checkHistory(today);
 		if (row == 0) {
 			attendanceDAO.insertAttendance();
@@ -74,34 +78,75 @@ public class AttendanceService {
 	    
 	    List<Map<String, Object>> list = attendanceDAO.getAttendanceList(params);
 	    map.put("list", list);
+
+	    LocalDate now = LocalDate.now();
+	    int thisMonth = now.getMonthValue();
 	    
-	    List<HolidayDTO> holidays = calendarDAO.getAllHolidays();
-	    ZoneId zoneId = ZoneId.of("Asia/Seoul");
-        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        int workDays = 0;
-        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-            final LocalDate currentDate = date;
-
-            if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                continue;
-            }
-          
-
-            boolean isHoliday = holidays.stream()
-            	    .anyMatch(holiday -> holiday.getHoliday_date().toLocalDate().equals(currentDate));
-            if (isHoliday) {
-                continue;
-            }
-
-            workDays++;
-        }
-        logger.info("workDays:"+workDays);
-        
+	    logger.info("now:{}",now);
         logger.info("list:{}",list);
+        List<Map<String, Object>> filteredList = list.stream()
+        	    .filter(name -> {
+        	        Date sqlDate = (Date) name.get("date");
+        	        LocalDate date = sqlDate.toLocalDate();
+        	        return date.getMonthValue() == LocalDate.now().getMonthValue(); 
+        	    })
+                .filter(name -> {
+                    String status = (String) name.get("status"); 
+                    return !("결근".equals(status) || "연차".equals(status));
+                })
+        	    .collect(Collectors.toList());
+        logger.info("filteredList:{}",filteredList);
         
         
-	    
+        double totalOverTime = filteredList.stream()
+                .mapToDouble(item -> {
+                    Object overTime = item.get("over_time"); // "over_time" 값 가져오기
+                    return overTime != null ? Double.parseDouble(overTime.toString()) : 0.0; 
+                })
+                .sum();
+        
+        logger.info("연장 근무시간: {}", totalOverTime);
+
+        double totalWorkTime = filteredList.stream()
+                .mapToDouble(item -> {
+                    Object calculateTime = item.get("calculate_time");
+                    return calculateTime != null ? Double.parseDouble(calculateTime.toString()) : 0.0;
+                })
+                .sum(); 
+        logger.info("총 근무시간: {}", totalWorkTime);
+        long lateCount = filteredList.stream()
+            .filter(item -> "지각".equals(item.get("status")))
+            .count();
+
+        List<Map<String, Object>> filterListOne = list.stream()
+        	    .filter(name -> {
+        	        Date sqlDate = (Date) name.get("date");
+        	        LocalDate date = sqlDate.toLocalDate();
+        	        return date.getMonthValue() == LocalDate.now().getMonthValue();
+        	    })
+        	    .collect(Collectors.toList());
+        
+        long leaveCount = filterListOne.stream()
+        	    .filter(item -> "연차".equals(item.get("status")))
+        	    .count();
+
+        long absentCount = filterListOne.stream()
+        	    .filter(item -> "결근".equals(item.get("status")))
+        	    .count();
+        
+        Integer remainLeave = attendanceDAO.getLeave(params);
+
+        logger.info("지각 횟수: {}", lateCount);
+        logger.info("연차 횟수: {}", leaveCount);
+        logger.info("결근 횟수: {}", absentCount);
+        map.put("workdays", filteredList.size());
+        map.put("totalOverTime", totalOverTime);
+        map.put("totalWorkTime", totalWorkTime);
+        map.put("lateCount", lateCount);
+        map.put("leaveCount", leaveCount);
+        map.put("absentCount", absentCount);
+        map.put("remainLeave", remainLeave);
+        
 	    
 		return map;
 	}
@@ -132,4 +177,52 @@ public class AttendanceService {
 		return response;
 	}
 
+	public void updateAbsent(LocalDate today) {
+		attendanceDAO.updateAbsent(today);
+	}
+
+	
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
