@@ -178,6 +178,9 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}	
+	div.content div.modal-box{
+		display: none;
+	}
 	@media ( min-width :1200px) {
 		.container {
 			max-width: 100% !important;
@@ -323,5 +326,33 @@ $(document).ready(function() {
 	    });
 	}
 });
+
+
+//모달 열기
+function receivedOpen(content) {
+    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+    // 모달 HTML 생성
+    var Html = 
+        '<div id="' + modalId + '" class="modal" style="display: none;">' +
+        '  <div class="modal-content">' +
+        '    <div class="modal-box">' +
+        '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
+        '    </div>' +
+        '    <div class="content_emp" contenteditable="true">' + content + '</div>' +
+        '  </div>' +
+        '</div>';
+        
+    // body에 추가
+    $('body').append(Html);
+
+    // 모달 표시
+    $('#' + modalId).show();
+
+    // 닫기 버튼 이벤트 등록 (이벤트 위임)
+    $(document).on('click', '.close-btn', function() {
+        var targetModalId = $(this).data('modal-id');
+        $('#' + targetModalId).remove();
+    });
+}
 </script>
 </html>
