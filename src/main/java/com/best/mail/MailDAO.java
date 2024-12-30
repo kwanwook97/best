@@ -25,6 +25,15 @@ public interface MailDAO {
 
 	// 메일 첨부파일업로드
 	int fileUpload(Map<String, Object> condition);
+
+	// 메일 읽음여부 업데이트
+	int updateReadStatus(Map<String, Object> map);
+
+	// 중요여부 업데이트
+	int updateSpecialStatus(Map<String, Object> map);
+
+	// 메일 휴지통이동, 복구, 완전삭제 
+	int moveToTrash(Map<String, Object> map);
 	
 	
 }

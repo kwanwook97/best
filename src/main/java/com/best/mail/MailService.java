@@ -28,17 +28,20 @@ public class MailService {
 
 	
 	// 메일목록 불러오기
+	@Transactional
 	public Map<String, Object> mailList(Map<String, String> map) {
+		
 		
 		int status = Integer.parseInt(map.get("status"));
 		int page = Integer.parseInt(map.get("page"));
 		int cnt = Integer.parseInt(map.get("cnt"));
 		int emp_idx = Integer.parseInt(map.get("emp_idx"));
-		int category = Integer.parseInt(map.get("category"));
 		int delete_flag = Integer.parseInt(map.get("delete_flag"));
-		int receiver_type = Integer.parseInt(map.get("receiver_type"));
+		
 		
 		String table = map.get("table");
+		
+		
 		String searchFilter = map.get("searchFilter");
 		String searchKeyword = "";
 		
@@ -46,6 +49,8 @@ public class MailService {
 		if(!map.get("searchKeyword").equals("")) {
 			searchKeyword = map.get("searchKeyword");
 		}
+		
+		
 		
 		logger.info("현재페이지 : "+page);
 		logger.info("한페이지에 보여줄 갯수 : "+cnt);		
@@ -63,9 +68,7 @@ public class MailService {
 		condition.put("searchKeyword", searchKeyword);
 		condition.put("emp_idx", emp_idx);
 		condition.put("table", table);
-		condition.put("category", category);
 		condition.put("delete_flag", delete_flag);
-		condition.put("receiver_type", receiver_type);
 		
 		int totalPages = mailDao.allCount(condition);
 		
@@ -199,6 +202,37 @@ public class MailService {
 	    }
 
 	    return row;
+	}
+
+	
+	// 메일 읽음여부 업데이트
+	public int updateReadStatus(Map<String, Object> map) {
+		
+		int mail_idx = Integer.parseInt((String) map.get("mailIdx"));
+		map.put("mail_idx", mail_idx);
+		
+		
+		return mailDao.updateReadStatus(map);
+	}
+
+	// 중요여부 업데이트
+	public int updateSpecialStatus(Map<String, Object> map) {
+		
+		int mail_idx = Integer.parseInt((String) map.get("mailIdx"));
+		map.put("mail_idx", mail_idx);
+		
+		return mailDao.updateSpecialStatus(map);
+	}
+
+	// 메일 휴지통이동, 복구, 완전삭제 
+	public int moveToTrash(Map<String, Object> map) {
+		
+		int mail_idx = Integer.parseInt((String) map.get("mailIdx"));
+		int delete_flag = Integer.parseInt((String) map.get("delete_flag"));
+		map.put("mail_idx", mail_idx);
+		map.put("delete_flag", delete_flag);
+		
+		return mailDao.moveToTrash(map);
 	}
 
 
