@@ -40,9 +40,9 @@ var loginId = ${sessionScope.loginId};
       <div class="member-profile">
          <div class="profile-photo"></div>
          <ul>
-            <li> 촉촉이 / 대리
+            <li> ${sessionScope.employee.name} / 대리
             </li>
-            <li> chockchock@gmail.com
+            <li> ${sessionScope.employee.email}
             </li>
          </ul>
       </div>
@@ -55,11 +55,26 @@ var loginId = ${sessionScope.loginId};
         </a>
       </li>
       
-      <li>
-        <a href="attendance.go">
+      <li class="dropD">
+        <a href="javaScript:void(0);">
           <i class="bi bi-clock-fill"></i> <span>근태관리</span>
           <i class="fa-solid fa-angle-right"></i>
         </a>
+        
+        <ul class="dropD-menu">
+          <li class="dropD-item">
+               <a href="attendance.go">
+                 <i class="bi bi-clock-fill"></i> <span>출퇴근 기록</span>
+                 <i class="fa-solid fa-angle-right"></i>
+               </a>
+          </li>
+          <li class="dropD-item">
+               <a href="attendanceEmpList.go">
+                 <i class="bi bi-person-vcard"></i><span>사원목록</span>
+                <i class="fa-solid fa-angle-right"></i>
+               </a>
+          </li>
+        </ul>
       </li>
       
       <li class="dropD">

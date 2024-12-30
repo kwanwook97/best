@@ -4,4 +4,35 @@
 >
 <mapper namespace="com.best.leave.LeaveDAO">
 
+	<!-- 연차용 사원 정보 겟 -->
+	<select id="getEmpList" parameterType="map" resultType="map">
+		SELECT 
+		    *,
+		    TIMESTAMPDIFF(YEAR, start_date, CURDATE()) AS years_of_service
+		FROM 
+		    employee
+		WHERE 
+		    end_date = '9999-12-31'
+		ORDER BY 
+		    start_date ASC;
+	</select>
+	
+	<!-- 1년미만 한달 만근 여부  -->
+	<select id="getAttendanceRecords">
+	    SELECT count(*)
+	    FROM attendance
+	    WHERE emp_idx = #{param1}
+	      AND date BETWEEN #{param2} AND #{param3}
+	      AND status != '결근'
+	</select>
+	
+	<!-- 1년미만 사원 만근 확인시 업데이트  -->
+	<update id="updateLeave">
+	    UPDATE leave_emp 
+	    SET 
+	        total_leave = total_leave + #{param2}, 
+	        remain_leave = remain_leave + #{param2}
+	    WHERE emp_idx = #{param1}
+	</update>
+	
 </mapper>  
