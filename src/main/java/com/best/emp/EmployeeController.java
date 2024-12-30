@@ -165,7 +165,7 @@ public class EmployeeController {
 	@RequestMapping(value="/orgChart.go")
 	public String orgChart() {
 		/* return "emp/orgChart"; */
-		return "modal/findAdd";
+		return "emp/orgChart";
 	}
 	
 	

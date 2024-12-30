@@ -68,4 +68,27 @@ public class MailController {
 		return mailService.mailList(map);
 	}
 	
+	// 메일읽음여부 변경
+	@RequestMapping(value="/updateReadStatus.ajax")
+	@ResponseBody
+	public int updateReadStatus(@RequestParam Map<String, Object> map) {
+	    // 메일 읽음여부 변경 후 결과값 반환
+	    return mailService.updateReadStatus(map);
+	}
+	
+	// 중요여부 변경
+	@RequestMapping(value="/updateSpecialStatus.ajax")
+	@ResponseBody
+	public int updateSpecialStatus(@RequestParam Map<String, Object> map) {
+		return mailService.updateSpecialStatus(map);
+	}
+	
+	// 메일 휴지통이동, 복구, 완전삭제 
+	@RequestMapping(value="/moveToTrash.ajax")
+	@ResponseBody
+	public int moveToTrash(@RequestParam Map<String, Object> map) {
+		return mailService.moveToTrash(map);
+	}
+
+	
 }
