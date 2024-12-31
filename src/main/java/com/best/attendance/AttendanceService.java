@@ -147,6 +147,9 @@ public class AttendanceService {
 //        logger.info("지각 횟수: {}", lateCount);
 //        logger.info("연차 횟수: {}", leaveCount);
 //        logger.info("결근 횟수: {}", absentCount);
+        
+        
+        
         map.put("workdays", filteredList.size());
         map.put("totalOverTime", totalOverTime);
         map.put("totalWorkTime", totalWorkTime);
