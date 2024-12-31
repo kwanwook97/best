@@ -44,7 +44,7 @@
 		SUM(CASE WHEN bm.status = '정비 중' THEN 1 ELSE 0 END) AS maintenance_count
 		FROM
 		bus b
-		JOIN
+		LEFT JOIN
 		bus_manage bm ON b.bus_idx = bm.bus_idx
 		GROUP BY b.route_name
 	</select>

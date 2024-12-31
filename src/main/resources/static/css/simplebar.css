@@ -103,3 +103,148 @@
     min-width: 10px;
     width: auto;
 }
+
+/* 알림 메시지 css */
+.notification {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	background-color: #FFF5E2;
+	color: #30005A;
+	padding: 7px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+	z-index: 1000;
+	display: none; /* 초기 상태는 숨김 */
+	width: 250px; /* 고정 너비 */
+	height: 100px; /* 고정 높이 */
+	overflow: hidden; /* 넘치는 내용 숨김 */
+	text-overflow: ellipsis; /* 초과 부분을 ...으로 표시 */
+	white-space: nowrap; /* 한 줄로 제한 */
+}
+
+.notification.show {
+	display: block; /* 표시 */
+	animation: fadeInOut 5s ease-in-out; /* 5초간 표시 후 사라짐 */
+}
+
+@
+keyframes fadeInOut { 0% {
+	opacity: 0;
+	transform: translateY(10px);
+}
+
+10
+%
+{
+opacity
+:
+1;
+transform
+:
+translateY(
+0
+);
+}
+90
+%
+{
+opacity
+:
+1;
+transform
+:
+translateY(
+0
+);
+}
+100
+%
+{
+opacity
+:
+0;
+transform
+:
+translateY(
+10px
+);
+}
+}
+.notification-profile {
+	background-color: #FFFBF2;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 7px;
+	border-radius: 5px;
+	width: 235px;
+	height: 80px;
+	gap: 10px;
+}
+
+.notifi-profile {
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+	color: #30005A;
+}
+
+.notification-profile .custom-image {
+	width: 45px !important;
+	height: 45px !important;
+}
+
+/* 드롭 다운 css */
+.dropdown {
+	position: relative; /* 드롭다운과 아이콘을 연결 */
+}
+
+.dropdown-menu-custom {
+	display: none;
+	position: absolute;
+	top: 100%; /* 아이콘 바로 아래에 위치 */
+	left: -140px;
+	background-color: #30005A;
+	border: 1px solid #ddd;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+	border-radius: 5px;
+	z-index: 1000;
+	min-width: 180px;
+}
+
+.dropdown-menu-custom.show {
+	display: block;
+}
+
+.dropdown-item {
+	padding: 7px;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.newMessageIndicator {
+	background-color: #E9396B;
+	border-radius: 50%;
+	width: 20px;
+	text-align: center;
+	display: none;
+	position: absolute;
+	top: 7px;
+	left: 111px;
+}
+
+.unread-message-count {
+	color: #FFF5E2;
+}
+
+#newMessageIndicator3 {
+	background-color: #E9396B;
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+	display: none;
+	position: absolute;
+	top: 5px;
+	left: 27px;
+}

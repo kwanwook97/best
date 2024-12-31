@@ -24,7 +24,6 @@ import com.best.websocket.WebsocketHandler;
 
 @Service
 public class ChatService {
-	@Autowired HttpSession session;
 
 	@Autowired
 	ChatDAO chatDAO;
@@ -360,8 +359,8 @@ public class ChatService {
 	}
 	
 	/* 전송자 사진 가져오기 */
-	public String getSenderPhoto(Integer empIdx) {
-		return chatDAO.getSenderPhoto(empIdx);
+	public Map<String, Object> senderInfo(Integer empIdx) {
+		return chatDAO.senderInfo(empIdx);
 	}
 	
 	/* 안읽은 메시지 총 갯수 */
@@ -370,29 +369,33 @@ public class ChatService {
     }
 	
 	/* 읽지 않은 메시지 총 갯수 브로드캐스트 */
-	public void broadcastUnreadTotal() {
-	    try {
-	        // 세션에서 로그인 ID 가져오기
-	        Integer empIdx = Integer.parseInt((String) session.getAttribute("loginId"));
-
-	        // 서비스 호출하여 읽지 않은 메시지 수 계산
+	public void broadcastUnreadTotal(int empIdx) {
+		try {
+	        log.info("읽지 않은 메시지 브로드캐스트 시작: empIdx = {}", empIdx);
 	        int unreadTotal = unreadTotal(empIdx);
+	        log.info("읽지 않은 메시지 총 갯수: {}", unreadTotal);
 
-	        // 브로드캐스트 데이터 구성
-	        Map<String, Object> payload = new HashMap<>();
-	        payload.put("type", "UPDATE_UNREAD_TOTAL");
-	        payload.put("emp_idx", empIdx);
-	        payload.put("unread_total", unreadTotal);
-
-	        log.info("브로드캐스트 페이로드: {}", payload);
-
-	        // WebSocket 브로드캐스트
-	        globalWs.broadcastUpdate(payload);
-
+	        GlobalWebsocketHandler.broadcastUnreadTotal(empIdx, unreadTotal);
 	    } catch (Exception e) {
-	        log.error("로그인 사용자 읽지 않은 메시지 총 갯수 브로드캐스트 실패", e);
+	        log.error("브로드캐스트 실패: {}", e.getMessage(), e);
 	    }
-	}
+    }
+	
+	/* 메시지 알림 */
+	public List<Map<String, Object>> msgAlarm(Integer empIdx) {
+        List<Map<String, Object>> messages = chatDAO.msgAlarm(empIdx);
+
+        for (Map<String, Object> message : messages) {
+            Integer senderIdx = (Integer) message.get("msg_send_idx");
+            Map<String, Object> senderInfo = chatDAO.senderInfo(senderIdx);
+
+            if (senderInfo != null) {
+                message.putAll(senderInfo);
+            }
+        }
+
+        return messages;
+    }
 
 
 }

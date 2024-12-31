@@ -105,15 +105,26 @@ public class WebsocketHandler extends TextWebSocketHandler {
             messagePayload.put("name", empName);
             messagePayload.put("time", System.currentTimeMillis());
             
-            String senderPhoto = chatService.getSenderPhoto(empIdx); // empIdx로 사진 경로 가져오기
-            messagePayload.put("photo", senderPhoto);
+            Map<String, Object> senderDetails = chatService.senderInfo(empIdx);
+            if (senderDetails != null) {
+                messagePayload.put("photo", senderDetails.get("photo"));
+                messagePayload.put("rank_name", senderDetails.get("rank_name"));
+            }
 
             // 개별 방 브로드캐스트
             broadcast(messagePayload);
            
             chatService.broadcastUnreadCount(chatIdx);
             
-            chatService.broadcastUnreadTotal();
+            for (WebSocketSession activeSession : GlobalWebsocketHandler.getSessions()) {
+                if (activeSession.isOpen()) {
+                    Integer targetEmpIdx = (Integer) activeSession.getAttributes().get("emp_idx");
+                    if (targetEmpIdx != null) {
+                        chatService.broadcastUnreadTotal(targetEmpIdx);
+                        log.info("웹소켓 핸들러 broadcastUnreadTotal 호출: empIdx = {}", empIdx);
+                    }
+                }
+            }
 
             if (!"CHAT_LIST_UPDATE".equals(messagePayload.get("type"))) {
                 globalWebsocketHandler.broadcastAll(messagePayload, session);

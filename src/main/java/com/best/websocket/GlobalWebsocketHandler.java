@@ -1,6 +1,7 @@
 package com.best.websocket;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,11 +21,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GlobalWebsocketHandler extends TextWebSocketHandler {
     private static final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(GlobalWebsocketHandler.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    public static List<WebSocketSession> getSessions() {
+        return sessions;
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
         log.info("글로벌 WebSocket 연결 성공: {}", session.getId());
+        Integer empIdx = (Integer) session.getAttributes().get("emp_idx");
+        log.info("세션 empIdx 설정: {}", empIdx);
     }
 
     @Override
@@ -56,6 +64,30 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
                     session.sendMessage(new TextMessage(jsonMessage));
                 } catch (IOException e) {
                     log.error("글로벌 WebSocket 메시지 전송 실패", e);
+                }
+            });
+    }
+    
+    public static void broadcastUnreadTotal(int empIdx, int unreadTotal) {
+    	log.info("글로벌 웹소켓 broadcastUnreadTotal 호출: empIdx = {}", empIdx);
+        sessions.stream()
+            .filter(WebSocketSession::isOpen)
+            .forEach(session -> {
+                try {
+                    Integer sessionEmpIdx = (Integer) session.getAttributes().get("emp_idx");
+                    if (sessionEmpIdx != null && sessionEmpIdx.equals(empIdx)) {
+                        Map<String, Object> payload = new HashMap<>();
+                        payload.put("type", "UPDATE_UNREAD_TOTAL");
+                        payload.put("emp_idx", empIdx);
+                        payload.put("unread_total", unreadTotal);
+
+                        String jsonMessage = objectMapper.writeValueAsString(payload);
+                        session.sendMessage(new TextMessage(jsonMessage));
+
+                        log.info("브로드캐스트 전송 성공: empIdx={}, unreadTotal={}", empIdx, unreadTotal);
+                    }
+                } catch (IOException e) {
+                    log.error("글로벌 WebSocket 메시지 전송 실패 - 세션 ID: {}", session.getId(), e);
                 }
             });
     }

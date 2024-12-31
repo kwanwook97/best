@@ -67,8 +67,10 @@ public interface ChatDAO {
 
 	String getChatNotice(int chat_idx);
 
-	String getSenderPhoto(Integer empIdx);
+	Map<String, Object> senderInfo(Integer empIdx);
 
 	int unreadTotal(int emp_idx);
+
+	List<Map<String, Object>> msgAlarm(Integer empIdx);
 
 }

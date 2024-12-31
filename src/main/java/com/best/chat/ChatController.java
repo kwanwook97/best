@@ -306,4 +306,11 @@ public class ChatController {
 	    // 서비스 호출하여 읽지 않은 메시지 수 계산
 	    return chatService.unreadTotal(emp_idx);
 	}
+	
+	/* 메시지 알림 */
+	@GetMapping(value="/msgAlarm.ajax")
+	@ResponseBody
+    public List<Map<String, Object>> msgAlarm(@RequestParam("emp_idx") Integer empIdx) {
+        return chatService.msgAlarm(empIdx);
+    }
 }

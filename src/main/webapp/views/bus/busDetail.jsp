@@ -8,7 +8,7 @@
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="resources/css/app-style.css" rel="stylesheet"/>
-  <script src="resources/js/busDetail.js"></script>
+  <script src="resources/js/bus/busDetail.js"></script>
   <style>
     .body {
 	height: auto;
@@ -174,6 +174,11 @@
 }
 .bus-detail-card{
 	width: 80%;
+    height: 93%;
+    overflow-y: auto;
+}
+.bus-detail-card::-webkit-scrollbar {
+	display: none;
 }
 .bus-info{
     width: 18%;
@@ -183,6 +188,7 @@
     flex-direction: column;
     background-color: #30005A;
     justify-content: space-between;
+    height: 94%;
 }
 .bus-info2{
 	width: 100%;

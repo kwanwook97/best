@@ -1,0 +1,602 @@
+@charset "UTF-8";
+
+:root { -
+	-primary-color: #30005A; -
+	-secondary-color: #8B6AA7; -
+	-accent-color: #E9396B;
+}
+
+.dashboard-body {
+	color: var(- -primary-color);
+	height: 92%;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: flex-start;
+	justify-content: center;
+	height: auto;
+	width: 83%;
+	margin-top: 80px;
+	margin-left: 300px;
+	margin-right: 100%;
+}
+
+.content-size {
+	width: 100%;
+	height: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.messenger-container {
+	display: flex;
+	height: 66vh;
+	color: #fff;
+	width: 84%;
+	border-radius: 10px;
+	margin: 1px 16px 1px 16px;
+}
+
+.sidebar {
+	width: 50%;
+	background-color: #30005A;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0 2% 0 0;
+	border-radius: 10px;
+	overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+	display: none;
+}
+
+.sidebar h3 {
+	margin: 0;
+	text-align: center;
+	font-size: 18px;
+	margin-bottom: 20px;
+}
+
+.chat-window {
+	width: 60%;
+	display: flex;
+	flex-direction: column;
+	background-color: #8B6AA7;
+	padding: 20px;
+	border-left: 2px solid #4a225d;
+	border-right: 2px solid #4a225d;
+	border-radius: 10px;
+}
+
+.chat-header {
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+
+.messages {
+	flex-grow: 1;
+	overflow-y: auto;
+	padding-right: 10px;
+}
+
+.message {
+	margin-bottom: 10px;
+	padding: 10px;
+	border-radius: 5px;
+	max-width: 70%;
+	line-height: 1.4;
+}
+
+.message.sent {
+	background-color: #9a57c6;
+	align-self: flex-end;
+}
+
+.message.received {
+	background-color: #8339a5;
+}
+
+.message-input {
+	display: flex;
+	gap: 10px;
+}
+
+.message-input input {
+	flex-grow: 1;
+	padding: 10px;
+	border-radius: 5px;
+	border: none;
+	outline: none;
+}
+
+.message-input button {
+	padding: 10px 20px;
+	border-radius: 5px;
+	border: none;
+	background-color: #9a57c6;
+	color: #fff;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.message-input button:hover {
+	background-color: #b06ed5;
+}
+
+.tm2 {
+	width: 21%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+
+.f32 {
+	font-size: 32px;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.lPurple {
+	color: #8B6AA7;
+}
+
+.chat-item {
+	display: flex;
+	align-items: center;
+	background-color: #FFFBF2;
+	padding: 10px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+	color: #fff;
+	transition: background-color 0.3s;
+}
+
+.chat-item:hover {
+	background-color: #FFF3D9;
+	cursor: pointer;
+}
+
+.chat-avatar {
+	width: 50px;
+	height: 50px;
+	border-radius: 20%;
+	overflow: hidden;
+	margin-right: 10px;
+	background-color: #fff; /* 기본 배경 (이미지 없을 때) */
+}
+
+.chat-avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.chat-details {
+	flex-grow: 1;
+}
+
+.chat-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+.chat-title {
+	font-weight: bold;
+	font-size: 16px;
+	color: #30005A;
+	max-width: 440px;
+	overflow: hidden; /* 넘치는 내용을 숨김 */
+    white-space: nowrap; /* 한 줄로 표시 */
+    text-overflow: ellipsis; 
+}
+
+.chat-time {
+	font-size: 12px;
+	color: #8B6AA7;
+}
+
+.chat-preview {
+	font-size: 14px;
+	color: #8B6AA7;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 529px;
+	display: flex;
+	justify-content: space-between;
+}
+
+/* 참여자리스트 */
+.member-list {
+	width: 100%;
+	background-color: #30005A;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0 0 0 0;
+	border-radius: 10px;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.member-list::-webkit-scrollbar {
+	display: none;
+}
+
+.image-label-wrapper {
+	display: flex;
+	align-items: center;
+	background-color: #FFFBF2; /* 배경색 */
+	border: 2px solid #30005A; /* 외곽선 */
+	border-radius: 10px; /* 둥근 모서리 */
+	padding: 5px 10px; /* 내부 여백 */
+	width: auto; /* 내용에 맞게 크기 조정 */
+	cursor: pointer;
+}
+
+.image-label-wrapper:hover {
+	background-color: #FFF3D9;
+	cursor: pointer;
+}
+
+.custom-image {
+	width: 30px; /* 이미지 크기 */
+	height: 30px;
+	border-radius: 5px; /* 이미지 둥글게 */
+	margin-right: 10px; /* 텍스트와의 간격 */
+}
+
+.custom-label {
+	color: #30005A; /* 텍스트 색상 */
+	font-size: 14px; /* 텍스트 크기 */
+	font-weight: bold; /* 텍스트 굵게 */
+}
+
+.line-box {
+	border: 3px solid #30005A;
+	width: 100%;
+	display: flex;
+	padding: 1% 1% 1% 1%;
+	border-radius: 10px;
+}
+/* 대화방 검색 바 */
+.chat-controls {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	padding: 10px;
+	margin-left: auto; /* 오른쪽으로 정렬 */
+	margin-right: 7vw;
+}
+
+.start-chat-button {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background-color: #ff527b;
+	color: white;
+	border: none;
+	padding: 10px 15px;
+	border-radius: 13px;
+	font-size: 14px;
+	cursor: pointer;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	transition: background-color 0.3s;
+	margin: 0 0 0 1px;
+	height: 31px;
+}
+
+.start-chat-button i {
+	font-size: 16px;
+}
+
+.start-chat-button:hover {
+	background-color: #ff385d;
+}
+
+.searchbar {
+	display: flex;
+	align-items: center;
+	border: 2px solid #6b3f86;
+	border-radius: 10px;
+	padding: 5px 10px;
+	background-color: white;
+	height: 31px;
+}
+
+.searchbar input {
+	border: none;
+	outline: none;
+	flex-grow: 1;
+	padding: 5px;
+	font-size: 14px;
+	height: 27px;
+}
+
+.searchbar i {
+	color: #ff527b;
+	font-size: 21px;
+	cursor: pointer;
+}
+
+.member-list-wrapper {
+	width: 50%;
+}
+
+.unread-count-list {
+	background-color: #E9396B;
+	border-radius: 50%;
+	width: 20px;
+	text-align: center;
+}
+
+.unread-message-count {
+	color: #FFF5E2;
+}
+
+.modal-header {
+	padding: 5px !important;
+	border-bottom: 0px !important;
+}
+
+.modal-header button {
+	border: 0px;
+	background-color: #FFF5E2;
+	color: #6C0F6C;
+}
+
+.close-modal {
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.subject-div, .search_bar-container {
+	position: relative;
+}
+
+#chatSubject, .search_bar {
+	border: 0px;
+	margin-bottom: 1rem;
+	width: 100%;
+	height: 36px;
+	background-color: #d1c4a8e0;
+	color: #30005A;
+	padding: 5px;
+	border-radius: 5px;
+}
+
+.fa-edit, .search-icon {
+	position: absolute;
+	right: 8px;
+	top: 35%;
+	transform: translateY(-50%);
+	color: #E9396B; /* 핑크색 */
+	font-size: 18px;
+	z-index: 1;
+	cursor: pointer;
+}
+
+search {
+	position: relative;
+	display: inline-block;
+}
+
+.subject-div::placeholder, .search_bar::placeholder {
+	color: #8B6AA7 !important;
+}
+
+.radio-container {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.radio-container label {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	width: 98%;
+	justify-content: space-between;
+	margin-left: 5px;
+}
+
+.radio-container img.custom-image {
+	width: 40px;
+	height: 40px;
+	border-radius: 5PX;
+	margin-right: 10px;
+}
+
+.radio-container span {
+	color: #30005A;
+	font-size: 14px;
+}
+
+.radio-container input[type="checkbox"] {
+	appearance: none; /* 기본 라디오 버튼 스타일 제거 */
+	margin-left: 10px;
+	height: 20px;
+	width: 20px;
+	border: 2px solid #d1c4a8e0; /* 기본 테두리 색상 */
+	background-color: #FFF5E2; /* 기본 배경색 */
+	border-radius: 50%; /* 원형 라디오 버튼 */
+	cursor: pointer;
+	position: relative;
+	display: inline-block;
+}
+
+.radio-container input[type="checkbox"]:checked {
+	background-color: #E9396B; /* 체크 시 배경색 */
+	border-color: #E9396B; /* 체크 시 테두리 색상 */
+}
+
+.radio-container input[type="checkbox"]::after {
+	content: '\f00c'; /* Font Awesome check 아이콘 (유니코드) */
+	font-family: "Font Awesome 5 Free"; /* Font Awesome 폰트 사용 */
+	font-weight: 900; /* 아이콘 굵기 */
+	color: #FFF; /* 아이콘 색상 */
+	font-size: 14px; /* 아이콘 크기 */
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	opacity: 0; /* 기본 상태에서 보이지 않음 */
+	transition: opacity 0.2s ease;
+}
+
+.radio-container input[type="checkbox"]:checked::after {
+	opacity: 1; /* 체크 시 아이콘 표시 */
+}
+
+#memberModal, #profileModal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 */
+	z-index: 1000;
+}
+
+#memberList {
+	list-style: none;
+	padding: 0px;
+}
+
+#memberList li {
+	display: flex;
+	justify-content: space-between;
+	list-style: none;
+}
+
+/* 모달 콘텐츠 */
+.modal-content {
+	position: fixed;
+	background-color: #FFF5E2;
+	padding: 10px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	width: 400px;
+	max-width: 90%;
+	text-align: center;
+	height: 500px;
+	overflow-y: auto;
+}
+
+.modal-content::-webkit-scrollbar {
+	display: none;
+}
+
+/* 닫기 버튼 */
+.close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	cursor: pointer;
+	font-size: 20px;
+	color: #333;
+}
+.modal-header{
+	display: flex;
+    align-items: center !important;
+}
+#profileModal .custom-image{
+    width: 70px;
+    height: 70px;
+	
+}
+#profileModal .modal-content{
+	height: 320px !important;
+}
+.btn-secondary {
+    color: #E9396B !important;
+    font-size: 20px;
+}
+.btn-secondary:hover {
+    color: #EF7597 !important;
+    background-color: #FFF5E2 !important;
+}
+.profile-header{
+	display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 15px;
+}
+.profile-header div{
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#profileModal ul{
+	width: 100%;
+	margin-left: 0px;
+	padding: 0px;
+}
+#profileModal li{
+	list-style: none;
+	display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #6C0F6C;
+}
+#profileModal li span:first-child{
+	color: #6C0F6C;
+	text-align: end;
+	width: 15%;
+}
+#profileModal li span:last-child{
+	text-align: start;
+	width: 45%;
+}
+#confirmModal .modal-content{
+    width: 300px !important;
+    height: 200px !important;
+}
+.modal-footer{
+	display: flex;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.modal-footer button:first-child{
+	background-color: #6C0F6C;
+	color: #FFF5E2 !important;
+}
+.modal-footer button:first-child:hover{
+	background-color: #981798;
+}
+.modal-footer button:last-child{
+	background-color: #E9396B;
+	color: #FFF5E2 !important;
+}
+.modal-footer button:last-child:hover{
+	background-color: #EF7597;
+}
+#selectedMembersContainer{
+	display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap; /* 너비 초과 시 다음 줄로 넘기기 */
+    gap: 10px; /* 멤버 간격 추가 */
+    max-width: 100%; /* 컨테이너의 최대 너비 제한 */
+    overflow: hidden;
+}
+.selected-member-container{
+	display: flex;
+    flex-direction: column;
+}
+.selected-member-container span:first-child{
+	display: flex;
+}
+.selected-member{
+	font-size: 12px;
+}
