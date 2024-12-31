@@ -1,5 +1,7 @@
 package com.best.attendance;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -59,6 +61,7 @@ public class AttendanceController {
 	@PostMapping(value="/checkButton.ajax")
 	@ResponseBody
 	public Map<String, Object> checkButton (@RequestBody Map<String, Object> params){
+		logger.info("params:{}",params);
 		return attendanceService.checkButton(params);
 	}
 	
@@ -74,4 +77,60 @@ public class AttendanceController {
 		return "emp/attendanceEmpList";
 	}
 	
+	// 출퇴근 기록 수정 데이터 가져오기
+	@PostMapping(value="/updateAttendance.ajax")
+	@ResponseBody
+	public Map<String, Object> updateAttendance(@RequestBody(required = false) Map<String, Object> params){
+			List<Map<String, Object>> list = (List<Map<String, Object>>) params.get("updatedList");
+		return attendanceService.updateAttendance(list);
+	}
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

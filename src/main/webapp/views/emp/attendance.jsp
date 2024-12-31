@@ -232,9 +232,43 @@
 		margin: -17px 0 0 19px;
 	}
 	.editable {
-		width: 100px;
+		width: 205px;
 	}
 	
+/* 모달 css	 */
+.modal-attendance {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content-attendance {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.modal-buttons-attendance {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#reasonInput {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    resize: none;
+    height: 200px;
+}	
 
 
   </style>
@@ -333,7 +367,13 @@
  		
  		<div class="contentBottom purple p1 f24">
  			<div class="h10 bold">
-				<span><i class="bi bi-clock-history"></i>&nbsp;&nbsp;출퇴근 기록</span> <button onclick="enableEditMode()">수정하기</button>
+				<span><i class="bi bi-clock-history"></i>&nbsp;&nbsp;출퇴근 기록</span>
+			    <c:if test="${not empty empIdx}">
+			    	<button onclick="enableEditMode()">수정하기</button>
+			    </c:if>
+			    <c:if test="${not empty empIdx}">
+			    	<button onclick="">수정내역</button>
+			    </c:if>
 			</div>
 			<!-- 출퇴근 기록 -->
 			<div class="bgColor h90">
@@ -403,14 +443,29 @@
 			
 		</div>
 	</div>
+	
+<div id="reasonModal" class="modal-attendance" style="display: none;">
+    <div class="modal-content-attendance">
+        <h3>변경 사유 입력</h3>
+        <textarea id="reasonInput" placeholder="변경 사유를 입력하세요..." rows="4" maxlength="200"></textarea>
+        <div class="modal-buttons-attendance">
+            <button id="confirmReason" onclick="saveEditedData()">확인</button>
+            <button id="cancelReason" onclick="hideReasonModal()">취소</button>
+        </div>
+    </div>
+</div>
+	
 </body>
 
 <script>
 var key = "${empIdx}";
+var empIdx ="";
 if (key) {
-	loginId = key;
+	empIdx = key;
+}else{
+	empIdx = loginId;
 }
-console.log("loginId: "+loginId);
+console.log("empIdx: "+empIdx);
 
 setInterval(updateClock, 1000)
 updateClock()
@@ -436,7 +491,7 @@ function updateTime(){
     $.ajax({
         url: "updateTime.ajax",
         type: "GET",
-        data: { loginId:loginId}, 
+        data: { loginId:empIdx}, 
         dataType: "json", 
         success: function (response) {
         	console.log('response:'+response.startTime);
@@ -457,7 +512,7 @@ function updateTime(){
             response.list.forEach(function (item) {
                 const row =
                     "<tr>" +
-                        "<td>" + (item.date || "*") + "</td>" +
+                        "<td data-attend-idx='" + item.attend_idx + "'>" + (item.date || "*") + "</td>" +
                         "<td>" + (item.start_time?  item.start_time.split(" ")[1] : "*") + "</td>" +
                         "<td>" + (item.end_time? item.end_time.split(" ")[1] : "*") + "</td>" +
                         "<td>" + (item.status || "*") + "</td>" +
@@ -513,79 +568,165 @@ function updateTime(){
 
 function enableEditMode() {
     if ($(".attendanceList input").length > 0) {
-        modal.showAlert('이미 수정 모드입니다!');
-        $(".attendanceList input").each(function () {
-            const value = $(this).val().trim(); // 입력된 값 가져오기
-            $(this).parent().text(value); // 입력 필드 제거 후 값 설정
-        });
-
+			cancle();
         // 저장 버튼 제거
-        $("#saveChanges").remove();
+
         return;
     }
 	
     $(".attendanceList tr").each(function () {
         $(this).find("td").each(function (index) {
-            if (index === 1 || index === 2 || index === 3 || index === 4 || index === 5 ) { 
-                const value = $(this).text().trim(); 
-                $(this).html('<input type="text" value="' + value + '" class="editable" />');
-            }
+            if (index === 0) { 
+                $(this).append('<input type="checkbox" class="rowCheckbox" />');
+            } else if (index === 1 || index === 2) {
+                const value = $(this).text().trim();
+                $(this).attr("data-original", value);
+                $(this).html('<input type="time" value="' + (value ==="*" ?  "00:00": value ) + '" class="editable" />');
+            }/*  else if (index === 3) {
+            	const value = $(this).text().trim();
+            	$(this).attr("data-original", value);
+
+            	const options = ['정상', '지각', '결근', '연차'];
+            	let selectHTML = '<select class="editable">';
+            	options.forEach(option => {
+            	    selectHTML += '<option value="' + option + '" ' + (value == option ? 'selected' : '') + '>' + option + '</option>';
+            	});
+            	selectHTML += '</select>';
+
+            	$(this).html(selectHTML);
+            } */
         });
     });
 
     // 수정 완료 버튼 표시 (수정 모드에서만 나타남)
     if ($("#saveChanges").length === 0) {
-        $(".h10").append('<button id="saveChanges">저장하기</button>');
+        $(".h10").append('<button id="saveChanges" onclick="showReasonModal()">저장하기</button>');
     }
 
-    // 저장 버튼 이벤트 추가
-    $("#saveChanges").on("click", function () {
-        saveEditedData();
-    });
 }
 
 function saveEditedData() {
     const updatedList = [];
-
+    
     $(".attendanceList tr").each(function () {
-        const row = {
-            date: $(this).find("td").eq(0).text().trim(),
-            start_time: $(this).find("td").eq(1).find("input").val() || "*",
-            end_time: $(this).find("td").eq(2).find("input").val() || "*",
-            status: $(this).find("td").eq(3).text().trim(),
-            calculate_time: $(this).find("td").eq(4).text().trim(),
-            over_time: $(this).find("td").eq(5).text().trim(),
-        };
-        updatedList.push(row);
+        if ($(this).find(".rowCheckbox").is(":checked")) {
+                    const attendIdx = $(this).find("td").eq(0).data("attend-idx");
+                    const date = $(this).find("td").eq(0).text().trim();
+                    const start_time = $(this).find("td").eq(1).find("input").val();
+                    const end_time = $(this).find("td").eq(2).find("input").val();
+                    /* const status = $(this).find("td").eq(3).find("input").val(); */
+                    const content = $("#reasonInput").val();
+            		
+                    const row = {
+                            attendIdx: attendIdx,
+                            date: date || "*",
+                            start_time: start_time || "*",
+                            end_time: end_time || "*",
+                            /* status: status || "*", */
+                            loginId: loginId,
+                            content: content
+                        };
+
+                updatedList.push(row); 
+        }
     });
+    hideReasonModal()
+    $("#saveChanges").remove();
 
     console.log("Updated List:", updatedList);
 
-    // 수정된 데이터를 서버로 전송
-    $.ajax({
+     // 수정된 데이터를 서버로 전송
+     $.ajax({
         url: "updateAttendance.ajax",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify({ attendanceList: updatedList }),
+        data: JSON.stringify({ updatedList: updatedList }),
         success: function (response) {
-            console.log("수정 성공:", response);
-            alert("출퇴근 기록이 저장되었습니다!");
-            updateTime();
-            // 수정 모드 종료: 버튼과 입력 필드 제거
-            $(".attendanceList input").each(function () {
-                const value = $(this).val().trim(); // 입력된 값 가져오기
-                $(this).parent().text(value); // 입력 필드 제거 후 값 설정
-            });
+            console.log("response:", response);
+            if (response.msg == "성공") {
+                updateTime();
+	            
+			}else{
+				modal.showAlert(response.msg);
+			}
+            
 
-            // 저장 버튼 제거
-            $("#saveChanges").remove();
         },
         error: function (xhr, status, error) {
             console.error("에러:", error);
         }
-    });
+    });  
 }
 
+function cancle(){
+	$(".attendanceList tr").each(function () {
+	    $(this).find("td").each(function (index) {
+	        if (index === 0) {
+	            $(this).find(".rowCheckbox").remove();
+	        } else if (index === 1 || index === 2 || index === 3) {
+                // 원래 값 복원
+                const originalValue = $(this).attr("data-original") || "*";
+                $(this).text(originalValue);
+                $(this).removeAttr("data-original");
+            }
+	    });
+	});
+    $("#saveChanges").remove();
+}
+
+/* 모달 온오프 */
+function showReasonModal() {
+    const isChecked = $(".attendanceList .rowCheckbox:checked").length > 0;
+    if (!isChecked) {
+        return modal.showAlert('수정할 항목을 선택하세요.');
+    }
+
+    let hasError = false;
+
+    $(".attendanceList tr").each(function () {
+        if ($(this).find(".rowCheckbox").is(":checked")) {
+            const attendIdx = $(this).find("td").eq(0).data("attend-idx");
+            const date = $(this).find("td").eq(0).text().trim();
+            const start_time = $(this).find("td").eq(1).find("input").val();
+            const end_time = $(this).find("td").eq(2).find("input").val();
+            /* const status = $(this).find("td").eq(3).find("input").val(); */
+            const content = $("#reasonInput").val();
+
+            if (!start_time) {
+                modal.showAlert("출근 시간이 비어있습니다. 입력해 주세요.");
+                hasError = true;
+                return false; 
+            }
+            if (!end_time) {
+                modal.showAlert("퇴근 시간이 비어있습니다. 입력해 주세요.");
+                hasError = true;
+                return false;
+            }
+/*             if (!status) {
+                modal.showAlert("근무 상태가 비어있습니다. 입력해 주세요.");
+                hasError = true;
+                return false;
+            } */
+            if (typeof loginId === "undefined" || loginId === null || loginId === "") {
+                modal.showAlert("로그인 후 이용해 주시기 바랍니다.");
+                hasError = true;
+                return false;
+            }
+        }
+    });
+
+    if (hasError) {
+        return;
+    }
+
+    $("#reasonModal").fadeIn();
+}
+
+
+function hideReasonModal() {
+    $("#reasonModal").fadeOut();
+    $("#reasonInput").val("");
+}
 
 
 
