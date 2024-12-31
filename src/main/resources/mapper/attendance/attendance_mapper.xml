@@ -31,16 +31,17 @@
 	<!-- 출퇴근 시간 가져오기 -->
 	<select id="getWorkTime" parameterType="map" resultType="map">
 		SELECT 
-			DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') AS start_time,
-			DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') AS end_time
+			DATE_FORMAT(start_time, '%Y-%m-%d %H:%i') AS start_time,
+			DATE_FORMAT(end_time, '%Y-%m-%d %H:%i') AS end_time
 		FROM attendance WHERE emp_idx = #{loginId} AND date = CURDATE()
 	</select>
 	<!-- 출퇴근 리스트 반환 -->
 	<select id="getAttendanceList" parameterType="map" resultType="map">
 		SELECT
-		    DATE_FORMAT(start_time, '%Y-%m-%d %H:%i:%s') AS start_time,
-		    DATE_FORMAT(end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
-		    calculate_time,
+			attend_idx,
+		    DATE_FORMAT(start_time, '%Y-%m-%d %H:%i') AS start_time,
+		    DATE_FORMAT(end_time, '%Y-%m-%d %H:%i') AS end_time,
+		    COALESCE(calculate_time, 0.0) as calculate_time,
 		    status,
 		    date,
 		    CASE 
@@ -54,7 +55,10 @@
 	
 	<!-- 출근 버튼 누른 유저인지 체크용 -->
 	<select id="checkButton" parameterType="map">
-		SELECT count(start_time)as startTime , count(end_time)as endTime  FROM attendance WHERE emp_idx = #{loginId} AND date = CURDATE()
+		SELECT 
+	        DATE_FORMAT(start_time, '%H:%i') AS startTime,
+	        DATE_FORMAT(end_time, '%H:%i') AS endTime
+		FROM attendance WHERE emp_idx = #{loginId} AND date = CURDATE()
 	</select>
 	
 	<!-- 퇴근 버튼 누를때 업데이트 -->
@@ -65,10 +69,10 @@
 		    content = '본인',
 		    calculate_time = TRUNCATE(TIMESTAMPDIFF(MINUTE, start_time, NOW()) / 60, 1),
 		    status = CASE 
-		                 WHEN HOUR(start_time) &lt;= 9 AND HOUR(NOW()) >= 18 THEN '정상'
-		                 WHEN HOUR(start_time) > 9 AND HOUR(NOW()) >= 18 THEN '지각'
-		                 WHEN HOUR(start_time) > 9 AND HOUR(NOW()) &lt; 18 THEN '비정상'
-		                 WHEN HOUR(start_time) &lt;= 9 AND HOUR(NOW()) &lt; 18 THEN '조퇴'
+		                 WHEN TIME(start_time) &lt;= '09:00:00' AND TIME(NOW()) >= '18:00:00' THEN '정상'
+		                 WHEN TIME(start_time) > '09:00:00' AND TIME(NOW()) >= '18:00:00' THEN '지각'
+		                 WHEN TIME(start_time) > '09:00:00' AND TIME(NOW()) &lt; '18:00:00' THEN '비정상'
+		                 WHEN TIME(start_time) &lt;= '09:00:00' AND TIME(NOW()) &lt; '18:00:00' THEN '조퇴'
 		             END
 		WHERE 
 		    date = CURDATE() 
@@ -88,6 +92,47 @@
 	    WHERE date = #{date}
 	      AND start_time IS NULL
 	</update>
+	
+	<!-- 출근버튼시 업데이트 emp 출근중 -->
+	<update id="upEmpStatus" parameterType="map">
+		UPDATE employee SET state = #{state} where emp_idx = #{loginId}
+	</update>
+	
+	<!-- 근태 수정 로직 -->
+	<select id="selectAttendance" parameterType="map" resultType="map">
+	    SELECT 
+		    COALESCE(start_time, '00:00:00') AS prevStartTime,
+		    COALESCE(end_time, '00:00:00') AS prevEndTime
+	    FROM attendance
+	    WHERE attend_idx = #{attendIdx}
+	</select>
+	<update id="updateAttendance" parameterType="map">
+		UPDATE attendance
+		SET 
+		    end_time = CONCAT(#{date}, ' ', #{end_time}), 
+		    content = '수정',
+		    start_time = CONCAT(#{date}, ' ', #{start_time}),
+		    calculate_time = TRUNCATE(TIMESTAMPDIFF(MINUTE, CONCAT(#{date}, ' ', #{start_time}), CONCAT(#{date}, ' ', #{end_time})) / 60, 1),
+			status = CASE 
+			             WHEN #{start_time} &lt;= '09:00' AND #{end_time} >= '18:00' THEN '정상'
+			             WHEN #{start_time} > '09:00' AND #{end_time} >= '18:00' THEN '지각'
+			             WHEN #{start_time} > '09:00' AND #{end_time} &lt; '18:00' THEN '비정상'
+			             WHEN #{start_time} &lt;= '09:00' AND #{end_time} &lt; '18:00' THEN '조퇴'
+			         END
+		WHERE 
+			attend_idx = #{attendIdx}
+	</update>
+	<insert id="insertAttendanceHistory" parameterType="map">
+		INSERT INTO attendance_history
+		(emp_idx,attend_idx,content,prev_start_time,prev_end_time,new_start_time,new_end_time)
+		VALUES
+		(#{loginId},#{attendIdx},#{content},
+      	CASE WHEN #{prevStartTime} = '00:00:00' THEN NULL ELSE #{prevStartTime} END,
+        CASE WHEN #{prevEndTime} = '00:00:00' THEN NULL ELSE #{prevEndTime} END,
+		CONCAT(#{date}, ' ', #{start_time}),CONCAT(#{date}, ' ', #{end_time}))
+	</insert>
+	
+	
 </mapper>  
 
 

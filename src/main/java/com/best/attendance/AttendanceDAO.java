@@ -27,5 +27,13 @@ public interface AttendanceDAO {
 
 	void updateAbsent(LocalDate today);
 
+	void upEmpStatus(Map<String, Object> params);
+
+	void updateAttendance(Map<String, Object> map);
+
+	int insertAttendanceHistory(Map<String, Object> map);
+
+	Map<String, Object> selectAttendance(Map<String, Object> map);
+
 
 }
