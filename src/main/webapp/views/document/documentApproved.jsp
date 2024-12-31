@@ -218,7 +218,7 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}	
-	div.content div.modal-box{
+	div.content_emp div.modal-box{
 		display: none;
 	}
 	@media ( min-width :1200px) {
@@ -373,7 +373,7 @@ function received(document) {
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
 		content += '<td>' + item.form_subject + '</td>';
-		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		content += '<td onclick="receivedDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
 		content += '<td>' + item.name + '</td>';
 		
 		var doc_date = new Date(item.doc_date);

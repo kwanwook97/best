@@ -105,6 +105,9 @@ public interface DocumentDAO {
 	int approveStatus(String doc_idx, String approv_order, String approv_date);
 	int documentStatus(String doc_idx, String doc_content);
 	int documentStatusT(String doc_idx, String doc_content);
+	// 결재 반려
+	int rejectStatus(String doc_idx, String emp_idx, String approv_date);
+	int documentStatusReject(String doc_idx, String doc_content, String remark);
 
 
 

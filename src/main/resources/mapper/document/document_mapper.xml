@@ -733,13 +733,21 @@
 	
 	<!-- 결재 승인 -->
 	<update id="approveStatus" parameterType="String">
-		UPDATE approv SET status = "승인", approv_date = #{approv_date} WHERE doc_idx = #{doc_idx} AND approv_order = #{approv_order}
+		UPDATE approv SET status = "승인", approv_date = #{approv_date}, doc_read= 0 WHERE doc_idx = #{doc_idx} AND approv_order = #{approv_order}
 	</update>
 	<update id="documentStatus" parameterType="String">
 		UPDATE document SET status = "진행중", doc_content = #{doc_content} WHERE doc_idx = #{doc_idx}
 	</update>
 	<update id="documentStatusT" parameterType="String">
 		UPDATE document SET status = "승인", doc_content = #{doc_content} WHERE doc_idx = #{doc_idx}
+	</update>
+	
+	<!-- 결재 반려 -->
+	<update id="rejectStatus" parameterType="String">
+		UPDATE approv SET status = "반려", approv_date = #{approv_date}, doc_read= 0 WHERE doc_idx = #{doc_idx} AND emp_idx = #{emp_idx}
+	</update>
+	<update id="documentStatusReject" parameterType="String">
+		UPDATE document SET status = "반려", doc_content = #{doc_content}, remark = #{remark} WHERE doc_idx = #{doc_idx}
 	</update>
 	
 	

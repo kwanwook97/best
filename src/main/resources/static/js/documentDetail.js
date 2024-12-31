@@ -4,7 +4,9 @@ function draftDetail(doc_idx) {
     $.ajax({
         type: 'GET',
         url: 'draftDetail.ajax',
-        data: { doc_idx: doc_idx },
+        data: { 
+        	doc_idx: doc_idx
+         },
         dataType: 'text',
         success: function(response) {
         	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
@@ -45,13 +47,20 @@ function open(content) {
 
 function receivedDetail(doc_idx) {
 	console.log("누른거 idx : ",doc_idx);
+    var approv_num = $('.update[data-doc-idx="' + doc_idx + '"]').data('approv-num');
+	var icon = $('.update[data-approv-num="' + approv_num + '"]').find('i');
+    console.log("번호뭔데"+approv_num);
     $.ajax({
         type: 'GET',
         url: 'draftDetail.ajax',
-        data: { doc_idx: doc_idx },
+        data: { 
+        	doc_idx: doc_idx,
+        	approv_num: approv_num
+    	},
         dataType: 'text',
         success: function(response) {
         	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
+            icon.removeClass('fa-envelope').addClass('fa-envelope-open-text').attr('title', '읽음');
         	receivedOpen(response); 
         },
         error: function(xhr, status, error) {

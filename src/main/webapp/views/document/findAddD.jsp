@@ -580,7 +580,7 @@ $(document).ready(function () {
                    '    <td class="signTwo" style="text-align: center; border: 1px solid black;" onclick="signAdd(this)"></td>' +
                    '  </tr>' +
                    '  <tr>' +
-                   '    <td class="todayDate3" style="text-align: center; height: 0.5vh; border: 1px solid black;"></td>' +
+                   '    <td class="todayDate3" style="text-align: center; height: 24px; border: 1px solid black;"></td>' +
                    '  </tr>' +
                    '</table>';
 

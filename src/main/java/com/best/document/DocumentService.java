@@ -489,12 +489,26 @@ public class DocumentService {
 		documentDao.approveStatus(doc_idx, approv_order, approv_date);
 		
 		doc_content = doc_content.replaceFirst(
-			    "(<input\\s+type=\"text\"\\s+class=\"today3\"[^>]*value=\")[^\"]*(\"[^>]*>)",
-			    "$1" + approvDate + "$2"
-		    );
+			"(<td\\s+class=\"todayDate3\"[^>]*>)(</td>)",
+				"$1" + approvDate + "$2"
+			);
 		logger.info("뭔데 : "+ doc_content);
 		
 		documentDao.documentStatusT(doc_idx, doc_content);
+	}
+	// 결재 반려
+	@Transactional
+	public void rejectStatus(String doc_idx, String emp_idx, String remark, String doc_content) {
+		String approv_date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		String approvDate= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		
+		documentDao.rejectStatus(doc_idx, emp_idx, approv_date);
+		
+		doc_content = doc_content.replaceFirst(
+			"(<td\\s+class=\"todayDate4\"[^>]*>)(</td>)",
+				"$1" + approvDate + "$2"
+			);
+		documentDao.documentStatusReject(doc_idx, doc_content, remark);
 	}
 
 

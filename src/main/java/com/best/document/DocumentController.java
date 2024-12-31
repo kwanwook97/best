@@ -144,8 +144,12 @@ public class DocumentController {
 	// 임시저장 상세보기
 	@GetMapping(value={"/draftDetail.ajax", "/pendingDetail.ajax"})
 	@ResponseBody
-	public String draftDetail(@RequestParam("doc_idx") String doc_idx) {
+	public String draftDetail(@RequestParam("doc_idx") String doc_idx, @RequestParam(required = false) Integer approv_num) {
 		String Detail = documentService.draftDetail(doc_idx);
+		if(approv_num != null) {;
+			int docIdx = Integer.parseInt(doc_idx);
+			documentService.updateRead("결재자", docIdx, 1, approv_num);
+		}
 		logger.info("바꾸고 난거: "+Detail);
 		return Detail;		
 	}
@@ -288,7 +292,12 @@ public class DocumentController {
 	// 결재 승인, 반려
 	@PostMapping(value="/approveDoc.ajax")
 	@ResponseBody
-	public ResponseEntity<Map<String, String>> approveDoc(String doc_idx, String approv_order, String actionType, String doc_content){
+	public ResponseEntity<Map<String, String>> approveDoc(String doc_idx, 
+			@RequestParam(required = false) String approv_order, 
+			@RequestParam(required = false) String remark,
+			@RequestParam(required = false) String emp_idx,
+			String actionType, 
+			String doc_content){
 		Map<String, String> response = new HashMap<String, String>();
 		
 		if ("승인".equals(actionType)) {
@@ -298,8 +307,8 @@ public class DocumentController {
 				documentService.approveStatusT(doc_idx, approv_order, doc_content);
 			}
 			
-		}else if("반려".equals(actionType)) {
-			
+		}else if("제출".equals(actionType)) {
+			documentService.rejectStatus(doc_idx, emp_idx, remark, doc_content);
 		}
 			
 			

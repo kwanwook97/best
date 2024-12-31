@@ -619,6 +619,69 @@ function docAction(actionType) {
 		
 	}else if(actionType === '반려'){
 		
+		var newTableHtml = 
+			'<br>' +
+		    '<table class="remarkComment" style="height: 14vh; border: 1px solid black; border-collapse: collapse;">' +
+		    '  <tr>' +
+		    '    <td style="text-align: center; width: 95px; border: 1px solid black; background-color: gainsboro; font-size: 14px; font-weight: bold;">반려자</td>' +
+		    '    <td class="empIdx" style="text-align: center; height: 24px; border: 1px solid black;">' +
+		    '      <input type="text" class="manager" value="'+emp_name+'" readonly/>' +
+		    '    </td>' +
+		    '  </tr>' +
+		    '  <tr>' +
+		    '    <td style="text-align: center; width: 95px; border: 1px solid black; background-color: gainsboro; font-size: 14px; font-weight: bold;">반려일자</td>' +
+		    '    <td class="todayDate4" style="text-align: center; height: 24px; border: 1px solid black;"></td>' +
+		    '  </tr>' +
+		    '  <tr>' +
+		    '    <td style="text-align: center; width: 95px; border: 1px solid black; background-color: gainsboro; font-size: 14px; font-weight: bold;">반려 사유</td>' +
+		    '    <td>' +
+		    '      <textarea name="remark" id="reject" maxlength="200" placeholder="반려사유를 입력해주세요. 200자 이내"></textarea>' +
+		    '    </td>' +
+		    '  </tr>' +
+		    '</table>'+
+		    '<button class="rejectBtn" onclick="docAction(\'제출\')">제출</button>';
+
+		$('.content_emp').find('table:last').after(newTableHtml);
+		
+	}else if(actionType === '제출'){
+		
+
+		var remark = $('textarea[name="remark"]').val();
+		var doc_idx = $('input[name="doc_idx"]').val();
+		console.log("사유 "+remark);
+		console.log("내 번호 "+emp_idx);
+		console.log("문서번호"+doc_idx);
+		
+		var updatedHtml = $('.modal-content:last-child').html();
+		updatedHtml = updatedHtml.replace(
+		    /<textarea[^>]*name="remark"[^>]*>.*?<\/textarea>/,
+		    function(match) {
+		        return match.replace(/(<textarea[^>]*name="remark"[^>]*>)(.*?)(<\/textarea>)/, '$1' + remark + '$3');
+		    }
+		);
+		
+        $('.modal-content:last-child').html(updatedHtml);
+        doc_content = $('.modal-content:last-child').html();
+        
+        console.log("바뀌어라 "+doc_content);
+		$.ajax({
+            type: 'POST',
+            url: 'approveDoc.ajax',
+            data: {
+            	actionType: actionType,
+            	doc_idx: doc_idx,
+            	emp_idx: emp_idx,
+            	remark: remark,
+            	doc_content: doc_content
+            },
+            success: function(response) {
+            	alert("반려 완료");
+	        	location.reload();
+            },
+            error: function(xhr, status, error) {
+                console.error("서버 요청 실패:", error);
+            }
+        });
 	}
 }
 
