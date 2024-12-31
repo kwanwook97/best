@@ -45,6 +45,8 @@ public class AttendanceService {
 		logger.info("종원테스트:{}",row);
 		if (row >0) {
 			response.put("msg", "성공");
+			params.put("state",true);
+			attendanceDAO.upEmpStatus(params);
 		}else {
 			response.put("msg", "실패");
 		}
@@ -101,7 +103,7 @@ public class AttendanceService {
         double totalOverTime = filteredList.stream()
                 .mapToDouble(item -> {
                     Object overTime = item.get("over_time"); // "over_time" 값 가져오기
-                    return overTime != null ? Double.parseDouble(overTime.toString()) : 0.0; 
+                    return overTime != null ? Math.round(Double.parseDouble(overTime.toString()) * 10) / 10.0 : 0.0; 
                 })
                 .sum();
         
@@ -110,10 +112,14 @@ public class AttendanceService {
         double totalWorkTime = filteredList.stream()
                 .mapToDouble(item -> {
                     Object calculateTime = item.get("calculate_time");
-                    return calculateTime != null ? Double.parseDouble(calculateTime.toString()) : 0.0;
+                    return calculateTime != null ? Math.round(Double.parseDouble(calculateTime.toString()) * 10) / 10.0  : 0.0;
                 })
                 .sum(); 
-        logger.info("총 근무시간: {}", totalWorkTime);
+        
+//        Math.round(Double.parseDouble(totalWorkTime.toString()) * 10) / 10.0
+        totalWorkTime = Math.round(totalWorkTime * 10) / 10.0; 
+        totalOverTime = Math.round(totalOverTime * 10) / 10.0; 
+        //logger.info("총 근무시간: {}", totalWorkTime);
         long lateCount = filteredList.stream()
             .filter(item -> "지각".equals(item.get("status")))
             .count();
@@ -135,10 +141,12 @@ public class AttendanceService {
         	    .count();
         
         Integer remainLeave = attendanceDAO.getLeave(params);
-
-        logger.info("지각 횟수: {}", lateCount);
-        logger.info("연차 횟수: {}", leaveCount);
-        logger.info("결근 횟수: {}", absentCount);
+        
+//        logger.info("totalWorkTime:{}",totalWorkTime);
+//        
+//        logger.info("지각 횟수: {}", lateCount);
+//        logger.info("연차 횟수: {}", leaveCount);
+//        logger.info("결근 횟수: {}", absentCount);
         map.put("workdays", filteredList.size());
         map.put("totalOverTime", totalOverTime);
         map.put("totalWorkTime", totalWorkTime);
@@ -156,10 +164,17 @@ public class AttendanceService {
 			
 //		int s = (int) map.get("startTime");
 //		int a = (int) map.get("endTime");
+
+//		logger.info("시작:{}",map.get("startTime"));
+//		logger.info("끝:{}",map.get("endTime"));
+//		logger.info("맵:{}",map);
+	    if (map == null || map.isEmpty()) {
+	    	map = new HashMap<>(); // 빈 Map을 생성
+	    	map.put("msg", "출근 기록이 없습니다.");
+	    	map.put("startTime", 0);
+	    	map.put("endTime", 0);
+	    }
 		
-		logger.info("시작:{}",map.get("startTime"));
-		logger.info("끝:{}",map.get("endTime"));
-		logger.info("맵:{}",map);
 		
 		return map;
 	}
@@ -167,18 +182,52 @@ public class AttendanceService {
 	public Map<String, Object> updateEndTime(Map<String, Object> params) {
 		Map<String, Object> response = new HashMap<String, Object>();
 		int row = attendanceDAO.updateEndTime(params);
-		logger.info("종원테스트퇴근:{}",row);
+		/* logger.info("종원테스트퇴근:{}",row); */
 		if (row >0) {
 			response.put("msg", "성공");
+			params.put("state", false);
+			attendanceDAO.upEmpStatus(params);
 		}else {
 			response.put("msg", "실패");
 		}
+		
+		
 		
 		return response;
 	}
 
 	public void updateAbsent(LocalDate today) {
 		attendanceDAO.updateAbsent(today);
+	}
+
+	public Map<String, Object> updateAttendance(List<Map<String, Object>> list) {
+		Map<String, Object> response = new HashMap<>();
+		int row = 0 ;
+		if (list == null) {
+		    response.put("msg", "매개변수 빈필드 오류");
+		}else {
+			for (Map<String, Object> map : list) {
+			Map<String, Object> prev = attendanceDAO.selectAttendance(map);
+			
+			logger.info("prev:{}",prev);
+				map.put("prevStartTime", prev.get("prevStartTime"));
+				map.put("prevEndTime", prev.get("prevEndTime"));
+				//map.put("prevStatus", prev.get("prevStatus"));
+				attendanceDAO.updateAttendance(map);
+				row += attendanceDAO.insertAttendanceHistory(map);
+			}
+			
+			if (row > 0) {
+				response.put("msg", "성공");
+			}else {
+				response.put("msg", "실패");
+			}
+			
+			
+		}
+		
+		
+		return response;
 	}
 
 	

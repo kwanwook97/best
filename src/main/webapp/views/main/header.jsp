@@ -118,6 +118,19 @@ var loginId = ${sessionScope.loginId};
 	color: #FFF5E2;
 }
 
+.work-time {
+	width: 100%;
+}
+.spanAction span {
+	display: none;
+	width: 30%;
+	margin: 0 0 0 14px;
+}
+.spanAction {
+	width: 45%;
+	display: none;
+}
+
 </style>
 
 <body>
@@ -484,6 +497,9 @@ var loginId = ${sessionScope.loginId};
       <div class="work-time">
             <i class="bi bi-clock-history"></i>
             <button class="btn-start-work" onclick="updateStartTime()">출근</button>
+	            <span class="spanAction"> 
+	            	<span>startTime </span>	~ <span>endTime</span>
+	            </span>
             <button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
          </div>
     </li>
@@ -558,13 +574,20 @@ function checkButton(){
        console.log(data.row)
         const button = document.querySelector('.btn-start-work');
         const finish = document.querySelector('.btn-finish-work');
+        const spans = document.querySelectorAll('.spanAction span');
+        const spanAction = document.querySelector('.spanAction');
        if (data.startTime) {
             button.style.display = 'none';
             finish.style.display = 'block';
+            spans[0].textContent = data.startTime;
+            spans[0].style.display = 'block';
+            spans[1].style.display = 'block';
+            spanAction.style.display = 'flex';
       }
        if (data.startTime && data.endTime) {
          finish.disabled = true;
-      }
+         spans[1].textContent = data.endTime;
+      }		
         
     })
     .catch(error => {
