@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -32,11 +33,16 @@ public class MailService {
 	public Map<String, Object> mailList(Map<String, String> map) {
 		
 		
+		int totalPages = 0;
 		int status = Integer.parseInt(map.get("status"));
 		int page = Integer.parseInt(map.get("page"));
 		int cnt = Integer.parseInt(map.get("cnt"));
 		int emp_idx = Integer.parseInt(map.get("emp_idx"));
 		int delete_flag = Integer.parseInt(map.get("delete_flag"));
+		
+		int mailFilter = Integer.parseInt(map.get("mailFilter")); // 0: 필터X, 1: 중요필터, 2:읽음필터
+		int special_flag = 0;
+		int read_flag = 0;
 		
 		
 		String table = map.get("table");
@@ -49,7 +55,6 @@ public class MailService {
 		if(!map.get("searchKeyword").equals("")) {
 			searchKeyword = map.get("searchKeyword");
 		}
-		
 		
 		
 		logger.info("현재페이지 : "+page);
@@ -70,14 +75,58 @@ public class MailService {
 		condition.put("table", table);
 		condition.put("delete_flag", delete_flag);
 		
-		int totalPages = mailDao.allCount(condition);
 		
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("totalPages", totalPages);
-		result.put("currPage", page);
-		result.put("list", mailDao.mailList(condition));		
+		// 필터여부
+		switch (mailFilter) {
+		case 0:
+			break;
+		case 1:
+			special_flag = Integer.parseInt(map.get("special_flag")); 
+			condition.put("special_flag", special_flag);
+			condition.put("mailFilter", 1);
+			break;
+		case 2:
+			read_flag = Integer.parseInt(map.get("read_flag")); 
+			condition.put("read_flag", read_flag);
+			condition.put("mailFilter", 2);
+			break;
+		}
 		
-		return result;
+		
+		List<Map<String, Object>> list = new ArrayList<>();
+		
+		// 휴지통 목록인경우 mail_send, mail_receive 테이블을 둘다 뒤져야함. 
+	    if (table.equals("mail_trash")) {
+	        // mail_trash 테이블일 경우, 두 테이블의 데이터를 합산
+	        condition.put("table", "mail_send");
+	        // status 0:임시저장, 1:발송 상관없이 모두 조회하기 위해 임의의 999값세팅
+	        condition.put("status", 999);
+	        totalPages += mailDao.allCount(condition);
+	        list.addAll(mailDao.mailList(condition));
+
+	        condition.put("table", "mail_receive");
+	        totalPages += mailDao.allCount(condition);
+	        list.addAll(mailDao.mailList(condition));
+	    } else {
+	        // 일반 테이블 조회
+	        condition.put("table", table);
+	        totalPages = mailDao.allCount(condition);
+	        list.addAll(mailDao.mailList(condition));
+	    }
+
+	    // 결과 데이터 구성
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("totalPages", totalPages);
+	    result.put("currPage", page);
+	    result.put("list", list);
+	    
+	    // 조건에 맞는 전체 리스트 개수 가져오기.
+	    // No.를 부여하기위함.
+	    condition.put("cnt", 1);
+	    int totalCnt = mailDao.allCount(condition);
+	    result.put("totalCnt", totalCnt);
+
+	    return result;
 	}
 
 	// 사원정보 가져오기(메일, 이름, idx) 
@@ -225,15 +274,33 @@ public class MailService {
 	}
 
 	// 메일 휴지통이동, 복구, 완전삭제 
-	public int moveToTrash(Map<String, Object> map) {
+	public int updateDeleteStatus(Map<String, Object> map) {
 		
 		int mail_idx = Integer.parseInt((String) map.get("mailIdx"));
 		int delete_flag = Integer.parseInt((String) map.get("delete_flag"));
 		map.put("mail_idx", mail_idx);
 		map.put("delete_flag", delete_flag);
 		
-		return mailDao.moveToTrash(map);
+		return mailDao.updateDeleteStatus(map);
 	}
+
+	
+	// 메일상세보기
+	@Transactional
+	public void mailDetail(String idx, Model model) {
+		
+		int mail_send_idx = Integer.parseInt(idx);
+		
+		// 작성자 데이터 가져오기 
+		MailSendDTO senderDto = mailDao.senderDetail(mail_send_idx);
+		model.addAttribute("senderDto", senderDto);
+		
+		// 수신자 데이터 가져오기
+		List<MailReceiveDTO> receiverList = mailDao.receiverDetail(mail_send_idx);
+		model.addAttribute("receiverList", receiverList);
+		
+	}
+
 
 
 

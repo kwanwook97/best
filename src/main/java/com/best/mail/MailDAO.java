@@ -31,9 +31,14 @@ public interface MailDAO {
 
 	// 중요여부 업데이트
 	int updateSpecialStatus(Map<String, Object> map);
-
+	
 	// 메일 휴지통이동, 복구, 완전삭제 
-	int moveToTrash(Map<String, Object> map);
+	int updateDeleteStatus(Map<String, Object> map);
+
+	// 메일상세보기 - 작성자 데이터
+	MailSendDTO senderDetail(int mail_send_idx);
+	// 메일상세보기 - 수신자 데이터
+	List<MailReceiveDTO> receiverDetail(int mail_send_idx);
 	
 	
 }

@@ -8,53 +8,87 @@
 	
 
 
-<!-- 메일 종류(table) 및 검색 조건(searchKeyword, searchFilter)에 따라 WHERE 절을 구성. -->
-	<sql id="mailWhere">
-	    <choose>
-	        <!-- 받은 메일함 조건 -->
-	        <when test="table == 'mail_receive'">
-	            AND mr.receiver_idx = #{emp_idx}
-	            
-	            AND mr.delete_flag = #{delete_flag}     
-	        </when>
-	        <!-- 보낸 메일함 조건 (임시저장, 발송) -->
-	        <when test="table == 'mail_send'">
-	            AND ms.sender_idx = #{emp_idx}
-	            
-	            AND ms.delete_flag = #{delete_flag}
-	        </when>
-	        <!-- 휴지통 조건 -->
-	        <when test="table == 'mail_trash'">
-	            AND ms.sender_idx = #{emp_idx}
-	            
-	            AND ms.delete_flag = #{delete_flag}
-	        </when>
-	    </choose>
-	
-	    <!-- 검색 조건 처리 -->
-	    <if test="searchKeyword != null and searchKeyword != ''">
-	        <choose>
-	            <!-- 발신자 검색 -->
-	            <when test="searchFilter == 'sender'">
-	                AND ms.sender_name LIKE CONCAT('%', #{searchKeyword}, '%')
-	            </when>
-	            <!-- 수신자 검색 -->
-	            <when test="searchFilter == 'receiver'">
-	                AND mr.receiver_name LIKE CONCAT('%', #{searchKeyword}, '%')
-	            </when>
-	            <!-- 제목 검색 -->
-	            <when test="searchFilter == 'subject'">
-	                AND ms.subject LIKE CONCAT('%', #{searchKeyword}, '%')
-	            </when>
-	            <!-- 내용 검색 -->
-	            <when test="searchFilter == 'content'">
-	                AND ms.content LIKE CONCAT('%', #{searchKeyword}, '%')
-	            </when>
-	        </choose>
-	    </if>
-	
-	    AND ms.status = #{status}            
-	</sql>
+<!-- 메일 종류(table) 및 검색 조건(searchKeyword, searchFilter)에 따라 WHERE 절을 구성 -->
+<sql id="mailWhere">
+
+    <!-- 중요 여부 및 읽음 여부 필터 -->
+    <choose>
+        <!-- 중요 여부 필터 -->
+        <when test="mailFilter == 1">
+            <choose>
+                <!-- 받은 메일함 -->
+                <when test="table == 'mail_receive'">
+                    AND mr.receiver_idx = #{emp_idx}
+                    AND mr.delete_flag = #{delete_flag}
+                    AND mr.special_flag = #{special_flag}
+                </when>
+                <!-- 보낸 메일함 -->
+                <when test="table == 'mail_send'">
+                    AND ms.sender_idx = #{emp_idx}
+                    AND ms.delete_flag = #{delete_flag}
+                    AND ms.special_flag = #{special_flag}
+                </when>
+            </choose>
+        </when>
+
+        <!-- 읽음 여부 필터 -->
+        <when test="mailFilter == 2">
+            <choose>
+                <!-- 받은 메일함 -->
+                <when test="table == 'mail_receive'">
+                    AND mr.receiver_idx = #{emp_idx}
+                    AND mr.delete_flag = #{delete_flag}
+                    AND mr.read_flag = #{read_flag}
+                </when>
+                <!-- 보낸 메일함 -->
+                <when test="table == 'mail_send'">
+                    AND ms.sender_idx = #{emp_idx}
+                    AND ms.delete_flag = #{delete_flag}
+                </when>
+            </choose>
+        </when>
+
+        <!-- 필터 없음 -->
+        <otherwise>
+            <choose>
+                <!-- 받은 메일함 -->
+                <when test="table == 'mail_receive'">
+                    AND mr.receiver_idx = #{emp_idx}
+                    AND mr.delete_flag = #{delete_flag}
+                </when>
+                <!-- 보낸 메일함 -->
+                <when test="table == 'mail_send'">
+                    AND ms.sender_idx = #{emp_idx}
+                    AND ms.delete_flag = #{delete_flag}
+                </when>
+            </choose>
+        </otherwise>
+    </choose>
+
+    <!-- 상태 필터 -->
+    <if test="status != 999">
+        AND ms.status = #{status}
+    </if>
+
+    <!-- 검색 조건 처리 -->
+    <if test="searchKeyword != null and searchKeyword != ''">
+        <choose>
+            <!-- 발신자 검색 -->
+            <when test="searchFilter == 'sender'">
+                AND ms.sender_name LIKE CONCAT('%', #{searchKeyword}, '%')
+            </when>
+            <!-- 제목 검색 -->
+            <when test="searchFilter == 'subject'">
+                AND ms.subject LIKE CONCAT('%', #{searchKeyword}, '%')
+            </when>
+            <!-- 내용 검색 -->
+            <when test="searchFilter == 'content'">
+                AND ms.content LIKE CONCAT('%', #{searchKeyword}, '%')
+            </when>
+        </choose>
+    </if>
+
+</sql>
 
 
 <!-- 메일 목록 가져오기: 받은 메일, 보낸 메일, 임시저장, 휴지통 등 다양한 메일함 데이터를 조회. -->
@@ -159,7 +193,7 @@
 
 
 <!-- 메일 휴지통이동, 복구, 완전삭제 -->
-<update id="moveToTrash" parameterType="map">
+<update id="updateDeleteStatus" parameterType="map">
   <choose>
         <when test="mailIdxType == 'mail_send_idx'">
             UPDATE mail_send SET delete_flag = #{delete_flag}
@@ -173,6 +207,35 @@
 </update>
 
 
+<!-- 메일 상세보기 - 작성자데이터 -->
+<select id="senderDetail" resultType="com.best.mail.MailSendDTO" parameterType="map">
+    SELECT 
+        mail_send_idx,
+        sender_idx,
+        sender_name,
+        sender_email,
+        subject,
+        content,
+        date,
+        special_flag
+    FROM
+        mail_send
+    WHERE mail_send_idx = #{mail_send_idx}           
+</select>
+
+<!-- 메일 상세보기 - 수신자데이터 -->
+<select id="receiverDetail" resultType="com.best.mail.MailReceiveDTO" parameterType="map">
+    SELECT 
+        mail_receive_idx,
+        receiver_idx, 
+        receiver_name, 
+        receiver_email,
+        receiver_type,
+        special_flag
+    FROM
+        mail_receive
+    WHERE mail_send_idx = #{mail_send_idx}            
+</select>
 
 
     <!-- 이메일 작성시 송신자, 수신자, 참조자의 사번, email, 사원명 가져오기 (자동완성) -->
