@@ -112,7 +112,7 @@
 .search input {
     border-radius: 10px;
     padding: 0 10px; /* 좌우 패딩 */
-    border: 1px solid var(--primary-color);
+    border: 2px solid var(--primary-color);
     height: 42px; /* 필터와 동일한 높이 */
     font-size: 16px;
     font-weight: bold;
@@ -215,7 +215,63 @@ select option:checked {
     	vertical-align: middle;
 	}
 	
-  </style>
+	
+	/* 페이지네이션 컨테이너 */
+.container {
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center; /* 세로축 중앙 정렬 */
+    margin-top: 20px; /* 상단 여백 */
+}
+
+/* 페이지네이션 */
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: bold;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination li a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+.pagination .active a {
+    background-color: var(--accent-color);
+    color: white;
+}
+	
+/* a태그 링크 스타일 */	
+table.my-table a {
+    text-decoration: underline; /* 밑줄 추가 */
+    color: var(--primary-color); /* 링크 색상 */
+}
+
+table.my-table a:hover {
+    color: var(--accent-color); /* 호버 시 링크 색상 변경 */
+    text-decoration: underline; /* 호버 시에도 밑줄 유지 */
+}	
+
+.bi-star,
+.bi-star-fill {
+    color: var(--accent-color); /* 별 아이콘에 색상 적용 */
+    transition: color 0.3s ease; /* 색상 변경 애니메이션 */
+}
+
+</style>
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
@@ -245,7 +301,6 @@ select option:checked {
 					<!-- 검색필터 -->
 					<select class="searchFilter">
 					  <option value="sender">보낸사람</option>
-					  <option value="receiver">받는사람</option>
 					  <option value="subject">제목</option>
 					  <option value="content">내용</option>
 					</select>
@@ -260,17 +315,20 @@ select option:checked {
 			<table class="my-table">
 				<thead>
 					<tr>
-						<th>중요</th>
+						<th class="no">No.</th>
+						<th class="special-column">중요</th>
 						<th class="read-column">읽음</th>
 						<th>보낸사람</th>
 						<th>제목</th>
 						<th>내용</th>
 						<th>수신 시간</th>
-						<th>휴지통</th>
+						<th class="restore-column">복구</th>
+						<th class="delete-column">휴지통</th>
 					</tr>
 				</thead>
 				<tbody class="email-list">
 					<tr>
+						<td>1</td>
 						<td><i class="bi bi-star" title="일반"></i></td>
 						<td><i class="fas fa-envelope" title="읽지 않음"></i></td>
 						<td>example1@example.com</td>
@@ -300,14 +358,15 @@ select option:checked {
 	var showPage = 1;          // 기본 보여줄 페이지
 	var content = '';          // 가공한 리스트 담을 변수
 	var pagination = '';       // 페이지네이션 선택자 변수
-	var searchFilter = 'receiver'; // 검색 필터 값 담을 변수
+	var searchFilter = 'sender'; // 검색 필터 값 담을 변수
 	var searchKeyword = '';    // 검색 값 담을 변수
-	var mailFilter = 'all'; // 초기값: 전체메일
+	var mailFilterVal = 'all'; // 초기값: 전체메일
 	
 	
 	/* 페이지네이션 관련 전역변수 */
 	var empIdx = 1; // 사번
 	var delete_flag = 0; // 0: 정상, 1: 휴지통, 2: 완전삭제
+	var mailFilter = 0; // 0: 필터X, 1: 중요필터, 2:읽음필터 
 	var special_flag = 0; // 중요여부
 	var read_flag = 0; // 읽음여부 0: 안읽은메일, 1: 읽은메일
 	
@@ -320,6 +379,28 @@ select option:checked {
 	
 	// 초기 페이지네이션 생성.
 	pageCall(showPage);
+	
+    updateMailFilterOptions(); // 초기 mailFilter 설정
+
+    /* 메일 필터 옵션 업데이트 함수 */
+    function updateMailFilterOptions() {
+        const filterDropdown = $('.mailFilter');
+        filterDropdown.empty(); // 기존 옵션 제거
+
+        if (table === 'mail_receive') {
+            filterDropdown.append('<option value="all">전체메일</option>');
+            filterDropdown.append('<option value="special">중요메일</option>');
+            filterDropdown.append('<option value="read">읽은메일</option>');
+            filterDropdown.append('<option value="notRead">읽지않은메일</option>');
+        } else if (table === 'mail_send' || table === 'draft') {
+        	filterDropdown.append('<option value="all">전체메일</option>');
+            filterDropdown.append('<option value="special">중요메일</option>');
+        } else if (table === 'mail_trash') {
+            filterDropdown.append('<option value="all">전체메일</option>');
+        }
+    }
+	
+	
 	
 	
 	
@@ -379,6 +460,10 @@ select option:checked {
 		});
 		
 		
+		// 변수 초기화
+		table = '';// 받은메일함
+		status = 1;            // 전송
+		delete_flag = 0;       // 삭제되지 않은 메일
 		
 		// 전역 변수 업데이트
 	    switch (tabData) {
@@ -386,29 +471,33 @@ select option:checked {
 	        case 'receive':
 	            table = 'mail_receive'; // 테이블 설정
 	            status = 1; // 전송
-	            delete_flag = 0; // 휴지통상태
+	            delete_flag = 0; // 삭제되지 않은 메일
 	            break;
 	         // 보낸 메일함
 	        case 'send':
 	            table = 'mail_send';
 	            status = 1; // 전송
-	            delete_flag = 0; // 휴지통상태
+	            delete_flag = 0; // 삭제되지 않은 메일
 	            break;
 	         // 임시저장 메일함
 	        case 'draft':
 	            table = 'mail_send';
 	            status = 0; // 임시저장
-	            delete_flag = 0; // 휴지통상태
+	            delete_flag = 0; // 삭제되지 않은 메일
 	            break;
 	         // 휴지통 함
 	        case 'trash':
 	        	table = 'mail_trash'; // 테이블 설정
 	            // table mail_receive, mail_send 둘다 뒤져야힘 
 	            status = 1; // 전송
-	            delete_flag = 1; // 휴지통상태
+	            delete_flag = 1; // 삭제된 메일
 	            break;
 	    }
 
+		
+	 	// 필터 옵션 업데이트
+        updateMailFilterOptions();
+		
 	    // 현재 페이지 1로 초기화
 	    showPage = 1;
 
@@ -423,25 +512,35 @@ select option:checked {
 	 // 메일필터 이벤트
     $('.mailFilter').change(function() {
     	
+    	// 변수 초기화
+    	mailFilter = 0; // 0: 필터X, 1: 중요필터, 2:읽음필터 
+    	special_flag = 0; // 중요여부
+    	read_flag = 0; // 읽음여부 0: 안읽은메일, 1: 읽은메일
+    	
+    	
         // 선택된 값 읽기
-        mailFilter = $(this).val();
+        mailFilterVal = $(this).val();
 
-        switch (mailFilter) {
+        switch (mailFilterVal) {
         // 전체메일
 		case 'all':
 			// specail_flag = 0, 1전체
 			// read_flag = 0, 1 전체
+			mailFilter = 0;
 			break;
 		// 중요메일
 		case 'special':
+			mailFilter = 1;
 			special_flag = 1;
 			break;
 		// 읽은메일
 		case 'read':
+			mailFilter = 2;
 			read_flag = 1;
 			break;
 		// 읽지않은메일
 		case 'notRead':
+			mailFilter = 2;
 			read_flag = 0;
 			break;
 		}
@@ -470,25 +569,27 @@ select option:checked {
 	        data:{
 	        	'table' : table, // 어떤.. 테이블... 보낸사람..? 받는사람..?
 	        	'page' : page,  // 몇페이지 보여줘?
-	        	'cnt' : 16,     // 페이지당 몇개의 게시물을 보여줘?
+	        	'cnt' : 12,     // 페이지당 몇개의 게시물을 보여줘?
 	        	'status' : status, // 임시저장여부 0:임시저장, 1:발송
 	        	'emp_idx' : empIdx, // 사번
 	        	'delete_flag' : delete_flag, // 휴지통여부 0: 정상, 1: 휴지통, 2: 완전삭제
+	        	'mailFilter' : mailFilter, // // 0: 필터X, 1: 중요필터, 2:읽음필터
+	        	'special_flag' : special_flag, // 중요여부
+	        	'read_flag' : read_flag, // 읽음여부
 	        	'searchFilter' : searchFilter,   // 검색필터
 	        	'searchKeyword' : searchKeyword // 검색 키워드
 	        },
 	        dataType: 'json', 
 	        success: function(data) {
-				console.log(data);
-				searchKeyword = '';    // 검색 값 초기화
 				
 				// 검색 결과가 없을 경우 modal 창 표시
-				if (!data.list || data.list.length === 0) {
+	            if ((!data.list || data.list.length === 0) && searchKeyword !== '') {
 	                modal.showAlert('검색된 값이 없습니다.');
+	                searchKeyword = '';    // 검색 값 초기화
 	                return;
 	            }
 				
-				listPrint(data.list, table);
+				listPrint(data.list, table, data.totalCnt);
 				
 				// 페이징 플러그인 처리
 	    		// 기존 페이지네이션 초기화 (이미 초기화된 경우에만 destroy 호출)
@@ -509,7 +610,7 @@ select option:checked {
 					}
 				});
 				
-				
+				searchKeyword = '';    // 검색 값 초기화
 	        },
 	        error: function(e) {
 	        	modal.showAlert('잠시 후 다시 시도해주세요.');         
@@ -518,23 +619,45 @@ select option:checked {
 	}
 	
 	// 페이지네이션 함수 -> 목록조회 함수
-	function listPrint(data, table) {
+	function listPrint(data, table, totalCnt) {
 	    var area = '.email-list';
 	
 	    // 리스트 초기화
 	    $(area).empty();
 	
-	    // 읽음 열 표시 여부 결정
+	 	// 읽음 열 및 중요 열 표시 여부 결정
 	    var showReadColumn = table === 'mail_receive';
+	    var showSpecialColumn = table === 'mail_receive' || table === 'mail_send';
 	
-	    // 헤더에서 읽음 열 숨김 처리
+	 	// 목록에 따른 열 처리
 	    if (showReadColumn) {
 	        $('.read-column').show();
 	    } else {
 	        $('.read-column').hide();
 	    }
+
+	    if (showSpecialColumn) {
+	        $('.special-column').show();
+	    } else {
+	        $('.special-column').hide();
+	    }
+			    
+	    // 휴지통목록인경우 완전삭제열 및 복구열 생성
+		var showTrashColumn = table === 'mail_trash';
+	    
+		// 열 제목 변경 및 열추가 (휴지통 목록일 경우)
+	    if (showTrashColumn) {
+	        $('.delete-column').text('완전삭제');
+	        $('.restore-column').show();
+	    } else {
+	        $('.delete-column').text('휴지통');
+	        $('.restore-column').hide();
+	    }
 	
 	    if (data.length > 0) {
+	    	// 페이지네이션에 따른 시작 번호 계산
+	    	var startIdx = totalCnt - (showPage - 1) * 12; // 12는 페이지당 항목 수 (cnt)
+	    	
 	        $.each(data, function (idx, item) {
 	            var content = '';
 	
@@ -550,30 +673,37 @@ select option:checked {
 	            var mailIdx = 0;
 	            var mailIdxType = '';
 	            var specialFlag = 0;
+	            var deleteFlag = 1; // 기본값 : 휴지통으로 이동
 
-	            if (table === 'mail_receive') {
-	                mailIdx = item.mail_receive_idx;
-	                mailIdxType = 'mail_receive_idx';
-	                specialFlag = item.receive_special_flag;
-	            } else if (table === 'mail_send') {
-	                mailIdx = item.mail_send_idx;
-	                mailIdxType = 'mail_send_idx';
-	                specialFlag = item.send_special_flag;
+	            
+	            // 메일 작성자인지 수신자인지 여부에 따라 테이블 선택.
+	            if(item.sender_idx === empIdx){ // 내가 메일작성자인 경우  
+	            	mailIdx = item.mail_send_idx
+	            	mailIdxType = 'mail_send_idx';
+	            	specialFlag = item.send_special_flag;
+	            }else{
+	            	mailIdx = item.mail_receive_idx
+	            	mailIdxType = 'mail_receive_idx';
+	            	specialFlag = item.receive_special_flag;
 	            }
 	            
-	            // 중요 아이콘
-	            var specialIcon = '<i class="bi bi-star" title="일반" style="cursor: pointer;" onclick="updateSpecialStatus(\'' 
-	                + mailIdxType + '\', ' 
-	                + mailIdx + ', ' 
-	                + specialFlag + ')"></i>';
-	            if (specialFlag !== 0) {
-	                specialIcon = '<i class="bi bi-star-fill" title="중요" style="cursor: pointer;" onclick="updateSpecialStatus(\'' 
+	         	// 중요 아이콘 (받은 메일함 또는 보낸 메일함에서만 표시)
+	            var specialIcon = '';
+	            if (showSpecialColumn) {
+	                specialIcon = '<i class="bi bi-star" title="일반" style="cursor: pointer;" onclick="updateSpecialStatus(\'' 
 	                    + mailIdxType + '\', ' 
 	                    + mailIdx + ', ' 
 	                    + specialFlag + ')"></i>';
+	                if (specialFlag !== 0) {
+	                    specialIcon = '<i class="bi bi-star-fill" title="중요" style="cursor: pointer;" onclick="updateSpecialStatus(\'' 
+	                        + mailIdxType + '\', ' 
+	                        + mailIdx + ', ' 
+	                        + specialFlag + ')"></i>';
+	                }
 	            }
-	
-	            // 읽음 아이콘 (받은 메일함에서만 표시)
+
+	            
+	         	// 읽음 아이콘 (받은 메일함에서만 표시)
 	            var readIcon = '';
 	            if (showReadColumn) {
 	                readIcon = '<i class="fas fa-envelope" title="읽지 않음" style="cursor: pointer;" onclick="updateReadStatus(\'' 
@@ -588,21 +718,46 @@ select option:checked {
 	                }
 	            }
 	
+	            
+	            
+	         	// 삭제 아이콘 (휴지통인 경우 완전 삭제 아이콘으로 표시)
+	            var deleteIcon = '<i class="fas fa-trash-alt" onclick="updateDeleteStatus(\'' + mailIdxType + '\', ' + mailIdx + ', ' +deleteFlag+ ')"></i>';
+	            if (table === 'mail_trash') {
+	            	deleteFlag = 2; // 완전삭제
+	                deleteIcon = '<i class="bi bi-x-circle-fill text-danger" title="완전 삭제" style="cursor: pointer;" onclick="updateDeleteStatus(\'' 
+	                    + mailIdxType + '\', ' 
+	                    + mailIdx + ', ' +deleteFlag+ ')"></i>';
+	            }
+	            
+	            
 	            // HTML 태그 제거
 	            var contentText = $('<div>').html(item.content).text();
 	
-	            // 행 생성
-	            content = '<tr>' +
-	                '<td>' + specialIcon + '</td>';
+	         	// 행 생성
+	            content = '<tr>';
+	            content += '<td>' + (startIdx - idx) + '</td>'; // No. 열에 페이지별 번호 추가
+	            if (showSpecialColumn) {
+	                content += '<td class="special-column">' + specialIcon + '</td>';
+	            }
 	            if (showReadColumn) {
-	                content += '<td>' + readIcon + '</td>';
+	                content += '<td class="read-column">' + readIcon + '</td>';
 	            }
 	            content += '<td>' + item.sender_name + '</td>' +
 	                '<td><a href="mailDetail.go?idx=' + item.mail_send_idx + '">' + item.subject + '</a></td>' +
 	                '<td>' + contentText + '</td>' +
-	                '<td>' + formattedDate + '</td>' +
-	                '<td><i class="fas fa-trash-alt" onclick="moveToTrash(\'' + mailIdxType + '\', ' + mailIdx + ')"></i></td>' +
-	                '</tr>';
+	                '<td>' + formattedDate + '</td>';
+	                
+	            // 복구행 생성    
+                if (showTrashColumn) {
+                    deleteFlag = 0; // 복구
+                    content += '<td class="restore-column"><i class="bi bi-arrow-counterclockwise" title="복구" style="cursor: pointer;" onclick="updateDeleteStatus(\'' 
+                        + mailIdxType + '\', ' 
+                        + mailIdx + ', ' 
+                        + deleteFlag + ')"></i></td>';
+                }
+                
+	            content += '<td>' + deleteIcon + '</td>' +
+	                       '</tr>';
 	
 	            // 받은메일목록 정보 업데이트        
 	            $(area).append(content);
@@ -683,27 +838,27 @@ select option:checked {
 
 	
 	
-	// 메일 휴지통에 담기
-	function moveToTrash(mailIdxType, mailIdx) {
+	// 메일 휴지통담기(1), 메일완전삭제(2), 메일복구(0)
+	function updateDeleteStatus(mailIdxType, mailIdx, deleteFlag) {
 	    $.ajax({
 	        type: 'POST',
-	        url: 'moveToTrash.ajax',
+	        url: 'updateDeleteStatus.ajax',
 	        data: { 
 	        	'mailIdxType': mailIdxType,
 	            'mailIdx': mailIdx,
-	            'delete_flag': 1           // 0: 정상, 1: 휴지통, 2: 완전삭제
+	            'delete_flag': deleteFlag           // 0: 정상, 1: 휴지통, 2: 완전삭제
         	},
 	        success: function (response) {
 	            // 성공 메시지 표시
-	            modal.showAlert('메일이 정상적으로 삭제되었습니다.');
-	
+	            modal.showAlert('작업이 정상적으로 처리되었습니다.');
 	            
-	            // UI에서 해당 메일 삭제
-	            $('i[onclick="moveToTrash(' +mailIdxType+ ', '+ mailIdx + ')"]').closest('tr').remove();
+	         	// 현재 페이지에 대한 데이터를 다시 호출
+	            pageCall(showPage);
+	            
 	        },
 	        error: function (e) {
 	            console.error('오류 발생:', e);
-	            modal.showAlert('메일을 휴지통으로 이동하는 중 오류가 발생했습니다.');
+	            modal.showAlert('오류가 발생했습니다.');
 	        }
 	    });
 	}

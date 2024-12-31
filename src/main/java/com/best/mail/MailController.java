@@ -49,6 +49,16 @@ public class MailController {
 		return page;
 	}
 	
+	// 메일상세보기
+	@RequestMapping(value = "/mailDetail.go")
+	public String mailDetail(String idx, Model model) {
+		String page = "mail/mailDetail";
+		
+		mailService.mailDetail(idx, model);
+		
+		return page;
+	}
+	
 	
 	// 사원정보 가져오기(메일, 이름, idx) 
 	@RequestMapping(value="/empInfo.ajax")
@@ -84,10 +94,10 @@ public class MailController {
 	}
 	
 	// 메일 휴지통이동, 복구, 완전삭제 
-	@RequestMapping(value="/moveToTrash.ajax")
+	@RequestMapping(value="/updateDeleteStatus.ajax")
 	@ResponseBody
-	public int moveToTrash(@RequestParam Map<String, Object> map) {
-		return mailService.moveToTrash(map);
+	public int updateDeleteStatus(@RequestParam Map<String, Object> map) {
+		return mailService.updateDeleteStatus(map);
 	}
 
 	

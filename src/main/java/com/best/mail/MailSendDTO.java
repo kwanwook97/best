@@ -1,6 +1,6 @@
 package com.best.mail;
 
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 public class MailSendDTO {
 	private int mail_send_idx; // 메일 발송 ID (Primary Key, AUTO_INCREMENT)
@@ -9,12 +9,10 @@ public class MailSendDTO {
 	private String sender_email; // 이메일 주소
 	private String subject; // 메일 제목
 	private String content; // 메일 내용
-	private LocalDateTime date; // 메일 전송 시간 (TIMESTAMP)
+	private Date date; // 메일 전송 시간 (TIMESTAMP)
 	private int status; // 상태 (0:임시저장, 1:발송)
 	private int special_flag; // 중요여부 (0: 일반, 1: 중요)
 	private int delete_flag;  // 삭제여부 (0: 정상, 1: 휴지통, 2: 완전삭제)
-	
-	
 	
 	
 	public int getSender_idx() {
@@ -53,10 +51,11 @@ public class MailSendDTO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public LocalDateTime getDate() {
+	
+	public Date getDate() {
 		return date;
 	}
-	public void setDate(LocalDateTime date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 	public int getStatus() {
