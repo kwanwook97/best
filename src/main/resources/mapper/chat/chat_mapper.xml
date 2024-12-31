@@ -168,21 +168,30 @@
 		m.message_type,
 		e.name,
 		e.photo,
-
+		re.rank_name,
 		(
 		SELECT
 		COUNT(*)
-		FROM msg_read mr
-		WHERE mr.msg_idx = m.msg_idx
+		FROM
+		msg_read mr
+		WHERE
+		mr.msg_idx = m.msg_idx
 		AND mr.is_read = 0
 		) AS unread_count
-
-		FROM message m
-		LEFT JOIN employee e ON m.msg_send_idx
-		= e.emp_idx
-		WHERE m.chat_idx = #{chatIdx}
-		ORDER BY m.time ASC
+		FROM
+		message m
+		LEFT JOIN
+		employee e ON
+		m.msg_send_idx = e.emp_idx
+		LEFT JOIN
+		rank_emp re ON e.rank_idx =
+		re.rank_idx
+		WHERE
+		m.chat_idx = #{chatIdx}
+		ORDER BY
+		m.time ASC
 	</select>
+
 
 	<!-- 참여중인 대화방 참여자 리스트 -->
 	<select id="getChatParticipants" resultType="map">
@@ -194,13 +203,14 @@
 		FROM
 		employee e
 		LEFT JOIN
-		rank_emp r ON e.rank_idx = r.rank_idx
+		rank_emp r ON
+		e.rank_idx = r.rank_idx
 		JOIN
 		party p ON e.emp_idx = p.emp_idx
 		WHERE
 		p.chat_idx = #{chat_idx}
 	</select>
-	
+
 	<!-- 대화방 나가기 -->
 	<delete id="removeParticipant">
 		DELETE FROM party
@@ -311,10 +321,9 @@
 		AND
 		p.emp_idx != #{sender_idx};
 	</insert>
-	
+
 	<!-- 회원 프로필 -->
-	<select id="profile" parameterType="int"
-		resultType="map">
+	<select id="profile" parameterType="int" resultType="map">
 		SELECT
 		e.emp_idx,
 		e.name,
@@ -328,43 +337,81 @@
 		FROM
 		employee e
 		LEFT JOIN
-		rank_emp r ON e.rank_idx = r.rank_idx
+		rank_emp r ON
+		e.rank_idx = r.rank_idx
 		LEFT JOIN
-		department d ON e.depart_idx = d.depart_idx
+		department d ON e.depart_idx =
+		d.depart_idx
 		WHERE
 		e.emp_idx = #{empIdx}
 	</select>
-	
+
 	<!-- 대화방 제목 변경 -->
-	<update id="updateChatSubject" parameterType="com.best.chat.ChatDTO">
-    	UPDATE chat
-    	SET chat_subject = #{chat_subject}
-    	WHERE chat_idx = #{chat_idx}
+	<update id="updateChatSubject"
+		parameterType="com.best.chat.ChatDTO">
+		UPDATE chat
+		SET chat_subject = #{chat_subject}
+		WHERE
+		chat_idx = #{chat_idx}
 	</update>
-	
+
 	<!-- 대화방 공지사항 등록 -->
 	<update id="updateChatNotice" parameterType="map">
-    	UPDATE chat
-    	SET chat_notice = #{noticeContent}
-    	WHERE chat_idx = #{chatIdx}
+		UPDATE chat
+		SET
+		chat_notice = #{noticeContent}
+		WHERE chat_idx = #{chatIdx}
 	</update>
-	
+
 	<!-- 대화방 공지사항 가져오기 -->
 	<select id="getChatNotice" resultType="string">
-    	SELECT chat_notice
-    	FROM chat
-    	WHERE chat_idx = #{chat_idx}
+		SELECT chat_notice
+		FROM
+		chat
+		WHERE chat_idx = #{chat_idx}
 	</select>
-	
-	<!-- 메시지 발송자 사진뽑기 -->
-	<select id="getSenderPhoto" resultType="String">
-		SELECT photo FROM employee WHERE emp_idx = #{empIdx}
+
+	<!-- 메시지 발송자 정보뽑기 -->
+	<select id="senderInfo" resultType="map">
+		SELECT
+		e.emp_idx,
+		e.name,
+		e.photo,
+		re.rank_name
+		FROM
+		employee e
+		LEFT JOIN
+		rank_emp re ON e.rank_idx =
+		re.rank_idx
+		WHERE
+		e.emp_idx = #{empIdx}
 	</select>
-	
+
 	<!-- 안 읽은 메시지 총 갯수 -->
 	<select id="unreadTotal" parameterType="int" resultType="int">
-    	SELECT COUNT(*)
-    	FROM msg_read
-    	WHERE emp_idx = #{emp_idx} AND is_read = 0
+		SELECT
+		COUNT(*)
+		FROM msg_read
+		WHERE emp_idx = #{emp_idx} AND is_read = 0
+	</select>
+
+	<!-- 메시지 알림 -->
+	<select id="msgAlarm" resultType="map">
+		SELECT
+		m.chat_idx,
+		m.msg_idx,
+		m.content,
+		m.time,
+		m.msg_send_idx
+		FROM
+		msg_read mr
+		JOIN
+		message m ON mr.msg_idx = m.msg_idx
+		WHERE
+		mr.emp_idx = #{empIdx}
+		AND mr.is_read = 0
+		ORDER BY
+		m.time DESC
+		LIMIT 5
 	</select>
 </mapper>  

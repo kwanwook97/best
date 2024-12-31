@@ -75,7 +75,39 @@ public class WebsocketController implements WebSocketConfigurer {
 	        });
 	    
 	    registry.addHandler(globalWebSocketHandler(), "/ws")
-        .setAllowedOrigins("*");
+	    .setAllowedOrigins("*")
+	    .addInterceptors(new HttpSessionHandshakeInterceptor() {
+	        @Override
+	        public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+	                                       WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+	            if (request instanceof ServletServerHttpRequest) {
+	                ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+	                HttpSession httpSession = servletRequest.getServletRequest().getSession(false);
+
+	                if (httpSession != null) {
+	                    // 로그인 정보 가져오기
+	                    String loginName = (String) httpSession.getAttribute("loginName");
+	                    String empIdxString = (String) httpSession.getAttribute("loginId");
+
+	                    // emp_idx 변환
+	                    Integer empIdx = null;
+	                    if (empIdxString != null) {
+	                        try {
+	                            empIdx = Integer.valueOf(empIdxString);
+	                        } catch (NumberFormatException e) {
+	                            log.error("emp_idx 변환 실패: {}", empIdxString, e);
+	                        }
+	                    }
+
+	                    // WebSocket attributes에 저장
+	                    attributes.put("emp_name", loginName != null ? loginName : "Unknown User");
+	                    attributes.put("emp_idx", empIdx);
+	                    log.info("Global Handshake - emp_idx: {}", empIdx);
+	                }
+	            }
+	            return super.beforeHandshake(request, response, wsHandler, attributes);
+	        }
+	    });
 	}
 	
     @Bean

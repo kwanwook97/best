@@ -60,12 +60,14 @@ public class BusController {
 	    Map<String, Object> result = new HashMap<>();
 
 	    // route_name, filterType, keyword 값 확인
-	    System.out.println("route_name: " + routeName);
-	    System.out.println("filterType: " + filterType);
-	    System.out.println("keyword: " + keyword);
+	    log.info("route_name: {}", routeName);
+	    log.info("filterType: {}", filterType);
+	    log.info("keyword: {}", keyword);
 
 	    List<Map<String, Object>> busData = busService.busDetail(routeName, filterType, keyword);
 	    List<Map<String, Object>> busSum = busService.busSum(routeName);
+	    
+	    log.info("busSum: {}", busSum);
 
 	    result.put("busData", busData);
 	    result.put("busSum", busSum);

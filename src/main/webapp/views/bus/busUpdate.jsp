@@ -83,7 +83,7 @@
 }
 .tm2 {
 	margin-top: 2%;
-	width: 55%;
+	width: 60%;
     display: flex;
     flex-direction: row;
     align-items: center;

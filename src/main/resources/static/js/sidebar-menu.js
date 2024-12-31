@@ -151,3 +151,191 @@ document.addEventListener("DOMContentLoaded", function () {
         sidebarMenu(sidebar);
     }
 });
+
+/* 우측 하단 알림 메시지 */
+function showNotification(photo, name, message, chatIdx, rank_name) {
+    const notification = $("#notification");
+
+    // 알림 메시지 설정
+    const notificationContent =
+        '<div class="notification-profile">' +
+            '<img src="/photo/' + photo + '" alt="프로필 사진" class="custom-image">' +
+            '<div class="notifi-profile">' +
+                '<div>' + name + ' / ' + rank_name + '</div>' +
+                '<div>' + message + '</div>' +
+            '</div>' +
+        '</div>';
+
+    notification.html(notificationContent);
+
+    // 알림 클릭 시 채팅방으로 이동
+    notification.off("click").on("click", function () {
+        redirectToChat(chatIdx);
+    });
+
+    // 알림 표시
+    notification.addClass("show");
+
+    // 일정 시간 후 알림 숨김
+    setTimeout(() => {
+        notification.removeClass("show");
+    }, 5000); // 5초 후 숨김
+}
+
+/* 헤더 드롭 다운 */
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdownToggle = document.getElementById("messageDropdownToggle");
+    const dropdownMenu = document.getElementById("messageDropdown");
+
+    // 드롭다운 토글 클릭 시 열고 닫기
+    dropdownToggle.addEventListener("click", function (event) {
+        event.stopPropagation(); // 이벤트 전파 방지
+        dropdownMenu.classList.toggle("show");
+    });
+
+    // 드롭다운 외부 클릭 시 닫기
+    document.addEventListener("click", function () {
+        dropdownMenu.classList.remove("show");
+    });
+});
+
+/* 헤더 메시지 알림 */
+function updateMessageDropdown(photo, name, message, chatIdx, rank_name) {
+    const messageDropdown = $("#messageDropdown");
+
+    // 메시지 항목 생성
+    const messageItem =
+    	'<div class="dropdown-item" onclick="redirectToChat(' + chatIdx + ')">' +
+            '<div class="notification-profile">' +
+                '<img src="/photo/' + photo + '" alt="프로필 사진" class="custom-image">' +
+                '<div class="notifi-profile">' +
+                    '<div>' + name + ' / ' + rank_name + '</div>' +
+                    '<div>' + message + '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>'; // 닫는 태그가 정상적으로 닫혔는지 확인
+
+    // 메시지 항목을 드롭다운에 추가
+    messageDropdown.prepend(messageItem);
+
+    // 최대 5개의 메시지만 유지
+    if (messageDropdown.children().length > 5) {
+        messageDropdown.children().last().remove();
+    }
+}
+/* 알림 메시지 채팅방 이동 */
+function redirectToChat(chatIdx) {
+    if (chatIdx) {
+        window.location.href = 'chat.go?chat_idx=' + chatIdx;
+    } else {
+        console.error('채팅방 이동에 필요한 chatIdx가 없습니다.');
+    }
+}
+/* 안 읽은 메시지 총 갯수 */
+$(document).ready(function () {
+    // 페이지 로드 시 호출
+    $.ajax({
+        type: 'GET',
+        url: 'unreadTotal.ajax',
+        success: function (totalUnreadCount) {
+            const newMessageIndicator = $(".newMessageIndicator");
+
+            // 기존 내용 초기화
+            newMessageIndicator.empty();
+
+            if (totalUnreadCount > 0) {
+                // 읽지 않은 메시지가 있으면 표시
+                newMessageIndicator.append(
+                    '<div class="unread-count-list">' +
+                        '<span class="unread-message-count">' + totalUnreadCount + '</span>' +
+                    '</div>'
+                ).css("display", "block");
+                
+                $("#newMessageIndicator3").css("display", "block");
+            } else {
+                // 읽지 않은 메시지가 없으면 숨김
+                newMessageIndicator.css("display", "none");
+                $("#newMessageIndicator3").css("display", "none");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX 요청 실패: ", error);
+        }
+    });
+});
+/* 메시지 알림 */
+$(document).ready(function () {
+    const empIdx = loginId;
+
+    // Ajax로 읽지 않은 메시지를 가져오기
+    function loadUnreadMessages() {
+        $.ajax({
+            type: 'GET',
+            url: 'msgAlarm.ajax',
+            data: { emp_idx: empIdx },
+            success: function (messages) {
+                // 드롭다운 초기화
+                const messageDropdown = $("#messageDropdown");
+                messageDropdown.empty();
+
+                // 메시지 추가
+                messages.reverse().forEach(function (message) {
+    				updateMessageDropdown(
+        				message.photo,
+       					message.name,
+        				message.content,
+        				message.chat_idx,
+        				message.rank_name
+    				);
+				});
+
+                // 읽지 않은 메시지가 있을 경우 알림 아이콘 표시
+                if (messages.length > 0) {
+                    $("#newMessageIndicator3").css("display", "block");
+                } else {
+                    $("#newMessageIndicator3").css("display", "none");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX 요청 실패: ", error);
+            }
+        });
+    }
+
+    // 페이지 로드 시 메시지 로드
+    loadUnreadMessages();
+});
+
+loginId = parseInt(loginId);
+
+$(document).ready(function () {
+    loadEmpDetail();
+
+    function loadEmpDetail() {
+        $.ajax({
+            url: 'empDetail.ajax', 
+            type: 'GET',
+            dataType: 'json',
+            data: { emp_idx: loginId }, 
+            success: function (data) {
+                updateUserInfo(data);
+            },
+            error: function () {
+                alert('회원 정보를 가져오는데 실패했습니다.');
+            }
+        });
+    }
+
+    function updateUserInfo(empDetail) {
+        // 프로필 사진
+        const photo = empDetail.photo; // 사진이 없으면 기본 이미지
+        $('.profile-photo').html('<img src="/photo/' + photo + '" alt="프로필 사진">');
+
+        // 이름과 직급
+        const name = empDetail.name;
+        const rankName = empDetail.rank_name;
+        $('.user-Info > li:first-child').html(name + ' / ' + rankName);
+        $('.user-Info > li:last-child').html(empDetail.email);
+
+    }
+});
