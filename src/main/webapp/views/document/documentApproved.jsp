@@ -81,6 +81,14 @@
 		background-color: var(--primary-color);
 		color: white;
 	}
+	.receivedList tr td:hover:nth-child(4) {
+	    color: var(--accent-color);
+	    cursor: pointer;
+	}
+	.sentList tr td:hover:nth-child(4) {
+	    color: var(--accent-color);
+	    cursor: pointer;
+	}
 	table.myTable thead tr th:first-child{
 		border-top-left-radius: 10px;
 	}
@@ -210,6 +218,9 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}	
+	div.content_emp div.modal-box{
+		display: none;
+	}
 	@media ( min-width :1200px) {
 		.container {
 			max-width: 100% !important;
@@ -362,7 +373,7 @@ function received(document) {
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
 		content += '<td>' + item.form_subject + '</td>';
-		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		content += '<td onclick="receivedDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
 		content += '<td>' + item.name + '</td>';
 		
 		var doc_date = new Date(item.doc_date);
@@ -451,5 +462,31 @@ function sentPageCall(page) {
     });
 }
 
+//모달 열기
+function receivedOpen(content) {
+    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+    // 모달 HTML 생성
+    var Html = 
+        '<div id="' + modalId + '" class="modal" style="display: none;">' +
+        '  <div class="modal-content">' +
+        '    <div class="modal-box">' +
+        '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
+        '    </div>' +
+        '    <div class="content_emp" contenteditable="true">' + content + '</div>' +
+        '  </div>' +
+        '</div>';
+        
+    // body에 추가
+    $('body').append(Html);
+
+    // 모달 표시
+    $('#' + modalId).show();
+
+    // 닫기 버튼 이벤트 등록 (이벤트 위임)
+    $(document).on('click', '.close-btn', function() {
+        var targetModalId = $(this).data('modal-id');
+        $('#' + targetModalId).remove();
+    });
+}
 </script>
 </html>

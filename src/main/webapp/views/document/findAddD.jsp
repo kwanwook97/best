@@ -5,7 +5,6 @@
 <head>
 <meta charset="utf-8" />
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
 /* 폴더 영역 스타일 */
 .userbox {
@@ -499,6 +498,7 @@ $(document).ready(function () {
             var empId = $(this).data("id");
             var employee = employees.find(emp => emp.emp_idx === empId);
             if (employee) {
+           		selectedEmployee = employee;	
                 showEmployeeModal(employee);
             }
         });
@@ -566,6 +566,28 @@ $(document).ready(function () {
                // 중복이 아니면 추가
                selectedEmployees.push(selectedEmployee);
                console.log("현재까지 추가된 사원목록:", selectedEmployees);
+               var signBox = $('.signBox');
+               var managerName1 = selectedEmployee.name;
+               var todayDate3 = '${todayDate3}';
+               // 새로운 table HTML 생성
+               var newTableHtml = 
+                   '<table class="signBox2" style="width: 7vw; height: 14vh; border: 1px solid black; border-collapse: collapse;">' +
+                   '  <tr>' +
+                   '    <td rowspan="3" style="text-align: center; width: 1.2vw; border: 1px solid black; background-color: gainsboro;">결재</td>' +
+                   '    <td class="managerName1" style="text-align: center; height: 0.5vh; border: 1px solid black;"><input type="text" class="manager" value="'+managerName1+'" readonly/></td>' +
+                   '  </tr>' +
+                   '  <tr>' +
+                   '    <td class="signTwo" style="text-align: center; border: 1px solid black;" onclick="signAdd(this)"></td>' +
+                   '  </tr>' +
+                   '  <tr>' +
+                   '    <td class="todayDate3" style="text-align: center; height: 24px; border: 1px solid black;"></td>' +
+                   '  </tr>' +
+                   '</table>';
+
+               // signBox 테이블 뒤에 새로운 table 추가
+               signBox.after(newTableHtml);
+               
+               $(".modal").css("display", "flex");
            } else {
                console.log("이미 추가된 사원입니다:", selectedEmployee.name);
            }
@@ -582,7 +604,10 @@ $(document).ready(function () {
 });
 
 function openUserBoxModal() {
+    $(".modal").css("display", "none");
     $("#userBoxModal").css("display", "flex").hide().fadeIn();
+    $("*").css("pointer-events", "auto");
+    isApprovalLineAdded = true;
 }
 
 function openEmployeeModal(employee) {
