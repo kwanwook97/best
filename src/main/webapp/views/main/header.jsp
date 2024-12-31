@@ -31,6 +31,19 @@ var loginId = ${sessionScope.loginId};
 	display: none;
 }
 
+.work-time {
+	width: 100%;
+}
+.spanAction span {
+	display: none;
+	width: 30%;
+	margin: 0 0 0 14px;
+}
+.spanAction {
+	width: 45%;
+	display: none;
+}
+
 </style>
 
 <body>
@@ -296,43 +309,46 @@ var loginId = ${sessionScope.loginId};
 
 	</div>
 
-	<header class="topbar-nav">
-		<nav class="navbar navbar-expand fixed-top">
-			<ul class="navbar-nav mr-auto align-items-center">
-				<li>
-					<div class="work-time">
-						<i class="bi bi-clock-history"></i>
-						<button class="btn-start-work" onclick="updateStartTime()">출근</button>
-						<button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
-					</div>
-				</li>
-			</ul>
 
-			<ul class="navbar-nav align-items-center right-nav-link">
-				<li class="nav-item dropdown-lg" style="position: relative;">
-					<div id="newMessageIndicator3"></div>
-					<div class="dropdown">
-						<a class="nav-link" href="javascript:void(0);"
-							id="messageDropdownToggle"> <i class="fa-regular fa-message"></i>
-						</a>
-						<div class="dropdown-menu-custom" id="messageDropdown">
-							<!-- 드롭다운 내용이 여기에 추가됩니다 -->
-						</div>
-					</div>
-				</li>
-				<li class="nav-item dropdown-lg"><a
-					class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect"
-					data-toggle="dropdown" href="javascript:void();"> <i
-						class="fa fa-bell-o"></i></a></li>
-				<li class="nav-item dropdown-lg"><a
-					class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect"
-					data-toggle="dropdown" href="javascript:void();"> <i
-						class="bi bi-person-circle"></i>
-				</a></li>
-			</ul>
-		</nav>
-	</header>
-	<script>
+<header class="topbar-nav">
+ <nav class="navbar navbar-expand fixed-top">
+  <ul class="navbar-nav mr-auto align-items-center">
+    <li>
+      <div class="work-time">
+            <i class="bi bi-clock-history"></i>
+            <button class="btn-start-work" onclick="updateStartTime()">출근</button>
+	            <span class="spanAction"> 
+	            	<span>startTime </span>	~ <span>endTime</span>
+	            </span>
+            <button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
+         </div>
+    </li>
+  </ul>
+     
+  <ul class="navbar-nav align-items-center right-nav-link">
+    <li class="nav-item dropdown-lg">
+    <div class="dropdown">
+        <a class="nav-link" href="javascript:void(0);" id="messageDropdownToggle">
+            <i class="fa-regular fa-message"></i>
+        </a>
+        <div class="dropdown-menu-custom" id="messageDropdown">
+            <!-- 드롭다운 내용이 여기에 추가됩니다 -->
+        </div>
+    </div>
+</li>
+    <li class="nav-item dropdown-lg">
+      <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
+      <i class="fa fa-bell-o"></i></a>
+    </li>
+    <li class="nav-item dropdown-lg">
+      <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
+      <i class="bi bi-person-circle"></i>
+      </a>
+    </li>
+  </ul>
+</nav>
+</header>
+<script>
 window.updateUnreadMessageCount = function (unreadTotal) {
     const unreadCountContainer = $(".newMessageIndicator .unread-count-list .unread-message-count");
 
@@ -383,13 +399,20 @@ function checkButton(){
        console.log(data.row)
         const button = document.querySelector('.btn-start-work');
         const finish = document.querySelector('.btn-finish-work');
+        const spans = document.querySelectorAll('.spanAction span');
+        const spanAction = document.querySelector('.spanAction');
        if (data.startTime) {
             button.style.display = 'none';
             finish.style.display = 'block';
+            spans[0].textContent = data.startTime;
+            spans[0].style.display = 'block';
+            spans[1].style.display = 'block';
+            spanAction.style.display = 'flex';
       }
        if (data.startTime && data.endTime) {
          finish.disabled = true;
-      }
+         spans[1].textContent = data.endTime;
+      }		
         
     })
     .catch(error => {
