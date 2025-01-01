@@ -395,8 +395,11 @@ public class DocumentService {
     	
     	return docDTO.getDoc_idx();
 	}
-
-
+	// 상신
+	public void formsent(int doc_idx, int parentManager, int order1, int manager, int order2, String status) {
+		documentDao.formsent(doc_idx,  parentManager, order1, manager, order2, status);
+	}
+		
 	// 결재 임시저장 문서 수정
 	public void formUpdate(String doc_idx, String doc_content, String doc_subject) {
 		documentDao.formUpdate(doc_idx, doc_content, doc_subject);
@@ -412,10 +415,7 @@ public class DocumentService {
 		return documentDao.managerIdx(emp_idx, managerName);
 	}
 	
-	// 상신
-	public void formsent(int doc_idx, int parentManager, int order1, int manager, int order2, String status) {
-		documentDao.formsent(doc_idx,  parentManager, order1, manager, order2, status);
-	}
+	
 	
 	
 	
@@ -510,6 +510,20 @@ public class DocumentService {
 			);
 		documentDao.documentStatusReject(doc_idx, doc_content, remark);
 	}
+	
+	
+	// 참조
+	public void referenceEmp(int doc_idx, List<String> managerIds) {
+		
+		if (managerIds.size() == 1) {
+	        documentDao.referenceEmpOne(doc_idx, managerIds.get(0));
+	    } else if (managerIds.size() == 2) {
+	        documentDao.referenceEmpTwo(doc_idx, managerIds.get(0), managerIds.get(1));
+	    } else if (managerIds.size() == 3) {
+	        documentDao.referenceEmpThree(doc_idx, managerIds.get(0), managerIds.get(1), managerIds.get(2));
+	    }
+	}
+	
 
 
 

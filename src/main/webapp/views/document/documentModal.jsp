@@ -284,6 +284,7 @@ input.manager, input.today2, input.today3{
 		</div>
 	</div>
 	<jsp:include page="findAddD.jsp"></jsp:include>
+	<jsp:include page="refFindAdd.jsp"></jsp:include>
 </body>
 <script>
 
@@ -384,6 +385,7 @@ function openModal(content, form_subject) {
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
         '      <button class="modal-btn save" onclick="btnAction(\'임시저장\')">임시저장</button>' +
+        '      <button class="modal-btn append" onclick="refOpenUserBoxModal()">참조자 추가</button>' +
         '      <button class="modal-btn append" onclick="openUserBoxModal()">결재선 추가</button>' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
@@ -449,11 +451,20 @@ function btnAction(actionType) {
 	    console.log("연차 시작", start_date);
 	    var end_date = $('input[name="end_date"]').val();
 	    console.log("연차 끝", end_date);
-	    // input[data-index]의 값들을 values 배열에 저장
+	   
+	    //참조 idx
+   		var managerIds = [];		
+	    $('.refEmps .refEmp').each(function() {
+	        var managerIdx = $(this).data('emp-idx');
+	        managerIds.push(managerIdx);
+	    });
+	    console.log("아니!!!!!!!!!!!!!!!!!!"+ managerIds);
+	    
 	    var values = [];
 	    $('input[data-index]').each(function() {
 	        values.push($(this).val());
 	    });
+	    
 	    if(actionType == '수정기안' || actionType == '수정'){
 	    	updatedHtml = updatedHtml.replace(
 	   		    /(<input[^>]*\bname=["']doc_subject["'][^>]*)\s*value=["'][^"]*["']/i,
@@ -493,7 +504,8 @@ function btnAction(actionType) {
 		    form_idx: form_idx,
 		    action: actionType,
 		    doc_subject: doc_subject,
-	        doc_content: doc_content
+	        doc_content: doc_content,
+	        managerIds: managerIds
 		};
 		
 		switch (form_idx) {
@@ -586,6 +598,7 @@ function btnAction(actionType) {
 	        type: 'GET',
 	        url: 'formType.ajax',
 	        data: data,
+	        traditional: true,
 	        success: function(response) {
 	        	alert(response.message);
 	        	location.reload();

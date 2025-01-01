@@ -719,6 +719,19 @@
         (#{doc_idx}, #{parentManager}, #{order1}, #{status}), 
         (#{doc_idx}, #{manager}, #{order2}, #{status})
 	</insert>
+	<!-- 참조 -->
+	<insert id="referenceEmpOne" parameterType="map">
+	    INSERT INTO reference (doc_idx, emp_idx)
+	    VALUES (#{doc_idx}, #{firstRef})
+	</insert>
+	<insert id="referenceEmpTwo" parameterType="map">
+	    INSERT INTO reference (doc_idx, emp_idx)
+	    VALUES (#{doc_idx}, #{firstRef}), (#{doc_idx}, #{secondRef})
+	</insert>
+	<insert id="referenceEmpThree" parameterType="map">
+	    INSERT INTO reference (doc_idx, emp_idx)
+	    VALUES (#{doc_idx}, #{firstRef}), (#{doc_idx}, #{secondRef}), (#{doc_idx}, #{thirdRef})
+	</insert>
 	
 	
 	
