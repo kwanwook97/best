@@ -239,8 +239,8 @@
  		<div><span>오늘의 교통 정보</span></div>
  		<div>
  			<ul>
- 				<li><span>2024년 12월 04일 13시 58분</span></li>
- 				<li><span>[사고] 올림픽대로성수대교영동대교3차로교통사고</span></li>
+ 				<li><span></span></li>
+ 				<li><span></span></li>
  			</ul>
  		</div>
  	</div>
@@ -387,7 +387,6 @@ $(document).ready(function () {
                 lang: 'ko' // 언어를 한국어로 설정
             },
             success: function (data) {
-                console.log(data); // API 응답 확인
                 renderWeather(data);
             },
             error: function () {
@@ -500,6 +499,108 @@ data.forecast.forecastday.forEach(function (day) {
         hourlyForecast.scrollLeft = scrollLeft - walk;
     });
 });
+
+
+$(document).ready(function () {
+    const API_URL = 'http://openapi.seoul.go.kr:8088/594172616a6a616e3931644566524c/xml/AccInfo/1/100';
+
+    $.ajax({
+        url: API_URL,
+        type: 'GET',
+        dataType: 'text', // XML 응답을 텍스트로 처리
+        success: function (response) {
+            // XML 파싱
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(response, "application/xml");
+
+            // API 응답 코드 확인
+            const resultCodeElement = xmlDoc.getElementsByTagName("CODE")[0];
+            if (!resultCodeElement || resultCodeElement.textContent.trim() !== "INFO-000") {
+                const errorMessageElement = xmlDoc.getElementsByTagName("MESSAGE")[0];
+                const errorMessage = errorMessageElement ? errorMessageElement.textContent : "알 수 없는 오류";
+                alert("API 오류: " + errorMessage);
+                return;
+            }
+
+            // row 데이터 추출 및 파싱
+            const rows = xmlDoc.getElementsByTagName("row");
+            const trafficData = [];
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const dateElement = row.getElementsByTagName("occr_date")[0];
+                const timeElement = row.getElementsByTagName("occr_time")[0];
+                const infoElement = row.getElementsByTagName("acc_info")[0];
+
+                // 날짜와 시간을 결합하여 정렬 가능한 데이터 생성
+                const rawDate = dateElement ? dateElement.textContent.trim() : null;
+                const rawTime = timeElement ? timeElement.textContent.trim() : null;
+                const formattedDate = rawDate ? formatDate(rawDate) : "날짜 정보 없음";
+                const formattedTime = rawTime ? formatTime(rawTime) : "시간 정보 없음";
+
+                const dateTime = rawDate && rawTime ? rawDate + rawTime : null;
+
+                trafficData.push({
+                    datetime: dateTime || "000000000000", // 정렬을 위해 기본값 설정
+                    date: formattedDate,
+                    time: formattedTime,
+                    info: infoElement ? infoElement.textContent.trim() : "정보 없음"
+                });
+            }
+
+            // 최신순으로 정렬 (datetime 기준 내림차순)
+            trafficData.sort((a, b) => b.datetime.localeCompare(a.datetime));
+
+            // 데이터를 화면에 렌더링
+            renderTrafficInfo(trafficData);
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX 호출 오류:", xhr.status, status, error);
+            console.error("응답 내용:", xhr.responseText);
+            alert("API 호출 중 오류가 발생했습니다.");
+        }
+    });
+
+ // 날짜를 "YYYY년 MM월 DD일" 형식으로 변환하는 함수
+    function formatDate(rawDate) {
+        const year = rawDate.substring(0, 4);
+        const month = rawDate.substring(4, 6);
+        const day = rawDate.substring(6, 8);
+        return year + "년 " + month + "월 " + day + "일";
+    }
+
+    // 시간을 "HH시 MM분" 형식으로 변환하는 함수
+    function formatTime(rawTime) {
+        const hour = rawTime.substring(0, 2);
+        const minute = rawTime.substring(2, 4);
+        return hour + "시 " + minute + "분";
+    }
+
+
+    // 화면에 데이터를 렌더링하는 함수
+    function renderTrafficInfo(trafficData) {
+        const roadInfoContainer = $('.road-info > div:last-child');
+        const ulElement = $('<ul></ul>');
+
+        trafficData.forEach(function (info) {
+            const listItem =
+                '<li class="road-info-date">' +
+                    '<span>' + info.date + ' ' + info.time + '</span>' +
+                '</li>' +
+                '<li class="road-info-detail">' +
+                    '<span>' + info.info + '</span>' +
+                '</li>';
+
+            ulElement.append(listItem);
+        });
+
+        // 기존 데이터를 초기화하고 새 데이터를 추가
+        roadInfoContainer.empty();
+        roadInfoContainer.append(ulElement);
+    }
+});
+
+
+
 
 
 

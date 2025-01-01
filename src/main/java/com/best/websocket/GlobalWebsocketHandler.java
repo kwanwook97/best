@@ -40,7 +40,7 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
         sessions.remove(session);
         log.info("글로벌 WebSocket 연결 종료: {}", session.getId());
     }
-
+    
     public void broadcastUpdate(Map<String, Object> payload) {
         sessions.stream()
             .filter(WebSocketSession::isOpen)
@@ -68,6 +68,7 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
             });
     }
     
+    /* 안읽은 메시지 총 갯수 카운트 브로드캐스트 */
     public static void broadcastUnreadTotal(int empIdx, int unreadTotal) {
     	log.info("글로벌 웹소켓 broadcastUnreadTotal 호출: empIdx = {}", empIdx);
         sessions.stream()
@@ -91,5 +92,32 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
                 }
             });
     }
+    
+    /* 메일 알림 브로드캐스트 */
+    public static void broadcastNewMail(int empIdx, String senderName, String content) {
+        log.info("글로벌 웹소켓 broadcastNewMail 호출: empIdx = {}, senderName = {}, content = {}", empIdx, senderName, content);
+        sessions.stream()
+            .filter(WebSocketSession::isOpen)
+            .forEach(session -> {
+                try {
+                    Integer sessionEmpIdx = (Integer) session.getAttributes().get("emp_idx");
+                    if (sessionEmpIdx != null && sessionEmpIdx.equals(empIdx)) {
+                        Map<String, Object> payload = new HashMap<>();
+                        payload.put("type", "NEW_MAIL");
+                        payload.put("emp_idx", empIdx);
+                        payload.put("sender_name", senderName);
+                        payload.put("content", content);
+
+                        String jsonMessage = objectMapper.writeValueAsString(payload);
+                        session.sendMessage(new TextMessage(jsonMessage));
+
+                        log.info("새 메일 알림 전송 성공: empIdx={}, senderName={}, content={}", empIdx, senderName, content);
+                    }
+                } catch (IOException e) {
+                    log.error("새 메일 알림 전송 실패 - 세션 ID: {}", session.getId(), e);
+                }
+            });
+    }
+
 
 }

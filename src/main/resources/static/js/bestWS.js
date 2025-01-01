@@ -1,4 +1,4 @@
-//loginId = parseInt(loginId);
+loginId = parseInt(loginId);
 
 // 글로벌 WebSocket 연결
 window.globalSocket = new WebSocket("ws://localhost:8080/BEST/ws");
@@ -29,6 +29,11 @@ globalSocket.onmessage = function (event) {
         }
     } else {
         console.warn("유효하지 않은 데이터:", messageData);
+    }
+    
+    if (messageData.type === "NEW_MAIL") {
+        showMailNotification(messageData.sender_name, messageData.content);
+        updateMailDropdown(messageData.sender_name, messageData.content);
     }
 };
 

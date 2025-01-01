@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.best.alarm.AlarmDAO;
+import com.best.alarm.AlarmDTO;
+import com.best.alarm.AlarmTemplateDTO;
+import com.best.websocket.GlobalWebsocketHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MailService {
 	
 	@Autowired MailDAO mailDao;
+	@Autowired AlarmDAO alarmDAO;
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	
@@ -218,6 +224,8 @@ public class MailService {
 	        // receiver 데이터 저장
 	        if (!receiveList.isEmpty()) {
 	            row = mailDao.mailReceiver(receiveList);
+	            
+	            insertAlarmAndBroadcast(mailSendIdx, receiveList, sendDto);
 	        }
 	    }
 
@@ -309,7 +317,27 @@ public class MailService {
 	
 	
 	
-	
+	private void insertAlarmAndBroadcast(int mailSendIdx, List<MailReceiveDTO> receiveList, MailSendDTO sender) {
+	    // 알림 생성
+	    for (MailReceiveDTO receiver : receiveList) {
+	        AlarmDTO alarm = new AlarmDTO();
+	        alarm.setEmp_idx(receiver.getReceiver_idx());
+	        alarm.setType("mail"); // 알림 유형
+	        alarm.setContent(sender.getSender_name() + "님 으로부터 새로운 메일이 도착했습니다.");
+	        alarm.setDate(new Date());
+
+	        // 알림 저장
+	        alarmDAO.insertAlarm(alarm);
+
+	        // WebSocket 브로드캐스트 실행
+	        GlobalWebsocketHandler.broadcastNewMail(
+	                receiver.getReceiver_idx(),
+	                sender.getSender_name(), // 발신자의 이름 전달
+	                alarm.getContent() // 알림 내용 전달
+            );
+	    }
+	}
+
 	
 	
 	

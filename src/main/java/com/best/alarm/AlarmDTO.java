@@ -1,13 +1,29 @@
 package com.best.alarm;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class AlarmDTO {
 	private int alarm_idx; // 알람 ID (Primary Key, AUTO_INCREMENT)
 	private int emp_idx; // 직원 ID
 	private int template_idx; // 템플릿 ID
-	private LocalDateTime date; // 알림 생성 시간 (TIMESTAMP)
+	private Date date; // 알림 생성 시간 (TIMESTAMP)
 	private Boolean flag; // 상태 플래그
+	private String type; // 템플릿 유형
+	private String content; // 템플릿 내용
+	
+	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
 	public int getAlarm_idx() {
 		return alarm_idx;
 	}
@@ -26,10 +42,10 @@ public class AlarmDTO {
 	public void setTemplate_idx(int template_idx) {
 		this.template_idx = template_idx;
 	}
-	public LocalDateTime getDate() {
+	public Date getDate() {
 		return date;
 	}
-	public void setDate(LocalDateTime date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 	public Boolean getFlag() {

@@ -184,24 +184,34 @@ function showNotification(photo, name, message, chatIdx, rank_name) {
 
 /* 헤더 드롭 다운 */
 document.addEventListener("DOMContentLoaded", function () {
-    const dropdownToggle = document.getElementById("messageDropdownToggle");
-    const dropdownMenu = document.getElementById("messageDropdown");
+    const dropdownToggles = document.querySelectorAll(".headerDropdownToggle");
+    const dropdownMenus = document.querySelectorAll(".dropdownMenu");
 
     // 드롭다운 토글 클릭 시 열고 닫기
-    dropdownToggle.addEventListener("click", function (event) {
-        event.stopPropagation(); // 이벤트 전파 방지
-        dropdownMenu.classList.toggle("show");
+    dropdownToggles.forEach(function (toggle) {
+        toggle.addEventListener("click", function (event) {
+            event.stopPropagation(); // 이벤트 전파 방지
+            const dropdownMenu = this.nextElementSibling; // 다음 요소를 찾아 열기/닫기
+            dropdownMenus.forEach(function (menu) {
+                if (menu !== dropdownMenu) {
+                    menu.classList.remove("show");
+                }
+            });
+            dropdownMenu.classList.toggle("show");
+        });
     });
 
     // 드롭다운 외부 클릭 시 닫기
     document.addEventListener("click", function () {
-        dropdownMenu.classList.remove("show");
+        dropdownMenus.forEach(function (menu) {
+            menu.classList.remove("show");
+        });
     });
 });
 
 /* 헤더 메시지 알림 */
 function updateMessageDropdown(photo, name, message, chatIdx, rank_name) {
-    const messageDropdown = $("#messageDropdown");
+    const messageDropdown = $(".messageDropdown");
 
     // 메시지 항목 생성
     const messageItem =

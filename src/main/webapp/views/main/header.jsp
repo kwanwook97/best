@@ -30,7 +30,18 @@ var loginId = ${sessionScope.loginId};
 .btn-finish-work {
 	display: none;
 }
-
+.work-time {
+	width: 100%;
+}
+.spanAction span {
+	display: none;
+	width: 30%;
+	margin: 0 0 0 14px;
+}
+.spanAction {
+	width: 45%;
+	display: none;
+}
 </style>
 
 <body>
@@ -277,7 +288,7 @@ var loginId = ${sessionScope.loginId};
 			</a></li>
 
 			<li class="sidebar-header"></li>
-			<li><a href="javaScript:void(0);"> <i
+			<li><a href="alarm.go"> <i
 					class="fa-regular fa-bell"></i> <span>알림</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
@@ -312,21 +323,35 @@ var loginId = ${sessionScope.loginId};
   			</ul>
 
 			<ul class="navbar-nav align-items-center right-nav-link">
+			
+				<!-- 메시지 알림 드롭다운 -->
 				<li class="nav-item dropdown-lg" style="position: relative;">
 					<div id="newMessageIndicator3"></div>
 					<div class="dropdown">
-						<a class="nav-link" href="javascript:void(0);"
-							id="messageDropdownToggle"> <i class="fa-regular fa-message"></i>
+						<a class="nav-link headerDropdownToggle" href="javascript:void(0);">
+							<i class="fa-regular fa-message"></i>
 						</a>
-						<div class="dropdown-menu-custom" id="messageDropdown">
+						<div class="dropdown-menu-custom messageDropdown dropdownMenu">
 							<!-- 드롭다운 내용이 여기에 추가됩니다 -->
 						</div>
 					</div>
 				</li>
-				<li class="nav-item dropdown-lg"><a
-					class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect"
-					data-toggle="dropdown" href="javascript:void();"> <i
-						class="fa fa-bell-o"></i></a></li>
+				
+				<!-- 결재 / 캘린더 / 메일 / 알림리스트 드롭다운 -->
+				<li class="nav-item dropdown-lg" style="position: relative;">
+				<div id="alarmIndicator"></div>
+				<div class="dropdown">
+						<a class="nav-link headerDropdownToggle" href="javascript:void(0);">
+							<i class="fa fa-bell-o"></i>
+						</a>
+						<div class="dropdown-menu-custom alarmDropdown dropdownMenu">
+							<!-- 드롭다운 내용이 여기에 추가됩니다 -->
+						</div>
+					</div>
+
+				</li>
+						
+						
 				<li class="nav-item dropdown-lg"><a
 					class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect"
 					data-toggle="dropdown" href="javascript:void();"> <i
@@ -361,6 +386,93 @@ window.updateUnreadMessageCount = function (unreadTotal) {
     console.log("읽지 않은 메시지 총 수 업데이트:", unreadTotal);
 };
 
+function showMailNotification(senderName, content) {
+    const notification = $("#notification");
+
+    const notificationContent =
+        '<div class="notification-profile">' +
+            '<div class="notifi-profile">' +
+                '<div>' + content + '</div>' +
+            '</div>' +
+        '</div>';
+
+    notification.html(notificationContent);
+
+    // 알림 표시
+    notification.addClass("show");
+
+    setTimeout(() => {
+        notification.removeClass("show");
+    }, 5000); // 5초 후 숨김
+}
+
+$(document).ready(function () {
+    const mailDropdown = $(".alarmDropdown");
+
+    // 초기 알림 리스트 로드
+    function loadAlarmList() {
+        $.ajax({
+            url: "alarmList.ajax",
+            type: "GET",
+            data: { emp_idx: loginId }, // emp_idx 세션이나 전역 상태에서 가져옴
+            success: function (data) {
+                renderDropdown(data);
+            },
+            error: function (err) {
+                console.error("알림 데이터를 가져오는 중 오류 발생", err);
+            }
+        });
+    }
+
+    // 드롭다운 렌더링 함수
+    function renderDropdown(data) {
+        mailDropdown.empty(); // 기존 드롭다운 초기화
+
+        if (data.length === 0) {
+            mailDropdown.append('<div class="dropdown-item">알림이 없습니다.</div>');
+            return;
+        }
+
+        const limitedData = data.slice(0, 5); // 최신 5개의 데이터만 유지
+        limitedData.forEach(function (alarm) {
+            const alarmItem =
+                '<div class="dropdown-item">' +
+                    '<div class="notification-profile">' +
+                        '<div class="notifi-profile">' +
+                            '<div>' + alarm.content + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            mailDropdown.append(alarmItem);
+        });
+    }
+
+    // 초기 호출
+    loadAlarmList();
+});
+
+function updateMailDropdown(senderName, content) {
+    const mailDropdown = $(".alarmDropdown");
+
+    // 새로 받은 알림 추가
+    const mailItem =
+        '<div class="dropdown-item">' +
+            '<div class="notification-profile">' +
+                '<div class="notifi-profile">' +
+                    '<div>' + content + '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+
+    mailDropdown.prepend(mailItem);
+
+    // 최대 5개의 메일만 유지
+    if (mailDropdown.children().length > 5) {
+        mailDropdown.children().last().remove();
+    }
+}
+
+
 
 
 checkButton()
@@ -386,13 +498,20 @@ function checkButton(){
        console.log(data.row)
         const button = document.querySelector('.btn-start-work');
         const finish = document.querySelector('.btn-finish-work');
+        const spans = document.querySelectorAll('.spanAction span');
+        const spanAction = document.querySelector('.spanAction');
        if (data.startTime) {
             button.style.display = 'none';
             finish.style.display = 'block';
+            spans[0].textContent = data.startTime;
+            spans[0].style.display = 'block';
+            spans[1].style.display = 'block';
+            spanAction.style.display = 'flex';
       }
        if (data.startTime && data.endTime) {
          finish.disabled = true;
-      }
+         spans[1].textContent = data.endTime;
+      }		
         
     })
     .catch(error => {
@@ -470,8 +589,6 @@ function updateEndTime(){
         alert(error.message);
     }); 
 }
-
-
 </script>
 
 	<!-- 우측 하단 알림 메시지 -->

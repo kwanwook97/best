@@ -269,7 +269,8 @@ public class ChatService {
 
 		// 읽음 상태 업데이트
 		chatDAO.markMessagesAsRead(chatIdx, empIdx, LocalDateTime.now()); // 현재 시간 전달
-
+		
+		broadcastUnreadTotal(empIdx);
 		broadcastUnreadCount(chatIdx);
 		broadcastUpdatedUnreadCounts(chatIdx);
 	}
