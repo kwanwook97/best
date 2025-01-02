@@ -21,6 +21,17 @@
     	</if>
     	ORDER BY date DESC
 	</select>
+	
+	
+	<select id="getApproverDetails" resultType="map">
+    SELECT 
+        d.emp_idx AS writerEmpIdx,
+        MAX(CASE WHEN a.approv_order = 1 THEN a.emp_idx ELSE NULL END) AS firstApproverEmpIdx,
+        MAX(CASE WHEN a.approv_order = 2 THEN a.emp_idx ELSE NULL END) AS secondApproverEmpIdx
+    FROM document d
+    LEFT JOIN approv a ON d.doc_idx = a.doc_idx
+    WHERE d.doc_idx = #{docIdx}
+</select>
 
 
 </mapper>  
