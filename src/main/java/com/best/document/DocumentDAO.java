@@ -15,47 +15,49 @@ public interface DocumentDAO {
 	// 검색
 	int searchCount(String emp_idx, int cnt, String status, String searchType, String query);
 	List<Map<String, Object>> searchList(String emp_idx, int limit, int offset, String status, String searchType, String query);
+
 	
 	/* 받은 문서 */
-	// 전자결재 대기 토탈 페이지 / 리스트
-	int pendingCount(String emp_idx, int cnt);
-	List<Map<String, Object>> pendingList(String emp_idx, int limit, int offset);
+	// 전자결재 @대기@ 토탈 페이지 / 리스트
+	int pendingCount(String emp_idx, int cnt, String readStatus);
+	List<Map<String, Object>> pendingList(String emp_idx, int limit, int offset, String readStatus);
 	// 검색
 	int searchPending(String emp_idx, int cnt, String searchType, String query);
 	List<Map<String, Object>> searchPendingList(String emp_idx, int limit, int offset, String searchType, String query);
 	
-	// 전자결재 진행중 토탈 페이지 / 리스트
-	int inProgressCount(String emp_idx, int cnt);
-	List<Map<String, Object>> inProgressList(String emp_idx, int limit, int offset);
+	
+	// 전자결재 @진행중@ 토탈 페이지 / 리스트
+	int inProgressCount(String emp_idx, int cnt, String readStatus);
+	List<Map<String, Object>> inProgressList(String emp_idx, int limit, int offset, String readStatus);
 	// 검색
 	int searchInProgress(String emp_idx, int cnt, String searchType, String query);
 	List<Map<String, Object>> searchInProgressList(String emp_idx, int limit, int offset, String searchType, String query);
 	
-	// 전자결재 완료 토탈 페이지 / 리스트
-	int approvedCount(String emp_idx, int cnt);
-	List<Map<String, Object>> approvedList(String emp_idx, int limit, int offset);
+	// 전자결재 @완료@ 토탈 페이지 / 리스트
+	int approvedCount(String emp_idx, int cnt, String readStatus);
+	List<Map<String, Object>> approvedList(String emp_idx, int limit, int offset, String readStatus);
 	// 검색
 	int searchApproved(String emp_idx, int cnt, String searchType, String query);
 	List<Map<String, Object>> searchApprovedList(String emp_idx, int limit, int offset, String searchType, String query);
 	
-	// 전자결재 반려 토탈 페이지 / 리스트
-	int rejectCount(String emp_idx, int cnt);
-	List<Map<String, Object>> rejectList(String emp_idx, int limit, int offset);
+	// 전자결재 @반려@ 토탈 페이지 / 리스트
+	int rejectCount(String emp_idx, int cnt, String readStatus);
+	List<Map<String, Object>> rejectList(String emp_idx, int limit, int offset, String readStatus);
 	// 검색
 	int searchReject(String emp_idx, int cnt, String searchType, String query);
 	List<Map<String, Object>> searchRejectList(String emp_idx, int limit, int offset, String searchType, String query);
 	
-	// 전자결재 참조 토탈 페이지 / 리스트
-	int referenceCount(String emp_idx, int cnt);
-	List<Map<String, Object>> referenceList(String emp_idx, int limit, int offset);
+	// 전자결재 @참조@ 토탈 페이지 / 리스트
+	int referenceCount(String emp_idx, int cnt, String readStatus);
+	List<Map<String, Object>> referenceList(String emp_idx, int limit, int offset, String readStatus);
 	// 검색
 	int searchReference(String emp_idx, int cnt, String searchType, String query);
 	List<Map<String, Object>> searchReferenceList(String emp_idx, int limit, int offset, String searchType, String query);
 
 	
 	// 읽음, 읽지않음 처리
-	boolean updateapprov(int doc_idx, int doc_read, int approv_num);
-	boolean updateReject(int doc_idx, int doc_read, int ref_idx);
+	boolean updateReference(int doc_read, int ref_idx);
+	boolean updateapprov(int doc_read, int approv_num);
 	
 	
 	// 전자결재 임시저장
@@ -113,6 +115,8 @@ public interface DocumentDAO {
 	int referenceEmpOne(int doc_idx, String firstRef);
 	int referenceEmpTwo(int doc_idx, String firstRef, String secondRef);
 	int referenceEmpThree(int doc_idx, String firstRef, String secondRef, String thirdRef);
+
+	
 
 
 

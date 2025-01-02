@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -210,7 +211,7 @@ input[name="doc_subject"]{
 }
 .thr div.modal-content{
     left: 6%;
-    transform: scale(1) !important;
+    transform: scale(0.8) !important;
     color: black !important;
 }
 input.manager, input.today2, input.today3{
@@ -227,31 +228,29 @@ input.manager, input.today2, input.today3{
 	<div class="docnav">
 		<div class="opt">
 			<div>
-				<a href="documentPending.go">대기<span>1</span></a>
+				<a href="documentPending.go">대기</a>
 			</div>
 			<div>
-				<a href="documentBoard.go">진행중<span>12</span></a>
+				<a href="documentBoard.go">진행중</a>
 			</div>
 			<div>
 				<a href="documentApproved.go">완료</a>
 			</div>
 			<div>
-				<a href="documentReject.go">반려<span>3</span></a>
+				<a href="documentReject.go">반려</a>
 			</div>
 			<div>
-				<a href="documentReference.go">참조<span>3</span></a>
+				<a href="documentReference.go">참조</a>
 			</div>
 			<div>
-				<a href="documentDraft.go">임시저장<span>3</span></a>
+				<a href="documentDraft.go">임시저장<span></span></a>
 			</div>
 		</div>
-		<div class="searchbox">
-			    <select class="listSelect">
-			        <option class="listOpt" value="received">받은문서</option>
-			        <c:if test="${text != '참조' and text != '임시저장'}">
-				       <option class="listOpt" value="sent">보낸문서</option>
-					</c:if>
-			    </select>
+		<div class="searchbox"> 
+	   		<select class="listSelect">
+	            <option class="listOpt" value="received">받은문서</option>
+	            <option class="listOpt" value="sent">보낸문서</option>
+	        </select>
 			<select class="searchSelect">
 	          <option class="searchOpt" value="subject">제목</option>
 	          <option class="searchOpt" value="docNum">문서번호</option>
@@ -279,7 +278,7 @@ input.manager, input.today2, input.today3{
 			<ul class="modal-list">
 				<li class="modal-item" onclick="documentForm('연차신청서')">연차신청서</li>
 				<li class="modal-item" onclick="documentForm('시말서')">시말서</li>
-				<li class="modal-item" onclick="documentForm('구매요청서')">구매요청서</li>
+				<li class="modal-item" onclick="documentForm('지출결의서')">지출결의서</li>
 			</ul>
 		</div>
 	</div>
@@ -289,6 +288,13 @@ input.manager, input.today2, input.today3{
 <script>
 
 $(document).ready(function() {
+    const currentPage = window.location.pathname; // 현재 페이지의 URL 경로를 가져옵니다.
+
+    if (currentPage.includes('documentReference.go') || currentPage.includes('documentDraft.go')) {
+        $('.listSelect').hide();
+        $('.searchbox').css("width", "32%");
+    }
+    
 	// 작성 버튼 클릭 시 모달 열기
 	$(".editbtn").click(function() {
 		$("#customModal").fadeIn(); // 모달 열기 (fade 효과)
@@ -452,6 +458,9 @@ function btnAction(actionType) {
 	    var end_date = $('input[name="end_date"]').val();
 	    console.log("연차 끝", end_date);
 	   
+        var managerName = $('.managerName').html();
+        var managerName1 = $('.manager').val();
+        
 	    //참조 idx
    		var managerIds = [];		
 	    $('.refEmps .refEmp').each(function() {
@@ -505,7 +514,9 @@ function btnAction(actionType) {
 		    action: actionType,
 		    doc_subject: doc_subject,
 	        doc_content: doc_content,
-	        managerIds: managerIds
+	        managerIds: managerIds,
+	        managerName: managerName,
+        	managerName1: managerName1
 		};
 		
 		switch (form_idx) {
@@ -552,8 +563,6 @@ function btnAction(actionType) {
 		        	data.start_date = start_date;
 		            data.end_date = end_date;
 		            data.doc_content = doc_content;
-		            data.managerName = $('.managerName').html();
-		            data.managerName1 = $('.manager').val();
 		    	}
 		        break;
 		    case '2':
@@ -862,6 +871,34 @@ function searchSentPageCall(page) {
         },
         error: function(e) {
             console.log("오류 발생", e);
+        }
+    });
+}
+
+// 읽음 읽지 않음 필터링
+function filterReceivedList() {
+    var status = $('#status').val(); // 선택된 값 가져오기
+    console.log('Selected Status:', status);
+
+    // Ajax 요청
+    $.ajax({
+        type: 'GET',
+        url: 'documentList.ajax',
+        data: {
+            status: status, // 필터 조건
+            page: 1,        // 첫 페이지로 초기화
+            cnt: 6          // 페이지당 게시물 수
+        },
+        dataType: 'JSON',
+        success: function(data) {
+            if (data.receivedList && data.receivedList.length > 0) {
+                received(data.receivedList); // 리스트 갱신
+            } else {
+                $('.receivedList').html('<tr><td colspan="8">조건에 맞는 문서가 없습니다.</td></tr>');
+            }
+        },
+        error: function(e) {
+            console.log('오류 발생:', e);
         }
     });
 }

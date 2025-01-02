@@ -253,10 +253,10 @@
 							<th>반려 날짜</th>
 							<th>결재 상태</th>
 							<th>
-								<select id="status">
+								<select id="status" onchange="pageCall(1, this.value)">
 						          <option value="all">전체</option>
 						          <option value="read">읽음</option>
-						          <option value="unread">안읽음</option>
+						          <option value="unread">읽지않음</option>
 						        </select>
 							</th>
 						</tr>
@@ -300,39 +300,50 @@
 <script>
 var showPage = 1;
 var text = "반려";
-pageCall(showPage);
+var readStatus = "all";
+pageCall(showPage, readStatus);
 
-function pageCall(page){
+function pageCall(page, readStatus){
     console.log('pageCall');
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
         data: {
+        	'readStatus': readStatus,
         	'text': text,
-            'page': page,  // 몇 페이지 보여줄지
-            'cnt': 6      // 페이지당 보여줄 게시물 수
+            'page': page, 
+            'cnt': 6 
         },
         dataType: 'JSON',
         success: function(data) {
             console.log(data);
             if(data.receivedList.length>0){
-            	// 받은 문서
                 received(data.receivedList);
-	            // 받은 문서 페이징
+                
 	            $('#receivedPage').twbsPagination({
 	                startPage: 1,
 	                totalPages: data.receivedTotalPages,
 	                visiblePages: 5,
 	                onPageClick: function(evt, page){
-	                    console.log("evt", evt);  // 클릭 이벤트
-	                    console.log("page", page);  // 클릭한 페이지 번호
-	                    receivedPageCall(page);
+	                    console.log("evt", evt);
+	                    console.log("page", page);
+	                    receivedPageCall(page, readStatus);
 	                }
 	            });
             }else{
-            	var content = '<tr>';
-        		content += '<td colspan="8"> 받은 문서가 없습니다. </td>'
-        		content += '</tr>';
+            	if(readStatus === 'all'){
+	            	var content = '<tr>';
+	        		content += '<td colspan="8"> 받은 문서가 없습니다. </td>';
+	        		content += '</tr>';            	
+            	}else if(readStatus === 'read'){
+            		var content = '<tr>';
+	        		content += '<td colspan="8"> 읽은 문서가 없습니다. </td>';
+	        		content += '</tr>';    
+            	}else if(readStatus === 'unread'){
+            		var content = '<tr>';
+	        		content += '<td colspan="8"> 읽지않은 문서가 없습니다. </td>';
+	        		content += '</tr>';    
+            	}
         		$('.receivedList').html(content);
             }
             if(data.sentList.length>0){
@@ -344,8 +355,8 @@ function pageCall(page){
 	                totalPages: data.sentTotalPages,
 	                visiblePages: 5,
 	                onPageClick: function(evt, page){
-	                    console.log("evt", evt);  // 클릭 이벤트
-	                    console.log("page", page);  // 클릭한 페이지 번호
+	                    console.log("evt", evt);
+	                    console.log("page", page);
 	                    sentPageCall(page);
 	                }
 	            });
@@ -424,11 +435,12 @@ function sent(document) {
 
 
 // 받은 문서
-function receivedPageCall(page) {
+function receivedPageCall(page, readStatus) {
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
         data: {
+        	'readStatus': readStatus,
         	'text': text,
             'page': page,
             'cnt': 6

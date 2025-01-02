@@ -59,7 +59,7 @@ public class DocumentController {
 	// 전자결재 리스트
 	@GetMapping(value="/documentList.ajax")
 	@ResponseBody
-	public Map<String, Object> documentList(String text, String page, String cnt, HttpSession session) {
+	public Map<String, Object> documentList(String text, String page, String cnt, HttpSession session, String readStatus) {
 	    int page_ = Integer.parseInt(page);
 	    int cnt_ = Integer.parseInt(cnt);
 	    String status = "";
@@ -67,19 +67,19 @@ public class DocumentController {
 	    switch (text) {
 	        case "대기":
 	            status = "상신";
-	            return documentService.pendingList(page_, cnt_, status, emp_idx);
+	            return documentService.pendingList(page_, cnt_, status, emp_idx, readStatus);
 	        case "진행중":
 	            status = "진행중";
-	            return documentService.inProgressList(page_, cnt_, status, emp_idx);
+	            return documentService.inProgressList(page_, cnt_, status, emp_idx, readStatus);
 	        case "완료":
 	        	status = "완료";
-	        	return documentService.approvedList(page_, cnt_, status, emp_idx);
+	        	return documentService.approvedList(page_, cnt_, status, emp_idx, readStatus);
 	        case "반려":
 	        	status = "반려";
-	        	return documentService.rejectList(page_, cnt_, status, emp_idx);
+	        	return documentService.rejectList(page_, cnt_, status, emp_idx, readStatus);
 	        case "참조":
 	        	status = "참조";
-	        	return documentService.referenceList(page_, cnt_, status, emp_idx);
+	        	return documentService.referenceList(page_, cnt_, status, emp_idx, readStatus);
 	        case "임시저장":
 	        	status = "임시저장";
 	        	return documentService.draftList(page_, cnt_, status, emp_idx);
@@ -126,10 +126,10 @@ public class DocumentController {
 	// 읽음, 읽지않음 처리
 	@PostMapping(value="/updateRead.ajax")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> updateRead(String text, int doc_idx, int doc_read, int approv_num) {
+	public ResponseEntity<Map<String, Object>> updateRead(String text, String doc_idx, int doc_read, int approv_num) {
 		Map<String, Object> response = new HashMap<>();
 		
-		boolean success = documentService.updateRead(text, doc_idx, doc_read, approv_num);
+		boolean success = documentService.updateRead(text, doc_read, approv_num);
 	
         if (success) {
             response.put("success", 1);
@@ -144,11 +144,10 @@ public class DocumentController {
 	// 임시저장 상세보기
 	@GetMapping(value={"/draftDetail.ajax", "/pendingDetail.ajax"})
 	@ResponseBody
-	public String draftDetail(@RequestParam("doc_idx") String doc_idx, @RequestParam(required = false) Integer approv_num) {
+	public String draftDetail(@RequestParam("doc_idx") String doc_idx, String text, @RequestParam(required = false) Integer approv_num) {
 		String Detail = documentService.draftDetail(doc_idx);
-		if(approv_num != null) {;
-			int docIdx = Integer.parseInt(doc_idx);
-			documentService.updateRead("결재자", docIdx, 1, approv_num);
+		if(approv_num != null) {
+			documentService.updateRead(text, 1, approv_num);
 		}
 		logger.info("바꾸고 난거: "+Detail);
 		return Detail;		
@@ -238,6 +237,9 @@ public class DocumentController {
 			if(row > 0) {				
 				int docIdx = Integer.parseInt(doc_idx);
 	    		documentService.formsent(docIdx, parentManager, 1, manager, 2, "상신");
+	    		if (managerIds != null && !managerIds.isEmpty()) {
+	    		    documentService.referenceEmp(docIdx, managerIds);
+	    		}
 	    		response.put("message", "기안 완료");	
 			}
 			

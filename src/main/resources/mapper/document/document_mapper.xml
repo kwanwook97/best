@@ -4,10 +4,11 @@
 >
 <mapper namespace="com.best.document.DocumentDAO">
     
+<!-- ************************************ 대기 ************************************ -->
     <!-- 전자결재 대기 토탈 페이지 -->
 	<select id="pendingCount" resultType="int">
 		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
-		FROM approv
+		FROM approv a
 		WHERE emp_idx = #{emp_idx}
 	  	AND (
 		      (status = '상신' AND approv_order = 1)
@@ -20,6 +21,9 @@
 		          )
 		      )
 	  	)
+	  	<if test="readStatus != 'all'">
+		    AND a.doc_read = #{readStatus}
+		</if>
 	</select>
     <!-- 전자결재 대기 리스트 -->
    	<select id="pendingList" resultType="map">
@@ -55,6 +59,9 @@
 	            )
 	        )
 	    )
+  	  	<if test="readStatus != 'all'">
+		    AND a.doc_read = #{readStatus}
+		</if>
 	    ORDER BY d.doc_date DESC
 	    LIMIT #{limit} OFFSET #{offset}
    	</select>
@@ -139,8 +146,9 @@
 	    ORDER BY d.doc_date DESC
 	    LIMIT #{limit} OFFSET #{offset}
 	</select>
-	
-	
+   	
+   	
+<!-- ************************************ 진행중 ************************************ -->
    	<!-- 전자결재 진행중 토탈 페이지 -->
    	<select id="inProgressCount" resultType="int">
    		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
@@ -154,6 +162,9 @@
 		) 
 		AND a.approv_order = 2 
 		AND a.status = '상신'
+  	  	<if test="readStatus != 'all'">
+		    AND a.doc_read = #{readStatus}
+		</if>
    	</select>
     <!-- 전자결재 진행중 리스트 -->
    	<select id="inProgressList" resultType="map">
@@ -180,6 +191,9 @@
 		JOIN 
 			form f ON d.form_idx = f.form_idx
 		WHERE d.status = '진행중'
+  	  	<if test="readStatus != 'all'">
+		    AND a1.doc_read = #{readStatus}
+		</if>
 	    ORDER BY d.doc_date DESC
 	    LIMIT #{limit} OFFSET #{offset}
    	</select>
@@ -250,6 +264,7 @@
    	</select>
    	
    	
+<!-- ************************************ 완료 ************************************ -->
     <!-- 전자결재 완료 토탈 페이지 -->
     <select id="approvedCount" resultType="int">
    		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
@@ -258,7 +273,10 @@
 		    SELECT a.doc_idx
 		    FROM approv a
 		    WHERE a.emp_idx = #{emp_idx}
-		      AND a.status = '승인'
+	      	AND a.status = '승인'
+		  	<if test="readStatus != 'all'">
+			    AND a.doc_read = #{readStatus}
+			</if>
 		)
 		AND d.status = '승인'
    	</select>
@@ -280,8 +298,11 @@
 		JOIN form f ON d.form_idx = f.form_idx
 		JOIN approv a ON d.doc_idx = a.doc_idx
 		WHERE a.emp_idx = #{emp_idx}
-		  AND a.status = '승인'
-		  AND d.status = '승인'
+		AND a.status = '승인'
+	  	AND d.status = '승인'
+		<if test="readStatus != 'all'">
+	    	AND a.doc_read = #{readStatus}
+		</if>
      	ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
    	</select>
@@ -346,6 +367,7 @@
    	</select>
    	
    	
+<!-- ************************************ 반려 ************************************ -->
  	<!-- 전자결재 반려 토탈 페이지 -->
 	<select id="rejectCount" resultType="int">
 		SELECT CEIL(COUNT(a.doc_idx) / #{cnt}) AS pages
@@ -356,7 +378,10 @@
 		        FROM approv 
 		        WHERE status = '반려'
 		    )
-	   		AND a.emp_idx = #{emp_idx}
+   		AND a.emp_idx = #{emp_idx}
+		<if test="readStatus != 'all'">
+	    	AND a.doc_read = #{readStatus}
+		</if>
 	</select>	
     <!-- 전자결재 반려 리스트 -->
     <select id="rejectList" resultType="map">
@@ -385,12 +410,15 @@
 		        FROM approv
 		        WHERE emp_idx = #{emp_idx}
 		    )
-		    AND a.status = '반려'
-		    AND a.doc_idx IN (
-		        SELECT doc_idx
-		        FROM approv
-		        WHERE status = '반려'
-		    )
+	    AND a.status = '반려'
+	    AND a.doc_idx IN (
+	        SELECT doc_idx
+	        FROM approv
+	        WHERE status = '반려'
+	    )
+	    <if test="readStatus != 'all'">
+	    	AND a.doc_read = #{readStatus}
+		</if>
      	ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
     </select>
@@ -471,10 +499,14 @@
     </select>
     
     
+<!-- ************************************ 참조 ************************************ -->    
     <!-- 전자결재 참조 토탈 페이지 -->
     <select id="referenceCount" resultType="int">
     	SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
     	FROM reference WHERE emp_idx = #{emp_idx}
+		<if test="readStatus != 'all'">
+	    	AND doc_read = #{readStatus}
+		</if>
     </select>
     <!-- 전자결재 참조 리스트 -->
    	<select id="referenceList" resultType="map">
@@ -493,6 +525,9 @@
 		JOIN form f ON d.form_idx = f.form_idx
 		JOIN reference r ON d.doc_idx = r.doc_idx
 		WHERE r.emp_idx = #{emp_idx}
+		<if test="readStatus != 'all'">
+	    	AND r.doc_read = #{readStatus}
+		</if>
 		ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
    	</select>
@@ -551,6 +586,8 @@
    	</select>
    	
    	
+   	
+<!-- ************************************ 보낸문서 ************************************ -->
   	<!-- 전자결재 보낸 문서 토탈 페이지 -->
 	<select id="sentCount" resultType="int">
 		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
@@ -625,11 +662,11 @@
    	</select>
    	
 	<!-- 읽음, 읽지않음 처리 -->
-    <update id="updateapprov">
-    	UPDATE approv SET doc_read = #{doc_read} WHERE doc_idx = #{doc_idx} AND approv_num = #{approv_num}
+    <update id="updateReference" parameterType="Integer">
+    	UPDATE reference SET doc_read = #{doc_read} WHERE ref_idx = #{ref_idx}
     </update>
-    <update id="updateReject">
-    	UPDATE reference SET doc_read = #{doc_read} WHERE doc_idx = #{doc_idx} AND ref_idx = #{ref_idx}
+    <update id="updateapprov" parameterType="Integer">
+    	UPDATE approv SET doc_read = #{doc_read} WHERE approv_num = #{approv_num}
     </update>
     
    
