@@ -1,6 +1,8 @@
 package com.best.mail;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,9 +16,13 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.best.alarm.AlarmDAO;
@@ -126,6 +132,8 @@ public class MailService {
 	    result.put("totalPages", totalPages);
 	    result.put("currPage", page);
 	    result.put("list", list);
+
+	    
 	    
 	    // 조건에 맞는 전체 리스트 개수 가져오기.
 	    // No.를 부여하기위함.
@@ -150,33 +158,21 @@ public class MailService {
 	}
 
 	
-	// 메일전송, 임시저장
+	// 메일전송, 임시저장 메일작성
+	// 메일전송, 임시저장 메일작성
 	@Transactional
 	public int mailWrite(MultipartFile[] files, Map<String, Object> map) {
 	    // 성공 여부 체크
 	    int row = 0;
 
-	    // special_flag 값 처리
-	    int specialFlag = 0; // 기본값 설정
-	    if (map.get("special_flag") != null) {
-	        try {
-	            specialFlag = Integer.parseInt(map.get("special_flag").toString());
-	        } catch (NumberFormatException e) {
-	            logger.error("special_flag 값 변환 중 오류 발생: ", e);
-	            throw new IllegalArgumentException("special_flag 값이 유효한 숫자가 아닙니다.");
-	        }
-	    }
+	    // mail_send_idx 확인
+	    Integer mailSendIdx = map.get("mail_send_idx") != null
+	            ? Integer.parseInt(map.get("mail_send_idx").toString())
+	            : null;
 
-	    // status 값 처리
-	    int status = 1; // 기본값 설정
-	    if (map.get("status") != null) {
-	        try {
-	            status = Integer.parseInt(map.get("status").toString());
-	        } catch (NumberFormatException e) {
-	            logger.error("status 값 변환 중 오류 발생: ", e);
-	            throw new IllegalArgumentException("status 값이 유효한 숫자가 아닙니다.");
-	        }
-	    }
+	    // special_flag와 status 값 처리
+	    int specialFlag = map.get("special_flag") != null ? Integer.parseInt(map.get("special_flag").toString()) : 0;
+	    int status = map.get("status") != null ? Integer.parseInt(map.get("status").toString()) : 1;
 
 	    // sender 데이터 가공
 	    MailSendDTO sendDto = new MailSendDTO();
@@ -188,55 +184,80 @@ public class MailService {
 	    sendDto.setSpecial_flag(specialFlag);
 	    sendDto.setStatus(status);
 
-	    // sender 데이터 저장
-	    row = mailDao.mailSender(sendDto);
+	    if (mailSendIdx != null) {
+	        // 기존 데이터 삭제
+	        deleteExistingMailData(mailSendIdx);
 
-	    // 메일 idx 가져오기
-	    int mailSendIdx = sendDto.getMail_send_idx();
+	        // INSERT 새로 추가 (보내는 사람)
+	        row = mailDao.mailSender(sendDto);
+	        mailSendIdx = sendDto.getMail_send_idx();
+	    } else {
+	        // INSERT 새로 추가
+	        row = mailDao.mailSender(sendDto);
+	        mailSendIdx = sendDto.getMail_send_idx();
+	    }
 
-	    // receiver_data 처리
+	    // 수신자 및 파일 처리
 	    if (row > 0) {
-	        List<Map<String, String>> receiverData = new ArrayList<>();
-	        String receiverDataJson = (String) map.get("receiver_data");
-	        if (receiverDataJson != null && !receiverDataJson.isEmpty()) {
-	            try {
-	                ObjectMapper objectMapper = new ObjectMapper();
-	                receiverData = objectMapper.readValue(
-	                    receiverDataJson, new TypeReference<List<Map<String, String>>>() {}
-	                );
-	            } catch (Exception e) {
-	                logger.error("JSON 파싱 중 오류 발생: ", e);
-	                throw new RuntimeException("receiver_data 처리 중 문제가 발생했습니다.");
-	            }
-	        }
+	        processReceiversAndFiles(mailSendIdx, map, files, specialFlag);
+	        
+	    }
 
-	        List<MailReceiveDTO> receiveList = new ArrayList<>();
-	        for (Map<String, String> item : receiverData) {
-	            MailReceiveDTO receiveDto = new MailReceiveDTO();
-	            receiveDto.setMail_send_idx(mailSendIdx);
-	            receiveDto.setReceiver_idx(Integer.parseInt(item.get("emp_idx")));
-	            receiveDto.setReceiver_email(item.get("email"));
-	            receiveDto.setReceiver_name(item.get("name"));
-	            receiveDto.setReceiver_type(Integer.parseInt(item.get("type")));
-	            receiveDto.setSpecial_flag(specialFlag);
-	            receiveList.add(receiveDto);
-	        }
+	    return row;
+	}
 
-	        // receiver 데이터 저장
-	        if (!receiveList.isEmpty()) {
-	            row = mailDao.mailReceiver(receiveList);
-	            
-	            alarmService.insertAlarmAndBroadcast(mailSendIdx, receiveList, sendDto);
+	// 기존 데이터 삭제
+	@Transactional
+	private void deleteExistingMailData(int mailSendIdx) {
+	    // 수신자 삭제
+	    mailDao.deleteMailReceiver(mailSendIdx);
+
+	    // 첨부파일 삭제
+	    mailDao.deleteAttach(mailSendIdx);
+
+	    // 발신자 데이터 삭제
+	    mailDao.deleteMailSender(mailSendIdx);
+	}
+
+	// 수신자 정보 및 파일 처리
+	@Transactional
+	private void processReceiversAndFiles(int mailSendIdx, Map<String, Object> map, MultipartFile[] files, int specialFlag) {
+	    // 수신자 데이터 처리
+	    List<Map<String, String>> receiverData = new ArrayList<>();
+	    String receiverDataJson = (String) map.get("receiver_data");
+	    if (receiverDataJson != null && !receiverDataJson.isEmpty()) {
+	        try {
+	            ObjectMapper objectMapper = new ObjectMapper();
+	            receiverData = objectMapper.readValue(
+	                receiverDataJson, new TypeReference<List<Map<String, String>>>() {}
+	            );
+	        } catch (Exception e) {
+	            logger.error("JSON 파싱 중 오류 발생: ", e);
+	            throw new RuntimeException("receiver_data 처리 중 문제가 발생했습니다.");
 	        }
 	    }
 
+	    List<MailReceiveDTO> receiveList = new ArrayList<>();
+	    for (Map<String, String> item : receiverData) {
+	        MailReceiveDTO receiveDto = new MailReceiveDTO();
+	        receiveDto.setMail_send_idx(mailSendIdx);
+	        receiveDto.setReceiver_idx(Integer.parseInt(item.get("emp_idx")));
+	        receiveDto.setReceiver_email(item.get("email"));
+	        receiveDto.setReceiver_name(item.get("name"));
+	        receiveDto.setReceiver_type(Integer.parseInt(item.get("type")));
+	        receiveDto.setSpecial_flag(specialFlag);
+	        receiveList.add(receiveDto);
+	    }
+
+	    // 수신자 데이터 저장
+	    if (!receiveList.isEmpty()) {
+	        mailDao.mailReceiver(receiveList);
+	    }
+
 	    // 파일 처리
-	    if (row > 0 && files != null) {
+	    if (files != null) {
 	        for (MultipartFile file : files) {
-	            if (file == null || file.isEmpty()) {
-	                logger.info("업로드할 파일이 없습니다.");
-	                continue;
-	            }
+	            if (file == null || file.isEmpty()) continue;
 
 	            try {
 	                String fileName = file.getOriginalFilename();
@@ -252,15 +273,16 @@ public class MailService {
 	                condition.put("fileName", fileName);
 	                condition.put("newFileName", newFileName);
 
-	                row = mailDao.fileUpload(condition);
+	                mailDao.fileUpload(condition);
 	            } catch (IOException e) {
 	                logger.error("파일 처리 중 오류 발생: ", e);
 	            }
 	        }
 	    }
-
-	    return row;
 	}
+
+
+
 
 	
 	// 메일 읽음여부 업데이트
@@ -296,21 +318,49 @@ public class MailService {
 	
 	// 메일상세보기
 	@Transactional
-	public void mailDetail(String idx, Model model) {
+	public Map<String, Object> mailDetail(String idx) {
 		
-		int mail_send_idx = Integer.parseInt(idx);
+		Map<String, Object> map = new HashMap<String, Object>();
+	    
+	    int mailSendIdx = Integer.parseInt(idx);
+	    
+	    // 작성자 데이터 가져오기
+	    MailSendDTO senderDto = mailDao.senderDetail(mailSendIdx);
+	    map.put("senderDto", senderDto);
+	    
+	    // 첨부파일 가져오기
+	    List<Map<String, Object>> empAttach = mailDao.mailAttach(mailSendIdx);
+		if(empAttach != null) 
+			map.put("fileList", empAttach);
+	    
+	    
+	    // 수신자 데이터 가져오기
+	    List<MailReceiveDTO> receiverList = mailDao.receiverDetail(mailSendIdx);
+	    map.put("receiverList", receiverList);
 		
-		// 작성자 데이터 가져오기 
-		MailSendDTO senderDto = mailDao.senderDetail(mail_send_idx);
-		model.addAttribute("senderDto", senderDto);
-		
-		// 수신자 데이터 가져오기
-		List<MailReceiveDTO> receiverList = mailDao.receiverDetail(mail_send_idx);
-		model.addAttribute("receiverList", receiverList);
-		
+	    
+	    return map;
 	}
 
-
+	// 첨부파일 다운로드
+	public ResponseEntity<Resource> download(String newfile_name, String orifile_name) {
+		//body
+		Resource res = new FileSystemResource("C:/upload/"+newfile_name);
+		
+		//header
+		HttpHeaders header = new HttpHeaders();		
+		header.add("content-type", "application/octet-stream");
+		try {
+			String filename = URLEncoder.encode(orifile_name, "UTF-8");
+			header.add("content-Disposition", "attechment;filename=\""+filename+"\"");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}	
+		
+		//body, header, status
+		return new ResponseEntity<Resource>(res, header, HttpStatus.OK);
+	}
+	
 
 
 

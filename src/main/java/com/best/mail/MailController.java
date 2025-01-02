@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +21,6 @@ public class MailController {
 	@RequestMapping(value = "/mail.go")
 	public String mail() {
 		return "mail/mail";
-	}
-	
-	@RequestMapping(value = "/test.go")
-	public String Test() {
-		return "mail/test";
 	}
 	
 	// 메일작성 페이지
@@ -49,15 +46,57 @@ public class MailController {
 		return page;
 	}
 	
-	// 메일상세보기
-	@RequestMapping(value = "/mailDetail.go")
-	public String mailDetail(String idx, Model model) {
-		String page = "mail/mailDetail";
-		
-		mailService.mailDetail(idx, model);
-		
-		return page;
+	// 메일상세페이지로 이동
+	@RequestMapping(value = "/mailDetail.go") 
+	public String mailDetail(String idx, Model model) { 
+	
+		return "mail/mailDetail"; 
 	}
+	
+	
+	
+	// 메일상세보기
+	@RequestMapping(value = "/mailDetail.ajax")
+	@ResponseBody
+	public Map<String, Object> mailDetail(String idx) {
+	    
+	    return mailService.mailDetail(idx);
+	}
+
+	
+	
+	
+	// 첨부파일 다운로드
+	@RequestMapping(value="/mailAttachDown.do")
+	public ResponseEntity<Resource> download(String newfile_name, String file_name){
+		
+		return mailService.download(newfile_name,file_name);
+	}
+	
+	
+	
+	// 임시저장메일 불러오기
+	@RequestMapping(value = "/mailDraft.go")
+	public String mailDraft(String idx) {
+		
+		return "mail/mailDraft";
+	}
+	
+	// 메일 포워딩하기
+	@RequestMapping(value = "/mailForward.go")
+	public String mailForward(String idx) {
+		
+		return "mail/mailForward";
+	}
+	
+	// 임시저장메일 불러오기
+	@RequestMapping(value = "/mailReWrite.go")
+	public String mailReWrite(String idx) {
+		
+		return "mail/mailReWrite";
+	}
+	
+	
 	
 	
 	// 사원정보 가져오기(메일, 이름, idx) 
@@ -99,6 +138,7 @@ public class MailController {
 	public int updateDeleteStatus(@RequestParam Map<String, Object> map) {
 		return mailService.updateDeleteStatus(map);
 	}
+	
 
 	
 }
