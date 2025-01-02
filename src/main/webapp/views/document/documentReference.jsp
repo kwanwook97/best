@@ -178,7 +178,7 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}	
-	div.content div.modal-box{
+	div.content_emp div.modal-box{
 		display: none;
 	}
 	@media ( min-width :1200px) {

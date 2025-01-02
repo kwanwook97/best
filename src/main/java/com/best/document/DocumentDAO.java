@@ -108,7 +108,11 @@ public interface DocumentDAO {
 	// 결재 반려
 	int rejectStatus(String doc_idx, String emp_idx, String approv_date);
 	int documentStatusReject(String doc_idx, String doc_content, String remark);
-
+	
+	// 참조
+	int referenceEmpOne(int doc_idx, String firstRef);
+	int referenceEmpTwo(int doc_idx, String firstRef, String secondRef);
+	int referenceEmpThree(int doc_idx, String firstRef, String secondRef, String thirdRef);
 
 
 
