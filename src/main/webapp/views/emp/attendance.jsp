@@ -185,7 +185,7 @@
 	}
 	
 	
-	table {
+	.table-attendance {
 	    width: 100%;
 	    /* height: 100%; */
 	    border-collapse: collapse;
@@ -268,7 +268,182 @@
     margin-top: 10px;
     resize: none;
     height: 200px;
-}	
+}
+/* 연차기록 수정 모달	 */
+.modal-leaveHistory {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content-leaveHistory {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.modal-buttons-leaveHistory {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#reasonInputLeaveHistory {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    resize: none;
+    height: 200px;
+}
+
+/* 근태 수정 내역 모달 */
+.modal-attendanceHistory {
+  display: none; /* 초기에는 숨김 */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content-attendanceHistory {
+  background-color: #fefefe;
+  margin: 3% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: 78%;
+  overflow-y: auto;
+}
+
+.close-btn-attendanceHistory {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn-attendanceHistory:hover, .close-btn-attendanceHistory:focus {
+  color: black;
+  text-decoration: none;
+}
+
+.modal-filters-attendanceHistory {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal-table-attendanceHistory {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  max-height: 86%;
+}
+
+.modal-table-attendanceHistory th, .modal-table-attendanceHistory td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.modal-table-attendanceHistory th {
+  background-color: #30005A;
+  color: white;
+}
+.addbtn {
+	background-color: #E9396B;
+	border-radius: 10px;
+	border: 1px solid #E9396B;
+	color: white;
+	margin: 0 0 0 3px;
+	font-size: 16px;
+}
+.addbtn:hover {
+	border: 2px solid #ed8faa;
+	background-color: #fe5c8a;
+}
+.leavEditable {
+	width: 55%;
+}
+/* 연차 수정 내역 모달 */
+.modal-leaveHistoryLog {
+  display: none; /* 초기에는 숨김 */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content-leaveHistoryLog {
+  background-color: #fefefe;
+  margin: 3% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: 78%;
+  overflow-y: auto;
+}
+
+.close-btn-leaveHistoryLog {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn-leaveHistoryLog:hover, .close-btn-leaveHistoryLog:focus {
+  color: black;
+  text-decoration: none;
+}
+
+.modal-filters-leaveHistoryLog {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal-table-leaveHistoryLog {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  max-height: 86%;
+}
+
+.modal-table-leaveHistoryLog th, .modal-table-leaveHistoryLog td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.modal-table-leaveHistoryLog th {
+  background-color: #30005A;
+  color: white;
+}
+
 
 
   </style>
@@ -366,18 +541,18 @@
  		
  		
  		<div class="contentBottom purple p1 f24">
- 			<div class="h10 bold">
+ 			<div class="h10 bold attendance-b">
 				<span><i class="bi bi-clock-history"></i>&nbsp;&nbsp;출퇴근 기록</span>
 			    <c:if test="${not empty empIdx}">
-			    	<button onclick="enableEditMode()">수정하기</button>
+			    	<button class="addbtn" onclick="attendanceHistory()">수정내역</button>
 			    </c:if>
 			    <c:if test="${not empty empIdx}">
-			    	<button onclick="">수정내역</button>
+			    	<button class="addbtn" onclick="enableEditMode()">수정하기</button>
 			    </c:if>
 			</div>
 			<!-- 출퇴근 기록 -->
 			<div class="bgColor h90">
-			    <table>
+			    <table class="table-attendance">
 			        <thead>
 			            <tr>
 			                <th>근무일자</th>
@@ -442,6 +617,35 @@
 			</div>
 			
 		</div>
+		
+ 		<div class="contentBottom purple p1 f24">
+ 			<div class="h10 bold leave">
+				<span><i class="bi bi-clock-history"></i>&nbsp;&nbsp;연차 기록</span>
+			    <c:if test="${not empty empIdx}">
+			    	<button class="addbtn" onclick="leaveHistoryLogList()">수정내역</button>
+			    </c:if>
+			    <c:if test="${not empty empIdx}">
+			    	<button class="addbtn" onclick="leaveHistoryEditMode()">수정하기</button>
+			    </c:if>
+			</div>
+			<!-- 출퇴근 기록 -->
+			<div class="bgColor h90">
+			    <table class="table-attendance">
+			        <thead>
+			            <tr>
+			                <th>시작 날짜</th>
+			                <th>종료 날짜</th>
+			                <th>총 사용 일수</th>
+			                <th>사유</th>
+			            </tr>
+			        </thead>
+			        <tbody class="leaveHistory">
+
+			        </tbody>
+			    </table>
+			</div>
+			
+		</div>
 	</div>
 	
 <div id="reasonModal" class="modal-attendance" style="display: none;">
@@ -454,6 +658,88 @@
         </div>
     </div>
 </div>
+
+<!-- 연차기록 수정 사유 모달 -->
+<div id="reasonLeaveModal" class="modal-leaveHistory" style="display: none;">
+    <div class="modal-content-leaveHistory">
+        <h3>변경 사유 입력</h3>
+        <textarea id="reasonInputLeaveHistory" placeholder="변경 사유를 입력하세요..." rows="4" maxlength="200"></textarea>
+        <div class="modal-buttons-leaveHistory">
+            <button id="confirmLeaveHistoryReason" onclick="saveLeaveHistoryEditedData()">확인</button>
+            <button id="cancelLeaveHistoryReason" onclick="hideLeaveHistoryReasonModal()">취소</button>
+        </div>
+    </div>
+</div>
+
+<div id="attendanceHistoryModal" class="modal-attendanceHistory">
+  <div class="modal-content-attendanceHistory">
+    <span class="close-btn-attendanceHistory">&times;</span>
+    <h2>근태 수정 내역</h2>
+    <div class="modal-filters-attendanceHistory">
+      <!-- 필터 섹션 -->
+      <span>날짜:</span>
+      <input type="date" id="dateFilter">
+      
+      <span>수정자:</span>
+      <input type="text" id="userFilter" placeholder="수정자 검색">
+      <button class="addbtn" id="filterBtn">필터 적용</button>
+      <button class="addbtn" id="reset" onclick="reset()">초기화</button>
+    </div>
+    <!-- 리스트 테이블 -->
+    <table class="modal-table-attendanceHistory">
+      <thead>
+        <tr>
+          <th>일자</th>
+          <th>수정 전</th>
+          <th>수정 후</th>
+          <th>수정자</th>
+          <th>수정 사유</th>
+          <th>수정 일자</th>
+        </tr>
+      </thead>
+      <tbody id="modalTableBody">
+        <tr>
+        	<td colspan="6">내역이 없습니다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 연차 수정내역 모달 -->
+<div id="leaveHistoryLogModal" class="modal-leaveHistoryLog">
+  <div class="modal-content-leaveHistoryLog">
+    <span class="close-btn-leaveHistoryLog">&times;</span>
+    <h2>연차 수정 내역</h2>
+    <div class="modal-filters-leaveHistoryLog">
+      <!-- 필터 섹션 -->
+      <span>날짜:</span>
+      <input type="date" id="dateLeaveFilter">
+      <span>수정자:</span>
+      <input type="text" id="userLeaveFilter" placeholder="수정자 검색">
+      <button class="addbtn" id="filterLeaveBtn">필터 적용</button>
+      <button class="addbtn" id="resetLeave" onclick="resetLeave()">초기화</button>
+    </div>
+    <!-- 리스트 테이블 -->
+    <table class="modal-table-leaveHistoryLog">
+      <thead>
+        <tr>
+          <th>수정 전</th>
+          <th>수정 후</th>
+          <th>수정자</th>
+          <th>수정 사유</th>
+          <th>수정 일자</th>
+        </tr>
+      </thead>
+      <tbody id="modalLeaveTableBody">
+        <tr>
+        	<td colspan="5">내역이 없습니다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 	
 </body>
 
@@ -465,6 +751,8 @@ if (key) {
 }else{
 	empIdx = loginId;
 }
+let attendanceData = [];
+let leaveHistoryLogData = [];
 console.log("empIdx: "+empIdx);
 
 setInterval(updateClock, 1000)
@@ -522,6 +810,28 @@ function updateTime(){
                 $(".attendanceList").append(row);
             });
             
+            // 연차 기록 
+            $(".leaveHistory").empty(); 
+            if (!response.leaveHistoryList) {
+                const row =
+                    "<tr>" +
+                        "<td colspan='4'> 사용 내역이 없습니다.</td>" +
+                    "</tr>";
+                $(".leaveHistory").append(row);
+			}else{
+	            response.leaveHistoryList.forEach(function (item) {
+	                const row =
+	                    "<tr>" +
+	                        "<td data-leave-update-idx='" + item.leave_update_idx+ "'>" + (item.start_date || "*") + "</td>" +
+	                        "<td>" + (item.end_date || "*") + "</td>" +
+	                        "<td>" + (item.total_days || "*") + "</td>" +
+	                        "<td>" + (item.reason || "*") + "</td>" +
+	                    "</tr>";
+	                $(".leaveHistory").append(row);
+	            });
+			}
+
+            
             if (response.workdays != null) {
 				$(".workdays").next("span").text(response.workdays + "일");
 			}else{
@@ -558,6 +868,17 @@ function updateTime(){
 				$(".remainLeave").next("span").text("없음");
 			}
            	
+            if (response.attendanceHistory) {
+				/* console.log("수정내역 확인 데이터 "+JSON.stringify(response.attendanceHistory));   */          	
+              	attendanceData = response.attendanceHistory;
+                renderTable(attendanceData);
+			}
+            
+            if (response.leaveHistoryLog) {
+				console.log("수정내역 확인 데이터 "+JSON.stringify(response.leaveHistoryLog));          	
+              	leaveHistoryLogData = response.leaveHistoryLog;
+              	renderLeaveHistoryLogTable(leaveHistoryLogData);
+			}
             
         },
         error: function (xhr, status, error) {
@@ -566,11 +887,10 @@ function updateTime(){
     });
 }
 
+/* 출퇴근기록 수정하기 버튼 클릭시 나오는 저장하기 버튼 취소기능 등*/
 function enableEditMode() {
     if ($(".attendanceList input").length > 0) {
 			cancle();
-        // 저장 버튼 제거
-
         return;
     }
 	
@@ -600,7 +920,7 @@ function enableEditMode() {
 
     // 수정 완료 버튼 표시 (수정 모드에서만 나타남)
     if ($("#saveChanges").length === 0) {
-        $(".h10").append('<button id="saveChanges" onclick="showReasonModal()">저장하기</button>');
+        $(".h10.bold.attendance-b").append('<button class="addbtn" id="saveChanges" onclick="showReasonModal()">저장하기</button>');
     }
 
 }
@@ -617,6 +937,11 @@ function saveEditedData() {
                     /* const status = $(this).find("td").eq(3).find("input").val(); */
                     const content = $("#reasonInput").val();
             		
+                    if (!content) {
+                        modal.showAlert("변경 사유가 비어있습니다. 입력해 주세요.");
+                        return false;
+                    }
+                    
                     const row = {
                             attendIdx: attendIdx,
                             date: date || "*",
@@ -731,6 +1056,300 @@ function hideReasonModal() {
 
 
 
+/* 수정내역 함수 */
+function attendanceHistory() {
+  $('#attendanceHistoryModal').fadeIn(); 
+}
+
+$('.close-btn-attendanceHistory').on('click', function () {
+  $('#attendanceHistoryModal').fadeOut(); 
+});
+
+
+// 필터 적용 버튼 클릭 이벤트
+$('#filterBtn').on('click', function () {
+  const dateFilter = $('#dateFilter').val(); 
+  const userFilter = $('#userFilter').val(); 
+
+
+  const filteredData = attendanceData.filter((entry) => {
+    const isDateMatch = dateFilter ? entry.beforeDate.includes(dateFilter) : true;
+    const isUserMatch = userFilter ? entry.name.includes(userFilter) : true;
+    return isDateMatch && isUserMatch;
+  });
+
+  renderTable(filteredData); 
+});
+
+
+function renderTable(data) {
+  const modalTableBody = $('#modalTableBody'); 
+  modalTableBody.empty();
+	
+  if (!data || data.length === 0) {
+	  const row = 
+		    '<tr>' +
+		      '<td colspan="6">내역이 없습니다.</td>'+ 
+		    '</tr>';
+		  modalTableBody.append(row); 
+	  return;
+	}
+  
+  data.forEach((entry) => {
+	  const row = 
+	    '<tr>' +
+	      '<td>' + (entry.beforeDate || '*') + '</td>' + 
+	      '<td>' + (entry.prevStart || '*') + ' ~ ' + (entry.prevEnd || '*') + '</td>' + 
+	      '<td>' + (entry.newStart || '*') + ' ~ ' + (entry.newEnd || '*') + '</td>' + 
+	      '<td>' + (entry.name || '*') + '</td>' + 
+	      '<td>' + (entry.content || '*') + '</td>' + 
+	      '<td>' + (entry.date || '*') + '</td>' + 
+	    '</tr>';
+	  modalTableBody.append(row); 
+	});
+
+}
+
+$(window).on('click', function (event) {
+  if ($(event.target).is('#attendanceHistoryModal')) {
+    $('#attendanceHistoryModal').fadeOut();
+  }
+});
+
+
+function reset(){
+	  $('#dateFilter').val('');
+	  $('#userFilter').val('');
+	  renderTable(attendanceData);
+}
+
+/* 연차 수정내역 함수 */
+function leaveHistoryLogList(){
+  $('#leaveHistoryLogModal').fadeIn(); 
+}
+
+$('.close-btn-leaveHistoryLog').on('click', function () {
+  $('#leaveHistoryLogModal').fadeOut(); 
+});
+
+
+// 필터 적용 버튼 클릭 이벤트
+$('#filterLeaveBtn').on('click', function () {
+  const dateFilter = $('#dateLeaveFilter').val(); 
+  const userFilter = $('#userLeaveFilter').val(); 
+
+
+  const filteredData = leaveHistoryLogData.filter((entry) => {
+	const isDateMatch = dateFilter 
+	    ? (new Date(entry.prevStartDate) <= new Date(dateFilter) && new Date(dateFilter) <= new Date(entry.prevEndDate))
+	    : true;
+    const isUserMatch = userFilter ? entry.name.includes(userFilter) : true;
+    return isDateMatch && isUserMatch;
+  });
+
+  renderLeaveHistoryLogTable(filteredData); 
+});
+
+
+function renderLeaveHistoryLogTable(data) {
+  const modalTableBody = $('#modalLeaveTableBody'); 
+  modalTableBody.empty();
+
+  if (!data || data.length === 0) {
+	  const row = 
+		    '<tr>' +
+		      '<td colspan="5">내역이 없습니다.</td>'+ 
+		    '</tr>';
+		  modalTableBody.append(row); 
+	  return;
+	}
+  
+  data.forEach((entry) => {
+	  const row = 
+	    '<tr>' +
+	      '<td>' + (entry.prevStartDate || '*') + ' ~ ' + (entry.prevEndDate || '*') + '</td>' + 
+	      '<td>' + (entry.newStartDate || '*') + ' ~ ' + (entry.newEndDate || '*') + '</td>' + 
+	      '<td>' + (entry.name || '*') + '</td>' + 
+	      '<td>' + (entry.content || '*') + '</td>' + 
+	      '<td>' + (entry.date || '*') + '</td>' + 
+	    '</tr>';
+	  modalTableBody.append(row); 
+	});
+
+}
+
+$(window).on('click', function (event) {
+  if ($(event.target).is('#leaveHistoryLogModal')) {
+    $('#leaveHistoryLogModal').fadeOut();
+  }
+});
+
+
+function resetLeave(){
+	  $('#dateLeaveFilter').val('');
+	  $('#userLeaveFilter').val('');
+	  renderLeaveHistoryLogTable(leaveHistoryLogData);
+}
+
+/* 연차 수정하기 버튼 클릭시 나오는 저장하기 버튼 취소기능 등*/
+function leaveHistoryEditMode() {
+     if ($(".leaveHistory input").length > 0) {
+    	 cancleLeave();
+        return;
+    } 
+ if ($(".leaveHistory tr").find("td").length <= 1) {
+	return;
+}   
+	
+ $(".leaveHistory tr").each(function () {
+	    const startDateInput = $(this).find("td").eq(0);
+	    const endDateInput = $(this).find("td").eq(1);   
+
+	    $(this).find("td").each(function (index) {
+	        const value = $(this).text().trim();
+	        $(this).attr("data-original", value); 
+
+	        if (index === 0) { 
+	        	const tomorrow = new Date();
+	        	tomorrow.setDate(tomorrow.getDate() + 1);
+	            $(this).empty();
+	            $(this).append('<input type="checkbox" class="dowCheckbox" />');
+	            $(this).append('<input type="date" value="' + value + '" class="leavEditable" min="' + tomorrow.toISOString().split("T")[0] + '" />');
+	        } else if (index === 1) {
+	           
+	            $(this).empty();
+	            const startDate = startDateInput.find("input[type='date']").val() || new Date().toISOString().split("T")[0];
+	            $(this).append('<input type="date" value="' + value + '" class="leavEditable" min="' + startDate + '" />');
+	            
+	            startDateInput.find("input[type='date']").on("change", function () {
+	                const updatedStartDate = $(this).val(); 
+	                endDateInput.find("input[type='date']").attr("min", updatedStartDate); 
+	            });
+	        }
+	    });
+	});
+
+
+    // 수정 완료 버튼 표시 (수정 모드에서만 나타남)
+    if ($("#saveLeave").length === 0) {
+        $(".h10.leave").append('<button class="addbtn" id="saveLeave" onclick="showReasonLeaveModal()">저장하기</button>');
+    }
+}
+
+function cancleLeave() {
+    $(".leaveHistory tr").each(function () {
+        $(this).find("td").each(function (index) {
+            const originalValue = $(this).attr("data-original") || ""; 
+            if (index === 0) {
+                $(this).find(".dowCheckbox").remove();
+                $(this).empty(); 
+                $(this).text(originalValue); 
+            } else {
+                $(this).empty(); 
+                $(this).text(originalValue);
+            }
+            $(this).removeAttr("data-original");
+        });
+    });
+    $("#saveLeave").remove();
+}
+
+function showReasonLeaveModal() {
+    const isChecked = $(".leaveHistory .dowCheckbox:checked").length > 0;
+    if (!isChecked) {
+        return modal.showAlert('수정할 항목을 선택하세요.');
+    }
+
+    let hasError = false;
+
+    $(".leaveHistory tr").each(function () {
+        if ($(this).find(".dowCheckbox").is(":checked")) {
+            const leaveUpdateIdx = $(this).find("td").eq(0).data("leave-update-idx");
+            const startDate = $(this).find("td").eq(0).find("input[type='date']").val();
+            const endDate = $(this).find("td").eq(1).find("input").val();
+
+            if (!startDate) {
+                modal.showAlert("시작 날짜가 비어있습니다. 입력해 주세요.");
+                hasError = true;
+                return false; 
+            }
+            if (!endDate) {
+                modal.showAlert("종료 날짜가 비어있습니다. 입력해 주세요.");
+                hasError = true;
+                return false;
+            }
+            if (typeof loginId === "undefined" || loginId === null || loginId === "") {
+                modal.showAlert("로그인 후 이용해 주시기 바랍니다.");
+                hasError = true;
+                return false;
+            }
+        }
+    });
+
+    if (hasError) {
+        return;
+    }
+    
+    $("#reasonLeaveModal").fadeIn();
+}
+
+/* 리즌 모달 사용후 저장확인로직 */
+function saveLeaveHistoryEditedData() {
+    const updatedList = [];
+    
+    $(".leaveHistory tr").each(function () {
+        if ($(this).find(".dowCheckbox").is(":checked")) {
+		            const leaveUpdateIdx = $(this).find("td").eq(0).data("leave-update-idx");
+		            const startDate = $(this).find("td").eq(0).find("input[type='date']").val();
+		            const endDate = $(this).find("td").eq(1).find("input").val();
+                    const content = $("#reasonInputLeaveHistory").val();
+                    
+                    if (!content) {
+                        modal.showAlert("변경 사유가 비어있습니다. 입력해 주세요.");
+                        return false;
+                    }
+                    
+                    const row = {
+                    		leaveUpdateIdx: leaveUpdateIdx,
+                    		startDate: startDate,
+                    		endDate: endDate,
+                            loginId: loginId,
+                            content: content
+                        };
+
+                updatedList.push(row); 
+        }
+    });
+    hideLeaveHistoryReasonModal();
+    $("#saveLeave").remove();
+
+    console.log("Updated List:", updatedList);
+
+     // 수정된 데이터를 서버로 전송
+     $.ajax({
+        url: "updateLeaveHistory.ajax",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ updatedList: updatedList }),
+        success: function (response) {
+            console.log("response:", response);
+            if (response.msg == "성공") {
+                updateTime();
+			}else{
+				modal.showAlert(response.msg);
+			}
+
+        },
+        error: function (xhr, status, error) {
+            console.error("에러:", error);
+        }
+    });  
+}
+
+function hideLeaveHistoryReasonModal() {
+    $("#reasonLeaveModal").fadeOut();
+    $("#reasonInputLeaveHistory").val("");
+}
 
 </script>
 </html>

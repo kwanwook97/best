@@ -5,6 +5,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.best.attendance.AttendanceDAO;
 import com.best.calendar.CalendarDAO;
 
 @Service
@@ -20,13 +23,23 @@ public class LeaveService {
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired LeaveDAO leaveDAO;
+	@Autowired AttendanceDAO attendanceDAO;
 	@Autowired CalendarDAO calendarDAO;
 
 	//연차 부여 로직
 	public void updateLeave() {
 		List<Map<String, Object>> list  = leaveDAO.getEmpList();
 		LocalDate today = LocalDate.now();
-		List<LocalDate> isHolidays = calendarDAO.getHolidayCalculate(); 
+		List<LocalDate> isHolidays = calendarDAO.getHolidayCalculate();
+		String text = "";
+		
+		// 소멸일시 업데이트
+		List<Map<String, Object>> annualLeaveList = leaveDAO.getAnnualLeave();
+		for (Map<String, Object> map : annualLeaveList) {
+			leaveDAO.updateLeaveDel(map);
+		}
+		
+		
 		
 		for (Map<String, Object> emp : list) {
 			int yearsOfService = ((Long) emp.get("years_of_service")).intValue();
@@ -62,8 +75,12 @@ public class LeaveService {
 	                    }
 		                if (workDays == row) {
 		                	leaveDAO.updateLeave(empIdx,1);
+		                	text = "1년미만 사원 1개월 근로 연차 지급 내역";
+		                	leaveDAO.insertAnnualLeave(empIdx,1,text);
 						}else {
 							leaveDAO.updateLeave(empIdx,0);
+		                	text = "1년미만 사원 1개월 근로 연차 지급 내역";
+		                	leaveDAO.insertAnnualLeave(empIdx,1,text);
 						}
 		                
 					}
@@ -86,6 +103,8 @@ public class LeaveService {
 
 		        if (attendanceCount >= 0.8) {
 		        	leaveDAO.updateLeave(empIdx, 15);
+		        	text = "1년 만근한 사원 지급 내역";
+		        	leaveDAO.insertAnnualLeave(empIdx, 15,text);
 		        }else {
 			        LocalDate currentDate = previousDate;
 			        List<LocalDate> dates = new ArrayList<>();
@@ -115,8 +134,12 @@ public class LeaveService {
 		                    }
 			                if (workDays == dow) {
 			                	leaveDAO.updateLeave(empIdx,1);
+			                	text = "한달만근 연차 부여";
+			                	leaveDAO.insertAnnualLeave(empIdx, 1, text);
 							}else {
 								leaveDAO.updateLeave(empIdx,0);
+			                	text = "한달만근 연차 부여";
+			                	leaveDAO.insertAnnualLeave(empIdx, 0, text);
 							}
 			                
 						}
@@ -125,7 +148,9 @@ public class LeaveService {
 
 		        if (yearsOfService >= 3) {
 		            int extraLeave = (yearsOfService - 1) / 2; 
-		            leaveDAO.updateLeave(empIdx, extraLeave); 
+		            leaveDAO.updateLeave(empIdx, extraLeave);
+		            text = "근속별 추가부여";
+                	leaveDAO.insertAnnualLeave(empIdx,extraLeave, text);
 		        }
 			}
 		}
@@ -135,6 +160,36 @@ public class LeaveService {
 	    return !(date.getDayOfWeek() == DayOfWeek.SATURDAY || 
 	             date.getDayOfWeek() == DayOfWeek.SUNDAY || 
 	             isHolidays.contains(date));
+	}
+
+	@Transactional
+	public Map<String, Object> updateLeaveHistory(List<Map<String, Object>> list) {
+		Map<String, Object> response = new HashMap<>();
+		int row = 0 ;
+		if (list == null) {
+		    response.put("msg", "매개변수 빈필드 오류");
+		}else {
+			for (Map<String, Object> map : list) {
+			Map<String, Object> prev = leaveDAO.selectLeaveHistory(map);
+			logger.info("prev:{}",prev);
+			if (prev != null && !prev.isEmpty()) {
+				map.put("prevStartDate", prev.get("prevStartDate"));
+				map.put("prevEndDate", prev.get("prevEndDate"));
+				
+				
+			}else {
+				return (Map<String, Object>) response.put("msg","변경할 이전 연차가 없습니다?");
+			}
+				leaveDAO.updateLeaveHistory(map);
+				row += leaveDAO.insertLeaveHistoryLog(map);
+			}
+			if (row > 0) {
+				response.put("msg", "성공");
+			}else {
+				response.put("msg", "실패");
+			}
+		}
+		return response;
 	}
 
 }

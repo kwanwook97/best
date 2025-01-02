@@ -383,16 +383,23 @@ function checkButton(){
         return response.json();
     })
     .then(data => {
-       console.log(data.row)
+        console.log(data.row)
         const button = document.querySelector('.btn-start-work');
         const finish = document.querySelector('.btn-finish-work');
+        const spans = document.querySelectorAll('.spanAction span');
+        const spanAction = document.querySelector('.spanAction');
        if (data.startTime) {
             button.style.display = 'none';
             finish.style.display = 'block';
+            spans[0].textContent = data.startTime;
+            spans[0].style.display = 'block';
+            spans[1].style.display = 'block';
+            spanAction.style.display = 'flex';
       }
        if (data.startTime && data.endTime) {
          finish.disabled = true;
-      }
+         spans[1].textContent = data.endTime;
+      }		
         
     })
     .catch(error => {

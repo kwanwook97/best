@@ -132,6 +132,31 @@
 		CONCAT(#{date}, ' ', #{start_time}),CONCAT(#{date}, ' ', #{end_time}))
 	</insert>
 	
+	<!-- 출퇴근 수정 내역 가져오기 -->
+	<select id="getAttendanceHistory" parameterType="map" resultType="map">
+	    SELECT
+	        DATE_FORMAT(ah.date, '%Y-%m-%d %H:%i') AS date,
+	        DATE_FORMAT(ah.prev_start_time, '%H:%i') AS prevStart,
+	        DATE_FORMAT(ah.prev_end_time, '%H:%i') AS prevEnd,
+	        DATE_FORMAT(ah.new_start_time, '%H:%i') AS newStart,
+	        DATE_FORMAT(ah.new_end_time, '%H:%i') AS newEnd,
+	        DATE_FORMAT(ah.new_end_time, '%Y-%m-%d') AS beforeDate,
+	        ah.emp_idx,
+	        ah.content,
+	        e.name
+	    FROM
+	        attendance_history ah
+	    JOIN
+	        attendance a ON ah.attend_idx = a.attend_idx
+	    JOIN
+	        employee e ON ah.emp_idx = e.emp_idx
+	    WHERE
+	        a.emp_idx = #{loginId}
+	    ORDER BY
+	        ah.attend_update_idx DESC
+	</select>
+	
+	
 	
 </mapper>  
 

@@ -35,4 +35,81 @@
 	    WHERE emp_idx = #{param1}
 	</update>
 	
+	<!-- 연차사용 내역 가져오기  -->
+	<select id="getLeaveHistory" parameterType="map" resultType="map">
+		SELECT *, DATEDIFF(end_date, start_date) + 1 AS total_days
+	    FROM leave_history 
+	    WHERE emp_idx = #{loginId} 
+	    ORDER BY start_date DESC
+	</select>
+	
+	<!-- 연차사용 기록 수정에 필요한 로직  -->
+	<select id="selectLeaveHistory" parameterType="map" resultType="map">
+		SELECT start_date as prevStartDate, end_date as prevEndDate FROM leave_history WHERE leave_update_idx = #{leaveUpdateIdx}
+	</select>
+	<update id="updateLeaveHistory" parameterType="map">
+	 	UPDATE leave_history
+	 	SET
+	 		start_date = #{startDate},
+	 		end_date = #{endDate}
+	 	WHERE leave_update_idx = #{leaveUpdateIdx}
+	</update>
+	<insert id="insertLeaveHistoryLog" parameterType="map">
+		insert into leave_history_log 
+		(emp_idx,leave_update_idx,content,prev_start_date,prev_end_date,new_start_date,new_end_date)
+		values
+		(#{loginId},#{leaveUpdateIdx},#{content},#{prevStartDate},#{prevEndDate},#{startDate},#{endDate})
+	</insert>
+	
+	<!-- 근태페이지에서 연차 수정 내역 가져가기 -->
+	<select id="getLeaveHistoryLog" parameterType="map" resultType="map">
+		SELECT
+	        lhl.prev_start_date AS prevStartDate,
+	        lhl.prev_end_date AS prevEndDate,
+	        lhl.new_start_date AS newStartDate,
+	        lhl.new_end_date AS newEndDate,
+	        DATE_FORMAT(lhl.date, '%Y-%m-%d %H:%i') AS date,
+	        lhl.emp_idx,
+	        lhl.content,
+			e.name
+		FROM leave_history_log  lhl
+		JOIN 
+			leave_history lh on lhl.leave_update_idx = lh.leave_update_idx
+		JOIN 
+			employee e on lhl.emp_idx = e.emp_idx
+		WHERE
+			lh.emp_idx=#{loginId}
+		ORDER BY
+			lhl.leave_history_log_idx DESC
+	</select>
+	
+	<!-- 연차 지급 내역로직 -->
+	<insert id="insertAnnualLeave">
+	    INSERT INTO annual_leave
+	    (leave_idx, add_leave, date, type, content)
+	    SELECT 
+	        leave_idx,
+	        #{param2},
+	        DATE(DATE_ADD(NOW(), INTERVAL 1 YEAR)),
+	        'SYSTEM',
+	        #{param3}
+	    FROM leave_emp
+	    WHERE emp_idx = #{param1};
+	</insert>
+	
+	<!-- 연차 소멸로직 -->
+	<select id="getAnnualLeave" resultType="map">
+		SELECT leave_idx, add_leave 
+		FROM annual_leave 
+		WHERE date = CURDATE(); 
+	</select>
+	<update id="updateLeaveDel" parameterType="map">
+		UPDATE leave_emp
+		SET total_leave = total_leave - #{add_leave},
+		    remain_leave = remain_leave - #{add_leave}
+		WHERE leave_idx = #{leave_idx};
+	</update>
+	
+	
+	
 </mapper>  

@@ -35,5 +35,8 @@ public interface AttendanceDAO {
 
 	Map<String, Object> selectAttendance(Map<String, Object> map);
 
+	List<Map<String, Object>> getAttendanceHistory(Map<String, Object> params);
+
+
 
 }
