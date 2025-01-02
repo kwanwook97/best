@@ -7,7 +7,9 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.best.alarm.AlarmDTO;
+import com.best.alarm.AlarmService;
 import com.best.emp.EmployeeDAO;
 import com.best.emp.EmployeeDTO;
 
@@ -525,6 +529,13 @@ public class DocumentService {
 	// 상신
 	public void formsent(int doc_idx, int parentManager, int order1, int manager, int order2, String status) {
 		documentDao.formsent(doc_idx,  parentManager, order1, manager, order2, status);
+		
+		// 참조자 ID 가져오기
+	    List<Integer> referenceEmpIds = documentDao.getReferenceEmpIds(doc_idx);
+	    logger.info("결재와 함께 참조자 알림 전송: {}", referenceEmpIds);
+
+	    // 결재 알림과 참조자 알림을 함께 처리
+	    notifyApproval(doc_idx, 0, "상신", referenceEmpIds);
 	}
 		
 	// 결재 임시저장 문서 수정
@@ -607,6 +618,16 @@ public class DocumentService {
 		logger.info("뭔데 : "+ doc_content);
 		
 		documentDao.documentStatus(doc_idx, doc_content);
+		
+		List<Integer> referenceEmpIds = documentDao.getReferenceEmpIds(Integer.parseInt(doc_idx));
+
+	    // 알림 처리
+	    notifyApproval(
+	        Integer.parseInt(doc_idx),
+	        Integer.parseInt(approv_order),
+	        "승인",
+	        referenceEmpIds
+	    );
 	}
 	@Transactional
 	public void approveStatusT(String doc_idx, String approv_order, String doc_content) {
@@ -622,6 +643,17 @@ public class DocumentService {
 		logger.info("뭔데 : "+ doc_content);
 		
 		documentDao.documentStatusT(doc_idx, doc_content);
+		
+		// 참조자 ID 가져오기
+	    List<Integer> referenceEmpIds = documentDao.getReferenceEmpIds(Integer.parseInt(doc_idx));
+
+	    // 알림 처리
+	    notifyApproval(
+	        Integer.parseInt(doc_idx),
+	        Integer.parseInt(approv_order),
+	        "승인",
+	        referenceEmpIds
+	    );
 	}
 	// 결재 반려
 	@Transactional
@@ -636,6 +668,17 @@ public class DocumentService {
 				"$1" + approvDate + "$2"
 			);
 		documentDao.documentStatusReject(doc_idx, doc_content, remark);
+		
+		// 참조자 ID 가져오기
+	    List<Integer> referenceEmpIds = documentDao.getReferenceEmpIds(Integer.parseInt(doc_idx));
+
+	    // 반려 이벤트 알림
+	    notifyApproval(
+	        Integer.parseInt(doc_idx),
+	        0, // 반려는 approvOrder가 필요 없음
+	        "반려",
+	        referenceEmpIds
+	    );
 	}
 	
 	
@@ -664,6 +707,86 @@ public class DocumentService {
 
 
 
+
+	@Autowired
+	private AlarmService alarmService;
+
+	private void notifyApproval(
+		    int docIdx,
+		    int approvOrder,
+		    String status,
+		    List<Integer> referenceEmpIds
+		) {
+		    // 결재자 정보를 DAO에서 조회
+		    Map<String, Object> approverData = documentDao.getApproverDetails(docIdx);
+		    if (approverData == null) {
+		        throw new IllegalStateException("결재자 정보를 찾을 수 없습니다.");
+		    }
+
+		    int writerEmpIdx = (int) approverData.get("writerEmpIdx");
+		    int firstApproverEmpIdx = (int) approverData.getOrDefault("firstApproverEmpIdx", 0);
+		    int secondApproverEmpIdx = (int) approverData.getOrDefault("secondApproverEmpIdx", 0);
+		    String senderName = (String) approverData.get("writerName");
+
+		    List<AlarmDTO> alarms = new ArrayList<>();
+		    String message = "";
+
+		    switch (status) {
+		        case "상신":
+		            // 기안자가 작성 -> 1차 결재자와 참조자에게 알림
+		            message = "새로운 결재 문서가 도착했습니다.";
+		            if (firstApproverEmpIdx > 0) {
+		                alarms.add(createAlarm(firstApproverEmpIdx, message));
+		            }
+		            referenceEmpIds.forEach(id -> alarms.add(createAlarm(id, "참조 문서가 도착했습니다.")));
+		            break;
+
+		        case "반려":
+		            // 2차 결재자가 반려 -> 기안자, 1차 결재자, 참조자에게 알림
+		            message = "결재 문서가 반려되었습니다.";
+		            alarms.add(createAlarm(writerEmpIdx, message)); // 기안자
+
+		            if (approvOrder == 2 && firstApproverEmpIdx > 0) {
+		                alarms.add(createAlarm(firstApproverEmpIdx, "1차 결재자님, 결재 문서가 반려되었습니다.")); // 1차 결재자
+		            }
+
+		            // 참조자 알림 추가
+		            referenceEmpIds.forEach(id -> alarms.add(createAlarm(id, "참조 문서가 반려되었습니다.")));
+		            break;
+
+		        case "승인":
+		            if (approvOrder == 1) {
+		                // 1차 결재 승인 -> 기안자와 2차 결재자에게 알림
+		                message = "기안하신 결재 문서가 1차 승인되었습니다.";
+		                alarms.add(createAlarm(writerEmpIdx, message)); // 기안자
+		                if (secondApproverEmpIdx > 0) {
+		                    alarms.add(createAlarm(secondApproverEmpIdx, "새로운 결재 문서가 도착했습니다.")); // 2차 결재자
+		                }
+		            } else if (approvOrder == 2) {
+		                // 2차 결재 최종 승인 -> 기안자, 1차 결재자, 참조자 모두에게 알림
+		                message = "결재 문서가 최종 승인되었습니다.";
+		                alarms.add(createAlarm(writerEmpIdx, message)); // 기안자
+		                if (firstApproverEmpIdx > 0) {
+		                    alarms.add(createAlarm(firstApproverEmpIdx, "1차 결재자님, 결재 문서가 최종 승인되었습니다.")); // 1차 결재자
+		                }
+		                referenceEmpIds.forEach(id -> alarms.add(createAlarm(id, "참조 문서가 승인되었습니다."))); // 참조자
+		            }
+		            break;
+		    }
+
+		    // 알림 전송
+		    alarmService.sendAlarms(alarms, senderName);
+		}
+
+
+		private AlarmDTO createAlarm(int empIdx, String content) {
+		    AlarmDTO alarm = new AlarmDTO();
+		    alarm.setEmp_idx(empIdx);
+		    alarm.setType("document");
+		    alarm.setContent(content);
+		    alarm.setDate(new Date());
+		    return alarm;
+		}
 
 
 
