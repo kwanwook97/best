@@ -495,7 +495,7 @@ function checkButton(){
         return response.json();
     })
     .then(data => {
-       console.log(data.row)
+        console.log(data.row)
         const button = document.querySelector('.btn-start-work');
         const finish = document.querySelector('.btn-finish-work');
         const spans = document.querySelectorAll('.spanAction span');

@@ -20,15 +20,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.best.calendar.CalendarDAO;
 import com.best.calendar.HolidayDTO;
+import com.best.leave.LeaveDAO;
 
 @Service
 public class AttendanceService {
 	
 	@Autowired AttendanceDAO attendanceDAO;
 	@Autowired CalendarDAO calendarDAO;
+	@Autowired LeaveDAO leaveDAO;
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
 	// 출근전 근태 테이블 늘리기용
@@ -142,11 +145,14 @@ public class AttendanceService {
         
         Integer remainLeave = attendanceDAO.getLeave(params);
         
-//        logger.info("totalWorkTime:{}",totalWorkTime);
-//        
-//        logger.info("지각 횟수: {}", lateCount);
-//        logger.info("연차 횟수: {}", leaveCount);
-//        logger.info("결근 횟수: {}", absentCount);
+        logger.info("totalWorkTime:{}",totalWorkTime);
+        
+        logger.info("지각 횟수: {}", lateCount);
+        logger.info("연차 횟수: {}", leaveCount);
+        logger.info("결근 횟수: {}", absentCount);
+        
+        
+        
         map.put("workdays", filteredList.size());
         map.put("totalOverTime", totalOverTime);
         map.put("totalWorkTime", totalWorkTime);
@@ -154,6 +160,25 @@ public class AttendanceService {
         map.put("leaveCount", leaveCount);
         map.put("absentCount", absentCount);
         map.put("remainLeave", remainLeave);
+        
+        // 수정 내역 가져오는 부분
+        List<Map<String, Object>> attendanceHistory = attendanceDAO.getAttendanceHistory(params);
+        if (attendanceHistory != null && !attendanceHistory.isEmpty()) {
+        	map.put("attendanceHistory",attendanceHistory);
+		}
+        
+        
+        // 연차 사용 이력 가져오기 
+        List<Map<String, Object>> leaveHistoryList = leaveDAO.getLeaveHistory(params);
+        if (leaveHistoryList != null && !leaveHistoryList.isEmpty()) {
+			map.put("leaveHistoryList", leaveHistoryList);
+		}
+        
+        // 연차 수정 이력 가져오기 
+        List<Map<String, Object>> leaveHistoryLog = leaveDAO.getLeaveHistoryLog(params);
+        if (leaveHistoryLog != null && !leaveHistoryLog.isEmpty()) {
+			map.put("leaveHistoryLog", leaveHistoryLog);
+		}
         
 	    
 		return map;
@@ -199,7 +224,8 @@ public class AttendanceService {
 	public void updateAbsent(LocalDate today) {
 		attendanceDAO.updateAbsent(today);
 	}
-
+	
+	@Transactional
 	public Map<String, Object> updateAttendance(List<Map<String, Object>> list) {
 		Map<String, Object> response = new HashMap<>();
 		int row = 0 ;

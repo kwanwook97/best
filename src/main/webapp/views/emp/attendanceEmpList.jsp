@@ -502,7 +502,7 @@
 	      	$.each(data, function(idx, item) {
 	      		// 변수 초기화
 	            content = '';
-	      		console.log("item{}"+ JSON.stringify(item));
+	      		/* console.log("item{}"+ JSON.stringify(item)); */
 	      		
 	      	    content =  '<a href="attendance.go?emp_idx=' + item.emp_idx +
 	      	  										'&name=' + encodeURIComponent(item.name) +
