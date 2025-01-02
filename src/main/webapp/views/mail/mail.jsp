@@ -319,6 +319,7 @@ table.my-table a:hover {
 						<th class="special-column">중요</th>
 						<th class="read-column">읽음</th>
 						<th>보낸사람</th>
+						<th class="attach-column">첨부파일</th> <!-- 첨부파일 열 추가 -->
 						<th>제목</th>
 						<th>내용</th>
 						<th>수신 시간</th>
@@ -369,6 +370,7 @@ table.my-table a:hover {
 	var mailFilter = 0; // 0: 필터X, 1: 중요필터, 2:읽음필터 
 	var special_flag = 0; // 중요여부
 	var read_flag = 0; // 읽음여부 0: 안읽은메일, 1: 읽은메일
+	var tabData = ''; // 현재 선택된 탭
 	
 	var status = 1; // 0: 임시저장, 1: 발송
 	var table = 'mail_receive'
@@ -446,7 +448,7 @@ table.my-table a:hover {
 	/* 탭 클릭시 이벤트 */
 	$('.opt div').click(function(){
 		// 선택된 탭의 데이터를 가져옴
-	    var tabData = $(this).data('tab');
+	    tabData = $(this).data('tab');
 		
 		$('.maintext').find(':last-child').html('>&nbsp;&nbsp;' + $(this).text());
 		$(this).css({
@@ -709,15 +711,26 @@ table.my-table a:hover {
 	                readIcon = '<i class="fas fa-envelope" title="읽지 않음" style="cursor: pointer;" onclick="updateReadStatus(\'' 
 	                    + mailIdxType + '\', ' 
 	                    + mailIdx + ', ' 
-	                    + item.read_flag + ')"></i>';
+	                    + item.read_flag + ', ' 
+                        + item.mail_send_idx+ ')"></i>';
 	                if (item.read_flag !== 0) {
 	                    readIcon = '<i class="fas fa-envelope-open-text" title="읽음" style="cursor: pointer;" onclick="updateReadStatus(\'' 
 	                        + mailIdxType + '\', ' 
 	                        + mailIdx + ', ' 
-	                        + item.read_flag + ')"></i>';
+	                        + item.read_flag + ', ' 
+	                        + item.mail_send_idx+ ')"></i>';
 	                }
 	            }
 	
+	            
+	         	// 첨부파일 아이콘
+	            var attachIcon = '';
+	            if (item.attach_flag === 1) {
+	                attachIcon = '<i class="fas fa-paperclip" title="첨부파일 있음"></i>';
+	            } else {
+	                attachIcon = '<i class="fas fa-paperclip" style="opacity: 0.3;" title="첨부파일 없음"></i>';
+	            }
+	            
 	            
 	            
 	         	// 삭제 아이콘 (휴지통인 경우 완전 삭제 아이콘으로 표시)
@@ -743,7 +756,13 @@ table.my-table a:hover {
 	                content += '<td class="read-column">' + readIcon + '</td>';
 	            }
 	            content += '<td>' + item.sender_name + '</td>' +
-	                '<td><a href="mailDetail.go?idx=' + item.mail_send_idx + '">' + item.subject + '</a></td>' +
+	                       '<td class="attach-column">' + attachIcon + '</td>' + // 첨부파일 아이콘 추가
+				            '<td>' +
+					            '<a href="#" onclick="handleMailClick(event, \'' + mailIdxType + '\', ' + mailIdx + ', ' + item.read_flag +  ', ' +item.mail_send_idx+ '); return false;">' +
+					            item.subject +
+					            '</a>' +
+				            '</td>' +
+	                /* '<td><a href="mailDetail.go?idx=' + item.mail_send_idx + '">' + item.subject + '</a></td>' + */ 
 	                '<td>' + contentText + '</td>' +
 	                '<td>' + formattedDate + '</td>';
 	                
@@ -768,7 +787,7 @@ table.my-table a:hover {
 
 	
 	// 읽음여부 업데이트
-	function updateReadStatus(mailIdxType, mailIdx, readFlag) {
+	function updateReadStatus(mailIdxType, mailIdx, readFlag, mail_send_idx) {
 	    // 반대로 변경할 읽음 상태 결정
 	    var newReadFlag = readFlag === 0 ? 1 : 0;
 	
@@ -783,8 +802,10 @@ table.my-table a:hover {
 	        },
 	        success: function () {
 	            // 선택자를 동적으로 찾기
-	            var icon = $('i[onclick="updateReadStatus(\'' + mailIdxType + '\', ' + mailIdx + ', ' + readFlag + ')"]');
-
+	            var icon = $('i[onclick="updateReadStatus(\'' + mailIdxType + '\', ' + mailIdx + ', ' + readFlag + ', ' +mail_send_idx+ ')"]');
+	            /* var subject = $('a[onclick="handleMailClick(event, \'' + mailIdxType + '\', ' + mailIdx + ', ' + readFlag + ', ' + mail_send_idx + ')"]'); */
+	            var subject = icon.closest('td').siblings().find('a'); // 같은 행의 a 태그 선택
+	            
 	            // 아이콘 업데이트
 	            if (newReadFlag === 1) {
 	                icon.removeClass('fa-envelope').addClass('fa-envelope-open-text').attr('title', '읽음');
@@ -793,7 +814,8 @@ table.my-table a:hover {
 	            }
 
 	            // onclick 속성 업데이트
-	            icon.attr('onclick', 'updateReadStatus(\'' + mailIdxType + '\', ' + mailIdx + ', ' + newReadFlag + ')');
+	            icon.attr('onclick', 'updateReadStatus(\'' + mailIdxType + '\', ' + mailIdx + ', ' + newReadFlag + ', ' +mail_send_idx+ ')');
+	            subject.attr('onclick', 'handleMailClick(event, "' + mailIdxType + '", ' + mailIdx + ', ' + newReadFlag + ', ' + mail_send_idx + ');');
 	        },
 	        error: function (e) {
 	            console.error('오류 발생:', e);
@@ -863,6 +885,32 @@ table.my-table a:hover {
 	    });
 	}
 
+
+	// 메일 상세보기시 링크이동
+	// 아직 안읽은 메일인 경우 읽음처리.
+	function handleMailClick(event, mailIdxType, mailIdx, readFlag, mail_send_idx) {
+	    event.preventDefault(); // 기본 링크 동작 차단
+
+	    
+	    var targetPage = 'mailDetail.go'; // 기본 페이지
+
+	    // 임시저장 탭인경우
+	    if (tabData === 'draft') {
+	        targetPage = 'mailDraft.go';
+	    }
+
+	    
+	    // 읽음 상태 업데이트가 필요한 경우 처리
+	    if (readFlag === 0) {
+	        updateReadStatus(mailIdxType, mailIdx, readFlag, mail_send_idx); // 읽음 상태로 업데이트
+	    }
+
+	    // 읽음 처리와 관계없이 상세 페이지로 이동
+	    setTimeout(function () {
+	        window.location.href = targetPage + '?idx=' + mail_send_idx;
+	    }, 300); // AJAX 요청을 기다릴 시간 설정 (필요 시 조정)
+	}
+	
 	
 </script>
 </html>

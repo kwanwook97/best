@@ -39,6 +39,21 @@ public interface MailDAO {
 	MailSendDTO senderDetail(int mail_send_idx);
 	// 메일상세보기 - 수신자 데이터
 	List<MailReceiveDTO> receiverDetail(int mail_send_idx);
+
+	// 메일상세보기 - 첨부파일
+	List<Map<String, Object>> mailAttach(int mailSendIdx);
+
+	// 임시저장메일 -> 업데이트
+	int updateMailSender(MailSendDTO sendDto);
+
+	// 임시저장메일 -> 수신자 데이터 삭제
+	void deleteMailReceiver(int mailSendIdx);
+
+	// 임시저장메일 -> 첨부파일삭제
+	void deleteAttach(int mailSendIdx);
+
+	// 임시저장메일 -> 발신자 데이터 삭제
+	void deleteMailSender(int mailSendIdx);
 	
 	
 }
