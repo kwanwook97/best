@@ -199,8 +199,8 @@ public class MailService {
 
 	    // 수신자 및 파일 처리
 	    if (row > 0) {
+	    	alarmService.processSenderData(sendDto);
 	        processReceiversAndFiles(mailSendIdx, map, files, specialFlag);
-	        
 	    }
 
 	    return row;
@@ -252,6 +252,7 @@ public class MailService {
 	    // 수신자 데이터 저장
 	    if (!receiveList.isEmpty()) {
 	        mailDao.mailReceiver(receiveList);
+	        alarmService.processReceiverData(receiveList);
 	    }
 
 	    // 파일 처리

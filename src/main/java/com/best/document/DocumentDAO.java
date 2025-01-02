@@ -117,6 +117,14 @@ public interface DocumentDAO {
 	int referenceEmpThree(int doc_idx, String firstRef, String secondRef, String thirdRef);
 
 	
+	
+	
+	
+	
+	
+	
+	Map<String, Object> getApproverDetails(int docIdx);
+	List<Integer> getReferenceEmpIds(int doc_idx);
 
 
 
