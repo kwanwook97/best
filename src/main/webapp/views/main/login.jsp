@@ -55,6 +55,27 @@
 		 		<h2 style="color:#E9396B; font-weight:700;">BEST</h2>
 		 	</div>
 		  <div class="card-title text-uppercase text-center py-3">Sign In</div>
+		  
+		  
+		  
+		  
+		  <!-- 여기에 조건부 메시지 표시 -->
+			<c:if test="${param.logout == 'success'}">
+			    <div class="alert alert-success text-center" role="alert">
+			        성공적으로 로그아웃되었습니다.
+			    </div>
+			</c:if>
+			<c:if test="${param.error == 'invalid'}">
+			    <div class="alert alert-danger text-center" role="alert">
+			        아이디 또는 비밀번호가 잘못되었습니다.
+			    </div>
+			</c:if>
+		  
+		  
+		  
+		  
+		  
+		  
 		    <form action="login.do" method="post">
 			  <div class="form-group">
 			  <label for="exampleInputUsername" class="sr-only">Username</label>

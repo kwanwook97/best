@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ public class EmployeeController {
 	
 	// 사원목록 페이지이동
 	// 페이지 접속권한 : 인사부서
+	@PreAuthorize("hasAuthority('ROLE_인사팀_RW')")
 	@RequestMapping(value="/empList.go")
 	public String empListGo() {
 		return "empManage/empList";

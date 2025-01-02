@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,10 +26,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class EmployeeService {
-
+	
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired EmployeeDAO empDAO;
+	
+	// 생성자 주입
+	private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public EmployeeService(EmployeeDAO empDAO, PasswordEncoder passwordEncoder) {
+        this.empDAO = empDAO;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+	
+	
 	
 	// 사원목록 가져오기
 	public Map<String, Object> empList(Map<String, String> map) {
@@ -315,6 +328,28 @@ public class EmployeeService {
 	public int empCreate(MultipartFile photo, MultipartFile[] files, EmployeeDTO empDTO) {
 		// 성공여부 체크
 		int row = 0;
+		
+		
+		
+		
+		
+		
+		
+		// 비밀번호 암호화
+	    if (empDTO.getPassword() != null && !empDTO.getPassword().isEmpty()) {
+	        String encryptedPassword = passwordEncoder.encode(empDTO.getPassword()); // 비밀번호 암호화
+	        empDTO.setPassword(encryptedPassword);
+	    } else {
+	        logger.info("유효한 비밀번호가 없습니다.");
+	        throw new IllegalArgumentException("비밀번호는 필수 입력 항목입니다.");
+	    }
+		
+		
+		
+		
+		
+		
+		
 		
 		// 프로필사진 파일명 가져오기
 		String photoName = photo.getOriginalFilename();
