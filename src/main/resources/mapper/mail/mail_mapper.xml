@@ -92,6 +92,7 @@
 
 
 <!-- 메일 목록 가져오기: 받은 메일, 보낸 메일, 임시저장, 휴지통 등 다양한 메일함 데이터를 조회. -->
+<!-- 첨부파일 여부체크 -->
 <select id="mailList" resultType="map" parameterType="map">
     SELECT 
         <choose>
@@ -114,12 +115,18 @@
         ms.delete_flag AS send_delete_flag,
         MAX(mr.read_flag) AS read_flag, <!-- 수신자 정보 중 가장 중요한 값 선택 -->
         MAX(mr.special_flag) AS receive_special_flag,
-        MAX(mr.delete_flag) AS receive_delete_flag
+        MAX(mr.delete_flag) AS receive_delete_flag,
+        CASE 
+            WHEN COUNT(at.attach_idx) > 0 THEN 1  <!-- 첨부파일 존재 -->
+            ELSE 0                               <!-- 첨부파일 없음 -->
+        END AS attach_flag                       <!-- 첨부파일 여부 -->
     FROM
         mail_send ms
     LEFT JOIN 
         mail_receive mr 
         ON ms.mail_send_idx = mr.mail_send_idx        
+    LEFT JOIN attachment at
+    	ON ms.mail_send_idx = at.idx_num AND at.attach_category = 1 <!-- 첨부파일 테이블 -->
     <where>
         <include refid="mailWhere"/> <!-- 공통 WHERE 조건 삽입 -->
     </where>
@@ -238,6 +245,21 @@
 </select>
 
 
+<!-- 메일 상세보기 - 첨부파일 -->
+	<select id="mailAttach" resultType="map" parameterType="int">
+		SELECT
+			file_name,
+			newfile_name,
+			date 
+		FROM attachment
+		WHERE
+			attach_category = 1
+		AND 
+			idx_num = #{emp_idx}
+		ORDER BY date DESC
+		LIMIT 5
+	</select>
+
     <!-- 이메일 작성시 송신자, 수신자, 참조자의 사번, email, 사원명 가져오기 (자동완성) -->
     <select id="empInfo" parameterType="map" resultType="map">
     	SELECT 
@@ -313,6 +335,29 @@
 		INSERT INTO attachment(attach_category, idx_num, file_name, newfile_Name)
 		VALUES(1, #{idx_num}, #{fileName}, #{newFileName})
 	</insert>
+
+
+	<!-- 임시저장 - 기존 수신자 데이터 삭제 -->
+	<delete id="deleteMailReceiver" parameterType="int">
+	    DELETE FROM mail_receive
+	    WHERE mail_send_idx = #{mail_send_idx}
+	</delete>
+	
+	<!-- 임시저장 - 기존 첨부파일 데이터 삭제 -->
+	<delete id="deleteAttach" parameterType="int">
+	    DELETE FROM attachment
+	    WHERE idx_num = #{mail_send_idx} AND attach_category = 1
+	</delete>
+	
+	<!-- 임시저장 - 기존 발신자 데이터 삭제 -->
+	<delete id="deleteMailSender" parameterType="int">
+	    DELETE FROM mail_send
+	    WHERE mail_send_idx = #{mail_send_idx}
+	</delete>
+
+
+
+
 
 
 </mapper>  
