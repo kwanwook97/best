@@ -764,4 +764,21 @@
 	</update>
 	
 	
+	
+	
+	
+	<select id="getApproverDetails" resultType="map">
+    SELECT 
+        d.emp_idx AS writerEmpIdx,
+        e.name AS writerName,
+        (SELECT a.emp_idx FROM approv a WHERE a.doc_idx = #{docIdx} AND a.approv_order = 1) AS firstApproverEmpIdx,
+        (SELECT a.emp_idx FROM approv a WHERE a.doc_idx = #{docIdx} AND a.approv_order = 2) AS secondApproverEmpIdx
+    FROM document d
+    JOIN employee e ON d.emp_idx = e.emp_idx
+    WHERE d.doc_idx = #{docIdx}
+</select>
+<select id="getReferenceEmpIds" resultType="int">
+    SELECT emp_idx FROM reference WHERE doc_idx = #{doc_idx}
+</select>
+	
 </mapper>  
