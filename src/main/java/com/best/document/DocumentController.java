@@ -193,11 +193,13 @@ public class DocumentController {
 	        @RequestParam(required = false) String start_date,
 	        @RequestParam(required = false) String end_date,
 	        @RequestParam(required = false) String managerName1,
+	        @RequestParam(required = false) List<String> managerIds,
 	        HttpSession session) {
 		Map<String, String> response = new HashMap<String, String>();
 		
 		String empIdx = (String) session.getAttribute("loginId");
 		int emp_idx = Integer.parseInt(empIdx);
+
 		// 요청에 따른 처리 로직
 		if ("기안".equals(action)) {
 			
@@ -209,6 +211,9 @@ public class DocumentController {
 	    	int docIdx = documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "상신");
 	    	if(docIdx > 0) {				
 	    		documentService.formsent(docIdx, parentManager, 1, manager, 2, "상신");
+	    		if (managerIds != null && !managerIds.isEmpty()) {
+	    		    documentService.referenceEmp(docIdx, managerIds);
+	    		}
 	    		response.put("message", "기안 완료");
 	    	}
 	    	

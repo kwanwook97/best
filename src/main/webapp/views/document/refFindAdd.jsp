@@ -7,7 +7,7 @@
 <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 <style>
 /* 폴더 영역 스타일 */
-.userbox {
+.userboxR {
     border: 1px solid #ddd; /* 선택적: 폴더 영역의 테두리 */
     padding: 15px;
     overflow-y: auto; /* 스크롤 */
@@ -48,7 +48,7 @@
     gap: 20px; /* 검색창과 폴더 영역 간의 간격 */
 }
 
-#userBoxModal .modalD-content {
+#refUserBoxModal .modalD-content {
     background-color: #FFFBF2;
     border: none;
     border-radius: 12px;
@@ -96,7 +96,7 @@
     top: 50%; /* 화면의 세로 중앙 */
     left: 50%; /* 화면의 가로 중앙 */
     transform: translate(-50%, -50%); /* 정확히 중앙으로 이동 */
-    z-index: 999; /* 최상위 레이어 */
+    z-index: 1000; /* 최상위 레이어 */
 }
 
 #employeeModal .modalD-dialog {
@@ -217,7 +217,8 @@
 }
 
 /* 닫기 버튼 */
-#employeeModal .modalD-button {
+#employeeModal .modalD-button,
+#addUserBoxModalR {
     background-color: #E9396B;
     color: white;
     border: none;
@@ -229,7 +230,8 @@
     margin-top: 10px;
 }
 
-#employeeModal .modalD-button:hover {
+#employeeModal .modalD-button:hover,
+#addUserBoxModalR:hover{
     background-color: #FF6373;
 }
 
@@ -281,7 +283,7 @@
 }
 
 
-#closeUserBoxModal {
+#closeUserBoxModalR {
     background-color: #E9396B;
     color: white;
     border: none;
@@ -292,26 +294,57 @@
     font-size: 1rem;
 }
 
-#closeUserBoxModal:hover {
+#closeUserBoxModalR:hover {
     background-color: #FF6373;
 }
-
+.refEmpBox{
+    pointer-events: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.refEmps{
+    display: flex;
+    width: 340px;
+}
+.refEmp{
+    margin-right: 10px;
+    padding: 5px;
+    display: flex;
+    height: 28px;
+    align-items: center;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    color: white;
+}
+.refEmp .xBtn{
+    font-size: smaller;
+}
+.refEmp .xBtn:hover{
+	cursor: pointer;
+	color: var(--accent-color);
+}
 </style>
 </head>
 <body>
 <!-- 조직도 모달 -->
-<div id="userBoxModal" class="modalD" style="display:none;">
+<div id="refUserBoxModal" class="modalD" style="display:none;">
     <div class="modalD-content">
         <div class="modalD-header">
            사원검색
-           <button id="closeUserBoxModal" class="modalD-button" style="float: right;">닫기</button> <!-- 닫기 버튼 추가 -->
+           <div class="refEmpBox">
+	           <div class="refEmps">
+				</div>
+	           <button id="addUserBoxModalR" class="modalD-button" style="float: right;">추가</button> <!-- 닫기 버튼 추가 -->
+	           <button id="closeUserBoxModalR" class="modalD-button" style="float: right;">닫기</button> <!-- 닫기 버튼 추가 -->
+           </div>
         </div>
         <div style="position: relative;">
           <input type="text" id="searchInput" class="search-bar" placeholder="사원명을 검색하세요.">
           <i class="fas fa-search search-icon"></i>
       </div>
 
-        <div class="userbox">
+        <div class="userboxR">
             <!-- 폴더 구조 -->
         </div>
     </div>
@@ -415,8 +448,8 @@ $(document).ready(function () {
 
     // 폴더 생성
     function generateFolders() {
-        var userbox = $(".userbox");
-        userbox.empty(); // 기존 폴더 초기화
+        var userboxR = $(".userboxR");
+        userboxR.empty(); // 기존 폴더 초기화
 
         // 부서별 폴더 생성
         $.each(departments, function (deptIndex, dept) {
@@ -480,7 +513,7 @@ $(document).ready(function () {
             }
 
             // 부서 폴더를 사용자 박스에 추가
-            userbox.append(deptFolder);
+            userboxR.append(deptFolder);
         });
 
         bindFolderEvents();
@@ -488,12 +521,12 @@ $(document).ready(function () {
 
     // 폴더 이벤트 바인딩
     function bindFolderEvents() {
-        $(".userbox").on("click", ".folder", function (e) {
+        $(".userboxR").on("click", ".folder", function (e) {
             e.stopPropagation(); // 이벤트 전파 방지
             $(this).children(".subfolders").slideToggle(); // 하위 폴더 토글
         });
 
-        $(".userbox").on("click", ".folder[data-id]", function (e) {
+        $(".userboxR").on("click", ".folder[data-id]", function (e) {
             e.stopPropagation();
             var empId = $(this).data("id");
             var employee = employees.find(emp => emp.emp_idx === empId);
@@ -553,7 +586,8 @@ $(document).ready(function () {
     $("#closeEmployeeModal").on("click", function () {
         $("#employeeModal").fadeOut();
     });
-
+    
+  
     // 추가 버튼 이벤트
     $("#addEmployeeButton").on("click", function () {
        if (selectedEmployee) {
@@ -566,48 +600,48 @@ $(document).ready(function () {
                // 중복이 아니면 추가
                selectedEmployees.push(selectedEmployee);
                console.log("현재까지 추가된 사원목록:", selectedEmployees);
-               var signBox = $('.signBox');
-               var managerName1 = selectedEmployee.name;
-               var todayDate3 = '${todayDate3}';
-               // 새로운 table HTML 생성
-               var newTableHtml = 
-                   '<table class="signBox2" style="width: 7vw; height: 14vh; border: 1px solid black; border-collapse: collapse;">' +
-                   '  <tr>' +
-                   '    <td rowspan="3" style="text-align: center; width: 1.2vw; border: 1px solid black; background-color: gainsboro;">결재</td>' +
-                   '    <td class="managerName1" style="text-align: center; height: 0.5vh; border: 1px solid black;"><input type="text" class="manager" value="'+managerName1+'" readonly/></td>' +
-                   '  </tr>' +
-                   '  <tr>' +
-                   '    <td class="signTwo" style="text-align: center; border: 1px solid black;" onclick="signAdd(this)"></td>' +
-                   '  </tr>' +
-                   '  <tr>' +
-                   '    <td class="todayDate3" style="text-align: center; height: 24px; border: 1px solid black;"></td>' +
-                   '  </tr>' +
-                   '</table>';
-
-               // signBox 테이블 뒤에 새로운 table 추가
-               signBox.after(newTableHtml);
+               var managerName = selectedEmployee.name;
+               var managerIdx = selectedEmployee.emp_idx;
+               console.log("이름 : "+managerName +" / 아이디 : "+managerIdx);
+               var index = $('.refEmps .refEmp').length + 1;
                
-               $(".modal").css("display", "flex");
+				// 컨테이너 내부의 .refEmp 개수 확인
+				if ($('.refEmps .refEmp').length < 3) {
+					var index = $('.refEmps .refEmp').length + 1;
+		               
+					var newTableHtml = 
+						'<div class="refEmp emp'+index+'" data-emp-idx="' + managerIdx + '">' +
+						'	<div class="empBox">'+managerName+'</div>'+
+						'   <div class="xBtn">&nbsp;x</div>' +
+						'</div>';
+							
+					$('.refEmps').append(newTableHtml);
+
+				} else {
+				    alert('최대 3명까지 참조할 수 있습니다.');
+				}
+             	$("#employeeModal").fadeOut();
+         
+            	 /*  $(".modal").css("display", "flex"); */
            } else {
                console.log("이미 추가된 사원입니다:", selectedEmployee.name);
            }
 
-           $(".modalD").fadeOut();
+           /* $(".modalD").fadeOut(); */
            
        } else {
            console.error("선택된 사원 정보가 없습니다.");
        }
    });
     
-
     loadData();
 });
 
-function openUserBoxModal() {
+
+function refOpenUserBoxModal() {
     $(".modal").css("display", "none");
-    $("#userBoxModal").css("display", "flex").hide().fadeIn();
+    $("#refUserBoxModal").css("display", "flex").hide().fadeIn();
     $("*").css("pointer-events", "auto");
-    isApprovalLineAdded = true;
 }
 
 function openEmployeeModal(employee) {
@@ -623,14 +657,36 @@ function openEmployeeModal(employee) {
     $("#employeeModal").css("display", "flex").hide().fadeIn();
 }
 
-/* function closeModals() {
-    $(".modalD").fadeOut();
-} */
+
+$("#addUserBoxModalR").on("click", function () {
+		var managerName = selectedEmployee.name;
+		console.log("이름 :"+managerName);
+		var managerIdx = selectedEmployee.emp_idx;
+		console.log("번호 :"+managerIdx);
+		
+ 		var refNames = [];
+	    
+		// 추가된 모든 사원의 이름을 배열에 저장
+		$('.refEmps .empBox').each(function () {
+		    var empName = $(this).text();
+		    var empIdx = $(this).closest('.refEmp').data('emp-idx');
+		    refNames.push({name: empName, idx: empIdx});  // 객체 형태로 저장
+		});
+		
+		refNames.forEach(function(employee, index) {
+		    var className = 'name' + (index + 1);
+		    var separator = (index === refNames.length - 1) ? '' : ',&nbsp;';
+		    $('.referenceName').append('<span class="' + className + '" data-emp-idx="' + employee.idx + '">' + employee.name + '</span>' + separator);
+		});
+		
+		$("#refUserBoxModal").fadeOut(); 
+		$(".modal").css("display", "flex");
+});
 
 
 //초창기 모달 닫기 버튼 이벤트
-$("#closeUserBoxModal").on("click", function () {
-    $("#userBoxModal").fadeOut(); // userBoxModal 닫기
+$("#closeUserBoxModalR").on("click", function () {
+    $("#refUserBoxModal").fadeOut(); // userBoxModal 닫기
     $(".modal").css("display", "flex");
 });
 
@@ -638,5 +694,6 @@ $("#closeUserBoxModal").on("click", function () {
 $("#closeEmployeeModal").on("click", function () {
     $("#employeeModal").fadeOut(); // employeeModal만 닫기
 });
+
 </script>
 </html>

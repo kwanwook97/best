@@ -4,6 +4,7 @@ public class ReferenceDTO {
 	private int ref_idx; // 참조 ID (Primary Key, AUTO_INCREMENT)
 	private int doc_idx; // 문서 ID
 	private int emp_idx; // 직원 ID
+	
 	public int getRef_idx() {
 		return ref_idx;
 	}
