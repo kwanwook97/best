@@ -3,7 +3,7 @@ $(document).on('click', '.update', function() {
     var icon = $(this).find('i');
     var doc_read = icon.hasClass('fa-envelope') ? 1 : 0;
     var approv_num = $(this).data('approv-num');
-    console.log("시발"+$('.text').html());
+    console.log(text);
     
     $.ajax({
         url: 'updateRead.ajax',

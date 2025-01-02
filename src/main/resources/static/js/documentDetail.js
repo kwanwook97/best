@@ -5,7 +5,8 @@ function draftDetail(doc_idx) {
         type: 'GET',
         url: 'draftDetail.ajax',
         data: { 
-        	doc_idx: doc_idx
+        	doc_idx: doc_idx,
+        	text: text
          },
         dataType: 'text',
         success: function(response) {
@@ -55,6 +56,7 @@ function receivedDetail(doc_idx) {
         url: 'draftDetail.ajax',
         data: { 
         	doc_idx: doc_idx,
+        	text: text,
         	approv_num: approv_num
     	},
         dataType: 'text',

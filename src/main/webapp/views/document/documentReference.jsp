@@ -54,7 +54,7 @@
 	table.myTable{
 		border-collapse: separate !important;
         border-spacing: 0;
-	    width: 90%;
+	    width: 1203px;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
 		margin: 0 48px 15px 48px;
@@ -210,10 +210,10 @@
 						<th>상신 날짜</th>
 						<th>결재 상태</th>
 						<th>
-							<select id="status">
+							<select id="status" onchange="pageCall(1, this.value)">
 					          <option value="all">전체</option>
 					          <option value="read">읽음</option>
-					          <option value="unread">안읽음</option>
+					          <option value="unread">읽지않음</option>
 					        </select>
 						</th>
 					</tr>
@@ -230,102 +230,113 @@
  	</div>
 </body>
 <script>
-$(document).ready(function() {
-	var text = "참조";
-	
-	var showPage = 1;
-	pageCall(showPage);
-	
-	function pageCall(page){
-	    console.log('pageCall');
-	    $.ajax({
-	        type: 'GET',
-	        url: 'documentList.ajax',
-	        data: {
-	        	'text': text,
-	            'page': page,  // 몇 페이지 보여줄지
-	            'cnt': 15      // 페이지당 보여줄 게시물 수
-	        },
-	        dataType: 'JSON',
-	        success: function(data) {
-	            console.log(data);
-	            if(data.receivedList.length>0){
-	            	// 받은 문서
-	                received(data.receivedList);
-		            // 받은 문서 페이징
-		            $('#receivedPage').twbsPagination({
-		                startPage: 1,
-		                totalPages: data.receivedTotalPages,
-		                visiblePages: 5,
-		                onPageClick: function(evt, page){
-		                    console.log("evt", evt);  // 클릭 이벤트
-		                    console.log("page", page);  // 클릭한 페이지 번호
-		                    receivedPageCall(page);
-		                }
-		            });
-	            }else{
+
+var showPage = 1;
+var text = "참조";
+console.log("시발"+text);
+var readStatus = "all";
+pageCall(showPage, readStatus);
+
+function pageCall(page, readStatus){
+    console.log('pageCall');
+    $.ajax({
+        type: 'GET',
+        url: 'documentList.ajax',
+        data: {
+        	'readStatus': readStatus,
+        	'text': text,
+            'page': page,
+            'cnt': 15 
+        },
+        dataType: 'JSON',
+        success: function(data) {
+            console.log(data);
+            if(data.receivedList.length>0){
+                received(data.receivedList);
+                
+	            $('#receivedPage').twbsPagination({
+	                startPage: 1,
+	                totalPages: data.receivedTotalPages,
+	                visiblePages: 5,
+	                onPageClick: function(evt, page){
+	                    console.log("evt", evt);
+	                    console.log("page", page);
+	                    receivedPageCall(page, readStatus);
+	                }
+	            });
+            }else{
+            	if(readStatus === 'all'){
 	            	var content = '<tr>';
-	        		content += '<td colspan="8"> 참조된 문서가 없습니다. </td>';
-	        		content += '</tr>';
-	        		$('.receivedList').html(content);
-	            }
-	        },
-	        error: function(e) {
-	            console.log("오류 발생", e);
-	        }
-	    });
-	}
+	        		content += '<td colspan="8"> 받은 문서가 없습니다. </td>';
+	        		content += '</tr>';            	
+            	}else if(readStatus === 'read'){
+            		var content = '<tr>';
+	        		content += '<td colspan="8"> 읽은 문서가 없습니다. </td>';
+	        		content += '</tr>';    
+            	}else if(readStatus === 'unread'){
+            		var content = '<tr>';
+	        		content += '<td colspan="8"> 읽지않은 문서가 없습니다. </td>';
+	        		content += '</tr>';    
+            	}
+        		$('.receivedList').html(content);
+            }
+        },
+        error: function(e) {
+            console.log("오류 발생", e);
+        }
+    });
+}
+
+// 받은 문서 리스트
+function received(document) {
 	
-	// 받은 문서 리스트
-	function received(document) {
+    var content = '';
+	var i = 1;
+	for(var item of document){
+		console.log(item.form_subject)
+		content += '<tr>';
+		content += '<td>' + i++ + '</td>';
+		content += '<td>' + item.doc_number + '</td>';
+		content += '<td>' + item.form_subject + '</td>';
+		content += '<td onclick="receivedDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		content += '<td>' + item.name + '</td>';
 		
-	    var content = '';
-		var i = 1;
-		for(var item of document){
-			console.log(item.form_subject)
-			content += '<tr>';
-			content += '<td>' + i++ + '</td>';
-			content += '<td>' + item.doc_number + '</td>';
-			content += '<td>' + item.form_subject + '</td>';
-			content += '<td onclick="receivedDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
-			content += '<td>' + item.name + '</td>';
-			
-			var doc_date = new Date(item.doc_date);
-			var docDate = doc_date.toISOString().split('T')[0];
-	
-			content += '<td>' + docDate + '</td>';
-			content += '<td>' + item.status + '</td>';
-			content += '<td>' + 
-			    (item.doc_read == false
-			        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
-			        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
-			'</td>';
-	    
-			content += '</tr>';
-		}
-		$('.receivedList').html(content);
+		var doc_date = new Date(item.doc_date);
+		var docDate = doc_date.toISOString().split('T')[0];
+
+		content += '<td>' + docDate + '</td>';
+		content += '<td>' + item.status + '</td>';
+		content += '<td>' + 
+		    (item.doc_read == false
+		        ? '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope" title="읽지 않음"></i></a>'
+		        : '<a href="javascript:void(0);" class="update" data-doc-idx="'+ item.doc_idx + '" data-approv-num="'+ item.approv_num + '"><i class="fas fa-envelope-open-text" title="읽음"></i></a>') +
+		'</td>';
+    
+		content += '</tr>';
 	}
-	
-	// 받은 문서
-	function receivedPageCall(page) {
-	    $.ajax({
-	        type: 'GET',
-	        url: 'documentList.ajax',
-	        data: {
-	        	'text': text,
-	            'page': page,
-	            'cnt': 15
-	        },
-	        dataType: 'JSON',
-	        success: function(data) {
-	        	received(data.receivedList);
-	        },
-	        error: function(e) {
-	            console.log("오류 발생", e);
-	        }
-	    });
-	}
-});
+	$('.receivedList').html(content);
+}
+
+// 받은 문서
+function receivedPageCall(page, readStatus) {
+    $.ajax({
+        type: 'GET',
+        url: 'documentList.ajax',
+        data: {
+        	'readStatus': readStatus,
+        	'text': text,
+            'page': page,
+            'cnt': 15
+        },
+        dataType: 'JSON',
+        success: function(data) {
+        	received(data.receivedList);
+        },
+        error: function(e) {
+            console.log("오류 발생", e);
+        }
+    });
+}
 
 
 //모달 열기
