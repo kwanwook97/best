@@ -292,7 +292,7 @@ var loginId = ${sessionScope.loginId};
 					class="fa-regular fa-bell"></i> <span>알림</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
-			<li><a href="javaScript:void(0);"> <i
+			<li><a href="myDetail.go?emp_idx=${sessionScope.loginId}"> <i
 					class="bi bi-person-fill-gear"></i> <span>내 정보관리</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
