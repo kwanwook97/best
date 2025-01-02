@@ -60,6 +60,7 @@ public class EmployeeController {
 	@PostMapping(value = "/empUpdate.ajax")
 	@ResponseBody
 	public Map<String, Object> empUpdate(@RequestParam Map<String, String> params){
+		logger.info("params:{}",params);
 		
 		int row = empService.empUpdate(params);
 		
@@ -182,6 +183,25 @@ public class EmployeeController {
 	}
 	
 	
+	//내 정보 관리
+	@GetMapping(value="/myDetail.go")
+	public String myDetail(String emp_idx, Model model) {
+		//logger.info("디테일:{}",empService.empDetail(emp_idx));
+		
+		model.addAttribute("detail", empService.empDetail(emp_idx));
+		model.addAttribute("attendance",empService.empOverTime(emp_idx));
+		
+		return "emp/myDetail";
+	}
+	
+	@PostMapping(value="/updateMyDetail.ajax")
+	@ResponseBody
+	public Map<String, Object> updateMyDetail(@RequestParam Map<String, Object> params){
+		
+		logger.info("이종원테스트1:{}",params);
+
+		return empService.updateMyDetail(params);
+	}
 	
 	
 	

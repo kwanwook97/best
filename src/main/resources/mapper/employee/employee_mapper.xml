@@ -344,4 +344,13 @@
 	        </otherwise>
 	    </choose>
 	</select>
+	
+	<!-- 종원 마이상세 값변경 -->
+	<update id="updateMyDetail" parameterType="map">
+	UPDATE employee
+	SET ${col}=#{newVal}
+	WHERE emp_idx = #{loginId}
+	</update>
+	
+	
 </mapper>
