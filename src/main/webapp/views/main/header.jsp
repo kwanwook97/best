@@ -182,6 +182,10 @@ var loginId = ${sessionScope.loginId};
 							class="bi bi-file-earmark-arrow-up-fill"></i> <span>임시저장</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
+					<li class="dropD-item"><a href="documentWrite.go"> <i
+							class="bi bi-file-earmark-arrow-up-fill"></i> <span>양식 만들기</span> <i
+							class="fa-solid fa-angle-right"></i>
+					</a></li>
 				</ul></li>
 
 			<li><a href="orgChart.go"> <i class="bi bi-diagram-3-fill"></i>

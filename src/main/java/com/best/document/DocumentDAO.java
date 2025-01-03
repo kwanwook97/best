@@ -75,8 +75,10 @@ public interface DocumentDAO {
 	int formUpdateSent(String doc_idx, String doc_content, String doc_subject);
 
 	
+	// 결재 양식 리스트
+	List<FormDTO> getDocList();
 	// 전자결재 양식 불러오기
-	String getForm(String form_subject);
+	String getForm(String form_idx);
 	// 전자결재 양식 검색
 	List<Map<String, String>> searchForm(String query);
 	

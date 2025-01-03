@@ -13,7 +13,8 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-  
+  	<script src="resources/js/document-write.js" type="text/javascript"></script>
+  	
   <style>
 	.dashboard-body{
 	    margin-left: 15vw;
@@ -31,11 +32,41 @@
 	}
 	.maintext{
 		display: flex;
-		margin: 10px;
+		margin-left: 10px;
 	}
 	.document{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
+		margin-right: 30px;
+	    margin-bottom: 40px;
+	}
+	.docBox{
+		display: flex;	
+	}
+	.documentListBox{
+		display: flex;
+		justify-content: center;
+	    width: 180px;
+	    height: 300px;
+	    border: 2px solid var(--primary-color);
+	    border-radius: 10px;
+	    margin-right: 20px;
+	}
+	.documentList{
+		border-radius: 9px;
+	    color: white;
+	    background: var(--secondary-color);
+		text-align: center;
+		width: 130px;
+	    height: 30px;
+	    margin-top: 10px;
+	}
+	.documentList span.boxSub{
+		font-size: 20px;
+	}
+	.docList{
+		list-style:none;
+	    margin-top: 8px;
+        padding-left: 0;
 	}
 	.formBorder{    
 		display: flex;
@@ -84,7 +115,7 @@
 	    width: 10px;
     	height: 10px;
 	}
-	#div_editor{
+	#div_editor2{
 	    height: 55vh;
 	}
 	rte-content{
@@ -110,36 +141,49 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="maintext">
-			<h3 class="document">게시판</h3>
-			<h3>>&nbsp;&nbsp;공지 작성</h3>
+			<h3 class="document">결재 문서</h3>
+			<h3 class="text">>&nbsp;&nbsp;결재 문서 생성</h3>
 		</div>
-		<div class="formBorder">
-			<form action="noticeWrite.do" method="POST">
-			<table>
-				<tr>
-					<td>제목 : <input type="text" name="subject" placeholder="제목을 입력 하세요! 20자 이내 작성" maxlength="20"/></td>
-				</tr>
-				<tr>
-					<td>
-						<label for="check">★ 중요 공지로 등록하려면 체크박스를 선택하세요</label>
-						<input type="checkbox" id="check" name="importance">
-					</td>
-				</tr>
-				<tr>
-					<td>작성자 : <input type="text" name="name" value="에이스" readonly/></td>
-				</tr>
-				<tr>
-					<td>
-						<div id="div_editor">
-						</div>
-						<input type="hidden" name="content"/>
-					</td>
-				</tr>
-				<tr>
-					<th><input type="button" value="공지 등록하기" onclick="save()"/></th>
-				</tr>
-			</table>
-			</form>
+		<div class="docBox">
+			<div class="documentListBox">
+				<div class="documentList">
+					<span class="boxSub">양식 리스트</span>
+					<ul class="docList">
+						<li>연차신청서</li>
+						<li>시말서</li>
+						<li>지출결의서</li>
+						<li></li>
+					</ul>
+				</div>
+			</div>
+			<div class="formBorder">
+				<form action="noticeWrite.do" method="POST">
+				<table>
+					<tr>
+						<td>제목 : <input type="text" name="subject" placeholder="양식이름을 작성하세요! 20자 이내" maxlength="20"/></td>
+					</tr>
+					<tr>
+						<td>
+							<label for="check">★ 중요 공지로 등록하려면 체크박스를 선택하세요</label>
+							<input type="checkbox" id="check" name="importance">
+						</td>
+					</tr>
+					<tr>
+						<td>작성자 : <input type="text" name="name" value="에이스" readonly/></td>
+					</tr>
+					<tr>
+						<td>
+							<div id="div_editor2">
+							</div>
+							<input type="hidden" name="content"/>
+						</td>
+					</tr>
+					<tr>
+						<th><input type="button" value="문서 등록하기" onclick="save()"/></th>
+					</tr>
+				</table>
+				</form>
+			</div>
 		</div>
  	</div>
 </body>
@@ -160,7 +204,7 @@ config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로
 	}
 }
 
-var editor = new RichTextEditor("#div_editor", config);
+var editor = new RichTextEditor("#div_editor2", config);
 
 function save() {
     var content = editor.getHTMLCode();
@@ -182,12 +226,58 @@ function save() {
     }
 }
 // 500자 제한
-$(document).on('input', '#div_editor', function() {
+$(document).on('input', '#div_editor2', function() {
     var maxLength = 500;
     var text = $(this).text();
     if (text.length > maxLength) {
         $(this).text(text.substring(0, maxLength));
     }
 });
+
+//템플릿 리스트 정의
+var templates = [
+    { name: "연차신청서", content: "<h1>연차 신청서</h1><p>내용을 작성하세요...</p>" },
+    { name: "시말서", content: "<h1>시말서</h1><p>사유를 작성하세요...</p>" },
+    { name: "지출결의서", content: "<h1>지출 결의서</h1><p>지출 내역을 작성하세요...</p>" }
+];
+
+// 툴바에 템플릿 버튼 추가
+config.toolbarItems = [
+    ...RichTextEditor.defaultToolbar,
+    {
+        name: "templates",
+        title: "템플릿",
+        icon: '<i class="fas fa-file-alt"></i>',
+        popup: true,
+        onRender: function (popup, editor) {
+            // 템플릿 리스트를 팝업으로 렌더링
+            var list = document.createElement("ul");
+            list.style.padding = "10px";
+            list.style.listStyleType = "none";
+
+            templates.forEach(function (template) {
+                var item = document.createElement("li");
+                item.textContent = template.name;
+                item.style.cursor = "pointer";
+                item.style.marginBottom = "5px";
+
+                // 템플릿 클릭 시 에디터에 삽입
+                item.onclick = function () {
+                    editor.insertHTML(template.content);
+                    popup.close(); // 팝업 닫기
+                };
+
+                list.appendChild(item);
+            });
+
+            popup.appendChild(list);
+        },
+    },
+];
+
+// 에디터 초기화
+var editor = new RichTextEditor("#div_editor2", config);
+
+
 </script>
 </html>
