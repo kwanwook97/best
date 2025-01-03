@@ -14,7 +14,7 @@ import com.best.emp.EmployeeService;
 public class MainController {
 	@Autowired EmployeeService empService;
 	
-	@GetMapping(value={"/","main.go"})
+	@GetMapping(value="/main.go")
 	public String main() {
 		return "main/main";
 	}

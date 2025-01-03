@@ -56,6 +56,8 @@ public interface EmployeeDAO {
 	
 	// 조직도 정보
 	List<Map<String, Object>> orgList(Map<String, String> parmas);
+
+	int updateMyDetail(Map<String, Object> params);
 	
 
 }

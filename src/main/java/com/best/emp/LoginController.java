@@ -1,5 +1,7 @@
 package com.best.emp;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,28 +11,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class LoginController {
-	
-	@Autowired LoginService loginService;
 
-	@RequestMapping(value = "/login.go")
-	public String login() {
-		return "main/login";
-	}
+    @Autowired
+    LoginService loginService;
+
+    @RequestMapping(value = {"/", "/login.go"})
+    public String login() {
+        System.out.println("LoginController - /login.go reached");
+        return "main/login";
+    }
+
+    @RequestMapping(value = "/login.do")
+    public String memberLogin(Model model, HttpSession session, String id, String pw) {
+        System.out.println("LoginController - /login.do reached with id: " + id);
+        Map<String, Object> loginData = loginService.login(id, pw);
+
+        if (loginData != null) {
+            EmployeeDTO employee = (EmployeeDTO) loginData.get("employee");
+            session.setAttribute("loginId", employee.getEmp_idx());
+            session.setAttribute("loginName", employee.getName());
+            session.setAttribute("employee", employee);
+            return "redirect:/main.go";
+        } else {
+            return "redirect:/login.go?error=invalid";
+        }
+    }
+
+    @RequestMapping(value = "/logout.do")
+    public String memberLogout(HttpSession session) {
+        System.out.println("LoginController - /logout.do reached");
+        session.invalidate();
+        return "redirect:/login.go?logout=success";
+    }
+}
+
+
 	
-	@RequestMapping(value = "/login.do")
-	public String memberLogin(Model model, HttpSession session, String id, String pw) {
-		String page="";
-		EmployeeDTO employee = loginService.login(id, pw);
-		if(employee != null) {
-			session.setAttribute("loginId", id);
-			session.setAttribute("loginName", employee.getName());
-			session.setAttribute("employee", employee);
-			page = "redirect:/main.go";
-		}else {
-			page = "redirect:/login.go";
-		}
-		return page;
-	}
+	
+	
 	
 //	@RequestMapping(value = "/resetPassword.do")
 //	@ResponseBody
@@ -41,4 +59,3 @@ public class LoginController {
 //	        return "비밀번호 초기화에 실패했습니다.";
 //	    }
 //	}
-}

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ public class EmployeeController {
 	
 	// 사원목록 페이지이동
 	// 페이지 접속권한 : 인사부서
+	@PreAuthorize("hasAuthority('ROLE_인사팀_RW')")
 	@RequestMapping(value="/empList.go")
 	public String empListGo() {
 		return "empManage/empList";
@@ -58,6 +60,7 @@ public class EmployeeController {
 	@PostMapping(value = "/empUpdate.ajax")
 	@ResponseBody
 	public Map<String, Object> empUpdate(@RequestParam Map<String, String> params){
+		logger.info("params:{}",params);
 		
 		int row = empService.empUpdate(params);
 		
@@ -180,6 +183,25 @@ public class EmployeeController {
 	}
 	
 	
+	//내 정보 관리
+	@GetMapping(value="/myDetail.go")
+	public String myDetail(String emp_idx, Model model) {
+		//logger.info("디테일:{}",empService.empDetail(emp_idx));
+		
+		model.addAttribute("detail", empService.empDetail(emp_idx));
+		model.addAttribute("attendance",empService.empOverTime(emp_idx));
+		
+		return "emp/myDetail";
+	}
+	
+	@PostMapping(value="/updateMyDetail.ajax")
+	@ResponseBody
+	public Map<String, Object> updateMyDetail(@RequestParam Map<String, Object> params){
+		
+		logger.info("이종원테스트1:{}",params);
+
+		return empService.updateMyDetail(params);
+	}
 	
 	
 	

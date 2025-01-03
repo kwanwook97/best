@@ -4,14 +4,44 @@
 >
 <mapper namespace="com.best.emp.LoginDAO">
 	<select id="login" resultType="com.best.emp.EmployeeDTO">
-        SELECT emp_idx, name, photo,email
+        SELECT emp_idx, name, photo, email, password
         FROM employee
         WHERE emp_idx = #{id}
-          AND password = #{pw}
+         <!--  AND password = #{pw} -->
     </select>
 	<update id="updatePassword" parameterType="map">
         UPDATE employee
         SET password = #{pw}
         WHERE emp_idx = #{id}
     </update>
+    
+    
+    <!-- 부서 권한 정보 조회 -->
+	 <select id="departRoleAsMap" resultType="map">
+	    SELECT 
+	        r.role_idx AS roleIdx,
+	        r.category AS category,
+	        d.depart_name AS depart_name,
+	        r.role AS role
+	    FROM employee e
+	    JOIN department d ON e.depart_idx = d.depart_idx
+	    JOIN role r ON d.role_idx = r.role_idx
+	    WHERE e.emp_idx = #{id}
+	</select>
+
+    <!-- 직급 권한 정보 조회 -->
+    <select id="rankRoleAsMap" resultType="map">
+	    SELECT 
+	        r.role_idx AS roleIdx,
+	        r.category AS category,
+	        re.rank_name AS rank_name,
+	        r.role AS role
+	    FROM employee e
+	    JOIN rank_emp re ON e.rank_idx = re.rank_idx
+	    JOIN role r ON re.role_idx = r.role_idx
+	    WHERE e.emp_idx = #{id}
+	</select>
+
+    
+    
 </mapper>  
