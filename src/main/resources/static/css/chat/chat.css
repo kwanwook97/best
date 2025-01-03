@@ -214,7 +214,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	max-width: 238px;
+	max-width: 275px;
 	display: flex;
 	justify-content: space-between;
 }

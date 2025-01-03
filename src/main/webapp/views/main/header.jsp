@@ -300,10 +300,7 @@ var loginId = ${sessionScope.loginId};
 					class="bi bi-person-fill-gear"></i> <span>내 정보관리</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
-			<li><a href="login.go"><i
-					class="fa-solid fa-right-to-bracket"></i> <span>로그인</span> <i
-					class="fa-solid fa-angle-right"></i> </a></li>
-			<li><a href="javaScript:void(0);"><i
+			<li><a href="logout.do"><i
 					class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span> <i
 					class="fa-solid fa-angle-right"></i> </a></li>
 
@@ -324,6 +321,9 @@ var loginId = ${sessionScope.loginId};
            				<button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
        				</div>
     			</li>
+  			</ul>
+  			<ul id="alarmHeader" class="alarmHeader">
+  				
   			</ul>
 
 			<ul class="navbar-nav align-items-center right-nav-link">
@@ -390,21 +390,39 @@ window.updateUnreadMessageCount = function (unreadTotal) {
     console.log("읽지 않은 메시지 총 수 업데이트:", unreadTotal);
 };
 
-function showMailNotification(senderName, content) {
-    const notification = $("#notification");
+function showMailNotification(content, type) {
+    const notification = $("#alarmHeader");
 
-    const notificationContent =
-        '<div class="notification-profile">' +
-            '<div class="notifi-profile">' +
-                '<div>' + content + '</div>' +
-            '</div>' +
-        '</div>';
-
+    const notificationContent = '<li>' + content + '</li>';
     notification.html(notificationContent);
 
     // 알림 표시
     notification.addClass("show");
 
+    // 클릭 시 URL 이동
+    notification.off("click").on("click", function () {
+        let redirectUrl = '';
+        switch (type) {
+            case 'mail':
+                redirectUrl = 'mail.go';
+                break;
+            case 'document':
+                redirectUrl = 'documentPending.go';
+                break;
+            case 'calendar':
+                redirectUrl = 'calendar.go';
+                break;
+            case 'reserve':
+                redirectUrl = 'myReserve.go';
+                break;
+            default:
+                console.warn('Unknown type:', type);
+                return;
+        }
+        window.location.href = redirectUrl;
+    });
+
+    // 알림 자동 숨김
     setTimeout(() => {
         notification.removeClass("show");
     }, 5000); // 5초 후 숨김
@@ -416,11 +434,11 @@ $(document).ready(function () {
     // 초기 알림 리스트 로드
     function loadAlarmList() {
         $.ajax({
-            url: "alarmList.ajax",
+            url: "unreadAlarm.ajax",
             type: "GET",
             data: { emp_idx: loginId }, // emp_idx 세션이나 전역 상태에서 가져옴
             success: function (data) {
-                renderDropdown(data);
+                renderDropdown(data.alarms);
             },
             error: function (err) {
                 console.error("알림 데이터를 가져오는 중 오류 발생", err);
@@ -440,7 +458,7 @@ $(document).ready(function () {
         const limitedData = data.slice(0, 5); // 최신 5개의 데이터만 유지
         limitedData.forEach(function (alarm) {
             const alarmItem =
-                '<div class="dropdown-item">' +
+                '<div class="dropdown-item" data-type="' + alarm.type + '">' +
                     '<div class="notification-profile">' +
                         '<div class="notifi-profile">' +
                             '<div>' + alarm.content + '</div>' +
@@ -453,14 +471,28 @@ $(document).ready(function () {
 
     // 초기 호출
     loadAlarmList();
+
+    // 이벤트 위임으로 클릭 이벤트 처리
+    mailDropdown.on("click", ".dropdown-item", function () {
+        const itemType = $(this).data("type");
+        let redirectUrl = '';
+        switch (itemType) {
+            case 'mail': redirectUrl = 'mail.go'; break;
+            case 'document': redirectUrl = 'documentPending.go'; break;
+            case 'calendar': redirectUrl = 'calendar.go'; break;
+            case 'reserve': redirectUrl = 'myReserve.go'; break;
+            default: return;
+        }
+        window.location.href = redirectUrl;
+    });
 });
 
-function updateMailDropdown(senderName, content) {
+function updateMailDropdown(content, type) {
     const mailDropdown = $(".alarmDropdown");
 
     // 새로 받은 알림 추가
     const mailItem =
-        '<div class="dropdown-item">' +
+        '<div class="dropdown-item" data-type="' + type + '">' +
             '<div class="notification-profile">' +
                 '<div class="notifi-profile">' +
                     '<div>' + content + '</div>' +
@@ -475,7 +507,6 @@ function updateMailDropdown(senderName, content) {
         mailDropdown.children().last().remove();
     }
 }
-
 
 
 

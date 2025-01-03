@@ -8,6 +8,13 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
 <style>
+
+:root{
+	--primary-color: #30005A;
+	--secondary-color: #8B6AA7;
+	--accent-color: #E9396B;
+	--background-color: #FFFBF2;
+}
 .dashboard-body {
 	color: #30005A;
 	height: 92%;
@@ -23,7 +30,7 @@
 	margin-right: 100%;
 }
 .content-size {
-    width: 100%;
+    width: 56vw;
     height: 728px;
     display: flex;
     flex-direction: column;
@@ -31,6 +38,7 @@
     border-radius: 10px;
     align-items: center;
     justify-content: center;
+    margin-left: 13vw;
 }
 .tm2 {
 	width: 21%;
@@ -53,24 +61,42 @@
 	color: #30005A;
 }
 .content-main{
-	width: 70%;
-    height: 78%;
+    width: 90%;
+    height: 90%;
+    margin-top: -4vh;
 }
 .content-body{
 	width: 100%;
-	height: 100%;
+	height: 95%;
 	border: 2px solid #30005A;
 	border-radius: 10px;
 }
 .header{
 	display: flex;
-    padding: 10px;
+}
+.body{
+	margin-top: 12px;
 }
 .filter{
 	width: fit-content;
    	margin-left: 15px;
    	cursor: pointer;
+   	height: 36px;
+   	font-size: 18px;
 }
+.filter:hover{
+	border-bottom: 2px solid #E9396B;
+}
+/* 위쪽 필터 활성화 */
+.content-header .filter.active {
+    border-bottom: 2px solid #E9396B;
+}
+
+/* 아래쪽 필터 활성화 */
+.body.header .filter.active {
+    border-bottom: 2px solid #E9396B;
+}
+
 table, th, td{
 	border-collapse: collapse;
 }
@@ -87,6 +113,48 @@ thead{
 td{
 	border-bottom: 1px solid #8B6AA7;
 }
+
+
+
+.container nav{
+		display:flex;
+		justify-content: center;
+	}
+	.pagination .page-link {
+		color: var(--primary-color); /* 글자 색상 */
+		background-color: var(--background-color); /* 배경 색상 */
+		border: var(--background-color) !important; /* 테두리 */
+		font-family: 'Arial', sans-serif; /* 폰트 */
+		font-size: 16px; /* 글자 크기 */
+		box-shadow: none !important;
+	}
+	/* 호버 시 스타일 */
+	.pagination .page-link:hover {
+		font-weight: bold;
+		color: var(--accent-color) !important;
+		background-color: var(--background-color) !important;
+	}
+	/* 활성화된 페이지 스타일 */
+	.pagination .active .page-link {
+		font-weight: bold;
+		color: var(--accent-color) !important;
+		background-color: var(--background-color) !important;
+	}
+	/* 클릭 시 생기는 테두리 제거 */
+	.pagination .page-link:focus {
+	  outline: none;
+	  box-shadow: none; /* 부가적인 그림자 효과도 제거 */
+	}
+	/* 비활성화된 페이지 스타일 */
+	.pagination .disabled .page-link {
+		color: var(--background-color) !important;
+		background-color: var(--background-color) !important;
+	}	
+	@media ( min-width :1200px) {
+		.container {
+			max-width: 100% !important;
+		}
+	}
 </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -126,6 +194,11 @@ td{
 						</tbody>
 					</table>
 				</div>
+				<div class="container" id="sentCont">
+				    <nav aria-label="Page navigation">
+				        <ul class="pagination" id="sentPage"></ul>
+				    </nav>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -134,70 +207,180 @@ td{
 var loginId = ${sessionScope.loginId};
 var emp_idx = parseInt(loginId);
 
-$(document).ready(function() {
-    function fetchAlarms(type = null, flag = null) {
+$(document).ready(function () {
+    const limit = 20; // 한 페이지에 표시할 알림 수
+    const empIdx = emp_idx; // 사용자 ID
+
+    let currentType = null; // 현재 필터 타입 (메일, 캘린더, 결재 등)
+    let currentFlag = null; // 현재 읽음 여부 (읽음, 안읽음)
+
+    // 초기 알림 데이터 로드
+    fetchAlarms(1, currentType, currentFlag);
+
+    // 알림 데이터 가져오기
+    function fetchAlarms(page, type, flag) {
         $.ajax({
             url: "alarmList.ajax",
             type: "GET",
-            data: { emp_idx:emp_idx, type: type, flag: flag },
-            success: function(data) {
-                renderAlarmList(data);
+            data: {
+                emp_idx: empIdx,
+                type: type || '',
+                flag: flag || '',
+                page: page,
+                limit: limit,
             },
-            error: function(err) {
+            success: function (response) {
+                console.log("응답 데이터:", response); // 디버깅용
+                renderAlarmList(response.alarms);
+                setupPagination(response.totalCount, page, type, flag);
+            },
+            error: function (err) {
                 console.error("알림 데이터를 가져오는 중 오류 발생", err);
-            }
+            },
         });
     }
 
+    // 알림 리스트 렌더링
     function renderAlarmList(data) {
         const alarmList = $("#alarmList");
         alarmList.empty();
 
-        if (data.length === 0) {
-            alarmList.append('<tr><td colspan="4">알림이 없습니다.</td></tr>');
+        if (!data || data.length === 0) {
+            alarmList.append('<tr><td colspan="5">알림이 없습니다.</td></tr>');
             return;
         }
 
-        data.forEach(function(alarm, index) {
+        data.forEach(function (alarm, index) {
             const alarmDate = new Date(alarm.date);
             const today = new Date();
 
-            // 오늘인지 확인
             const isToday =
                 alarmDate.getDate() === today.getDate() &&
                 alarmDate.getMonth() === today.getMonth() &&
                 alarmDate.getFullYear() === today.getFullYear();
 
-            // 날짜 포맷
             const formattedDate = isToday
-                ? alarmDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) // 12:10
-                : alarmDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }); // 2024년 11월 11일
+                ? alarmDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : alarmDate.toLocaleDateString("ko-KR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                  });
+                
+                const typeAction =
+                    alarm.type === "mail"
+                        ? "mail.go"
+                        : alarm.type === "document"
+                        ? "documentPending.go"
+                        : alarm.type === "calendar"
+                        ? "calendar.go"
+                        : alarm.type === "reserve"
+                        ? "myReserve.go"
+                        : "#";
 
-            alarmList.append(
-                '<tr>' +
-                '<td>' + (index + 1) + '</td>' +
-                '<td>' + alarm.type + '</td>' +
-                '<td style="cusor: pointer;">' + alarm.content + '</td>' +
-                '<td>' + formattedDate + '</td>' +
-                '<td>' + (alarm.flag === false ? "안읽음" : "읽음") + '</td>' +
-                '</tr>'
-            );
+
+                alarmList.append(
+                		'<tr style="' + (alarm.flag === false ? '' : 'color: #8B6AA7;') + '">' +
+                	        '<td>' + (index + 1) + '</td>' +
+                	        '<td>' +
+                	            (alarm.type === "mail"
+                	                ? '<i class="far fa-envelope"></i>'
+                	                : alarm.type === "document"
+                	                ? '<i class="fa-regular fa-clipboard"></i>'
+                	                : alarm.type === "calendar"
+                	                ? '<i class="fa-regular fa-calendar-check"></i>'
+                	                : alarm.type === "reserve"
+                	                ? '<i class="fa-regular fa-calendar-check"></i>'
+                	                : '') +
+                	        '</td>' +
+                	        '<td style="cursor: pointer;" onclick="handleAlarmClick(\'' + alarm.alarm_idx + '\', \'' + typeAction + '\')">' + alarm.content + '</td>' +
+                	        '<td>' + formattedDate + '</td>' +
+                	        '<td>' + (alarm.flag === false ? '<i class="fas fa-envelope"></i>' : '<i class="fas fa-envelope-open-text"></i>') + '</td>' +
+                	    '</tr>'
+                	);
         });
     }
 
+    // 페이지네이션 설정
+    function setupPagination(totalCount, currentPage, type, flag) {
+        const totalPages = Math.ceil(totalCount / limit);
 
+        $("#sentPage").twbsPagination("destroy"); // 기존 이벤트 제거
+        $("#sentPage").empty(); // 기존 DOM 제거
 
-    // 초기 데이터 로드
-    fetchAlarms();
+        $("#sentPage").twbsPagination({
+            totalPages: totalPages,
+            visiblePages: 5,
+            startPage: currentPage,
+            onPageClick: function (event, page) {
+                if (page !== currentPage) { // 중복 호출 방지
+                    fetchAlarms(page, null, null);
+                }
+            },
+        });
+    }
 
     // 필터 클릭 이벤트
-    $(".filter").on("click", function() {
-        const type = $(this).text().toLowerCase(); // mail, calendar, document로 변환
-        const flag = type === "전체" ? null : type === "읽음" ? 1 : 0;
-        const empIdx = emp_idx; // 여기에 실제 emp_idx 값을 넣어야 함
+    $(".filter").off("click").on("click", function () {
+        const parentClass = $(this).parent().attr("class"); // 부모 클래스 확인
 
-        fetchAlarmList(empIdx, type === "전체" ? null : type, flag);
+        if (parentClass.includes("content-header")) {
+            // 위쪽 필터 그룹
+            $(".content-header .filter").removeClass("active");
+            $(this).addClass("active");
+
+            const filterText = $(this).text().trim();
+            switch (filterText) {
+                case "전체":
+                    currentType = null;
+                    break;
+                case "메일":
+                    currentType = "mail";
+                    break;
+                case "캘린더":
+                    currentType = "calendar";
+                    break;
+                case "결재":
+                    currentType = "document";
+                    break;
+            }
+        } else if (parentClass.includes("body header")) {
+            // 아래쪽 필터 그룹
+            $(".body.header .filter").removeClass("active");
+            $(this).addClass("active");
+
+            const filterText = $(this).text().trim();
+            switch (filterText) {
+                case "전체":
+                    currentFlag = null;
+                    break;
+                case "읽음":
+                    currentFlag = 1;
+                    break;
+                case "안읽음":
+                    currentFlag = 0;
+                    break;
+            }
+        }
+
+        console.log("필터 선택:", { type: currentType, flag: currentFlag }); // 디버깅용
+
+        fetchAlarms(1, currentType, currentFlag); // 필터 적용 후 페이지 1부터 데이터 다시 로드
     });
+    
+    window.handleAlarmClick = function (alarmIdx, redirectUrl) {
+        $.ajax({
+            url: "updateAlarmFlag.ajax",
+            type: "POST",
+            data: { alarm_idx: alarmIdx, flag: 1 },
+            success: function () {
+                location.href = redirectUrl;
+            },
+            error: function (err) {
+                console.error("알림 flag 업데이트 중 오류 발생:", err);
+            },
+        });
+    };
 });
 
 

@@ -94,8 +94,8 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
     }
     
     /* 메일 알림 브로드캐스트 */
-    public static void broadcastNewMail(int empIdx, String senderName, String content) {
-        log.info("글로벌 웹소켓 broadcastNewMail 호출: empIdx = {}, senderName = {}, content = {}", empIdx, senderName, content);
+    public static void broadcastNewMail(int empIdx, String content, String type) {
+        log.info("글로벌 웹소켓 broadcastNewMail 호출: empIdx = {}, type = {}, content = {}", empIdx, type, content);
         sessions.stream()
             .filter(WebSocketSession::isOpen)
             .forEach(session -> {
@@ -103,21 +103,21 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
                     Integer sessionEmpIdx = (Integer) session.getAttributes().get("emp_idx");
                     if (sessionEmpIdx != null && sessionEmpIdx.equals(empIdx)) {
                         Map<String, Object> payload = new HashMap<>();
-                        payload.put("type", "NEW_MAIL");
+                        payload.put("type", type); // type 추가
                         payload.put("emp_idx", empIdx);
-                        payload.put("sender_name", senderName);
                         payload.put("content", content);
 
                         String jsonMessage = objectMapper.writeValueAsString(payload);
                         session.sendMessage(new TextMessage(jsonMessage));
 
-                        log.info("새 메일 알림 전송 성공: empIdx={}, senderName={}, content={}", empIdx, senderName, content);
+                        log.info("새 알림 전송 성공: empIdx={}, type={}, content={}", empIdx, type, content);
                     }
                 } catch (IOException e) {
-                    log.error("새 메일 알림 전송 실패 - 세션 ID: {}", session.getId(), e);
+                    log.error("알림 전송 실패 - 세션 ID: {}", session.getId(), e);
                 }
             });
     }
+
 
 
 }

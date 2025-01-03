@@ -31,10 +31,10 @@ globalSocket.onmessage = function (event) {
         console.warn("유효하지 않은 데이터:", messageData);
     }
     
-    if (messageData.type === "NEW_MAIL") {
-        showMailNotification(messageData.sender_name, messageData.content);
-        updateMailDropdown(messageData.sender_name, messageData.content);
-    }
+    if (messageData.type === "mail" || messageData.type === "document" || messageData.type === "calendar" || messageData.type === "reserve") {
+        // 알림 표시 및 드롭다운 업데이트
+        showMailNotification(messageData.content, messageData.type);
+        updateMailDropdown(messageData.content, messageData.type);
 };
 
 // WebSocket 에러 처리

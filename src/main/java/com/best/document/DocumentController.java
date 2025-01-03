@@ -221,10 +221,10 @@ public class DocumentController {
 	    	logger.info("팀장, 그위에 팀장 : "+parentManager +" / "+manager);
 	    	int docIdx = documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "상신");
 	    	if(docIdx > 0) {				
-	    		documentService.formsent(docIdx, parentManager, 1, manager, 2, "상신");
 	    		if (managerIds != null && !managerIds.isEmpty()) {
-	    		    documentService.referenceEmp(docIdx, managerIds);
+	    			documentService.referenceEmp(docIdx, managerIds);
 	    		}
+	    		documentService.formsent(docIdx, parentManager, 1, manager, 2, "상신");
 	    		response.put("message", "기안 완료");
 	    	}
 	    	
@@ -248,10 +248,10 @@ public class DocumentController {
 			int row = documentService.formUpdateSent(doc_idx, doc_content, doc_subject);
 			if(row > 0) {				
 				int docIdx = Integer.parseInt(doc_idx);
+				if (managerIds != null && !managerIds.isEmpty()) {
+					documentService.referenceEmp(docIdx, managerIds);
+				}
 	    		documentService.formsent(docIdx, parentManager, 1, manager, 2, "상신");
-	    		if (managerIds != null && !managerIds.isEmpty()) {
-	    		    documentService.referenceEmp(docIdx, managerIds);
-	    		}
 	    		response.put("message", "기안 완료");	
 			}
 			
