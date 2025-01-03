@@ -73,4 +73,8 @@ public interface ChatDAO {
 
 	List<Map<String, Object>> msgAlarm(Integer empIdx);
 
+	Integer findSingleChatRoom(int emp_idx1, int emp_idx2);
+
+	List<Map<String, Object>> chatParty(String keyword, int chatIdx);
+
 }

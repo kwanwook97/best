@@ -149,6 +149,16 @@ public class ChatController {
 		return chatService.getEmployeeList(keyword); // 회원 리스트를 반환하는 서비스 호출
 	}
 	
+	/* 대화방에 참여중인 인원 제외하고 보여주기 */
+	@GetMapping(value = "/chatParty.ajax")
+	@ResponseBody
+	public List<Map<String, Object>> chatParty(
+	        @RequestParam(value = "keyword", required = false) String keyword,
+	        @RequestParam(value = "chat_idx") int chatIdx) {
+	    return chatService.chatParty(keyword, chatIdx);
+	}
+
+	
 	/* 회원 프로필 가져오기 */
 	@GetMapping(value="/profile.ajax")
 	@ResponseBody
@@ -164,24 +174,59 @@ public class ChatController {
 	@PostMapping(value = "/createChat.do")
 	@ResponseBody
 	public Map<String, Object> createChat(@RequestBody Map<String, Object> requestData, HttpSession session) {
-		Map<String, Object> result = new HashMap<>();
-		try {
-			String chat_subject = (String) requestData.get("chat_subject");
-			List<Integer> emp_idx_list = (List<Integer>) requestData.get("emp_idx_list");
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        String chat_subject = (String) requestData.get("chat_subject");
+	        List<Integer> emp_idx_list = (List<Integer>) requestData.get("emp_idx_list");
 
-			Integer login_emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+	        Integer login_emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
 
-			// 대화방 생성
-			int chat_idx = chatService.createChat(chat_subject, login_emp_idx, emp_idx_list);
+	        // 단둘만 있는 대화방 확인
+	        if (emp_idx_list.size() == 1) { // 상대방이 1명일 때만 체크
+	            Integer existingChatIdx = chatService.findSingleChatRoom(login_emp_idx, emp_idx_list.get(0));
+	            if (existingChatIdx != null) {
+	                // 단둘만 있는 대화방으로 이동
+	                result.put("success", true);
+	                result.put("chatIdx", existingChatIdx);
+	                result.put("existing", true);
+	                return result;
+	            }
+	        }
 
-			result.put("success", true);
-			result.put("chatIdx", chat_idx);
-		} catch (Exception e) {
-			e.printStackTrace();
-			result.put("success", false);
-		}
-		return result;
+	        // 대화방 생성
+	        int chat_idx = chatService.createChat(chat_subject, login_emp_idx, emp_idx_list);
+
+	        result.put("success", true);
+	        result.put("chatIdx", chat_idx);
+	        result.put("existing", false);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("success", false);
+	    }
+	    return result;
 	}
+
+//	@PostMapping(value = "/createChat.do")
+//	@ResponseBody
+//	public Map<String, Object> createChat(@RequestBody Map<String, Object> requestData, HttpSession session) {
+//		Map<String, Object> result = new HashMap<>();
+//		try {
+//			String chat_subject = (String) requestData.get("chat_subject");
+//			List<Integer> emp_idx_list = (List<Integer>) requestData.get("emp_idx_list");
+//
+//			Integer login_emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
+//
+//			// 대화방 생성
+//			int chat_idx = chatService.createChat(chat_subject, login_emp_idx, emp_idx_list);
+//
+//			result.put("success", true);
+//			result.put("chatIdx", chat_idx);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			result.put("success", false);
+//		}
+//		return result;
+//	}
 
 	/* 방 나가기 */
 	@PostMapping(value="/leaveChat.ajax")

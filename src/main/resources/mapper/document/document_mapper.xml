@@ -804,18 +804,32 @@
 	
 	
 	
-	<select id="getApproverDetails" resultType="map">
+<select id="getApproverDetails" resultType="map">
     SELECT 
         d.emp_idx AS writerEmpIdx,
         e.name AS writerName,
         (SELECT a.emp_idx FROM approv a WHERE a.doc_idx = #{docIdx} AND a.approv_order = 1) AS firstApproverEmpIdx,
-        (SELECT a.emp_idx FROM approv a WHERE a.doc_idx = #{docIdx} AND a.approv_order = 2) AS secondApproverEmpIdx
+        (SELECT emp.name FROM approv a 
+         JOIN employee emp ON a.emp_idx = emp.emp_idx
+         WHERE a.doc_idx = #{docIdx} AND a.approv_order = 1) AS firstApproverName,
+        (SELECT a.emp_idx FROM approv a WHERE a.doc_idx = #{docIdx} AND a.approv_order = 2) AS secondApproverEmpIdx,
+        (SELECT emp.name FROM approv a 
+         JOIN employee emp ON a.emp_idx = emp.emp_idx
+         WHERE a.doc_idx = #{docIdx} AND a.approv_order = 2) AS secondApproverName,
+        f.form_subject AS formName -- 양식 이름
     FROM document d
     JOIN employee e ON d.emp_idx = e.emp_idx
+    JOIN form f ON d.form_idx = f.form_idx -- 양식 이름 가져오기
     WHERE d.doc_idx = #{docIdx}
 </select>
+
+
+
+
 <select id="getReferenceEmpIds" resultType="int">
-    SELECT emp_idx FROM reference WHERE doc_idx = #{doc_idx}
+    SELECT emp_idx
+    FROM reference
+    WHERE doc_idx = #{doc_idx}
 </select>
 
 <!-- 연차 소진용 로직 -->

@@ -406,7 +406,8 @@
 		FROM
 		msg_read mr
 		JOIN
-		message m ON mr.msg_idx = m.msg_idx
+		message m ON
+		mr.msg_idx = m.msg_idx
 		WHERE
 		mr.emp_idx = #{empIdx}
 		AND mr.is_read = 0
@@ -414,4 +415,59 @@
 		m.time DESC
 		LIMIT 5
 	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- 두 명만 참여하는 대화방 확인 -->
+	<select id="findSingleChatRoom" resultType="int">
+		SELECT c.chat_idx
+		FROM chat c
+		JOIN party p1 ON c.chat_idx = p1.chat_idx
+		JOIN party p2 ON c.chat_idx = p2.chat_idx
+		WHERE p1.emp_idx = #{emp_idx1}
+		AND p2.emp_idx = #{emp_idx2}
+		AND c.chat_idx NOT IN (
+		SELECT chat_idx
+		FROM party
+		GROUP BY chat_idx
+		HAVING COUNT(emp_idx) > 2
+		)
+	</select>
+	
+	<!-- 대화방 참여중인 사원 제외 -->
+	<select id="chatParty" resultType="map">
+		SELECT
+		e.emp_idx,
+		e.name,
+		e.photo,
+		r.rank_name
+		FROM
+		employee e
+		LEFT JOIN rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE e.emp_idx NOT IN (
+		SELECT p.emp_idx
+		FROM party p
+		WHERE p.chat_idx = #{chatIdx}
+		)
+		<if test="keyword != null and keyword != ''">
+			AND e.name LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+		ORDER BY r.rank_idx;
+	</select>
+
+
 </mapper>  

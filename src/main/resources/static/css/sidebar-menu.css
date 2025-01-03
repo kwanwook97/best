@@ -428,3 +428,16 @@ a > * {
 	flex-grow: 1;
 	text-align: center
 }
+
+.alarmHeader{
+    margin-right: 104px !important;
+    margin-bottom: 0rem !important;
+    min-width: 696px;
+    display: none;
+}
+#alarmHeader.show {
+    display: block;
+}
+.alarmHeader > li{
+	list-style: none;
+}

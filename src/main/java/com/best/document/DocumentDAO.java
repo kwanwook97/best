@@ -116,12 +116,7 @@ public interface DocumentDAO {
 	int referenceEmpTwo(int doc_idx, String firstRef, String secondRef);
 	int referenceEmpThree(int doc_idx, String firstRef, String secondRef, String thirdRef);
 
-	
-	
-	
-	
-	
-	
+
 	
 	Map<String, Object> getApproverDetails(int docIdx);
 	List<Integer> getReferenceEmpIds(int doc_idx);
@@ -129,8 +124,6 @@ public interface DocumentDAO {
 	// 문서양식 확인용
 	String documentName(String doc_idx);
 	Map<String, Object> getDocContent(String doc_idx);
-
-
 
 
 
