@@ -1,6 +1,6 @@
 package com.best.emp;
 
-import java.io.File;
+import java.io.File; 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +35,7 @@ public class EmployeeService {
 	@Autowired EmployeeDAO empDAO;
 	@Autowired AttendanceDAO attendanceDAO;
 	
-	// 생성자 주입
+
 	private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -341,7 +341,7 @@ public class EmployeeService {
 		
 		
 		
-		// 비밀번호 암호화
+	// 비밀번호 암호화
 	    if (empDTO.getPassword() != null && !empDTO.getPassword().isEmpty()) {
 	        String encryptedPassword = passwordEncoder.encode(empDTO.getPassword()); // 비밀번호 암호화
 	        empDTO.setPassword(encryptedPassword);
@@ -450,6 +450,39 @@ public class EmployeeService {
 			map.put("success", "성공");
 		}
 		
+		return map;
+	}
+
+
+
+
+	public Map<String, Object> checkSign(Map<String, Object> params) {
+		
+		Map<String, Object> sign = empDAO.checkSign(params);
+
+	    if (sign != null && !sign.isEmpty()) {
+	        sign.put("msg", "성공");
+	    } else {
+	        sign = new HashMap<>();
+	        sign.put("msg", "실패");
+	    }
+
+	    return sign;
+	}
+
+
+
+
+	public Map<String, Object> delSign(Map<String, Object> params) {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		int row = empDAO.delSign(params);
+		if (row>0) {
+			map.put("msg", "성공");
+		}else {
+			map = new HashMap<>();
+			map.put("msg", "실패");
+		}
 		return map;
 	}
 

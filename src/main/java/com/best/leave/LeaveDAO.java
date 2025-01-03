@@ -31,5 +31,7 @@ public interface LeaveDAO {
 
 	List<Map<String, Object>> getAnnualLeave();
 
+	void insertLeaveHistory(Map<String, Object> map);
+
 
 }

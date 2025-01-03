@@ -352,5 +352,14 @@
 	WHERE emp_idx = #{loginId}
 	</update>
 	
+	<!-- 종원 사인 있니없니? -->
+	<select id="checkSign" parameterType="map" resultType="map">
+		SELECT sign FROM employee WHERE emp_idx = #{loginId}
+	</select>
+	
+	<!-- 종원 사인 델 -->
+	<update id="delSign" parameterType="map">
+		UPDATE employee SET sign = null WHERE emp_idx = #{loginId}
+	</update>
 	
 </mapper>

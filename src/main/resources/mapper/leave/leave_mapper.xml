@@ -110,6 +110,11 @@
 		WHERE leave_idx = #{leave_idx};
 	</update>
 	
+	<!-- 결제 연차승인 인서트 -->
+<!-- 	<insert id="insertLeaveHistory" parameterType="map">
+		insert into leave_history (emp_idx,leave_idx)
+	</insert> -->
+	
 	
 	
 </mapper>  

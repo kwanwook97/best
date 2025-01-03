@@ -58,6 +58,10 @@ public interface EmployeeDAO {
 	List<Map<String, Object>> orgList(Map<String, String> parmas);
 
 	int updateMyDetail(Map<String, Object> params);
+
+	Map<String, Object> checkSign(Map<String, Object> params);
+
+	int delSign(Map<String, Object> params);
 	
 
 }

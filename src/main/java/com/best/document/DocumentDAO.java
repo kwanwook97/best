@@ -122,6 +122,10 @@ public interface DocumentDAO {
 	
 	Map<String, Object> getApproverDetails(int docIdx);
 	List<Integer> getReferenceEmpIds(int doc_idx);
+	
+	// 문서양식 확인용
+	String documentName(String doc_idx);
+	Map<String, Object> getDocContent(String doc_idx);
 
 
 

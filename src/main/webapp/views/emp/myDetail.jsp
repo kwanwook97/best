@@ -404,11 +404,11 @@ form{
   <span class="close-btn-sign">&times;</span>
     <div class="modal_body">
       <div id="signatureContainer">
-	<canvas id="signatureCanvas" width="100" height="100" style="border:2px solid #30005A;"></canvas>
+	<canvas id="signatureCanvas" width="100" height="100" style="border:2px solid #30005A;background-color: white;"></canvas>
       </div>
     </div>
     <div class="modal_footer">
-	  <button class="btn_confirm" onclick="saveSignature()">등록</button>
+	  <button class="btn_confirm btn_confirm_sign" onclick="saveSignature()">등록</button>
 	  <button class="btn_cancel" onclick="clearCanvas()">삭제</button>
     </div>
   </div>
@@ -663,7 +663,6 @@ form{
 	var license = '${detail.license}';         // 면허번호
     var license_period = '${detail.license_period}';  // 면허유효기간
     var certificate = '${detail.certificate}';     // 자격증번호
-    context.fillStyle = "#FFFFFF"; // 흰색
 	
 	/* 직원정보 변경 모달창 관련 기능 */
 	// 1. 모달 띄우기
@@ -904,12 +903,41 @@ form{
 	}
 	
 
+	
+
 function showSignatureModal(signatureUrl) {
 	$(".sign-modal").css("display","flex").hide().fadeIn();
+	checkSign()
+	
 }
 
 function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
+	   $.ajax({
+		    type: 'get',
+		    url: 'delSign.ajax',
+		    data: {
+		        loginId:loginId
+		    },
+		    dataType: 'json', 
+		    success: function(response) {
+		    	if (response.msg == '성공') {
+		    	    ctx.clearRect(0, 0, canvas.width, canvas.height);
+		    	    $('.btn_confirm_sign').prop('disabled', false);
+	        		$('.btn_confirm_sign').css('background-color', '#30005A');
+
+		    		checkSign();
+				}else {
+					modal.showAlert('시스템 에러 발생 ! 잠시 후 다시 시도해주세요.');
+				}
+		    	
+		    },
+		    error: function(xhr, status, error) {
+		        console.error(error);
+		    }
+		});
+	
+
 }
 var canvas = document.getElementById("signatureCanvas");
 var ctx = canvas.getContext("2d");
@@ -951,7 +979,9 @@ function saveSignature() {
 		    dataType: 'json', // 서버에서 반환할 데이터 타입
 		    success: function(data) {
 		    	 if (data.status === "success") {
-		                alert(data.message);
+		    		 modal.showAlert(data.message);
+		    		 checkSign();
+		    		 
 		            } else {
 		                alert(data.message);
 		            }
@@ -965,6 +995,62 @@ function saveSignature() {
 $('.close-btn-sign').on('click', function () {
 	$(".sign-modal").fadeOut(); 
 });
+
+
+checkSign()
+function checkSign(){
+    $.ajax({
+        type: 'GET',
+        url: 'checkSign.ajax',
+        data: {
+        	loginId:loginId,
+        },
+        dataType:'json',
+        success: function(response) {
+        		console.log("response.sign 사인값 확인용:"+response.sign);
+        		console.log("response.msg 사인값 확인용:"+response.msg);
+        		console.log("response 사인값 확인용:"+response);
+        	if (response.msg === '성공') {
+        		  $('#signatureContainer').empty();
+        		  const row = 
+        		    '<img src="/photo/' + response.sign + '" width="100" height="100" style="border:2px solid #30005A; background-color: white;">';
+        		  $('#signatureContainer').append(row);
+        		  $('.btn_confirm_sign').prop('disabled', true);
+        		  $('.btn_confirm_sign').css('background-color', '#939393');
+        		  
+        		} else {
+        		  $('#signatureContainer').empty();
+        		  const row = 
+        		    '<canvas id="signatureCanvas" width="100" height="100" style="border:2px solid #30005A; background-color: white;"></canvas>';
+        		  $('#signatureContainer').append(row);
+        		  
+                  canvas = document.getElementById("signatureCanvas");
+                  ctx = canvas.getContext("2d");
+
+                  canvas.addEventListener("mousedown", () => (isSigning = true));
+                  canvas.addEventListener("mousemove", (event) => {
+                      if (!isSigning) return;
+                      ctx.lineWidth = 2;
+                      ctx.lineCap = "round";
+                      ctx.strokeStyle = "black";
+
+                      ctx.lineTo(event.offsetX, event.offsetY);
+                      ctx.stroke();
+                      ctx.beginPath();
+                      ctx.moveTo(event.offsetX, event.offsetY);
+                  });
+                  canvas.addEventListener("mouseup", () => {
+                      isSigning = false;
+                      ctx.beginPath();
+                  });
+        		}
+         
+        },
+        error: function() {
+          alert('에러');
+        }
+      });
+}
 
 
 	

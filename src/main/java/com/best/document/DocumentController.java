@@ -273,6 +273,9 @@ public class DocumentController {
 	@ResponseBody
 	public ResponseEntity<Map<String, String>> saveSign(String sign, HttpSession session){
 		Map<String, String> response = new HashMap<String, String>();
+		Object loginId = session.getAttribute("loginId");
+	    logger.info("Class: {}, Value: {}", loginId.getClass().getName(), loginId);
+
 		String loginName = (String) session.getAttribute("loginName");
 		String emp_idx = (String) session.getAttribute("loginId");
 		logger.info("로그인 : "+loginName);
