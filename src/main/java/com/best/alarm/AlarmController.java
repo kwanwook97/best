@@ -42,7 +42,17 @@ public class AlarmController {
 
 	    return response;
 	}
+	
+	@GetMapping(value = "/unreadAlarm.ajax")
+	@ResponseBody
+	public Map<String, Object> unreadAlarm(@RequestParam int emp_idx) {
+	    Map<String, Object> response = new HashMap<>();
+	    List<Map<String, Object>> alarms = alarmService.unreadAlarm(emp_idx);
+	    response.put("alarms", alarms);
+	    return response;
+	}
 
+	
 	
 	
 	@PostMapping("/updateAlarmFlag.ajax")

@@ -20,6 +20,7 @@ public interface AlarmDAO {
 
 	void updateAlarmFlag(int alarm_idx, int flag);
 
+	List<Map<String, Object>> unreadAlarm(int emp_idx);
 
 
 }

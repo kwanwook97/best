@@ -18,6 +18,14 @@
 		ORDER BY alarm_idx DESC
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
+	<select id="unreadAlarm" resultType="map">
+		SELECT *
+		FROM alarm
+		WHERE emp_idx = #{emp_idx}
+		AND flag = 0
+		ORDER BY alarm_idx DESC
+		LIMIT 5
+	</select>
 
 
 	<select id="getTotalAlarmCount" parameterType="map"

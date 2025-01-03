@@ -135,5 +135,8 @@ public class AlarmService {
         alarmDAO.updateAlarmFlag(alarm_idx, flag);
     }
 
+	public List<Map<String, Object>> unreadAlarm(int emp_idx) {
+		return alarmDAO.unreadAlarm(emp_idx);
+	}
 
 }

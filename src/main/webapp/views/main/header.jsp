@@ -430,7 +430,7 @@ $(document).ready(function () {
     // 초기 알림 리스트 로드
     function loadAlarmList() {
         $.ajax({
-            url: "alarmList.ajax",
+            url: "unreadAlarm.ajax",
             type: "GET",
             data: { emp_idx: loginId }, // emp_idx 세션이나 전역 상태에서 가져옴
             success: function (data) {
