@@ -691,22 +691,27 @@
 		DELETE FROM document where doc_idx = #{doc_idx}
 	</delete>
 	<!-- 임시저장 수정 -->
-	<update id="formUpdate" parameterType="String">
+	<update id="formUpdate">
 		UPDATE document SET doc_content = #{doc_content}, doc_subject = #{doc_subject} WHERE doc_idx = #{doc_idx}
 	</update>
 	
 	<!-- 임시저장한거 기안 -->
-	<update id="formUpdateSent" parameterType="String">
+	<update id="formUpdateSent">
 		UPDATE document SET doc_content = #{doc_content}, doc_subject = #{doc_subject}, status = '상신' WHERE doc_idx = #{doc_idx}
 	</update>
 	
+	
+	<!-- 결재 양식 리스트 -->
+	<select id="getDocList" resultType="com.best.document.FormDTO">
+		SELECT form_idx, form_subject FROM form ORDER BY form_idx
+	</select>
     <!-- 양식 불러오기 -->
     <select id="getForm" resultType="String">
-        SELECT form_content FROM form WHERE form_subject = #{form_subject}
+        SELECT form_content FROM form WHERE form_idx = #{form_idx}
     </select>
     <!-- 양식 검색 -->
 	<select id="searchForm" parameterType="String">
-	    SELECT form_subject FROM form
+	    SELECT form_idx, form_subject FROM form
 	    WHERE form_subject LIKE CONCAT('%', #{query}, '%')
 	</select>
     

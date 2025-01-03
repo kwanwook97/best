@@ -54,6 +54,11 @@ public class DocumentController {
 	public String documentDraft() {
 		return "document/documentDraft";
 	}
+	// 전자결재 양식 만들기
+	@RequestMapping(value="/documentWrite.go")
+	public String documentWrite() {
+		return "document/documentWrite";
+	}
 	
 	
 	// 전자결재 리스트
@@ -166,12 +171,19 @@ public class DocumentController {
 	}
 
 	
+	// 결재 양식 리스트
+	@GetMapping(value="/formList.ajax")
+	@ResponseBody
+	public List<FormDTO> getDocList() {
+	    return documentService.getDocList();
+	}
+	
 	// 전자결재 양식 불러오기
 	@GetMapping(value="/getForm.ajax")
 	@ResponseBody
-	public String getForm(String form_subject,  HttpSession session) throws IOException {
+	public String getForm(String form_idx,  HttpSession session) throws IOException {
 		String emp_idx = (String) session.getAttribute("loginId");
-	    String responseContent = documentService.getForm(form_subject, emp_idx);
+	    String responseContent = documentService.getForm(form_idx, emp_idx);
 	    
 	    return responseContent;
 	}
@@ -311,7 +323,7 @@ public class DocumentController {
 		Map<String, String> response = new HashMap<String, String>();
 		
 		if ("승인".equals(actionType)) {
-			if(approv_order.equals("1")) {				
+			if(approv_order.equals("1")) {
 				documentService.approveStatus(doc_idx, approv_order, doc_content);
 			}else if(approv_order.equals("2")) {
 				documentService.approveStatusT(doc_idx, approv_order, doc_content);
