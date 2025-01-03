@@ -37,42 +37,54 @@ public class LoginService {
             return null; // 인증 실패
         }
 
-        // 부서 및 직급 권한 정보 조회
-        Map<String, Object> departmentRole = loginDAO.departRoleAsMap(id);
-        Map<String, Object> rankRole = loginDAO.rankRoleAsMap(id);
+        // 사용자가 접근 가능한 URL 목록 조회
+        List<String> accessibleUrls = getAccessibleUrlsForUser(employee.getDepart_idx(), employee.getRank_idx());
 
         // 권한 정보를 Spring Security Context에 설정
-        setAuthoritiesForEmployee(employee, departmentRole, rankRole);
+        setAuthoritiesForEmployee(employee, accessibleUrls);
 
         // 결과 데이터를 Map에 담기
         Map<String, Object> result = new HashMap<>();
         result.put("employee", employee); // 직원 정보
-        result.put("departmentRole", departmentRole); // 부서 권한
-        result.put("rankRole", rankRole); // 직급 권한
+        result.put("accessibleUrls", accessibleUrls); // 접근 가능한 URL
 
         return result;
     }
 
-    private void setAuthoritiesForEmployee(EmployeeDTO employee, Map<String, Object> departmentRole, Map<String, Object> rankRole) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
+    /**
+     * 모든 URL과 사용자 권한 기반으로 접근 가능한 URL 필터링
+     */
+    public List<String> getAccessibleUrlsForUser(int departIdx, int rankIdx) {
+        List<String> allUrls = loginDAO.findAllUrls();
+        List<String> accessibleUrls = new ArrayList<>();
 
-        // 부서 권한 설정
-        if (departmentRole != null && departmentRole.get("role") != null) {
-            String departmentName = (String) departmentRole.get("depart_name");
-            String role = (String) departmentRole.get("role"); // rw or r
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + departmentName + "_" + role.toUpperCase()));
+        for (String url : allUrls) {
+            if (loginDAO.hasAccessToUrl(url, departIdx, rankIdx) > 0) {
+                // URL 앞에 "/"를 붙여줌 (이미 "/"로 시작한다면 그대로 유지)
+                if (!url.startsWith("/")) {
+                    url = "/" + url;
+                }
+                accessibleUrls.add(url);
+            }
         }
 
-        // 직급 권한 설정
-        if (rankRole != null && rankRole.get("role") != null) {
-            String rankName = (String) rankRole.get("rank_name");
-            String role = (String) rankRole.get("role"); // rw or r
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + rankName + "_" + role.toUpperCase()));
+        return accessibleUrls;
+    }
+
+
+    /**
+     * SecurityContext에 권한 정보 설정
+     */
+    private void setAuthoritiesForEmployee(EmployeeDTO employee, List<String> accessibleUrls) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        // URL 자체를 권한으로 설정
+        for (String url : accessibleUrls) {
+            authorities.add(new SimpleGrantedAuthority(url));
         }
 
         // SecurityContext에 Authentication 설정
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                employee.getName(), null, authorities);
+        Authentication auth = new UsernamePasswordAuthenticationToken(employee, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

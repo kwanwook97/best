@@ -3,45 +3,52 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
 >
 <mapper namespace="com.best.emp.LoginDAO">
-	<select id="login" resultType="com.best.emp.EmployeeDTO">
-        SELECT emp_idx, name, photo, email, password
+    <!-- 사용자 로그인 -->
+    <select id="login" resultType="com.best.emp.EmployeeDTO">
+        SELECT emp_idx, name, photo, email, password, depart_idx, rank_idx
         FROM employee
         WHERE emp_idx = #{id}
-         <!--  AND password = #{pw} -->
     </select>
-	<update id="updatePassword" parameterType="map">
+
+    <!-- 비밀번호 업데이트 -->
+    <update id="updatePassword" parameterType="map">
         UPDATE employee
         SET password = #{pw}
         WHERE emp_idx = #{id}
     </update>
-    
-    
-    <!-- 부서 권한 정보 조회 -->
-	 <select id="departRoleAsMap" resultType="map">
-	    SELECT 
-	        r.role_idx AS roleIdx,
-	        r.category AS category,
-	        d.depart_name AS depart_name,
-	        r.role AS role
-	    FROM employee e
-	    JOIN department d ON e.depart_idx = d.depart_idx
-	    JOIN role r ON d.role_idx = r.role_idx
-	    WHERE e.emp_idx = #{id}
+
+    <!-- access 테이블에서 모든 URL 가져오기 -->
+	<select id="findAllUrls" resultType="string">
+	    SELECT DISTINCT url
+	    FROM access
 	</select>
 
-    <!-- 직급 권한 정보 조회 -->
-    <select id="rankRoleAsMap" resultType="map">
-	    SELECT 
-	        r.role_idx AS roleIdx,
-	        r.category AS category,
-	        re.rank_name AS rank_name,
-	        r.role AS role
-	    FROM employee e
-	    JOIN rank_emp re ON e.rank_idx = re.rank_idx
-	    JOIN role r ON re.role_idx = r.role_idx
-	    WHERE e.emp_idx = #{id}
+	<!-- 특정 URL 접근 권한 확인 -->
+	<select id="hasAccessToUrl" parameterType="map" resultType="int">
+	    SELECT COUNT(DISTINCT a.url)
+		FROM role_test rt
+		JOIN access a ON rt.page_idx = a.page_idx
+		WHERE a.url = #{url}
+		  AND (
+		      (rt.idx_name = 'depart_idx' AND rt.idx_num = #{departIdx})
+		      OR (rt.idx_name = 'rank_idx' AND rt.idx_num = #{rankIdx})
+		  )
+	</select>
+	
+    <!-- URL이 access 테이블에 등록되어 있는지 확인 -->
+	<select id="countUrl" parameterType="string" resultType="int">
+	    SELECT COUNT(*)
+	    FROM access
+	    <where>
+	        <if test="url != null and url != ''">
+	            url = #{url}
+	        </if>
+	    </where>
 	</select>
 
+
+    
+    
     
     
 </mapper>  

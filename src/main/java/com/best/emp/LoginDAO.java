@@ -1,10 +1,9 @@
 package com.best.emp;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
-
-import com.best.role.RoleDTO;
 
 @Mapper
 public interface LoginDAO {
@@ -14,10 +13,12 @@ public interface LoginDAO {
 
 	void updatePassword(Map<String, String> params);
 	
-	// 부서 권한 정보를 Map으로 가져오기
-    Map<String, Object> departRoleAsMap(String id);
+	
+	List<String> findAllUrls();
+    int hasAccessToUrl(String url, int departIdx, int rankIdx);
 
-    // 직급 권한 정보를 Map으로 가져오기
-    Map<String, Object> rankRoleAsMap(String id);
+    // URL이 access 테이블에 등록되어 있는지 확인
+	int countUrl(String url);
+
 
 }

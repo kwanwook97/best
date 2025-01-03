@@ -1,6 +1,6 @@
 package com.best.emp;
 
-import java.util.HashMap;  
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +27,6 @@ public class EmployeeController {
 	@Autowired EmployeeService empService;
 	
 	// 사원목록 페이지이동
-	// 페이지 접속권한 : 인사부서
-	
-	@PreAuthorize("hasAuthority('ROLE_인사팀_RW')")
 	@RequestMapping(value="/empList.go")
 	public String empListGo() {
 		return "empManage/empList";
@@ -204,58 +201,8 @@ public class EmployeeController {
 		return empService.updateMyDetail(params);
 	}
 	
-	// 내정보 사인 체크 로직
-	@GetMapping(value="checkSign.ajax")
-	@ResponseBody
-	public Map<String, Object> checkSign(@RequestParam Map<String, Object> params){
-		
-		return empService.checkSign(params);
-	}
-	
-	// 사인 삭제시 삭제 로직 
-	@GetMapping(value="delSign.ajax")
-	@ResponseBody
-	public Map<String, Object> delSign(@RequestParam Map<String, Object> params){
-		
-		return empService.delSign(params);
-	}
-	
 	
 	
 	
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

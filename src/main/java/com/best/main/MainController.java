@@ -2,6 +2,8 @@ package com.best.main;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller; 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +17,7 @@ public class MainController {
 	@Autowired EmployeeService empService;
 	
 	@GetMapping(value="/main.go")
-	public String main() {
+	public String main(HttpSession session) {
 		return "main/main";
 	}
 	
