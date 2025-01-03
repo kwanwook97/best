@@ -201,18 +201,9 @@ input[name="doc_subject"]{
     font-size: 14px; /* 글자 크기 줄이기 */
 }
 /* 모달 종류 */
-.one div.modal-content{
-     left: 6%;
-    transform: scale(0.9) !important;
-}
-.two div.modal-content{
+.modal div.modal-content{
     left: 6%;
     transform: scale(0.8) !important;
-}
-.thr div.modal-content{
-    left: 6%;
-    transform: scale(0.8) !important;
-    color: black !important;
 }
 input.manager, input.today2, input.today3{
     all: unset; /* 모든 기본 스타일 제거 */
@@ -276,9 +267,6 @@ input.manager, input.today2, input.today3{
 			<hr />
 			<!-- 항목 리스트 -->
 			<ul class="modal-list">
-				<li class="modal-item" onclick="documentForm('연차신청서')">연차신청서</li>
-				<li class="modal-item" onclick="documentForm('시말서')">시말서</li>
-				<li class="modal-item" onclick="documentForm('지출결의서')">지출결의서</li>
 			</ul>
 		</div>
 	</div>
@@ -297,7 +285,25 @@ $(document).ready(function() {
     
 	// 작성 버튼 클릭 시 모달 열기
 	$(".editbtn").click(function() {
-		$("#customModal").fadeIn(); // 모달 열기 (fade 효과)
+		$("#customModal").fadeIn();
+		$.ajax({
+	        url: 'formList.ajax',
+	        type: 'GET',
+	        success: function(data) {
+	            var ul = $('.modal-list');
+	            ul.empty();
+
+	            data.forEach(function(form) {
+	                var li = $('<li class="modal-item" onclick="documentForm('+form.form_idx+')"></li>');
+	                li.text(form.form_subject);
+
+	                ul.append(li);
+	            });
+	        },
+	        error: function(error) {
+	            console.log(error);
+	        }
+	    });
 	});
 
 	// 화살표 뒤로가기
@@ -349,16 +355,16 @@ $(document).ready(function() {
 });
 
 
-function documentForm(form_subject) {
+function documentForm(form_idx) {
     $.ajax({
         type: 'GET',
         url: 'getForm.ajax',
-        data: { form_subject: form_subject },
+        data: { form_idx: form_idx },
         dataType: 'text',
         success: function(response) {
         	console.log("Response HTML: ", response);
-        	$("#customModal").fadeOut();
-            openModal(response, form_subject); 
+         	$("#customModal").fadeOut();
+            openModal(response, form_idx);
         },
         error: function(xhr, status, error) {
             console.error('문서 요청 실패:', error);
@@ -366,27 +372,13 @@ function documentForm(form_subject) {
     });
 }
 //모달 열기
-function openModal(content, form_subject) {
+function openModal(content, form_idx) {
     var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
 	var modalClass = '';
 
-    console.log("누른LI "+form_subject);
-
-    // switch 문을 사용하여 텍스트 값에 따라 변수 이름을 설정합니다.
-    switch (form_subject) {
-        case "연차신청서":
-            modalClass = 'one';
-            break;
-        case "시말서":
-            modalClass = 'two';
-            break;
-        case "구매요청서":
-            modalClass = 'thr';
-            break;
-    }
     // 모달 HTML 생성
     var modalHtml = 
-        '<div id="' + modalId + '" class="modal '+modalClass+'" style="display: none;">' +
+        '<div id="' + modalId + '" class="modal" style="display: none;">' +
         '  <div class="modal-content">' +
         '    <div class="modal-box">' +
         '      <button class="modal-btn Approve" onclick="btnAction(\'기안\')">기안</button>' +
@@ -653,7 +645,7 @@ function searchForm(query) {
                     var li = $("<li></li>")
                         .addClass("modal-item")
                         .text(item.form_subject)
-                        .attr("onclick", "documentForm('" + item.form_subject + "')");
+                        .attr("onclick", "documentForm('" + item.form_idx + "')");
                     modalList.append(li);
                 });
             } else {
@@ -684,7 +676,7 @@ function resetList() {
         var li = $("<li></li>")
             .addClass("modal-item")
             .text(item.form_subject)
-            .attr("onclick", "documentForm('" + item.form_subject + "')");
+            .attr("onclick", "documentForm('" + item.form_idx + "')");
         modalList.append(li);
     });
 }

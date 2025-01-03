@@ -452,12 +452,16 @@ public class DocumentService {
 		return documentDao.draftDelete(doc_idx);
 	}
 	
+	// 결재 양식 리스트
+	public List<FormDTO> getDocList() {
+		return documentDao.getDocList();
+	}
 	
 	// 전자결재 양식 불러오기
-    public String getForm(String form_subject, String emp_idx) throws IOException {
+    public String getForm(String form_idx, String emp_idx) throws IOException {
         // 양식 내용 가져오기
-        String htmlContent = documentDao.getForm(form_subject);
-
+        String htmlContent = documentDao.getForm(form_idx);
+        logger.info("시발아 :"+htmlContent);
         // 오늘 날짜
         LocalDate todayDate = LocalDate.now();
         String todayDateString = todayDate.toString();
@@ -780,6 +784,7 @@ public class DocumentService {
 	    alarm.setDate(new Date());
 	    return alarm;
 	}
+
 
 
 
