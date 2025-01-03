@@ -299,7 +299,7 @@ var loginId = ${sessionScope.loginId};
 			<li><a href="login.go"><i
 					class="fa-solid fa-right-to-bracket"></i> <span>로그인</span> <i
 					class="fa-solid fa-angle-right"></i> </a></li>
-			<li><a href="javaScript:void(0);"><i
+			<li><a href="logout.do"><i
 					class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span> <i
 					class="fa-solid fa-angle-right"></i> </a></li>
 

@@ -28,7 +28,7 @@ public class LoginController {
 
         if (loginData != null) {
             EmployeeDTO employee = (EmployeeDTO) loginData.get("employee");
-            session.setAttribute("loginId", employee.getEmp_idx());
+            session.setAttribute("loginId", String.valueOf(employee.getEmp_idx()));
             session.setAttribute("loginName", employee.getName());
             session.setAttribute("employee", employee);
             return "redirect:/main.go";

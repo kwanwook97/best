@@ -27,8 +27,6 @@ public class EmployeeController {
 	@Autowired EmployeeService empService;
 	
 	// 사원목록 페이지이동
-	// 페이지 접속권한 : 인사부서
-	@PreAuthorize("hasAuthority('ROLE_인사팀_RW')")
 	@RequestMapping(value="/empList.go")
 	public String empListGo() {
 		return "empManage/empList";
