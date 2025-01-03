@@ -211,11 +211,13 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	max-width: 529px;
+	max-width: 540px;
 	display: flex;
 	justify-content: space-between;
 }
-
+.chat-preview > span{
+    max-width: 482px;
+}
 /* 참여자리스트 */
 .member-list {
 	width: 100%;

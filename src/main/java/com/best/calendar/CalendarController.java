@@ -86,7 +86,7 @@ public class CalendarController {
 		return "calendar/calendar";
 	}
 	
-	
+	// 회의실 예약
 	@PostMapping(value ="/saveCalendar.ajax")
 	@ResponseBody
 	public Map<String, Object> saveCalendar(
@@ -102,6 +102,7 @@ public class CalendarController {
 		return calendarService.saveCalendar(params,quantityList,materialIdxList);
 	}
 	
+	// 회의실 정보 가져오기
 	@GetMapping(value ="/getCalendarEvents.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> getCalendarEvents(
@@ -221,7 +222,7 @@ public class CalendarController {
 		return calendarService.getMaterial();
 	}
 	
-	
+	// 일정 등록
     @PostMapping("/addMyCalendar.ajax")
     @ResponseBody
     public Map<String, Object> addEvent(@RequestBody Map<String, Object> requestData) {
@@ -251,6 +252,7 @@ public class CalendarController {
         return response;
     }
     
+    // 일정 뽑기
     @RequestMapping(value="/events.ajax")
     @ResponseBody
     public List<Map<String, Object>> getMyEvents(){
@@ -260,7 +262,7 @@ public class CalendarController {
     	return calendarService.getMyEvents();
     }
     
-    
+    // 일정 수정
     @PostMapping(value="/updateEvent.ajax")
     @ResponseBody
     public Map<String, Object> updateMyEvent(@RequestBody Map<String, Object> params){

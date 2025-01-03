@@ -4,34 +4,88 @@
 >
 <mapper namespace="com.best.alarm.AlarmDAO">
 
-	<insert id="insertAlarm" parameterType="com.best.alarm.AlarmDTO">
-    	INSERT INTO alarm (emp_idx, type, content, date)
-    	VALUES (#{emp_idx}, #{type}, #{content}, #{date})
-	</insert>
-	
-	<select id="alarmList" parameterType="map" resultType="com.best.alarm.AlarmDTO">
-    	SELECT * 
-    	FROM alarm
-    	WHERE emp_idx = #{emp_idx}
-    	<if test="type != null and type != ''">
-        	AND type = #{type}
-    	</if>
-    	<if test="flag != null and flag !=''">
-        	AND flag = #{flag}
-    	</if>
-    	ORDER BY date DESC
+	<select id="alarmList" parameterType="map"
+		resultType="com.best.alarm.AlarmDTO">
+		SELECT *
+		FROM alarm
+		WHERE emp_idx = #{emp_idx}
+		<if test="type != null and type != ''">
+			AND type = #{type}
+		</if>
+		<if test="flag != null">
+			AND flag = #{flag}
+		</if>
+		ORDER BY alarm_idx DESC
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
-	
-	
-	<select id="getApproverDetails" resultType="map">
-    SELECT 
-        d.emp_idx AS writerEmpIdx,
-        MAX(CASE WHEN a.approv_order = 1 THEN a.emp_idx ELSE NULL END) AS firstApproverEmpIdx,
-        MAX(CASE WHEN a.approv_order = 2 THEN a.emp_idx ELSE NULL END) AS secondApproverEmpIdx
-    FROM document d
-    LEFT JOIN approv a ON d.doc_idx = a.doc_idx
-    WHERE d.doc_idx = #{docIdx}
-</select>
 
+
+	<select id="getTotalAlarmCount" parameterType="map"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM alarm
+		WHERE emp_idx = #{emp_idx}
+		<if test="type != null and type != ''">
+			AND type = #{type}
+		</if>
+		<if test="flag != null">
+			AND flag = #{flag}
+		</if>
+	</select>
+
+	<insert id="insertAlarm" parameterType="com.best.alarm.AlarmDTO">
+		INSERT INTO alarm
+		(emp_idx, type, content, date)
+		VALUES (#{emp_idx}, #{type}, #{content},
+		#{date})
+	</insert>
+
+	<select id="getApproverDetails" resultType="map">
+		SELECT
+		d.emp_idx AS
+		writerEmpIdx,
+		MAX(CASE WHEN a.approv_order = 1 THEN a.emp_idx ELSE NULL
+		END) AS
+		firstApproverEmpIdx,
+		MAX(CASE WHEN a.approv_order = 2 THEN
+		a.emp_idx ELSE NULL END) AS
+		secondApproverEmpIdx
+		FROM document d
+		LEFT
+		JOIN approv a ON d.doc_idx = a.doc_idx
+		WHERE d.doc_idx = #{docIdx}
+	</select>
+
+	<select id="getUpcomingEvents" resultType="map">
+		SELECT
+		r.reserve_idx AS
+		reserveId,
+		r.start_datetime AS startTime,
+		e.emp_idx AS employeeId,
+		r.subject AS subject
+		FROM reserve r
+		JOIN employee e ON r.emp_idx =
+		e.emp_idx
+		WHERE TIMESTAMPDIFF(MINUTE, NOW(), r.start_datetime) = 10
+	</select>
+
+	<!-- 10분 전 캘린더 일정 가져오기 -->
+	<select id="getUpcomingCalendarEvents" resultType="map">
+		SELECT
+		s.schedule_idx AS scheduleId,
+		s.start_datetime AS startTime,
+		s.subject
+		AS subject,
+		s.emp_idx AS employeeId
+		FROM schedule s
+		WHERE
+		TIMESTAMPDIFF(MINUTE, NOW(), s.start_datetime) = 10
+	</select>
+	<update id="updateAlarmFlag">
+		UPDATE alarm
+		SET flag = #{flag}
+		WHERE alarm_idx =
+		#{alarm_idx}
+	</update>
 
 </mapper>  

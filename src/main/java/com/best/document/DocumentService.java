@@ -768,7 +768,7 @@ public class DocumentService {
     }
 
 	    // 알림 전송
-	    alarmService.sendAlarms(alarms, writerName);
+	    alarmService.sendAlarms(alarms);
 	}
 
 

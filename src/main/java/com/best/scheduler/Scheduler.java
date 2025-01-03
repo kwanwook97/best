@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.best.alarm.AlarmService;
 import com.best.attendance.AttendanceService;
 import com.best.calendar.CalendarService;
 import com.best.leave.LeaveService;
@@ -21,6 +23,7 @@ public class Scheduler {
     private final CalendarService calendarService;
     private final AttendanceService attendanceService;
     private final LeaveService leaveService;
+    @Autowired private AlarmService alarmService;
 
     public Scheduler(CalendarService calendarService,AttendanceService attendanceService,LeaveService leaveService) {
         this.calendarService = calendarService;
@@ -61,6 +64,13 @@ public class Scheduler {
 	    	attendanceService.updateAbsent(today);
 	    }
 	}
+	
+
+    // 1분마다 실행
+    @Scheduled(fixedRate = 60000)
+    public void checkForUpcomingEvents() {
+        alarmService.sendUpcomingEventAlarms();
+    }
 	
 	
 
