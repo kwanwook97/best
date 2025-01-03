@@ -398,5 +398,13 @@ public class ChatService {
         return messages;
     }
 
+	public Integer findSingleChatRoom(int emp_idx1, int emp_idx2) {
+	    return chatDAO.findSingleChatRoom(emp_idx1, emp_idx2);
+	}
+
+	public List<Map<String, Object>> chatParty(String keyword, int chatIdx) {
+		return chatDAO.chatParty(keyword, chatIdx);
+	}
+
 
 }

@@ -267,14 +267,20 @@ $(document).ready(function () {
     $.ajax({
         type: "POST",
         url: "createChat.do",
-        contentType: "application/json; charset=UTF-8", // Content-Type을 JSON으로 설정
+        contentType: "application/json; charset=UTF-8",
         data: JSON.stringify({
-            chat_subject: chat_subject, 
-            emp_idx_list: emp_idx_list // 선택된 사용자 리스트 전달
+            chat_subject: chat_subject,
+            emp_idx_list: emp_idx_list
         }),
         success: function (response) {
             if (response.success) {
-                location.href = "chat.go?chat_idx=" + response.chatIdx; // 생성된 방으로 이동
+                if (response.existing) {
+                    // 기존 대화방으로 이동
+                    location.href = "chat.go?chat_idx=" + response.chatIdx;
+                } else {
+                    // 새로 생성된 대화방으로 이동
+                    location.href = "chat.go?chat_idx=" + response.chatIdx;
+                }
             } else {
                 alert("대화방 생성에 실패했습니다. 다시 시도해주세요.");
             }
@@ -284,6 +290,7 @@ $(document).ready(function () {
         }
     });
 }
+
 });
 
 
@@ -397,7 +404,7 @@ $(document).ready(function () {
             // 체크박스 선택 시
             var memberElement = 
             	'<div class="selected-member-container" data-member-id="' + memberId + '">' +
-                    '<span><img src="/photo/' + memberPhoto + '" class="custom-image">' +
+                    '<span><img src="' + memberPhoto + '" class="custom-image">' +
                     '<i class="fas fa-times remove-member" data-member-id="' + memberId + '"></i></span>' +
                 	'<span class="selected-member" data-member-id="' + memberId + '">' + memberName +
                 	'</span>' +

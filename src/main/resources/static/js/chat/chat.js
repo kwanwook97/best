@@ -671,10 +671,11 @@ function executeSearch() {
 
 // 회원 리스트 불러오기
 function loadMemberList(keyword) {
+var chatIdx = new URLSearchParams(window.location.search).get("chat_idx"); // URL에서 chat_idx 가져오기
     $.ajax({
         type: "GET",
-        url: "memberList.ajax",
-        data: { keyword: keyword || '' }, // 검색어 전달
+        url: "chatParty.ajax",
+        data: { keyword: keyword || '' , chat_idx: chatIdx}, // 검색어 전달
         success: function (members) {
             var memberList = $("#memberList");
             memberList.empty(); // 기존 리스트 초기화
@@ -717,7 +718,7 @@ $(document).ready(function () {
             // 체크박스 선택 시
             var memberElement = 
             	'<div class="selected-member-container" data-member-id="' + memberId + '">' +
-                    '<span><img src="/photo/' + memberPhoto + '" class="custom-image">' +
+                    '<span><img src="' + memberPhoto + '" class="custom-image">' +
                     '<i class="fas fa-times remove-member" data-member-id="' + memberId + '"></i></span>' +
                 	'<span class="selected-member" data-member-id="' + memberId + '">' + memberName +
                 	'</span>' +
