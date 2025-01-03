@@ -30,6 +30,7 @@ import com.best.alarm.AlarmDTO;
 import com.best.alarm.AlarmService;
 import com.best.emp.EmployeeDAO;
 import com.best.emp.EmployeeDTO;
+import com.best.leave.LeaveDAO;
 
 @Service
 public class DocumentService {
@@ -37,7 +38,7 @@ public class DocumentService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired DocumentDAO documentDao;
     @Value("${upload.path}") private String signPath;
-    
+    @Autowired LeaveDAO leaveDAO;
 	// 전자결재 대기 리스트
 	public Map<String, Object> pendingList(int page, int cnt, String status, String emp_idx, String readStatus) {
 		int limit = cnt;
@@ -654,6 +655,35 @@ public class DocumentService {
 	        "승인",
 	        referenceEmpIds
 	    );
+	    
+	    
+	    // 연차 소진 로직
+	    String formSubject = documentDao.documentName(doc_idx);
+	    if (formSubject == "연차신청서") {
+	    	Map<String, Object> result = documentDao.getDocContent(doc_idx);
+	    	String docContent = (String) result.get("doc_content");
+	    	String empIdx = (String) result.get("emp_idx");
+	    	
+	        Document htmlDoc = Jsoup.parse(docContent);
+	        Element startDateElement = htmlDoc.selectFirst("input[name=start_date]");
+	        Element endDateElement = htmlDoc.selectFirst("input[name=end_date]");
+	        Element textareaElement = htmlDoc.selectFirst("textarea");
+	        String textareaValue = textareaElement != null ? textareaElement.text() : null;
+	        String startDate = startDateElement != null ? startDateElement.attr("value") : null;
+	        String endDate = endDateElement != null ? endDateElement.attr("value") : null;
+	        
+	        Map<String, Object> map = new HashMap<String, Object>();
+	        map.put("startDate", startDate);
+	        map.put("endDate", endDate);
+	        map.put("reason", textareaValue);
+	        leaveDAO.insertLeaveHistory(map);
+	        
+	        
+		}
+	    
+	    
+	    
+	    
 	}
 	// 결재 반려
 	@Transactional

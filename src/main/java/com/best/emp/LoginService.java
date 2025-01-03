@@ -1,6 +1,6 @@
 package com.best.emp;
 
-import java.util.ArrayList;
+import java.util.ArrayList;  
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class LoginService {
         // 사용자 정보 가져오기
         EmployeeDTO employee = loginDAO.login(id);
 
-        if (employee == null || !passwordEncoder.matches(pw, employee.getPassword())) {
+       if (employee == null || !passwordEncoder.matches(pw, employee.getPassword())) {
             return null; // 인증 실패
         }
 
