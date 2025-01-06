@@ -151,11 +151,7 @@ RTE_DefaultConfig.galleryImages = [
 	"http://richtexteditor.com/uploads/6.jpg"
 ]; // Default images for gallery Images dialog. 
 
-//RTE_DefaultConfig.htmlTemplates = [
-//	["My Doc 1", "<h2>MyTitleMyTitleMyTitleMyTitleMyTitleMyTitleMyTitle</h2><p>Paragraph 1 </p><p>Paragraph 2 </p><p>Paragraph 3 </p><p>Paragraph 4 </p><p>Paragraph 5 </p>"]
-//	,
-//	["My Doc 1", "<h2>MyTitleMyTitleMyTitle</h2><p>Paragraph 1 </p><p>Paragraph 2 </p><p>Paragraph 3 </p><p>Paragraph 4 </p><p>Paragraph 5 </p>"]
-//];// Default html Templates for html Templates dialog. 
+
 RTE_DefaultConfig.htmlTemplates = [
     ["신청서 템플릿", `
 	    <h3 style=" width: 800px; text-align: center;">신청서</h3>
@@ -312,8 +308,6 @@ RTE_DefaultConfig.htmlTemplates = [
 		</table>
     `]
 ];
-
-
 
 
 RTE_DefaultConfig.inlineStyles = [["Red", "color:red", "color:red"], ["Bold", "font-weight:bold", "font-weight:bold"], ["Mark", "my-cls-mark"], ["Warning", "my-cls-warning"]]; // Default CSS styles for inline styles dropdown. 
