@@ -114,24 +114,14 @@
 			<h3>>&nbsp;&nbsp;공지 수정</h3>
 		</div>
 		<div class="formBorder">
-			<form action="noticeUpdate.do" method="POST">
+			<form action="freeUpdate.do" method="POST">
 				<table>
 					<input type="hidden" name="board_idx" value="${info.board_idx}" />
 					<tr>
 						<td>제목 : <input type="text" name="subject" maxlength="20" value="${info.subject}"/></td>
 					</tr>
-					<tr>
-						<td>
-							<label for="check">★ 중요 공지로 등록하려면 체크박스를 선택하세요</label>
-							  	<input type="checkbox" id="check" name="importance"
-							    	<c:if test="${info.importance == true}">
-								        checked="checked"
-								    </c:if> />
-						    <input type="hidden" name="importance" value="0">
-						</td>
-					</tr>
-					<tr>
-						<td>작성자 : <input type="text" name="name" value="${info.name}" readonly/></td>
+					<tr style="display: none;">
+						<td><input type="text" name="name" value="${info.name}" readonly/></td>
 					</tr>
 					<tr>
 						<td>
@@ -141,8 +131,8 @@
 							<input type="hidden" name="content"/>
 						</td>
 					</tr>
-					<tr>
-						<th><input type="button" value="공지 수정하기" onclick="save()"/></th>
+					<tr style="display: none;">
+						<th><input type="button" value="글 수정하기" onclick="save()"/></th>
 					</tr>
 				</table>
 			</form>

@@ -74,6 +74,8 @@
 	    	employee e ON a.emp_idx = e.emp_idx 
 	    JOIN 
 	    	document d ON d.doc_idx = a.doc_idx
+    	JOIN 
+    		form f ON d.form_idx = f.form_idx
 	    WHERE a.emp_idx = #{emp_idx}
 	    AND (
 	        (a.status = '상신' AND a.approv_order = 1)
@@ -87,15 +89,18 @@
 	        )
 	    )
        <choose>
-           <when test="searchType == 'subject'">
-               AND d.doc_subject LIKE CONCAT('%', #{query}, '%')
-           </when>
-           <when test="searchType == 'emp'">
-               AND e.name LIKE CONCAT('%', #{query}, '%')
-           </when>
-           <when test="searchType == 'docNum'">
-               AND d.doc_number LIKE CONCAT('%', #{query}, '%')
-           </when>
+			<when test="searchType == 'subject'">
+			    AND d.doc_subject LIKE CONCAT('%', #{query}, '%')
+			</when>
+			<when test="searchType == 'emp'">
+			    AND e.name LIKE CONCAT('%', #{query}, '%')
+			</when>
+			<when test="searchType == 'docNum'">
+			    AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+			</when>
+	        <when test="searchType == 'type'">
+               AND f.form_subject LIKE CONCAT('%', #{query}, '%')
+           </when>           
        </choose>
 	</select>
 	<!-- 전자결재 대기 리스트 검색 -->
@@ -141,6 +146,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+	        <when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
 	    ORDER BY d.doc_date DESC
@@ -204,6 +212,7 @@
 		FROM approv a
 		JOIN document d ON d.doc_idx = a.doc_idx
 		JOIN employee e ON d.emp_idx = e.emp_idx
+		JOIN form f ON d.form_idx = f.form_idx
 		WHERE a.doc_idx IN (
 		        SELECT a1.doc_idx
 		        FROM approv a1
@@ -222,6 +231,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+	        <when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
    	</select>
@@ -257,6 +269,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+	        <when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
      	ORDER BY d.doc_date DESC
@@ -312,6 +327,7 @@
    		SELECT CEIL(COUNT(d.doc_idx) / #{cnt}) AS pages
 		FROM document d
 		JOIN employee e ON d.emp_idx = e.emp_idx
+		JOIN form r ON d.form_idx = f.form_idx
 		WHERE d.doc_idx IN (
 		    SELECT a.doc_idx
 		    FROM approv a
@@ -328,6 +344,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+	        <when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
    	</select>
@@ -360,6 +379,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+    		<when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
      	ORDER BY d.doc_date DESC
@@ -430,6 +452,8 @@
 		JOIN 
 		    document d ON a.doc_idx = d.doc_idx
 		JOIN 
+		    form f ON d.form_idx = f.form_idx
+		JOIN 
 		    employee e ON d.emp_idx = e.emp_idx
 		WHERE	
 			a.doc_idx IN (
@@ -447,6 +471,9 @@
 	            </when>
 	            <when test="searchType == 'docNum'">
 	                AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+	            </when>
+	            <when test="searchType == 'type'">
+	                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
 	            </when>
 	        </choose>
 	</select>	
@@ -493,6 +520,9 @@
 	            <when test="searchType == 'docNum'">
 	                AND d.doc_number LIKE CONCAT('%', #{query}, '%')
 	            </when>
+		        <when test="searchType == 'type'">
+	                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
+	            </when>
 	        </choose>
      	ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
@@ -538,6 +568,8 @@
     	FROM reference r 
     	JOIN 
 	    	document d ON d.doc_idx = r.doc_idx
+    	JOIN 
+	    	form f ON d.form_idx = f.form_idx
 		JOIN 
 			employee e ON d.emp_idx = e.emp_idx
     	WHERE r.emp_idx = #{emp_idx}
@@ -550,6 +582,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+            <when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
     </select>
@@ -579,6 +614,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+            <when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
      	ORDER BY d.doc_date DESC
@@ -619,16 +657,22 @@
    	
   	<!-- 전자결재 보낸 문서 토탈 페이지 검색-->
 	<select id="searchCount" resultType="int">
-		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
-		FROM document WHERE emp_idx = #{emp_idx} AND status = #{status}
-        <choose>
-            <when test="searchType == 'subject'">
-                AND doc_subject LIKE CONCAT('%', #{query}, '%')
-            </when>
-            <when test="searchType == 'docNum'">
-                AND doc_number LIKE CONCAT('%', #{query}, '%')
-            </when>
-        </choose>
+		SELECT CEIL(COUNT(d.doc_idx) / #{cnt}) AS pages
+		FROM document d
+		JOIN form f ON d.form_idx = f.form_idx
+		WHERE d.emp_idx = #{emp_idx} 
+		  AND d.status = #{status}
+		<choose>
+		    <when test="searchType == 'subject'">
+		        AND d.doc_subject LIKE CONCAT('%', #{query}, '%')
+		    </when>
+		    <when test="searchType == 'docNum'">
+		        AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+		    </when>
+		    <when test="searchType == 'type'">
+		        AND f.form_subject LIKE CONCAT('%', #{query}, '%')
+		    </when>
+		</choose>
 	</select>
 	<!-- 전자결재 보낸 문서 리스트 검색 -->
    	<select id="searchList" resultType="map">
@@ -655,6 +699,9 @@
             </when>
             <when test="searchType == 'docNum'">
                 AND d.doc_number LIKE CONCAT('%', #{query}, '%')
+            </when>
+            <when test="searchType == 'type'">
+                AND f.form_subject LIKE CONCAT('%', #{query}, '%')
             </when>
         </choose>
 		ORDER BY d.doc_date DESC
@@ -728,6 +775,7 @@
 		SELECT 
 		    e.name,
 		    e.sign,
+		    e.parent_emp_idx,
 		    m.name AS managerName,
 		    dp.depart_name,
 		    r.rank_name,
@@ -806,8 +854,19 @@
 	</update>
 	
 	
-	
-	
+	<!-- 결재 문서 만들기 -->
+	<insert id="documentWrite"
+ 		useGeneratedKeys="true"
+		keyColumn="form_idx"
+		keyProperty="form_idx"
+		parameterType="com.best.document.FormDTO">
+		   	INSERT INTO form(form_subject, form_content)
+    		VALUES(#{form_subject}, #{form_content})
+	</insert>
+	<update id="documentReWrite">
+		UPDATE form SET form_content = #{form_content} WHERE form_idx = #{form_idx}
+	</update>
+
 	
 <select id="getApproverDetails" resultType="map">
     SELECT 

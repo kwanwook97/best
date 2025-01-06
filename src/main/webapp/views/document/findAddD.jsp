@@ -568,16 +568,21 @@ $(document).ready(function () {
                console.log("현재까지 추가된 사원목록:", selectedEmployees);
                var signBox = $('.signBox');
                var managerName1 = selectedEmployee.name;
+               var managerRank = selectedEmployee.rank_name;
+               var managerDepart = selectedEmployee.depart_name;
                var todayDate3 = '${todayDate3}';
                // 새로운 table HTML 생성
                var newTableHtml = 
                    '<table class="signBox2" style="width: 7vw; height: 14vh; border: 1px solid black; border-collapse: collapse;">' +
                    '  <tr>' +
-                   '    <td rowspan="3" style="text-align: center; width: 1.2vw; border: 1px solid black; background-color: gainsboro;">결재</td>' +
-                   '    <td class="managerName1" style="text-align: center; height: 0.5vh; border: 1px solid black;"><input type="text" class="manager" value="'+managerName1+'" readonly/></td>' +
+                   '    <td rowspan="4" style="text-align: center; width: 1.2vw; border: 1px solid black; background-color: gainsboro;">결재</td>' +
+                   '    <td class="parent" style="text-align: center; height: 24px; border: 1px solid black;">'+managerDepart +'/'+managerRank+'</td>'+
                    '  </tr>' +
                    '  <tr>' +
-                   '    <td class="signTwo" style="text-align: center; border: 1px solid black;" onclick="signAdd(this)"></td>' +
+                   '    <td class="managerName1" style="text-align: center; height: 24px; border: 1px solid black;"><input type="text" class="manager" value="'+managerName1+'" readonly/></td>' +
+                   '  </tr>' +
+                   '  <tr>' +
+                   '    <td class="signTwo" style="text-align: center; border: 1px solid black; height: 73px;" onclick="signAdd(this)"></td>' +
                    '  </tr>' +
                    '  <tr>' +
                    '    <td class="todayDate3" style="text-align: center; height: 24px; border: 1px solid black;"></td>' +

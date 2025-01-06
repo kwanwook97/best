@@ -13,7 +13,6 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-  	<script src="resources/js/document-write.js" type="text/javascript"></script>
   	
   <style>
 	.dashboard-body{
@@ -63,7 +62,7 @@
 	.documentList span.boxSub{
 		font-size: 20px;
 	}
-	.docList{
+	.modal-list{
 		list-style:none;
 	    margin-top: 8px;
         padding-left: 0;
@@ -82,9 +81,6 @@
 	}
 	table{
 		border-radius: 10px;
-	}
-	th, td{
-		border: none !important;
 	}
 	input[type="text"]{
 		width: 47%;
@@ -115,7 +111,7 @@
 	    width: 10px;
     	height: 10px;
 	}
-	#div_editor2{
+	#div_editor{
 	    height: 55vh;
 	}
 	rte-content{
@@ -135,6 +131,49 @@
 	input[type="button"]::hover{
 		background-color: var(--accent-color);
 	}
+	.modal {
+	    width: 100%;
+	    height: 100%;
+	    background-color: rgba(0, 0, 0, 0.5);
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    z-index: 1000;
+	    pointer-events: none;
+	}
+	.modal-content:not(:nth-child(2)) {
+	    border: 2px solid var(--primary-color);
+		transform: scale(0.8) !important;
+	    background-color: white;
+	    padding: 15px;
+	    border-radius: 5px;
+	    width: 44vw;
+        position: absolute;
+	    left: 635px;
+	    top: 128px;
+	}
+	.modal-content:nth-child(2){
+	    border: 2px solid var(--primary-color);
+		transform: scale(0.8) !important;
+	    background-color: white;
+	    padding: 15px;
+	    border-radius: 5px;
+	    width: 44vw;
+        position: absolute;
+	    left: 635px;
+	    top: 0px;
+	}
+	.close-btn {
+	    position: absolute;
+	    top: 5px;
+	    right: 5px;
+	    cursor: pointer;
+	    font-size: 14px;
+	    pointer-events: auto;
+	}
+	.modal-box input{
+		all: unset;
+	}
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -148,38 +187,25 @@
 			<div class="documentListBox">
 				<div class="documentList">
 					<span class="boxSub">양식 리스트</span>
-					<ul class="docList">
-						<li>연차신청서</li>
-						<li>시말서</li>
-						<li>지출결의서</li>
-						<li></li>
+					<ul class="modal-list">
 					</ul>
 				</div>
 			</div>
 			<div class="formBorder">
-				<form action="noticeWrite.do" method="POST">
+				<form action="documentWrite.do" method="POST">
 				<table>
 					<tr>
 						<td>제목 : <input type="text" name="subject" placeholder="양식이름을 작성하세요! 20자 이내" maxlength="20"/></td>
 					</tr>
 					<tr>
 						<td>
-							<label for="check">★ 중요 공지로 등록하려면 체크박스를 선택하세요</label>
-							<input type="checkbox" id="check" name="importance">
-						</td>
-					</tr>
-					<tr>
-						<td>작성자 : <input type="text" name="name" value="에이스" readonly/></td>
-					</tr>
-					<tr>
-						<td>
-							<div id="div_editor2">
+							<div id="div_editor">
 							</div>
 							<input type="hidden" name="content"/>
 						</td>
 					</tr>
 					<tr>
-						<th><input type="button" value="문서 등록하기" onclick="save()"/></th>
+						<th><input type="button" value="문서 등록하기" onclick="saveForm()"/></th>
 					</tr>
 				</table>
 				</form>
@@ -204,80 +230,87 @@ config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로
 	}
 }
 
-var editor = new RichTextEditor("#div_editor2", config);
+var editor = new RichTextEditor("#div_editor", config);
 
-function save() {
+function saveForm() {
     var content = editor.getHTMLCode();
     console.log(content);
     console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
 
-    // 체크박스 상태에 따라 importance 값 설정
-    if ($('#check').prop('checked')) {
-        $('input[name="importance"]').val('true');
-    } else {
-        $('input[name="importance"]').val('false');
-    }
-
-    if (content.length > 100 * 1024 * 1024) {
+	if (content.length > 100 * 1024 * 1024) {
         alert("100MB이상 크기는 전송이 불가능 합니다.");
     } else {
         $('input[name="content"]').val(content);
         $('form').submit();
     }
 }
-// 500자 제한
-$(document).on('input', '#div_editor2', function() {
-    var maxLength = 500;
-    var text = $(this).text();
-    if (text.length > maxLength) {
-        $(this).text(text.substring(0, maxLength));
+
+// 에디터 초기화
+var editor = new RichTextEditor("#div_editor", config);
+
+
+$.ajax({
+    url: 'formList.ajax',
+    type: 'GET',
+    success: function(data) {
+        var ul = $('.modal-list');
+        ul.empty();
+
+        data.forEach(function(form) {
+            var li = $('<li class="modal-item" onclick="documentForm('+form.form_idx+')"></li>');
+            li.text(form.form_subject);
+
+            ul.append(li);
+        });
+    },
+    error: function(error) {
+        console.log(error);
     }
 });
 
-//템플릿 리스트 정의
-var templates = [
-    { name: "연차신청서", content: "<h1>연차 신청서</h1><p>내용을 작성하세요...</p>" },
-    { name: "시말서", content: "<h1>시말서</h1><p>사유를 작성하세요...</p>" },
-    { name: "지출결의서", content: "<h1>지출 결의서</h1><p>지출 내역을 작성하세요...</p>" }
-];
-
-// 툴바에 템플릿 버튼 추가
-config.toolbarItems = [
-    ...RichTextEditor.defaultToolbar,
-    {
-        name: "templates",
-        title: "템플릿",
-        icon: '<i class="fas fa-file-alt"></i>',
-        popup: true,
-        onRender: function (popup, editor) {
-            // 템플릿 리스트를 팝업으로 렌더링
-            var list = document.createElement("ul");
-            list.style.padding = "10px";
-            list.style.listStyleType = "none";
-
-            templates.forEach(function (template) {
-                var item = document.createElement("li");
-                item.textContent = template.name;
-                item.style.cursor = "pointer";
-                item.style.marginBottom = "5px";
-
-                // 템플릿 클릭 시 에디터에 삽입
-                item.onclick = function () {
-                    editor.insertHTML(template.content);
-                    popup.close(); // 팝업 닫기
-                };
-
-                list.appendChild(item);
-            });
-
-            popup.appendChild(list);
+function documentForm(form_idx) {
+    $.ajax({
+        type: 'GET',
+        url: 'getForm.ajax',
+        data: { form_idx: form_idx },
+        dataType: 'text',
+        success: function(response) {
+        	console.log("Response HTML: ", response);
+         	$("#customModal").fadeOut();
+            openModal(response, form_idx);
         },
-    },
-];
+        error: function(xhr, status, error) {
+            console.error('문서 요청 실패:', error);
+        }
+    });
+}
+//모달 열기
+function openModal(content, form_idx) {
+    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+	var modalClass = '';
 
-// 에디터 초기화
-var editor = new RichTextEditor("#div_editor2", config);
+    // 모달 HTML 생성
+    var modalHtml = 
+        '<div id="' + modalId + '"class="modal" style="display: none;">' +
+        '  <div class="modal-content">' +
+        '    <div class="modal-box">' +
+        '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
+        '    </div>' +
+        '    <div class="content" contenteditable="true">' + content + '</div>' +
+        '  </div>' +
+        '</div>';
 
+    // body에 추가
+    $('body').append(modalHtml);
 
+    // 모달 표시
+    $('#' + modalId).show();
+
+    // 닫기 버튼 이벤트 등록 (이벤트 위임)
+    $(document).on('click', '.close-btn', function() {
+        var targetModalId = $(this).data('modal-id');
+        $('#' + targetModalId).remove();
+    });
+}
 </script>
 </html>

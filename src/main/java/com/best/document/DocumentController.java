@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class DocumentController {
@@ -208,6 +209,7 @@ public class DocumentController {
 	        HttpSession session) {
 		Map<String, String> response = new HashMap<String, String>();
 		
+		logger.info("컨텐츠: "+doc_content);
 		String empIdx = (String) session.getAttribute("loginId");
 		int emp_idx = Integer.parseInt(empIdx);
 
@@ -220,6 +222,7 @@ public class DocumentController {
 		    
 	    	logger.info("팀장, 그위에 팀장 : "+parentManager +" / "+manager);
 	    	int docIdx = documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "상신");
+	 
 	    	if(docIdx > 0) {				
 	    		if (managerIds != null && !managerIds.isEmpty()) {
 	    			documentService.referenceEmp(docIdx, managerIds);
@@ -318,6 +321,9 @@ public class DocumentController {
 			@RequestParam(required = false) String approv_order, 
 			@RequestParam(required = false) String remark,
 			@RequestParam(required = false) String emp_idx,
+			@RequestParam(required = false) List<String> item,
+			@RequestParam(required = false) List<String> price,
+			String form_idx,
 			String actionType, 
 			String doc_content){
 		Map<String, String> response = new HashMap<String, String>();
@@ -327,15 +333,21 @@ public class DocumentController {
 				documentService.approveStatus(doc_idx, approv_order, doc_content);
 			}else if(approv_order.equals("2")) {
 				documentService.approveStatusT(doc_idx, approv_order, doc_content);
+				logger.info("품목: {}", item);
+				logger.info("가격 :{}", price);
 			}
 			
 		}else if("제출".equals(actionType)) {
 			documentService.rejectStatus(doc_idx, emp_idx, remark, doc_content);
-		}
-			
-			
+		}			
 		return ResponseEntity.ok(response);
 	}
 	
 	
+	// 결재문서 만들기
+	@PostMapping(value="/documentWrite.do")
+	public String documentWrite(@RequestParam Map<String, String> param) {
+		documentService.documentWrite(param);
+		return "redirect:/documentWrite.go";
+	}
 }

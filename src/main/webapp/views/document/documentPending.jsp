@@ -605,21 +605,48 @@ function docAction(actionType) {
 	        var manager = $('input[class="manager"]').val();
 	        console.log("두번째 "+manager);
 			var doc_idx = $('input[name="doc_idx"]').val();
+			var form_idx = $('input[name="form_idx"]').val();
 			console.log("문서번호 "+doc_idx);
 			console.log("수정됐냐?"+doc_content);
+			console.log("폼폼 "+$('input[name="doc_idx"]').val());
 			
 			var approv_order = (manager === emp_name) ? 2 : 1;
 			console.log("야 "+approv_order);
 			
+			if(manager === emp_name){
+				var item = [];
+				var price = [];
+
+				$('input[data-index]').each(function() {
+				    var index = parseInt($(this).attr('data-index'));
+				    
+				    if ([1, 6, 11, 16].includes(index)) {
+				    	item.push($(this).val());
+				    }
+				    else if ([4, 9, 14, 19].includes(index)) {
+				    	price.push($(this).val());
+				    }
+				});
+
+				console.log("item:", item);
+				console.log("price:", price);  
+			}
+			
+			var data = {
+					doc_idx: doc_idx,
+				    form_idx: form_idx,
+				    actionType: actionType,
+			        doc_content: doc_content,
+			        approv_order:approv_order,
+		        	item: JSON.stringify(item),
+		        	price: JSON.stringify(price)
+				};
+
 			$.ajax({
 	            type: 'POST',
 	            url: 'approveDoc.ajax',
-	            data: {
-	            	doc_idx: doc_idx,
-	            	approv_order: approv_order,
-	                actionType: actionType,
-	                doc_content: doc_content
-	            },
+	            data: data,
+		        traditional: true,
 	            success: function(response) {
 	            	alert("승인 완료");
 		        	location.reload();
