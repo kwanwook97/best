@@ -26,7 +26,7 @@ public class AlarmController {
 	public Map<String, Object> alarmList(
 	    @RequestParam int emp_idx,
 	    @RequestParam(required = false) String type,
-	    @RequestParam(required = false) Integer flag,
+	    @RequestParam(required = false) Boolean flag,
 	    @RequestParam(defaultValue = "1") int page,
 	    @RequestParam(defaultValue = "15") int limit
 	) {
@@ -66,6 +66,15 @@ public class AlarmController {
 	        e.printStackTrace();
 	        return "fail";
 	    }
+	}
+	
+	@GetMapping("/unreadAlarmCount.ajax")
+	@ResponseBody
+	public Map<String, Object> getUnreadAlarmCount(@RequestParam("emp_idx") int empIdx) {
+	    int unreadAlarmCount = alarmService.getUnreadAlarmCount(empIdx);
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("unreadAlarmCount", unreadAlarmCount);
+	    return response;
 	}
 
 }

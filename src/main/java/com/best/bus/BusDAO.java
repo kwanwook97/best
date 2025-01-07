@@ -19,13 +19,13 @@ public interface BusDAO {
 
 	BusDTO busUpdate(int bus_idx);
 
-	BusManageDTO busManUpdate(int bus_idx);
+	List<Map<String, Object>> busManUpdate(int bus_idx);
 
 	List<Map<String, Object>> busSum(String routeName);
 
-	void busUpdateDo(BusDTO bus);
-
-	void busManUdateDo(BusManageDTO busMan);
+//	void busUpdateDo(BusDTO bus);
+//
+//	void busManUdateDo(BusManageDTO busMan);
 
 	List<String> busDispatch();
 

@@ -18,11 +18,11 @@ public class AlarmService {
 	private List<MailReceiveDTO> storedReceivers;
 	@Autowired AlarmDAO alarmDAO;
 
-	public List<AlarmDTO> alarmList(int emp_idx, String type, Integer flag, int offset, int limit) {
+	public List<AlarmDTO> alarmList(int emp_idx, String type, Boolean flag, int offset, int limit) {
 	    return alarmDAO.alarmList(emp_idx, type, flag, offset, limit);
 	}
 
-	public int getTotalAlarmCount(int emp_idx, String type, Integer flag) {
+	public int getTotalAlarmCount(int emp_idx, String type, Boolean flag) {
 	    return alarmDAO.getTotalAlarmCount(emp_idx, type, flag);
 	}
 
@@ -138,5 +138,16 @@ public class AlarmService {
 	public List<Map<String, Object>> unreadAlarm(int emp_idx) {
 		return alarmDAO.unreadAlarm(emp_idx);
 	}
+
+	public int getUnreadAlarmCount(int empIdx) {
+        int unreadCount = alarmDAO.getUnreadAlarmCount(empIdx);
+
+        // WebSocket 브로드캐스트 호출
+        GlobalWebsocketHandler.broadcastUnreadAlarm(empIdx, unreadCount);
+
+        return unreadCount;
+    }
+	
+	
 
 }

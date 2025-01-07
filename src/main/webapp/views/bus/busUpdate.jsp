@@ -4,20 +4,16 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="resources/css/app-style.css" rel="stylesheet"/>
   <style>
     .body {
 	height: auto;
-	width: 83%;
+	width: 100%;
     }
 
     .bus-info-card {
-      border: 2px solid #30005A;
-      border-radius:  0 0 10px 10px;
       padding: 3px;
       height: auto;
       width: 100%;
@@ -45,20 +41,19 @@
 		color: #2A33DD;
 	}
 	select{
-	    width: 26.1vw;
+	    width: 100%;;
 	    border-radius: 10px;
    	    padding: 3 10px;
+   	    margin-right: 30px;
    	    color: #30005A;
 	}
 
     .bus-details {
-      font-size: 16px;
-      color: #8B6AA7; /* 연보라색 */
-      margin: auto 0;
-      margin-right: 15%;
-      width: 100%;
-      display: flex;
-   	  justify-content: center;
+    width: 100%;;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     }
 
     .bus-details p {
@@ -83,7 +78,7 @@
 }
 .tm2 {
 	margin-top: 2%;
-	width: 60%;
+	width: 29%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -97,12 +92,11 @@
 	font-weight: bold;
 }
 .content {
-	width: 100%;
+	width: 500px;
     height: 80%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-evenly;
+    align-items: flex-start;
 }
 .docnav{
 	    width: 100%;
@@ -150,7 +144,7 @@
 		background-color: #E9396B;
 		border-radius: 5px;
 		width: 100%;
-	    height: 5vh;
+	    height: 8vh;
 	}
 	.bus-info-subject{
 		background-color: #30005A;
@@ -160,33 +154,39 @@
     	font-size: 24px;
     	margin-top: 1vh;
     	border-radius: 10px 10px 0 0;
-   	    padding: 4px;
+   	    padding: 5px;
    	    text-align: center;
     }
     .bus-insert-btn{
         margin-top: 1vh;
-        width: 100%;
+        width: 102%;
     	display: flex;
     	flex-direction: column;
     	align-items: center;
     }
     .bus-details ul{
-    	width: 80%;
-   	    display: flex;
-    	flex-direction: column;
-    	align-items: center;
-    	margin: 0px;
-    	padding: 0px;
-    }
-    .bus-details li{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+    align-items: flex-start;
+}
+    .bus-details > ul > li{
     	list-style: none;
-    	width: 80%;
+    	width: 100%;
     	display: flex;
     	justify-content: space-between;
     	align-items: center;
     	margin: 4px;
     	border-bottom: 1px solid #8B6AA7;
    	    padding-bottom: 5px;
+    }
+    .bus-details > ul > li > span{
+    	margin-right: 30px;
+    }
+    .bus-details > ul > li > strong{
+    	margin-left: 15px;
     }
     .bus-details input{
    	    width: 100%;
@@ -202,43 +202,48 @@
     background: transparent; /* 배경 투명 */
     pointer-events: none; /* 마우스 클릭 막기 */
 }
-form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+
+textarea{
+    height: 100px;
+    width: 250px;
+    resize: none;
+    border-radius: 10px;
 }
+
   </style>
 </head>
 <body class="bg-theme bg-theme1">
-  <form action="busUpdate.do">
+  <form action="busManage.do">
   <div class="body">
-     <div class="naviPath bold f32 w100 tm2">
+     <!-- <div class="naviPath bold f32 w100 tm2">
 		<span class="lPurple">버스정보</span>
 			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
 		<span class="lPurple">버스관리</span>
 			<i class="fa-solid fa-angle-right" style="color:#30005A;"></i>
-		<span class="purple">버스수정</span>
+		<span class="purple">버스등록</span>
 		<div class="bus-drive-info">
 				
 		</div>
-	</div>
+	</div> -->
     <div class="content">
-      <div class="bus-info-subject bold purple"><span>버스 정보</span></div>
+    <%-- <div class="bus-info-subject bold purple"><span>버스 정보</span></div>
       <div class="bus-info-card">
        	<div class="bus-details">
        	<input type="hidden" name="bus_idx" value="${bus.bus_idx}" />
        		<ul>
-       			<li><strong>노선 번호:</strong> <span><input type="text" name="bus_route_name" value="${bus.route_name}"/></span></li>
-       			<li><strong>차량 번호:</strong> <span><input type="text" name="bus_license_plate" value="${bus.license_plate}" readonly/></span></li>
-       			<li><strong>연비:</strong> <span><input type="text" name="bus_fuel_efficiency" value="${bus.fuel_efficiency}"/></span></li>
-       			<li><strong>구입일:</strong> <span><input type="text" name="bus_buy_date" value="${bus.buy_date}" readonly/></span></li>
-       			<li><strong>제조사:</strong> <span><input type="text" name="bus_bus_company" value="${bus.bus_company}" readonly/></span></li>
-       			<li><strong>좌석 수:</strong> <span><input type="text" name="bus_seat_number" value="${bus.seat_number}"/></span></li>
-       			<li><strong>버스 종류:</strong> <span><input type="text" name="bus_bus_type" value="${bus.bus_type}"/></span></li>
+       			<li><strong>노선 번호:</strong> <span>${bus.route_name}</span></li>
+       			<li><strong>차량 번호:</strong> <span>${bus.license_plate}</span></li>
+       			<li><strong>연비:</strong> <span>${bus.fuel_efficiency} km/L</span></li>
+       			<li><strong>구입일:</strong> <span>${bus.buy_date}</span></li>
+       			<li><strong>제조사:</strong> <span>${bus.bus_company}</span></li>
+       			<li><strong>좌석 수:</strong> <span>${bus.seat_number}</span></li>
+       			<li><strong>버스 종류:</strong> <span>${bus.bus_type}</span></li>
        		</ul>
         </div>
-       </div>
+       </div> --%>
        <div class="bus-info-subject bold purple"><span>정비 사항</span></div>
+       <input type="hidden" name="bus_manage_emp_idx" value="${sessionScope.loginId}"/>
+       <input type="hidden" name="bus_idx" value="${bus.bus_idx}" />
        <div class="bus-info-card">
         <div class="bus-details">
         	<ul>
@@ -251,28 +256,23 @@ form{
         				</select>
         			</span>
         		</li>
-        		<li><strong>운행거리:</strong> <span><input type="text" name="bus_manage_distance" value="${busMan.distance}"/></span></li>
-        		<li><strong>점검 일:</strong> <span><input type="text" name="bus_manage_inspect_date" value="${busMan.inspect_date}"/></span></li>
-        		<li><strong>다음 점검일:</strong> <span><input type="text" name="bus_manage_next_inspect_date" value="${busMan.next_inspect_date}"/></span></li>
-        		<li><strong>담당 정비사:</strong> <span><input type="text" name="bus_manage_emp_idx" value="${busMan.emp_idx}" readonly/></span></li>
-        		<li><strong>정비 내용:</strong> <span><input type="text" name="bus_manage_content" value="${busMan.content}"/></span></li>
-        		<li><strong>정비 비용:</strong> <span><input type="text" name="bus_manage_amount" value="${busMan.amount}"/></span></li>
+        		<li><strong>운행거리:</strong> <span><input type="text" name="bus_manage_distance"/></span></li>
+        		<li><strong>점검 일:</strong> <span><input type="date" name="bus_manage_inspect_date"/></span></li>
+        		<li><strong>다음 점검일:</strong> <span><input type="date" name="bus_manage_next_inspect_date"/></span></li>
+        		<li><strong>담당 정비사:</strong> <span><input type="text" name="bus_manage_name" value="${sessionScope.loginName}" readonly/></span></li>
+        		<li><strong>정비 비용:</strong> <span><input type="text" name="bus_manage_amount"/></span></li>
+        		<li><strong>정비 내용:</strong> <span><textarea name="bus_manage_content"></textarea></span></li>
         	</ul>
     	</div>
       </div>
 			<div class="bus-insert-btn">
-				<button class="editbtn" type="submit"><i class="far fa-edit"></i>&nbsp;수정</button>
-				<button class="editbtn" style="background-color:#8B6AA7;" type="button" onclick="window.parent.closeModal()">
-				<i class="bi bi-x-square"></i>&nbsp;취소</button>
+				<button class="editbtn" type="submit"><i class="far fa-edit"></i>&nbsp;등록</button>
 			</div>
     </div>
   </div>
 </form>
 </body>
 <script>
-function closeModal() {
-    const modal = document.getElementById('busUpdateModal'); // 모달 ID로 요소 가져오기
-    modal.style.display = 'none'; // 모달창 숨기기
-}
+
 </script>
 </html>

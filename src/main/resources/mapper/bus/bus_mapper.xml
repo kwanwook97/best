@@ -8,65 +8,114 @@
 	<select id="driveInfo" resultType="com.best.bus.RouteDTO">
 		SELECT * FROM route
 	</select>
-	
+
 	<!-- 버스 상세 정보 / 검색 / 필터링 -->
 	<select id="busDetail" resultType="map">
+		WITH LatestBusManage AS (
+		SELECT
+		bm.*,
+		ROW_NUMBER() OVER (
+		PARTITION BY bm.bus_idx
+		ORDER BY bm.bus_manage_idx DESC
+		) AS rn
+		FROM
+		bus_manage bm
+		)
 		SELECT
 		b.*,
-		bm.*
+		lbm.*,
+		e.name
 		FROM
 		bus b
 		LEFT JOIN
-		bus_manage bm ON b.bus_idx = bm.bus_idx
-		WHERE 1=1
+		LatestBusManage lbm ON b.bus_idx = lbm.bus_idx AND lbm.rn = 1
+		LEFT JOIN
+		employee e ON lbm.emp_idx = e.emp_idx
+		WHERE
+		1=1
 		<if test="routeName != null and routeName != ''">
 			AND b.route_name = #{routeName}
 		</if>
 		<if test="filterType != null and keyword != null and keyword != ''">
 			<choose>
 				<when test="filterType == 'busPlateNo'">
-					AND b.license_plate LIKE CONCAT('%', #{keyword}, '%')
+					AND b.license_plate LIKE CONCAT('%', #{keyword},
+					'%')
 				</when>
 				<when test="filterType == 'busNo'">
 					AND b.route_name LIKE CONCAT('%', #{keyword}, '%')
 				</when>
 			</choose>
 		</if>
-		ORDER BY b.bus_idx ASC
+		ORDER BY
+		b.bus_idx ASC
 	</select>
+
+
+
 
 	<!-- 버스 상태 카운트 -->
 	<select id="busSum" resultType="map">
+		WITH LatestBusManage AS (
+		SELECT
+		bm.*,
+		ROW_NUMBER() OVER (PARTITION BY bm.bus_idx ORDER BY
+		bm.inspect_date DESC) AS rn
+		FROM
+		bus_manage bm
+		)
 		SELECT
 		b.route_name,
-		COUNT(*) AS total_buses,
-		SUM(CASE WHEN bm.status = '정상' THEN 1 ELSE 0 END) AS normal_count,
-		SUM(CASE WHEN bm.status = '정비 중' THEN 1 ELSE 0 END) AS maintenance_count
+		COUNT(DISTINCT b.bus_idx) AS total_buses,
+		SUM(
+		CASE
+		WHEN lbm.status =
+		'정상' THEN 1
+		WHEN lbm.status IS NULL THEN 0
+		ELSE 0
+		END
+		) AS normal_count,
+		SUM(
+		CASE
+		WHEN lbm.status = '정비 중' THEN 1
+		WHEN lbm.status IS NULL THEN 0
+		ELSE 0
+		END
+		) AS maintenance_count
 		FROM
 		bus b
 		LEFT JOIN
-		bus_manage bm ON b.bus_idx = bm.bus_idx
-		GROUP BY b.route_name
+		LatestBusManage lbm
+		ON b.bus_idx = lbm.bus_idx AND lbm.rn = 1
+		GROUP BY
+		b.route_name
 	</select>
+
+
 
 	<!-- 버스 등록 -->
 	<insert id="busInsert" parameterType="com.best.bus.BusDTO"
 		useGeneratedKeys="true" keyProperty="bus_idx">
-		INSERT INTO bus (route_name, license_plate, fuel_efficiency, buy_date,
-		bus_company, seat_number, bus_type)
-		VALUES (#{route_name}, #{license_plate}, #{fuel_efficiency}, #{buy_date},
+		INSERT INTO bus (route_name,
+		license_plate, fuel_efficiency, buy_date,
+		bus_company, seat_number,
+		bus_type)
+		VALUES (#{route_name}, #{license_plate}, #{fuel_efficiency},
+		#{buy_date},
 		#{bus_company}, #{seat_number}, #{bus_type})
 	</insert>
-	
+
 	<!-- 버스 관리 등록 -->
 	<insert id="busManInsert"
 		parameterType="com.best.bus.BusManageDTO">
-		INSERT INTO bus_manage (bus_idx, inspect_date, next_inspect_date, status,
+		INSERT INTO bus_manage (bus_idx, inspect_date,
+		next_inspect_date, status,
 		distance, emp_idx, content, amount)
-		VALUES (#{bus_idx}, #{inspect_date}, #{next_inspect_date}, #{status},
+		VALUES
+		(#{bus_idx}, #{inspect_date}, #{next_inspect_date}, #{status},
 		#{distance}, #{emp_idx}, #{content}, #{amount})
 	</insert>
-	
+
 	<!-- 배차현황 수정 -->
 	<update id="dispatchUpdate" parameterType="map">
 		UPDATE dispatch
@@ -77,26 +126,31 @@
 		shift_idx = #{shift_idx}
 		WHERE dispatch_idx = #{dispatch_idx}
 	</update>
-	
+
 	<!-- 배차현황 가져오기 -->
 	<select id="getDispatchByIdx" parameterType="int"
 		resultType="map">
 		SELECT
 		d.bus_idx,
 		d.driver_idx,
-		d.dispatch_idx, 
-		b.license_plate, 
+		d.dispatch_idx,
+		b.license_plate,
 		e.name AS driver_name,
-		s.shift, 
-		s.shift_idx, 
-		d.date, 
-		b.route_name 
+		s.shift,
+		s.shift_idx,
+		d.date,
+		b.route_name
 		FROM dispatch d
 		JOIN bus b ON d.bus_idx = b.bus_idx
-		JOIN driver dr ON d.driver_idx = dr.driver_idx
-		JOIN employee e ON dr.emp_idx = e.emp_idx
+		JOIN
+		driver dr ON
+		d.driver_idx = dr.driver_idx
+		JOIN employee e ON dr.emp_idx
+		= e.emp_idx
 		JOIN shift s ON d.shift_idx = s.shift_idx
-		WHERE d.dispatch_idx = #{dispatch_idx}
+		WHERE
+		d.dispatch_idx =
+		#{dispatch_idx}
 	</select>
 
 	<!-- 모든 버스 정보 가져오기 -->
@@ -105,56 +159,34 @@
 		SELECT * FROM bus WHERE bus_idx = #{bus_idx}
 	</select>
 	<!-- 모든 버스 관리 정보 가져오기 -->
-	<select id="busManUpdate" parameterType="int"
-		resultType="com.best.bus.BusManageDTO">
-		SELECT * FROM bus_manage WHERE bus_idx = #{bus_idx}
+	<select id="busManUpdate" parameterType="int" resultType="map">
+		SELECT
+		bm.*,
+		e.name
+		FROM
+		bus_manage bm
+		LEFT JOIN
+		employee e ON bm.emp_idx =
+		e.emp_idx
+		WHERE
+		bm.bus_idx = #{bus_idx}
+		ORDER BY bm.inspect_date DESC
 	</select>
-	
-	<!-- 버스 정보 수정 -->
-	<update id="busUpdateDo">
-		UPDATE bus
-		<set>
-			<if test="route_name != null and route_name != ''">
-				route_name = #{route_name},
-			</if>
-			<if test="fuel_efficiency != null">
-				fuel_efficiency = #{fuel_efficiency},
-			</if>
-			<if test="seat_number != null">
-				seat_number = #{seat_number},
-			</if>
-			<if test="bus_type != null and bus_type != ''">
-				bus_type = #{bus_type},
-			</if>
-		</set>
-		WHERE bus_idx = #{bus_idx}
-	</update>
 
-	<update id="busManUdateDo">
-		UPDATE bus_manage
-		<set>
-			<if test="status != null and status != ''">
-				status = #{status},
-			</if>
-			<if test="distance != null">
-				distance = #{distance},
-			</if>
-			<if test="inspect_date != null">
-				inspect_date = #{inspect_date},
-			</if>
-			<if test="next_inspect_date != null">
-				next_inspect_date = #{next_inspect_date},
-			</if>
-			<if test="content != null and content != ''">
-				content = #{content},
-			</if>
-			<if test="amount != null">
-				amount = #{amount},
-			</if>
-		</set>
-		WHERE bus_idx = #{bus_idx}
-	</update>
-	
+	<!-- 버스 정보 수정 -->
+	<!-- <update id="busUpdateDo"> UPDATE bus <set> <if test="route_name != 
+		null and route_name != ''"> route_name = #{route_name}, </if> <if test="fuel_efficiency 
+		!= null"> fuel_efficiency = #{fuel_efficiency}, </if> <if test="seat_number 
+		!= null"> seat_number = #{seat_number}, </if> <if test="bus_type != null 
+		and bus_type != ''"> bus_type = #{bus_type}, </if> </set> WHERE bus_idx = 
+		#{bus_idx} </update> <update id="busManUdateDo"> UPDATE bus_manage <set> 
+		<if test="status != null and status != ''"> status = #{status}, </if> <if 
+		test="distance != null"> distance = #{distance}, </if> <if test="inspect_date 
+		!= null"> inspect_date = #{inspect_date}, </if> <if test="next_inspect_date 
+		!= null"> next_inspect_date = #{next_inspect_date}, </if> <if test="content 
+		!= null and content != ''"> content = #{content}, </if> <if test="amount 
+		!= null"> amount = #{amount}, </if> </set> WHERE bus_idx = #{bus_idx} </update> -->
+
 	<!-- 배차현황 노선번호 가져오기 -->
 	<select id="busDispatch" resultType="string">
 		SELECT route_name FROM route
@@ -165,57 +197,68 @@
 	</select>
 	<!-- 배차현황 차량번호 가져오기 -->
 	<select id="license" parameterType="string" resultType="map">
-		SELECT license_plate, bus_idx
+		SELECT
+		license_plate, bus_idx
 		FROM bus
 		WHERE route_name = #{routeName}
 	</select>
 	<!-- 배차현황 기사정보 가져오기 -->
 	<select id="driver" parameterType="string" resultType="map">
-		SELECT d.driver_idx, e.emp_idx, e.name
+		SELECT
+		d.driver_idx, e.emp_idx, e.name
 		FROM driver d
-		JOIN employee e ON d.emp_idx = e.emp_idx
+		JOIN employee e ON
+		d.emp_idx = e.emp_idx
 		WHERE d.route_name = #{routeName}
 	</select>
-	
+
 	<!-- 배차현황 중복등록 체크 -->
 	<select id="checkDuplicateDispatch"
 		parameterType="com.best.bus.DispatchDTO"
 		resultType="com.best.bus.DispatchDTO">
 		SELECT * FROM dispatch WHERE bus_idx = #{bus_idx}
-		AND date = #{date}
+		AND date =
+		#{date}
 		AND shift_idx = #{shift_idx};
 	</select>
 	<!-- 배차현황 등록 -->
 	<insert id="dispatchInsert"
 		parameterType="com.best.bus.DispatchDTO" useGeneratedKeys="true"
 		keyProperty="dispatch_idx">
-		INSERT INTO dispatch (bus_idx, driver_idx, date, shift_idx)
+		INSERT INTO dispatch (bus_idx, driver_idx, date,
+		shift_idx)
 		VALUES (#{bus_idx}, #{driver_idx}, #{date}, #{shift_idx});
 	</insert>
 	<!-- 운행상태 등록 -->
 	<insert id="driveInsert" parameterType="com.best.bus.DriveDTO">
-		INSERT INTO drive (dispatch_idx, status)
+		INSERT INTO drive
+		(dispatch_idx, status)
 		VALUES (#{dispatch_idx}, #{status})
 	</insert>
 	<!-- 배차현황 리스트 -->
 	<select id="dispatchList" parameterType="int" resultType="map">
 		SELECT
-		d.dispatch_idx, 
-		b.license_plate, 
+		d.dispatch_idx,
+		b.license_plate,
 		e.name AS driver_name,
 		s.shift,
-		s.shift_idx, 
-		d.date, 
-		b.route_name, 
-		e.emp_idx, 
+		s.shift_idx,
+		d.date,
+		b.route_name,
+		e.emp_idx,
 		d.driver_idx,
-		dv.status 
-		FROM dispatch d
-		JOIN bus b ON d.bus_idx = b.bus_idx 
-		JOIN driver dr ON d.driver_idx = dr.driver_idx 
+		dv.status
+		FROM
+		dispatch d
+		JOIN bus b ON d.bus_idx = b.bus_idx
+		JOIN driver dr ON
+		d.driver_idx = dr.driver_idx
 		JOIN employee e ON dr.emp_idx = e.emp_idx
-		JOIN shift s ON d.shift_idx = s.shift_idx -- dispatch
-		LEFT JOIN drive dv ON d.dispatch_idx = dv.dispatch_idx 
+		JOIN shift s ON d.shift_idx =
+		s.shift_idx -- dispatch
+		LEFT JOIN drive dv
+		ON d.dispatch_idx =
+		dv.dispatch_idx
 		<if test="date != null and date != ''">
 			WHERE d.date = #{date} -- 날짜 조건 추가
 		</if>
@@ -233,7 +276,8 @@
 	<select id="findDispatchIdxByDriverIdxAndDate"
 		parameterType="map" resultType="map">
 		SELECT dispatch_idx, bus_idx
-		FROM dispatch
+		FROM
+		dispatch
 		WHERE driver_idx = #{driverIdx}
 		AND date = #{date}
 		LIMIT 1
@@ -242,26 +286,30 @@
 	<update id="updateDriveStatus">
 		UPDATE drive
 		SET status = #{status},
-		start_time = #{startTime}
+		start_time =
+		#{startTime}
 		WHERE dispatch_idx = #{dispatchIdx}
 	</update>
 	<!-- 버스 운행상태 변경 -->
 	<update id="updateBusDriveStatus">
 		UPDATE bus
 		SET drive_status = #{driveStatus}
-		WHERE bus_idx = #{busIdx}
+		WHERE
+		bus_idx = #{busIdx}
 	</update>
 	<!-- 운행 종료 시간 -->
 	<update id="updateDriveEndStatus">
 		UPDATE drive
 		SET status = #{status},
-		end_time = #{endTime}
+		end_time =
+		#{endTime}
 		WHERE dispatch_idx = #{dispatchIdx}
 	</update>
 
 	<!-- 사원번호로 기사번호 가져오기 -->
 	<select id="getDriverIdx" parameterType="int" resultType="int">
-		SELECT driver_idx
+		SELECT
+		driver_idx
 		FROM driver
 		WHERE emp_idx = #{empIdx}
 	</select>
@@ -269,12 +317,15 @@
 	<select id="getDispatchIdx" parameterType="map" resultType="int">
 		SELECT dispatch_idx
 		FROM dispatch
-		WHERE driver_idx = #{driverIdx} AND date = #{date}
+		WHERE driver_idx = #{driverIdx} AND
+		date = #{date}
 	</select>
 	<!-- 배차 등록 -->
 	<insert id="insertDrive" parameterType="map">
-		INSERT INTO drive (dispatch_idx, start_time, status)
-		VALUES (#{dispatchIdx}, #{startTime}, #{status})
+		INSERT INTO drive
+		(dispatch_idx, start_time, status)
+		VALUES (#{dispatchIdx},
+		#{startTime}, #{status})
 	</insert>
 
 
