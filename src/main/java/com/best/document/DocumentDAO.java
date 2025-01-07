@@ -123,6 +123,17 @@ public interface DocumentDAO {
 	Map<String, Object> getApproverDetails(int docIdx);
 	List<Integer> getReferenceEmpIds(int doc_idx);
 	
+	// 문서양식 확인용
+	String documentName(String doc_idx);
+	Map<String, Object> getDocContent(String doc_idx);
+	
+	
+	// 결재 문서 만들기
+	int documentWrite(FormDTO formDTO);
+	int documentReWrite(int form_idx, String form_content);
+	
+	// 결재 문서 수정하기
+	int documentUpdate(FormDTO formDTO);
 
 
 

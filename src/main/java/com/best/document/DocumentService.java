@@ -470,6 +470,10 @@ public class DocumentService {
         // 직원 정보 가져오기
         Map<String, Object> employeeDetails = documentDao.getEmpDetails(emp_idx);
         logger.info("기안자 정보: {}",employeeDetails);
+        String parent =  String.valueOf(employeeDetails.get("parent_emp_idx"));
+        Map<String, Object> parentDetails = documentDao.getEmpDetails(parent);
+        String parentDepart = (String) parentDetails.get("depart_name");
+        String parentRank = (String) parentDetails.get("rank_name");
         
         // 이미지 파일을 Base64로 변환
         String sign = (String) employeeDetails.get("sign");
@@ -483,6 +487,8 @@ public class DocumentService {
         return htmlContent
                 .replace("${todayDate}", todayDateString)
                 .replace("${name}", (String) employeeDetails.get("name"))
+           		.replace("${parent}", parentDepart+" / "+parentRank)
+           		.replace("${my}", (String) employeeDetails.get("depart_name")+"/"+(String) employeeDetails.get("rank_name"))
                 .replace("${managerName}", (String) employeeDetails.get("managerName"))
                 .replace("${depart_name}", (String) employeeDetails.get("depart_name"))
                 .replace("${rank_name}", (String) employeeDetails.get("rank_name"))
@@ -620,11 +626,11 @@ public class DocumentService {
 		documentDao.documentStatus(doc_idx, doc_content);
 		
 		// 결재 알림 처리
-	    notifyApproval(
-	        Integer.parseInt(doc_idx),
-	        Integer.parseInt(approv_order),
-	        "승인"
-	    );
+//	    notifyApproval(
+//	        Integer.parseInt(doc_idx),
+//	        Integer.parseInt(approv_order),
+//	        "승인"
+//	    );
 	}
 	@Transactional
 	public void approveStatusT(String doc_idx, String approv_order, String doc_content) {
@@ -646,6 +652,7 @@ public class DocumentService {
 		        Integer.parseInt(approv_order),
 		        "승인"
 		    );
+		
 	}
 	// 결재 반려
 	@Transactional
@@ -683,9 +690,35 @@ public class DocumentService {
 	}
 	
 
+	// 결재문서 만들기
+	@Transactional
+	public void documentWrite(Map<String, String> param) {
+		FormDTO formDTO = new FormDTO();
+		formDTO.setForm_subject(param.get("subject"));
+		formDTO.setForm_content(param.get("content"));
+		documentDao.documentWrite(formDTO);
+		
+	    int form_idx = formDTO.getForm_idx();
+	    String form_content = formDTO.getForm_content();
+	    
+	    form_content = form_content.replaceFirst(
+	    	    "(<input\\s+type=\"hidden\"\\s+name=\"form_idx\"\\s+value=\")([^\"]*)(\")",
+	    	    "$1" + form_idx + "$3"
+	    	);
+	    documentDao.documentReWrite(form_idx, form_content);
+	}
+	
+	// 결재문서 수정하기
+	@Transactional
+	public void documentUpdate(Map<String, String> param) {
+		FormDTO formDTO = new FormDTO();
+		formDTO.setForm_subject(param.get("subject"));
+		formDTO.setForm_content(param.get("content"));
+		documentDao.documentUpdate(formDTO);
+	}
+	
 
-
-
+	
 
 
 
@@ -785,6 +818,9 @@ public class DocumentService {
 	    alarm.setDate(new Date());
 	    return alarm;
 	}
+
+
+	
 
 
 
