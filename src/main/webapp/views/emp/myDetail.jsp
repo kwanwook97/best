@@ -925,7 +925,7 @@ function clearCanvas() {
 		    	    ctx.clearRect(0, 0, canvas.width, canvas.height);
 		    	    $('.btn_confirm_sign').prop('disabled', false);
 	        		$('.btn_confirm_sign').css('background-color', '#30005A');
-
+					modal.showAlert('삭제가 완료되었습니다.');
 		    		checkSign();
 				}else {
 					modal.showAlert('시스템 에러 발생 ! 잠시 후 다시 시도해주세요.');

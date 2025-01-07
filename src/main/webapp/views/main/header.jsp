@@ -224,7 +224,7 @@ var loginId = ${sessionScope.loginId};
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
 					<li class="dropD-item"><a href="roomInfo.go"> <i
-							class="fa-regular fa-calendar-check"></i> <span>회의실 정보</span> <i
+							class="fa-regular fa-calendar-check"></i> <span>회의실 관리</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
 				</ul></li>
@@ -267,18 +267,18 @@ var loginId = ${sessionScope.loginId};
 			</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="javaScript:void();"> <i
+					<li class="dropD-item"><a href="monthlyChart.go"> <i
 							class="bi bi-bar-chart-fill"></i> <span>월별현황</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
-					<li class="dropD-item"><a href="javaScript:void();"> <i
+					<li class="dropD-item"><a href="yearlyChart.go"> <i
 							class="bi bi-graph-up"></i> <span>연별현황</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
-					<li class="dropD-item"><a href="javaScript:void();"> <i
+					<!-- <li class="dropD-item"><a href="javaScript:void();"> <i
 							class="bi bi-file-earmark-bar-graph-fill"></i> <span>매출등록</span>
 							<i class="fa-solid fa-angle-right"></i>
-					</a></li>
+					</a></li> -->
 				</ul></li>
 
 			<li><a href="javaScript:void();"> <i

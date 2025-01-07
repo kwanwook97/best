@@ -201,6 +201,24 @@ public class EmployeeController {
 		return empService.updateMyDetail(params);
 	}
 	
+	// 내정보 사인 체크 로직
+	@GetMapping(value="checkSign.ajax")
+	@ResponseBody
+	public Map<String, Object> checkSign(@RequestParam Map<String, Object> params){
+		
+		return empService.checkSign(params);
+	}
+	
+	// 사인 삭제시 삭제 로직 
+	@GetMapping(value="delSign.ajax")
+	@ResponseBody
+	public Map<String, Object> delSign(@RequestParam Map<String, Object> params){
+		
+		return empService.delSign(params);
+	}
+	
+	
+	
 	
 	
 	

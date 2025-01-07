@@ -26,7 +26,7 @@
 	      AND status != '결근'
 	</select>
 	
-	<!-- 1년미만 사원 만근 확인시 업데이트  -->
+	<!-- 정기 연차 업데이트  -->
 	<update id="updateLeave">
 	    UPDATE leave_emp 
 	    SET 
@@ -104,16 +104,49 @@
 		WHERE date = CURDATE(); 
 	</select>
 	<update id="updateLeaveDel" parameterType="map">
-		UPDATE leave_emp
-		SET total_leave = total_leave - #{add_leave},
-		    remain_leave = remain_leave - #{add_leave}
-		WHERE leave_idx = #{leave_idx};
+	    UPDATE leave_emp
+	    SET 
+	        total_leave = total_leave - #{add_leave},
+	        remain_leave = CASE
+	            WHEN remain_leave > total_leave - #{add_leave} THEN total_leave - #{add_leave}
+	            ELSE remain_leave
+	        END
+	    WHERE leave_idx = #{leave_idx};
 	</update>
 	
 	<!-- 결제 연차승인 인서트 -->
-<!-- 	<insert id="insertLeaveHistory" parameterType="map">
-		insert into leave_history (emp_idx,leave_idx)
-	</insert> -->
+ 	<insert id="insertLeaveHistory" parameterType="map">
+	    INSERT INTO leave_history (emp_idx, leave_idx, start_date, end_date, reason)
+	    SELECT 
+	        #{empIdx}, 
+	        leave_idx,
+	        #{startDate}, 
+	        #{endDate}, 
+	        #{reason}
+	    FROM leave_emp
+	    WHERE emp_idx = #{empIdx}
+	</insert>
+	
+	
+	<!-- 연차 소진용 로직 -->
+	<select id="documentName">
+		SELECT f.form_subject FROM document d
+		JOIN 
+			form f on d.form_idx = f.form_idx
+		WHERE
+			d.doc_idx = #{param1}
+	</select>
+	<select id="getDocContent" resultType="map">
+	    SELECT doc_content, emp_idx
+	    FROM document
+	    WHERE doc_idx = #{doc_idx}
+	</select>
+	<update id="updateRemainLeave" parameterType="map">
+		UPDATE leave_emp
+		SET remain_leave = remain_leave - #{days}
+		WHERE emp_idx = #{empIdx}
+	</update>
+
 	
 	
 	

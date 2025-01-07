@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.best.leave.LeaveService;
+
 @Controller
 public class DocumentController {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired DocumentService documentService;
+	@Autowired LeaveService leaveService;
 
 	// 전자결재 대기 리스트
 	@RequestMapping(value="/documentPending.go")
@@ -333,6 +336,7 @@ public class DocumentController {
 				documentService.approveStatus(doc_idx, approv_order, doc_content);
 			}else if(approv_order.equals("2")) {
 				documentService.approveStatusT(doc_idx, approv_order, doc_content);
+				leaveService.addLeaveHistory(doc_idx);
 				logger.info("품목: {}", item);
 				logger.info("가격 :{}", price);
 			}

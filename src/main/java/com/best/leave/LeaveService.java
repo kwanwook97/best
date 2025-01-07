@@ -4,11 +4,15 @@ import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,6 +194,41 @@ public class LeaveService {
 			}
 		}
 		return response;
+	}
+
+	// 연차 로직
+	@Transactional
+	public void addLeaveHistory(String doc_idx) {
+	    // 연차 소진 로직
+	    String formSubject = leaveDAO.documentName(doc_idx);
+	    if (formSubject.equals("연차신청서")) {
+	    	Map<String, Object> result = leaveDAO.getDocContent(doc_idx);
+	    	String docContent = (String) result.get("doc_content");
+	    	String empIdx = (String) result.get("emp_idx");
+	    	
+	        Document htmlDoc = Jsoup.parse(docContent);
+	        Element startDateElement = htmlDoc.selectFirst("input[name=start_date]");
+	        Element endDateElement = htmlDoc.selectFirst("input[name=end_date]");
+	        Element textareaElement = htmlDoc.selectFirst("textarea");
+	        String textareaValue = textareaElement != null ? textareaElement.text() : null;
+	        String startDate = startDateElement != null ? startDateElement.attr("value") : null;
+	        String endDate = endDateElement != null ? endDateElement.attr("value") : null;
+	        
+	        
+	        LocalDate start = LocalDate.parse("2025-01-01"); // 예: "2025-01-01"
+	        LocalDate end = LocalDate.parse("2025-01-05");     // 예:
+	        long days = ChronoUnit.DAYS.between(start, end) + 1;
+	        
+	        Map<String, Object> map = new HashMap<String, Object>();
+	        map.put("startDate", startDate);
+	        map.put("endDate", endDate);
+	        map.put("reason", textareaValue);
+	        map.put("empIdx", empIdx);
+	        map.put("days", days);
+	        
+	        leaveDAO.insertLeaveHistory(map);
+	        leaveDAO.updateRemainLeave(map);
+		}		
 	}
 
 }

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd"
+>
+<mapper namespace="com.best.sales.SalesDAO">
+	<insert id="saveSettlement" parameterType="map">
+		insert into settlement (company,amount,month,emp_idx)
+		values (#{company},#{amount},STR_TO_DATE(CONCAT(#{month}, '-01'), '%Y-%m-%d'),#{loginId})
+	</insert>
+	
+<select id="filterSettlement" parameterType="map" resultType="map">
+  SELECT  
+  	s.settlement_idx AS settlementIdx,
+    s.company AS company,
+    s.amount AS amount,
+    DATE_FORMAT(s.month, '%Y-%m') AS month,
+    e.name AS name
+  FROM settlement s
+  JOIN employee e ON e.emp_idx = s.emp_idx
+  WHERE 
+      s.month = STR_TO_DATE(CONCAT(#{month, jdbcType=VARCHAR}, '-01'), '%Y-%m-%d')
+      <choose>
+        <when test="searchField == 'subject' and searchInput != null and searchInput != ''">
+          AND s.company LIKE CONCAT('%', #{searchInput}, '%')
+        </when>
+        <when test="searchField == 'content' and searchInput != null and searchInput != ''">
+          AND e.name LIKE CONCAT('%', #{searchInput}, '%')
+        </when>
+        <otherwise>
+        </otherwise>
+      </choose>
+  ORDER BY s.company ASC
+  LIMIT #{limit} OFFSET #{offset}
+</select>
+
+
+<select id="getTotalPages" parameterType="map">
+  SELECT CEIL(COUNT(*) / CASE WHEN #{cnt} > 0 THEN #{cnt} ELSE 1 END)
+  FROM settlement s
+  INNER JOIN employee e ON e.emp_idx = s.emp_idx
+  WHERE 
+      s.month = STR_TO_DATE(CONCAT(#{month, jdbcType=VARCHAR}, '-01'), '%Y-%m-%d')
+      <choose>
+        <when test="searchField == 'subject' and searchInput != null and searchInput != ''">
+          AND s.company LIKE CONCAT('%', #{searchInput}, '%')
+        </when>
+        <when test="searchField == 'content' and searchInput != null and searchInput != ''">
+          AND e.name LIKE CONCAT('%', #{searchInput}, '%')
+        </when>
+        <otherwise>
+        </otherwise>
+      </choose>
+</select>
+
+<select id="fetchChart" parameterType="map" resultType="map">
+	SELECT
+		company,
+		amount
+	FROM settlement 
+	WHERE 
+      	month = STR_TO_DATE(CONCAT(#{month, jdbcType=VARCHAR}, '-01'), '%Y-%m-%d')
+</select>
+
+<select id="fetchYearChart" parameterType="map" resultType="map">
+	SELECT 
+  		RIGHT(LEFT(month, 7), 2) AS month,
+	    SUM(amount) AS totalAmount 
+	FROM 
+	    settlement
+	WHERE 
+	    month BETWEEN CONCAT(#{year}, '-01-01') AND CONCAT(#{year}, '-12-01')
+	GROUP BY 
+	    LEFT(month, 7) 
+	ORDER BY 
+	    RIGHT(LEFT(month, 7), 2) ASC;
+</select>
+<select id="fetchYearCompanyList" parameterType="map" resultType="string">
+    SELECT DISTINCT 
+        company
+    FROM 
+        settlement
+    WHERE 
+        month BETWEEN CONCAT(#{year}, '-01-01') AND CONCAT(#{year}, '-12-01')
+    ORDER BY 
+        company ASC;
+</select>
+
+<select id="getChartData" parameterType="map">
+    SELECT 
+        RIGHT(LEFT(month, 7), 2) AS month,
+        amount
+    FROM 
+        settlement
+    WHERE 
+        company = #{company}
+        AND month BETWEEN CONCAT(#{year}, '-01-01') AND CONCAT(#{year}, '-12-01')
+    ORDER BY 
+        month ASC
+</select>
+
+<update id="updateSattlement" parameterType="map">
+	update settlement
+	set company = #{company}, amount = #{amount}, 
+	month = STR_TO_DATE(CONCAT(#{month}, '-01'), '%Y-%m-%d'),
+	emp_idx = #{loginId}
+	where settlement_idx = #{settlementIdx}
+</update>
+
+
+
+</mapper>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

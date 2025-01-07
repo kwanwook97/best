@@ -194,8 +194,9 @@ public class CalendarController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (!roomName.isEmpty()) {
 			map= calendarService.saveRoomInfo(roomName,photo,maxCapacity,materialIdxList,quantityList);
+		}else {
+			map.put("response", "회의실 이름이 없습니다.");
 		}
-		map.put("response", "회의실 이름이 없습니다.");
         return map;
     }
 	
@@ -228,7 +229,7 @@ public class CalendarController {
     public Map<String, Object> addEvent(@RequestBody Map<String, Object> requestData) {
         // 요청 데이터 확인
         
-        logger.info("requestData:{}종원 테스트1",requestData);
+        logger.info("requestData종원 테스트1:{}",requestData);
         // 사원 정보 조회 (사원 ID 기준)
         // 부서 정보 가져와 저장
         int loginId = Integer.parseInt(requestData.get("loginId").toString());

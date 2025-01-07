@@ -65,7 +65,7 @@
 	        he.name AS handler_name,
 	        hd.depart_name AS handler_depart_name,
 	        hr.rank_name AS handler_rank_name,
-	        b.confirmation_datetime,
+	        DATE_FORMAT(b.confirmation_datetime, '%Y-%m-%d %H:%i') AS confirmation_datetime,
 	        GROUP_CONCAT(CONCAT(m.material_name, ' (', b.quantity, ')') SEPARATOR ', ') AS material_with_quantity
 	    FROM 
 	        borrow b
@@ -103,15 +103,40 @@
 	</select>
 	<select id="getBorrowCount" parameterType="map" resultType="int">
 	    SELECT COUNT(*)
-	    FROM borrow b
-	    WHERE
-	        DATE(b.end_datetime) &lt;= CURRENT_DATE
-	        <if test="returnStatus != null and returnStatus == '미반납'">
-	            AND b.flag = 0
-	        </if>
-	        <if test="returnStatus != null and returnStatus == '반납완료'">
-	            AND b.flag = 1
-	        </if>
+	    FROM (
+	        SELECT 
+	            res.reserve_idx
+	        FROM 
+	            borrow b
+	        JOIN 
+	            employee e ON b.emp_idx = e.emp_idx
+	        JOIN 
+	            department d ON e.depart_idx = d.depart_idx
+	        JOIN 
+	            rank_emp r ON e.rank_idx = r.rank_idx
+	        JOIN 
+	            reserve res ON b.reserve_idx = res.reserve_idx
+	        JOIN 
+	            room rm ON res.room_idx = rm.room_idx
+	        JOIN 
+	            material m ON b.material_idx = m.material_idx
+	        LEFT JOIN 
+	            employee he ON b.handler_emp_idx = he.emp_idx
+	        LEFT JOIN 
+	            department hd ON he.depart_idx = hd.depart_idx 
+	        LEFT JOIN 
+	            rank_emp hr ON he.rank_idx = hr.rank_idx
+	        WHERE 
+	            DATE(b.end_datetime) &lt;= CURRENT_DATE
+	            <if test="returnStatus != null and returnStatus == '미반납'">
+	                AND b.flag = 0
+	            </if>
+	            <if test="returnStatus != null and returnStatus == '반납완료'">
+	                AND b.flag = 1
+	            </if>
+	        GROUP BY 
+	            res.reserve_idx, e.emp_idx, d.depart_name, r.rank_name, rm.name, b.start_datetime, b.end_datetime, b.flag, b.handler_emp_idx
+	    ) AS groupedData
 	</select>
 
 	

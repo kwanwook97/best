@@ -33,5 +33,11 @@ public interface LeaveDAO {
 
 	void insertLeaveHistory(Map<String, Object> map);
 
+	// 문서양식 확인용
+	String documentName(String doc_idx);
+	
+	Map<String, Object> getDocContent(String doc_idx);
+
+	void updateRemainLeave(Map<String, Object> map);
 
 }
