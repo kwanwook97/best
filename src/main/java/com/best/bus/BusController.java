@@ -87,8 +87,18 @@ public class BusController {
 		log.info("contrl param:{}",param);
 	    return "redirect:/busDetail";
 	}
+//	@RequestMapping(value="/busManage.go")
+//	public ModelAndView busManageGo() {
+//		ModelAndView mav = new ModelAndView("bus/busManage");
+//		return mav;
+//	}
+	@RequestMapping(value="/busManage.go")
+	public String busManage(@RequestParam("bus_idx") String busIdx, Model model) {
+	    int bus_idx = Integer.parseInt(busIdx);
+	    busService.busUpdate(bus_idx, model);
+	    return "bus/busManage";
+	}
 	
-	/* 버스 수정 */
 	@RequestMapping(value="/busUpdate.go")
 	public String busUpdate(@RequestParam("bus_idx") String busIdx, Model model) {
 		int bus_idx = Integer.parseInt(busIdx);
@@ -96,13 +106,20 @@ public class BusController {
 		return "bus/busUpdate";
 	}
 	
-	@RequestMapping(value="/busUpdate.do")
-	public String busUpdate(@RequestParam Map<String, String> param) {
-		busService.busUpdateDo(param); 
+	@RequestMapping(value="/busManage.do")
+	public String busManage(@RequestParam Map<String, String> param) {
+		busService.busManage(param); 
 		log.info("contrl param:{}",param);
-	    return "redirect:/busUpdate.go?bus_idx="+Integer.parseInt(param.get("bus_idx"));
+		return "redirect:/busUpdate.go?bus_idx="+Integer.parseInt(param.get("bus_idx"));
 	}
 	
+//	@RequestMapping(value="/busUpdate.do")
+//	public String busUpdate(@RequestParam Map<String, String> param) {
+//		busService.busUpdateDo(param); 
+//		log.info("contrl param:{}",param);
+//	    return "redirect:/busUpdate.go?bus_idx="+Integer.parseInt(param.get("bus_idx"));
+//	}
+//	
 	/* 배차현황 */
 	@RequestMapping(value="/dispatchList.go")
 	public String dispatchList() {
@@ -306,11 +323,6 @@ public class BusController {
 
 	
 	
-	/* 버스 관리 정보 */
-	@RequestMapping(value="/busManage.go")
-	public String busManage() {
-		return "bus/busManage";
-	}
 	/* 배차등록 보류 */
 	@RequestMapping(value="/dispatchInsert.go")
 	public String dispatchInsert() {

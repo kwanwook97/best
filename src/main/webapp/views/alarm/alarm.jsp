@@ -219,16 +219,23 @@ $(document).ready(function () {
 
     // 알림 데이터 가져오기
     function fetchAlarms(page, type, flag) {
+    	const data = {
+    	        emp_idx: empIdx,
+    	        page: page,
+    	        limit: limit,
+    	    };
+
+    	    if (type) {
+    	        data.type = type;
+    	    }
+
+    	    if (flag !== null) {
+    	        data.flag = flag; // 명확히 true 또는 false로 설정
+    	    }
         $.ajax({
             url: "alarmList.ajax",
             type: "GET",
-            data: {
-                emp_idx: empIdx,
-                type: type || '',
-                flag: flag || '',
-                page: page,
-                limit: limit,
-            },
+            data: data,
             success: function (response) {
                 console.log("응답 데이터:", response); // 디버깅용
                 renderAlarmList(response.alarms);
@@ -339,6 +346,7 @@ $(document).ready(function () {
                     break;
                 case "캘린더":
                     currentType = "calendar";
+                    currentType = "reserve";
                     break;
                 case "결재":
                     currentType = "document";
@@ -355,10 +363,10 @@ $(document).ready(function () {
                     currentFlag = null;
                     break;
                 case "읽음":
-                    currentFlag = 1;
+                    currentFlag = true;
                     break;
                 case "안읽음":
-                    currentFlag = 0;
+                    currentFlag = false;
                     break;
             }
         }

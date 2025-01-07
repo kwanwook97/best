@@ -10,9 +10,9 @@ public interface AlarmDAO {
 
 	void insertAlarm(AlarmDTO alarm);
 
-	List<AlarmDTO> alarmList(int emp_idx, String type, Integer flag, int offset, int limit);
+	List<AlarmDTO> alarmList(int emp_idx, String type, Boolean flag, int offset, int limit);
 
-	int getTotalAlarmCount(int emp_idx, String type, Integer flag);
+	int getTotalAlarmCount(int emp_idx, String type, Boolean flag);
 
 	List<Map<String, Object>> getUpcomingEvents();
 
@@ -21,6 +21,8 @@ public interface AlarmDAO {
 	void updateAlarmFlag(int alarm_idx, int flag);
 
 	List<Map<String, Object>> unreadAlarm(int emp_idx);
+
+	int getUnreadAlarmCount(int empIdx);
 
 
 }
