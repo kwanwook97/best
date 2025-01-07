@@ -133,7 +133,7 @@ public interface DocumentDAO {
 	int documentReWrite(int form_idx, String form_content);
 	
 	// 결재 문서 수정하기
-	int documentUpdate(FormDTO formDTO);
+	int documentUpdate(Map<String, String> param);
 
 
 

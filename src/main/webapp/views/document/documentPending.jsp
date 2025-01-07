@@ -614,7 +614,7 @@ function docAction(actionType) {
 			console.log("야 "+approv_order);
 			
 			if(manager === emp_name){
-				var item = [];
+				/* var item = [];
 				var price = [];
 
 				$('input[data-index]').each(function() {
@@ -629,7 +629,37 @@ function docAction(actionType) {
 				});
 
 				console.log("item:", item);
-				console.log("price:", price);  
+				console.log("price:", price);   */
+				// 그룹화된 데이터를 저장할 배열
+			    var one = [];
+			    var two = [];
+			    var three = [];
+			    var four = [];
+			    var five = [];
+
+			    // input 요소를 순회하면서 data-index 값에 따라 배열에 푸시
+			    $('input[data-index]').each(function () {
+			        var index = parseInt($(this).attr('data-index'));
+
+			        if (index >= 1 && index <= 5) {
+			            one.push($(this).val());
+			        } else if (index >= 6 && index <= 10) {
+			            two.push($(this).val());
+			        } else if (index >= 11 && index <= 15) {
+			            three.push($(this).val());
+			        } else if (index >= 16 && index <= 20) {
+			            four.push($(this).val());
+			        } else if (index >= 21 && index <= 25) {
+			            five.push($(this).val());
+			        }
+			    });
+
+			    // 결과 확인용 콘솔 출력
+			    console.log("one:", one);
+			    console.log("two:", two);
+			    console.log("three:", three);
+			    console.log("four:", four);
+			    console.log("five:", five);
 			}
 			
 			var data = {
@@ -638,8 +668,11 @@ function docAction(actionType) {
 				    actionType: actionType,
 			        doc_content: doc_content,
 			        approv_order:approv_order,
-		        	item: JSON.stringify(item),
-		        	price: JSON.stringify(price)
+			        one: JSON.stringify(one),
+			        two: JSON.stringify(two),
+			        three: JSON.stringify(three),
+			        four: JSON.stringify(four),
+			        five: JSON.stringify(five)
 				};
 
 			$.ajax({

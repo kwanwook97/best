@@ -182,6 +182,7 @@
 	.modal-box input{
 		all: unset;
 	}
+
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -203,13 +204,13 @@
 				<form action="documentWrite.do" method="POST">
 				<table>
 					<tr>
-						<td>제목 : <input type="text" name="subject" placeholder="양식이름을 작성하세요! 20자 이내" maxlength="20"/></td>
+						<td>제목 : <input type="text" name="form_subject" placeholder="양식이름을 작성하세요! 20자 이내" maxlength="20"/></td>
 					</tr>
 					<tr>
 						<td>
 							<div id="div_editor">
 							</div>
-							<input type="hidden" name="content"/>
+							<input type="hidden" name="form_content"/>
 						</td>
 					</tr>
 					<tr>
@@ -269,7 +270,7 @@ var editor = new RichTextEditor("#div_editor", config);
 
 function saveForm() {
 	
-	var subject = $('input[name="subject"]').val().trim();
+	var subject = $('input[name="form_subject"]').val().trim();
     if (subject === "") {
         alert("제목을 입력해주세요.");
         return;
@@ -282,14 +283,14 @@ function saveForm() {
 	if (content.length > 100 * 1024 * 1024) {
         alert("100MB이상 크기는 전송이 불가능 합니다.");
     } else {
-        $('input[name="content"]').val(content);
+        $('input[name="form_content"]').val(content);
         $('form').submit();
     }
 }
 
 function updateForm() {
 	
-	var subject = $('input[name="subject"]').val().trim();
+	var subject = $('input[name="form_subject"]').val().trim();
     if (subject === "") {
         alert("제목을 입력해주세요.");
         return;
@@ -302,7 +303,7 @@ function updateForm() {
 	if (content.length > 100 * 1024 * 1024) {
         alert("100MB이상 크기는 전송이 불가능 합니다.");
     } else {
-        $('input[name="content"]').val(content);
+        $('input[name="form_content"]').val(content);
         $('form').submit();
     }
 }
@@ -330,8 +331,6 @@ $.ajax({
     }
 });
 
-// RichTextEditor 초기화
-var richTextEditorInstance = new RichTextEditor("#div_editor");
 
 function documentFormUp(form_idx) {
     $.ajax({
@@ -341,10 +340,19 @@ function documentFormUp(form_idx) {
         dataType: 'text',
         success: function(response) {
         	console.log("Response HTML: ", response);
-        	if (richTextEditorInstance) {
-                richTextEditorInstance.setHTML(response);
+        	if (editor) {
+        		editor.setHTML(response);
                 changeFormActionToUpdate();
                 changeButtonToUpdate();
+                
+                $('#div_editor input[name="form_idx"]').remove();
+                
+                var hiddenInput = $('<input>', {
+                    type: 'hidden',
+                    name: 'form_idx',
+                    value: form_idx
+                });
+                $('#div_editor').append(hiddenInput);
             } else {
                 console.error('RichTextEditor 인스턴스가 없습니다.');
             }
@@ -352,34 +360,6 @@ function documentFormUp(form_idx) {
         error: function(xhr, status, error) {
             console.error('문서 요청 실패:', error);
         }
-    });
-}
-//모달 열기
-function openModal(content, form_idx) {
-    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
-	var modalClass = '';
-
-    // 모달 HTML 생성
-    var modalHtml = 
-        '<div id="' + modalId + '"class="modal" style="display: none;">' +
-        '  <div class="modal-content">' +
-        '    <div class="modal-box">' +
-        '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
-        '    </div>' +
-        '    <div class="content" contenteditable="true">' + content + '</div>' +
-        '  </div>' +
-        '</div>';
-
-    // body에 추가
-    $('body').append(modalHtml);
-
-    // 모달 표시
-    $('#' + modalId).show();
-
-    // 닫기 버튼 이벤트 등록 (이벤트 위임)
-    $(document).on('click', '.close-btn', function() {
-        var targetModalId = $(this).data('modal-id');
-        $('#' + targetModalId).remove();
     });
 }
 </script>

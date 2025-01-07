@@ -625,12 +625,12 @@ public class DocumentService {
 		
 		documentDao.documentStatus(doc_idx, doc_content);
 		
-		// 결재 알림 처리
-//	    notifyApproval(
-//	        Integer.parseInt(doc_idx),
-//	        Integer.parseInt(approv_order),
-//	        "승인"
-//	    );
+//		 결재 알림 처리
+	    notifyApproval(
+	        Integer.parseInt(doc_idx),
+	        Integer.parseInt(approv_order),
+	        "승인"
+	    );
 	}
 	@Transactional
 	public void approveStatusT(String doc_idx, String approv_order, String doc_content) {
@@ -694,8 +694,8 @@ public class DocumentService {
 	@Transactional
 	public void documentWrite(Map<String, String> param) {
 		FormDTO formDTO = new FormDTO();
-		formDTO.setForm_subject(param.get("subject"));
-		formDTO.setForm_content(param.get("content"));
+		formDTO.setForm_subject(param.get("form_subject"));
+		formDTO.setForm_content(param.get("form_content"));
 		documentDao.documentWrite(formDTO);
 		
 	    int form_idx = formDTO.getForm_idx();
@@ -709,12 +709,8 @@ public class DocumentService {
 	}
 	
 	// 결재문서 수정하기
-	@Transactional
 	public void documentUpdate(Map<String, String> param) {
-		FormDTO formDTO = new FormDTO();
-		formDTO.setForm_subject(param.get("subject"));
-		formDTO.setForm_content(param.get("content"));
-		documentDao.documentUpdate(formDTO);
+		documentDao.documentUpdate(param);
 	}
 	
 
