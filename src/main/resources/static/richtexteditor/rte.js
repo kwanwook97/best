@@ -151,25 +151,163 @@ RTE_DefaultConfig.galleryImages = [
 	"http://richtexteditor.com/uploads/6.jpg"
 ]; // Default images for gallery Images dialog. 
 
+
 RTE_DefaultConfig.htmlTemplates = [
-	["My Doc 1", "<h2>MyTitleMyTitleMyTitleMyTitleMyTitleMyTitleMyTitle</h2><p>Paragraph 1 </p><p>Paragraph 2 </p><p>Paragraph 3 </p><p>Paragraph 4 </p><p>Paragraph 5 </p>"]
-	,
-	["My Doc 1", "<table class="__se_tbl" style="background: white; margin: 0px; border: 1px solid black; border-image: none; color: black; font-family: malgun gothic,dotum,arial,tahoma; font-size: 12px; border-collapse: collapse !important;"><!-- User --> 
-     
-	<tbody class="infoTable">
-		<tr>
-			<td style="width: 100px; height: 22px; vertical-align: middle; border: 1px solid black; text-align: center; font-weight: bold; background: rgb(221, 221, 221); padding: 3px !important;">
-				기안자
-			</td>
-			<td style="width: 200px; height: 22px; vertical-align: middle; border: 1px solid black; text-align: left; padding: 3px !important;">
-				<span unselectable="on" contenteditable="false" class="comp_wrap" data-cid="0" data-dsl="{{label:draftUser}}" data-wrapper="" style="" data-value="" data-autotype=""><span class="comp_item name">${name}</span><span contenteditable="false" class="comp_active" style="display:none;"> <span class="Active_dot1"></span><span class="Active_dot2"></span> <span class="Active_dot3"></span><span class="Active_dot4"></span> </span> <span contenteditable="false" class="comp_hover" data-content-protect-cover="true" data-origin="0"> <a contenteditable="false" class="ic_prototype ic_prototype_trash" data-content-protect-cover="true" data-component-delete-button="true"></a> </span> </span> 
-			</td>
-		</tr>
-		</tbody>
-		</table>"]
-	,
-	["My Doc 1", "<h2>MyTitleMyTitleMyTitle</h2><p>Paragraph 1 </p><p>Paragraph 2 </p><p>Paragraph 3 </p><p>Paragraph 4 </p><p>Paragraph 5 </p>"]
-];// Default html Templates for html Templates dialog. 
+    ["신청서 템플릿", `
+	    <h3 style=" width: 800px; text-align: center;">신청서</h3>
+	    <input type="hidden" name="form_idx" value="">
+		<table border="1" cellpadding="5" cellspacing="0" style=" border-collapse: collapse; font-size: 12px; font-weight: bold;">
+			<tbody>
+				<tr style="width: 200px;">
+					<td style="background: #ddd; width: 80px; text-align: center;">기안자</td>
+					<td style="width: 120px;"><span class="comp_item name"></span></td>
+				</tr>
+				<tr style="width: 200px;">
+					<td style="background: #ddd; width: 80px; text-align: center;">기안부서</td>
+					<td style="width: 120px;"><span class="comp_item depart_name"></span></td>
+				</tr>
+				<trstyle="width: 200px;">
+					<td style="background: #ddd; width: 80px; text-align: center;">기안일</td>
+					<td style="width: 120px;"><span class="comp_item todayDate"></span></td>
+				</tr>
+				<tr style="width: 200px;">
+					<td style="background: #ddd; width: 80px; text-align: center;">문서번호</td>
+					<td style="width: 120px;"><span class="comp_item doc_number"></span></td>
+				</tr>
+				<tr style="width: 200px;">
+					<td style="background: #ddd; width: 80px; text-align: center;">참조</td>
+					<td style="width: 120px;"><span class="comp_item referenceName"></span></td>
+				</tr>
+			</tbody>
+		</table>
+		<br/>
+		<table border="1" cellpadding="5" cellspacing="0" style="width: 800px; border-collapse: collapse; font-size: 14px; font-weight: bold;">
+			<tbody>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">제목</td>
+					<td>	
+						<input class="ipt_editor" type="text" name="doc_subject" maxlength="15">
+					</td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">기간 및 일시</td>
+					<td><input type="date" name="start_date">&nbsp;~&nbsp;<input type="date" name="end_date"></td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">사유</td>
+					<td><textarea class="text" style="width: 300px; height: 150px;"></textarea></td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">세부내용</td>
+					<td><textarea style="width: 300px; height: 120px;"></textarea></td>
+				</tr>
+			</tbody>
+		</table>
+    `]
+    ,  
+    ["신청서 템플릿 2", `
+	    <h3 style=" width: 800px; text-align: center;">신청서</h3>
+	    <input type="hidden" name="form_idx" value="">
+		<table border="1" cellpadding="5" cellspacing="0" style=" border-collapse: collapse; font-size: 12px; font-weight: bold;">
+			<tbody>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">기안자</td>
+					<td style="width: 120px;"><span class="comp_item name"></span></td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">기안부서</td>
+					<td style="width: 120px;"><span class="comp_item depart_name"></span></td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">기안일</td>
+					<td style="width: 120px;"><span class="comp_item todayDate"></span></td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">문서번호</td>
+					<td style="width: 120px;"><span class="comp_item doc_number"></span></td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">참조</td>
+					<td style="width: 120px;"><span class="comp_item referenceName"></span></td>
+				</tr>
+			</tbody>
+		</table>
+		<table border="1" cellpadding="5" cellspacing="0" style="width: 800px; border-collapse: collapse; font-size: 14px; font-weight: bold; margin-bottom: 20px;">
+			<tbody>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">제목</td>
+					<td>	
+						<input class="ipt_editor" type="text" name="doc_subject" maxlength="15">
+					</td>
+				</tr>
+				<tr>
+					<td style="background: #ddd; width: 80px; text-align: center;">사유</td>
+					<td><textarea class="text" style="width: 300px; height: 150px;"></textarea></td>
+				</tr>
+				<br/>
+				<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 14px; font-weight: bold;">
+					<thead>
+						<tr>
+							<th style="background: #ddd; text-align: center;">번호</th>
+							<th style="background: #ddd; text-align: center;">품목</th>
+							<th style="background: #ddd; text-align: center;">수량</th>
+							<th style="background: #ddd; text-align: center;">단위</th>
+							<th style="background: #ddd; text-align: center;">합계</th>
+							<th style="background: #ddd; text-align: center;">비고</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>1</th>
+							<th><input id="no1_1" class="ipt_editor" type="text" name="item1" maxlength="15"></th>
+							<th><input id="no2_1" class="ipt_editor" type="text" name="item2" maxlength="15"></th>
+							<th><input id="no3_1" class="ipt_editor" type="text" name="item3" maxlength="15"></th>
+							<th><input id="no4_1" class="ipt_editor" type="text" name="item4" maxlength="15"></th>
+							<th><input id="no5_1" class="ipt_editor" type="text" name="item5" maxlength="15"></th>
+						</tr>
+						<tr>
+							<th>2</th>
+							<th><input id="no1_2" class="ipt_editor" type="text" name="item6" maxlength="15"></th>
+							<th><input id="no2_2" class="ipt_editor" type="text" name="item7" maxlength="15"></th>
+							<th><input id="no3_2" class="ipt_editor" type="text" name="item8" maxlength="15"></th>
+							<th><input id="no4_2" class="ipt_editor" type="text" name="item9" maxlength="15"></th>
+							<th><input id="no5_2" class="ipt_editor" type="text" name="item10" maxlength="15"></th>
+						</tr>
+						<tr>
+							<th>3</th>
+							<th><input id="no1_3" class="ipt_editor" type="text" name="item11" maxlength="15"></th>
+							<th><input id="no2_3" class="ipt_editor" type="text" name="item12" maxlength="15"></th>
+							<th><input id="no3_3" class="ipt_editor" type="text" name="item13" maxlength="15"></th>
+							<th><input id="no4_3" class="ipt_editor" type="text" name="item14" maxlength="15"></th>
+							<th><input id="no5_3" class="ipt_editor" type="text" name="item15" maxlength="15"></th>
+						</tr>
+						<tr>
+							<th>4</th>
+							<th><input id="no1_4" class="ipt_editor" type="text" name="item16" maxlength="15"></th>
+							<th><input id="no2_4" class="ipt_editor" type="text" name="item17" maxlength="15"></th>
+							<th><input id="no3_4" class="ipt_editor" type="text" name="item18" maxlength="15"></th>
+							<th><input id="no4_4" class="ipt_editor" type="text" name="item19" maxlength="15"></th>
+							<th><input id="no5_4" class="ipt_editor" type="text" name="item20" maxlength="15"></th>
+						</tr>
+						<tr>
+							<th>5</th>
+							<th><input id="no1_5" class="ipt_editor" type="text" name="item21" maxlength="15"></th>
+							<th><input id="no2_5" class="ipt_editor" type="text" name="item22" maxlength="15"></th>
+							<th><input id="no3_5" class="ipt_editor" type="text" name="item23" maxlength="15"></th>
+							<th><input id="no4_5" class="ipt_editor" type="text" name="item24" maxlength="15"></th>
+							<th><input id="no5_5" class="ipt_editor" type="text" name="item25" maxlength="15"></th>
+						</tr>
+						<tr>
+							<th colspan="4">총 계</th>
+							<th><input id="no1_6" class="ipt_editor" type="text" name="item26" maxlength="15"></th>
+							<th><input id="no2_6" class="ipt_editor" type="text" name="item27" maxlength="15"></th>
+						</tr>
+					</tbody>
+				</table>
+			</tbody>
+		</table>
+    `]
+];
 
 
 RTE_DefaultConfig.inlineStyles = [["Red", "color:red", "color:red"], ["Bold", "font-weight:bold", "font-weight:bold"], ["Mark", "my-cls-mark"], ["Warning", "my-cls-warning"]]; // Default CSS styles for inline styles dropdown. 

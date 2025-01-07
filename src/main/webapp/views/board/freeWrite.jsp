@@ -31,7 +31,7 @@
 	}
 	.maintext{
 		display: flex;
-		margin-left: 10px;
+		margin: 10px;
 	}
 	.document{
 		color: var(--secondary-color);
@@ -111,45 +111,35 @@
  	<div class="dashboard-body">
  		<div class="maintext">
 			<h3 class="document">게시판</h3>
-			<h3>>&nbsp;&nbsp;공지 수정</h3>
+			<h3>>&nbsp;&nbsp;공지 작성</h3>
 		</div>
 		<div class="formBorder">
-			<form action="noticeUpdate.do" method="POST">
-				<table>
-					<input type="hidden" name="board_idx" value="${info.board_idx}" />
-					<tr>
-						<td>제목 : <input type="text" name="subject" maxlength="20" value="${info.subject}"/></td>
-					</tr>
-					<tr>
-						<td>
-							<label for="check">★ 중요 공지로 등록하려면 체크박스를 선택하세요</label>
-							  	<input type="checkbox" id="check" name="importance"
-							    	<c:if test="${info.importance == true}">
-								        checked="checked"
-								    </c:if> />
-						    <input type="hidden" name="importance" value="0">
-						</td>
-					</tr>
-					<tr>
-						<td>작성자 : <input type="text" name="name" value="${info.name}" readonly/></td>
-					</tr>
-					<tr>
-						<td>
-							<div id="div_editor">
-								${info.content}
-							</div>
-							<input type="hidden" name="content"/>
-						</td>
-					</tr>
-					<tr>
-						<th><input type="button" value="공지 수정하기" onclick="save()"/></th>
-					</tr>
-				</table>
+			<form action="freeWrite.do" method="POST">
+			<table>
+				<tr>
+					<td>제목 : <input type="text" name="subject" placeholder="제목을 입력 하세요! 20자 이내 작성" maxlength="20"/></td>
+				</tr>
+				<tr style="display: none;">
+					<td><input type="text" name="name" value="${sessionScope.loginName}" readonly/></td>
+				</tr>
+				<tr>
+					<td>
+						<div id="div_editor">
+						</div>
+						<input type="hidden" name="content"/>
+					</td>
+				</tr>
+				<tr>
+					<th><input type="button" value="글쓰기" onclick="save()"/></th>
+				</tr>
+			</table>
 			</form>
 		</div>
  	</div>
 </body>
 <script>
+var emp_idx = "${sessionScope.loginId}";
+var emp_name = "${sessionScope.loginName}";
 var config = {}
 config.editorResizeMode = "none";
 //config.toolbar = "basic";
@@ -175,9 +165,9 @@ function save() {
 
     // 체크박스 상태에 따라 importance 값 설정
     if ($('#check').prop('checked')) {
-        $('input[name="importance"]').val('1');
+        $('input[name="importance"]').val('true');
     } else {
-        $('input[name="importance"]').val('0');
+        $('input[name="importance"]').val('false');
     }
 
     if (content.length > 100 * 1024 * 1024) {

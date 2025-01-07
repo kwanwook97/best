@@ -96,16 +96,13 @@
 						<td>제목 : ${info.subject}</td>
 					</tr>
 					<tr>
-						<td>작성자 : ${info.name}</td>
-					</tr>
-					<tr>
 						<td>${info.content}</td>
 					</tr>
 				</tbody>
 			</table>
 			<div class="gobtn">
-				<input type="button" value="리스트" onclick="location.href='noticeBoard.go'"/>
-				<input type="button" value="수정하기" onclick="location.href='noticeUpdate.go?idx=${info.board_idx}'"/>
+				<input type="button" value="리스트" onclick="location.href='freeBoard.go'"/>
+				<input type="button" value="수정하기" onclick="location.href='freeUpdate.go?idx=${info.board_idx}'"/>
 			</div>
 		</div>
  	</div>

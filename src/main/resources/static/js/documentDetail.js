@@ -28,7 +28,7 @@ function open(content) {
         '    <div class="modal-box">' +
         '      <span class="close-btn" data-modal-id="' + modalId + '">X</span>' +
         '    </div>' +
-        '    <div class="content none" contenteditable="true">' + content + '</div>' +
+        '    <div class="content_emp" contenteditable="true">' + content + '</div>' +
         '  </div>' +
         '</div>';
 
