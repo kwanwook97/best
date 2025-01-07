@@ -117,6 +117,31 @@ public class GlobalWebsocketHandler extends TextWebSocketHandler {
                 }
             });
     }
+    
+    /* 안 읽은 알림 브로드캐스트 */
+    public static void broadcastUnreadAlarm(int empIdx, int unreadAlarmCount) {
+        log.info("글로벌 웹소켓 broadcastUnreadAlarm 호출: empIdx = {}, unreadAlarmCount = {}", empIdx, unreadAlarmCount);
+        sessions.stream()
+            .filter(WebSocketSession::isOpen)
+            .forEach(session -> {
+                try {
+                    Integer sessionEmpIdx = (Integer) session.getAttributes().get("emp_idx");
+                    if (sessionEmpIdx != null && sessionEmpIdx.equals(empIdx)) {
+                        Map<String, Object> payload = new HashMap<>();
+                        payload.put("type", "UPDATE_UNREAD_ALARM");
+                        payload.put("emp_idx", empIdx);
+                        payload.put("unread_alarm_count", unreadAlarmCount);
+
+                        String jsonMessage = objectMapper.writeValueAsString(payload);
+                        session.sendMessage(new TextMessage(jsonMessage));
+
+                        log.info("알림 브로드캐스트 성공: empIdx={}, unreadAlarmCount={}", empIdx, unreadAlarmCount);
+                    }
+                } catch (IOException e) {
+                    log.error("글로벌 WebSocket 알림 메시지 전송 실패 - 세션 ID: {}", session.getId(), e);
+                }
+            });
+    }
 
 
 

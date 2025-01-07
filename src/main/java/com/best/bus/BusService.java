@@ -122,22 +122,21 @@ public class BusService {
 	    bus.setBus_type(param.get("bus_bus_type"));
 	    log.info("ser busDTO:{}",bus);
 	    busDao.busInsert(bus);
-	    
-	    
-	    int busIdx = bus.getBus_idx();
-	    BusManageDTO busMan = new BusManageDTO();   
-	    String inspectDateStr = param.get("bus_manage_inspect_date");
+	}
+	public void busManage(Map<String, String> param) {
+		BusManageDTO busMan = new BusManageDTO();   
+		String inspectDateStr = param.get("bus_manage_inspect_date");
 		String nextInspectDateStr = param.get("bus_manage_next_inspect_date");
-		busMan.setBus_idx(busIdx);
-	    busMan.setStatus(param.get("bus_manage_status"));
-	    busMan.setDistance(Double.parseDouble(param.get("bus_manage_distance")));
-	    busMan.setInspect_date(parseLocalDate(inspectDateStr));
+		busMan.setBus_idx(Integer.parseInt(param.get("bus_manage_emp_idx")));
+		busMan.setStatus(param.get("bus_manage_status"));
+		busMan.setDistance(Double.parseDouble(param.get("bus_manage_distance")));
+		busMan.setInspect_date(parseLocalDate(inspectDateStr));
 		busMan.setNext_inspect_date(parseLocalDate(nextInspectDateStr));
-	    busMan.setEmp_idx(Integer.parseInt(param.get("bus_manage_emp_idx")));
-	    busMan.setContent(param.get("bus_manage_content"));
-	    busMan.setAmount(Integer.parseInt(param.get("bus_manage_amount")));
-	    log.info("ser busManageDTO:{}",busMan);
-	    busDao.busManInsert(busMan);
+		busMan.setEmp_idx(Integer.parseInt(param.get("bus_manage_emp_idx")));
+		busMan.setContent(param.get("bus_manage_content"));
+		busMan.setAmount(Integer.parseInt(param.get("bus_manage_amount")));
+		log.info("ser busManageDTO:{}",busMan);
+		busDao.busManInsert(busMan);
 		
 	}
 	/* 데이트 타입 형변환 공통 메서드 */
@@ -154,38 +153,38 @@ public class BusService {
 	}
 
 	public void busUpdate(int bus_idx, Model model) {
-        BusDTO bus = busDao.busUpdate(bus_idx);
-        BusManageDTO busMan = busDao.busManUpdate(bus_idx);
-        
-        model.addAttribute("bus", bus);
-        model.addAttribute("busMan", busMan);
+	    BusDTO bus = busDao.busUpdate(bus_idx);
+	    List<Map<String, Object>> busManList = busDao.busManUpdate(bus_idx); // 여러 행 처리
+
+	    model.addAttribute("bus", bus);
+	    model.addAttribute("busManList", busManList); // List로 전달
 	}
 
-	public void busUpdateDo(Map<String, String> param) {
-	    BusDTO bus = new BusDTO();  
-	    int bus_idx = Integer.parseInt(param.get("bus_idx"));
-	    bus.setBus_idx(bus_idx);
-	    bus.setRoute_name(param.get("bus_route_name"));
-	    bus.setFuel_efficiency(Double.parseDouble(param.get("bus_fuel_efficiency")));
-	    bus.setSeat_number(Integer.parseInt(param.get("bus_seat_number")));
-	    bus.setBus_type(param.get("bus_bus_type"));
-	    log.info("ser busDTO:{}", bus);
-	    busDao.busUpdateDo(bus);
-
-	    BusManageDTO busMan = new BusManageDTO();  
-	    String inspectDateStr = param.get("bus_manage_inspect_date");
-	    String nextInspectDateStr = param.get("bus_manage_next_inspect_date");
-	    busMan.setBus_idx(bus_idx);
-	    busMan.setStatus(param.get("bus_manage_status"));
-	    busMan.setDistance(Double.parseDouble(param.get("bus_manage_distance")));
-	    busMan.setInspect_date(parseLocalDate(inspectDateStr));
-	    busMan.setNext_inspect_date(parseLocalDate(nextInspectDateStr));
-	    busMan.setEmp_idx(Integer.parseInt(param.get("bus_manage_emp_idx")));
-	    busMan.setContent(param.get("bus_manage_content"));
-	    busMan.setAmount(Integer.parseInt(param.get("bus_manage_amount")));
-	    log.info("ser busManageDTO:{}", busMan);
-	    busDao.busManUdateDo(busMan);
-	}
+//	public void busUpdateDo(Map<String, String> param) {
+//	    BusDTO bus = new BusDTO();  
+//	    int bus_idx = Integer.parseInt(param.get("bus_idx"));
+//	    bus.setBus_idx(bus_idx);
+//	    bus.setRoute_name(param.get("bus_route_name"));
+//	    bus.setFuel_efficiency(Double.parseDouble(param.get("bus_fuel_efficiency")));
+//	    bus.setSeat_number(Integer.parseInt(param.get("bus_seat_number")));
+//	    bus.setBus_type(param.get("bus_bus_type"));
+//	    log.info("ser busDTO:{}", bus);
+//	    busDao.busUpdateDo(bus);
+//
+//	    BusManageDTO busMan = new BusManageDTO();  
+//	    String inspectDateStr = param.get("bus_manage_inspect_date");
+//	    String nextInspectDateStr = param.get("bus_manage_next_inspect_date");
+//	    busMan.setBus_idx(bus_idx);
+//	    busMan.setStatus(param.get("bus_manage_status"));
+//	    busMan.setDistance(Double.parseDouble(param.get("bus_manage_distance")));
+//	    busMan.setInspect_date(parseLocalDate(inspectDateStr));
+//	    busMan.setNext_inspect_date(parseLocalDate(nextInspectDateStr));
+//	    busMan.setEmp_idx(Integer.parseInt(param.get("bus_manage_emp_idx")));
+//	    busMan.setContent(param.get("bus_manage_content"));
+//	    busMan.setAmount(Integer.parseInt(param.get("bus_manage_amount")));
+//	    log.info("ser busManageDTO:{}", busMan);
+//	    busDao.busManUdateDo(busMan);
+//	}
 
 	public List<String> busDispatch() {
 		return busDao.busDispatch();

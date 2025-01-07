@@ -286,10 +286,7 @@ var loginId = ${sessionScope.loginId};
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
 
-			<li><a href="javaScript:void();"> <i
-					class="fa-solid fa-video"></i> <span>CCTV</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a></li>
+
 
 			<li class="sidebar-header"></li>
 			<li><a href="alarm.go"> <i
@@ -353,8 +350,8 @@ var loginId = ${sessionScope.loginId};
 				
 				<!-- 결재 / 캘린더 / 메일 / 알림리스트 드롭다운 -->
 				<li class="nav-item dropdown-lg" style="position: relative;">
-				<div id="alarmIndicator"></div>
-				<div class="dropdown">
+					<div id="alarmIndicator"></div>
+					<div class="dropdown">
 						<a class="nav-link headerDropdownToggle" href="javascript:void(0);">
 							<i class="fa fa-bell-o"></i>
 						</a>
@@ -366,11 +363,28 @@ var loginId = ${sessionScope.loginId};
 				</li>
 						
 						
-				<li class="nav-item dropdown-lg"><a
-					class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect"
-					data-toggle="dropdown" href="javascript:void();"> <i
-						class="bi bi-person-circle"></i>
-				</a></li>
+				<li class="nav-item dropdown-lg" style="position: relative;">
+					<div class="dropdown">
+						<a class="nav-link headerDropdownToggle" href="javascript:void();"> 
+							<i class="bi bi-person-circle"></i>
+						</a>
+						<div class="dropdown-menu-custom myPageDropdown dropdownMenu">
+							<div class="dropdown-item">
+                    			<a href="myDetail.go?emp_idx=${sessionScope.loginId}">
+                    				<i class="bi bi-person-fill-gear"></i>
+                    				<span>나의 정보 관리</span>
+                    			</a>
+                			</div>
+							<div class="dropdown-item">
+                    			<a href="logout.do">
+                    				<i class="fa-solid fa-right-to-bracket"></i>
+                    				<span>로그아웃</span>
+                    			</a>
+                			</div>
+						</div>
+					</div>
+				</li>
+				
 			</ul>
 		</nav>
 	</header>
@@ -399,6 +413,22 @@ window.updateUnreadMessageCount = function (unreadTotal) {
 
     console.log("읽지 않은 메시지 총 수 업데이트:", unreadTotal);
 };
+
+window.updateUnreadAlarmCount = function (unreadAlarmCount) {
+    const alarmIndicator = document.querySelector("#alarmIndicator");
+
+    if (unreadAlarmCount > 0) {
+        // 안 읽은 알림이 있으면 표시
+        alarmIndicator.style.display = "block";
+    } else {
+        // 안 읽은 알림이 없으면 숨김
+        alarmIndicator.style.display = "none";
+    }
+
+    console.log("안 읽은 알림 수 업데이트:", unreadAlarmCount);
+};
+
+
 
 function showMailNotification(content, type) {
     const notification = $("#alarmHeader");
@@ -461,14 +491,14 @@ $(document).ready(function () {
         mailDropdown.empty(); // 기존 드롭다운 초기화
 
         if (data.length === 0) {
-            mailDropdown.append('<div class="dropdown-item">알림이 없습니다.</div>');
+            mailDropdown.append('<div class="dropdown-item"><div class="notification-profile"> 새로운 알림이 없습니다.</div></div>');
             return;
         }
 
         const limitedData = data.slice(0, 5); // 최신 5개의 데이터만 유지
         limitedData.forEach(function (alarm) {
             const alarmItem =
-                '<div class="dropdown-item" data-type="' + alarm.type + '">' +
+                '<div class="dropdown-item" data-alarm-idx="' + alarm.alarm_idx + '" data-type="' + alarm.type + '">' +
                     '<div class="notification-profile">' +
                         '<div class="notifi-profile">' +
                             '<div>' + alarm.content + '</div>' +
@@ -484,6 +514,7 @@ $(document).ready(function () {
 
     // 이벤트 위임으로 클릭 이벤트 처리
     mailDropdown.on("click", ".dropdown-item", function () {
+        const alarmIdx = $(this).data("alarm-idx"); // alarm_idx 가져오기
         const itemType = $(this).data("type");
         let redirectUrl = '';
         switch (itemType) {
@@ -493,7 +524,21 @@ $(document).ready(function () {
             case 'reserve': redirectUrl = 'myReserve.go'; break;
             default: return;
         }
-        window.location.href = redirectUrl;
+
+        // 읽음 처리 AJAX 호출 추가
+        $.ajax({
+            url: "updateAlarmFlag.ajax",
+            type: "POST",
+            data: { alarm_idx: alarmIdx, flag: 1 },
+            success: function () {
+                console.log("알림 읽음 처리 완료");
+                window.location.href = redirectUrl; // 읽음 처리 후 이동
+            },
+            error: function (err) {
+                console.error("알림 읽음 처리 중 오류 발생:", err);
+                window.location.href = redirectUrl; // 오류 시에도 이동
+            }
+        });
     });
 });
 
@@ -519,6 +564,20 @@ function updateMailDropdown(content, type) {
 }
 
 
+$(document).ready(function () {
+    // 초기 알림 상태 가져오기
+    $.ajax({
+        type: 'GET',
+        url: 'unreadAlarmCount.ajax',
+        data: { emp_idx: loginId },
+        success: function (data) {
+            updateUnreadAlarmCount(data.unreadAlarmCount);
+        },
+        error: function (err) {
+            console.error("알림 데이터를 가져오는 중 오류 발생", err);
+        }
+    });
+});
 
 checkButton()
 

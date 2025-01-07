@@ -59,7 +59,7 @@ $(document).ready(function() {
                                     <li><strong>총 버스 : </strong>
                                         <span>${sum.total_buses}</span>
                                     </li>
-                                    <li><strong>운행 중 : </strong>
+                                    <li><strong>운행 가능 : </strong>
                                         <span>${sum.normal_count}</span>
                                     </li>
                                     <li><strong>정비 중 : </strong>
@@ -75,25 +75,91 @@ $(document).ready(function() {
             // 버스 상세 데이터 (busData) 출력
             $.each(data.busData, function(index, bus) {
                 var detailHtml = `
-                    <div class="bus-info-card" onclick="busUpdate(this)">
+                    <div class="bus-info-card" onclick="openModal('busManageModal', 'busManage.go?bus_idx=${bus.bus_idx}'); return false;">
                         <input type="hidden" name="bus_idx" value="${bus.bus_idx}"/>
                         <div class="bus-number ${bus.route_name.length == 3 ? 'blue' : 'green'}">
                             ${bus.route_name}
                         </div>
                         <div class="bus-details">
-                            <p><strong>차량 번호:</strong> <span class="purple">${bus.license_plate}</span></p>
-                            <p><strong>운행 상태:</strong> <span class="purple">${bus.drive_status}</span></p>
-                            <p><strong>연비:</strong> <span class="purple">${bus.fuel_efficiency} km/L</span></p>
-                            <p><strong>구입일:</strong> <span class="purple">${bus.buy_date}</span></p>
-                            <p><strong>제조사:</strong> <span class="purple">${bus.bus_company}</span></p>
-                            <p><strong>좌석 수:</strong> <span class="purple">${bus.seat_number} 석</span></p>
-                            <p><strong>운행거리:</strong> <span class="purple">${bus.distance} km</span></p>
-                            <p><strong>점검 일:</strong> <span class="purple">${bus.inspect_date}</span></p>
-                            <p><strong>다음 점검일:</strong> <span class="purple">${bus.next_inspect_date}</span></p>
-                            <p><strong>담당 정비사:</strong> <span class="purple">${bus.emp_idx}</span></p>
-                            <p><strong>정비 내용:</strong> <span class="purple">${bus.content}</span></p>
-                            <p><strong>버스 상태:</strong> <span class="purple">${bus.status}</span></p>
-                        </div>
+                        	<table>
+                        		<thead>
+                        			<tr>
+                        				<th colspan="2"><strong>버스 정보</strong></th>
+                        			</tr>
+                    			</thead>
+                    			<tbody>
+                        		    <tr>
+                        		    	<td><strong>차량 번호</strong></td>
+                        		    	<td><span class="purple">${bus.license_plate}</span</td>
+                        		    </tr>
+                        		    <tr>
+                        		    	<td><strong>운행 상태</strong></td>
+                        		    	<td><span class="purple">${bus.drive_status}</span</td>
+                        		    </tr>
+                        		    <tr>
+                        		    	<td><strong>연비</strong></td>
+                        		    	<td><span class="purple">${bus.fuel_efficiency} km/L</span</td>
+                        		    </tr>
+                        		    <tr>
+                        		    	<td><strong>구입일</strong></td>
+                        		    	<td><span class="purple">${bus.buy_date}</span</td>
+                        		    </tr>
+                        		    <tr>
+                        		    	<td><strong>제조사</strong></td>
+                        		    	<td><span class="purple">${bus.bus_company}</span</td>
+                        		    </tr>
+                        		    <tr>
+                        		    	<td><strong>종류</strong></td>
+                        		    	<td><span class="purple">${bus.bus_type}</span</td>
+                        		    </tr>
+                    		    </tbody>
+                		    </table>
+                		    <table>
+                		    	<thead style="border-right: 1px solid #30005A;">
+                        		    <tr>
+                        				<th colspan="2"><strong>정비 내역</strong></th>
+                        			</tr>
+                    			</thead>
+                    			<tbody style="border-right: 1px solid #8B6AA7;">
+                        			<tr>
+                        		    	<td><strong>운행거리</strong></td>
+                        		    	<td><span class="purple">${bus.distance} km</span</td>
+                        		    </tr>
+                        			<tr>
+                        		    	<td><strong>점검 일</strong></td>
+                        		    	<td><span class="purple">${bus.inspect_date}</span</td>
+                        		    </tr>
+                        			<tr>
+                        		    	<td><strong>다음 점검일</strong></td>
+                        		    	<td><span class="purple">${bus.next_inspect_date}</span</td>
+                        		    </tr>
+                        			<tr>
+                        		    	<td><strong>담당 정비사</strong></td>
+                        		    	<td><span class="purple">${bus.name}</span</td>
+                        		    </tr>
+                        			<tr>
+                        		    	<td><strong>정비 비용</strong></td>
+                        		    	<td><span class="purple">${bus.amount}</span</td>
+                        		    </tr>
+                        			<tr>
+                        		    	<td><strong>버스 상태</strong></td>
+                        		    	<td><span class="purple">${bus.status}</span</td>
+                        		    </tr>
+                    		    </tbody>
+                        	</table>
+                        	<table class="manage-content">
+                        		<thead>
+                        		    <tr>
+                        				<th colspan="2"><strong>정비 내용</strong></th>
+                        			</tr>
+                    			</thead>
+                    			<tbody>
+                    				<tr>
+                        		    	<td colspan="2" rowspan="6"><span class="purple">${bus.content}</span</td>
+                        		    </tr>
+                    			</tbody>
+                        	</table>
+                    	</div>
                     </div>`;
                 $('.bus-detail-card').append(detailHtml);
             });
@@ -104,36 +170,3 @@ $(document).ready(function() {
     });
 }
 });
-
-function busUpdate(element) {
-    // 클릭한 요소에서 bus_idx 값을 가져오기
-    const busIdx = $(element).find('input[name="bus_idx"]').val();
-    console.log('busIdx:', busIdx); // bus_idx 값을 확인
-    
-    if (!busIdx) {
-        alert('bus_idx 값을 가져올 수 없습니다.');
-        return;
-    }
-
-    // 모달 열기
-    const modal = document.getElementById('busUpdateModal');
-    modal.style.display = 'block';
-
-    // bus_idx 값을 포함한 URL로 iframe을 업데이트
-    const iframe = modal.querySelector('iframe');
-    iframe.src = 'busUpdate.go?bus_idx=' + busIdx;
-}
-
-	// 모달 닫기
-	function closeModal() {
-	  const modal = document.getElementById('busUpdateModal');
-	  modal.style.display = 'none';
-	}
-
-	// 모달 외부 클릭 시 닫기
-	window.onclick = function (event) {
-	  const modal = document.getElementById('busUpdateModal');
-	  if (event.target === modal) {
-	    modal.style.display = 'none';
-	  }
-	};

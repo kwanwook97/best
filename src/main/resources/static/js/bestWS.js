@@ -12,7 +12,11 @@ globalSocket.onmessage = function (event) {
     const messageData = JSON.parse(event.data);
 
     // 읽지 않은 메시지 수 처리
-    if (messageData.type === "UPDATE_UNREAD_TOTAL") {
+    if (messageData.type === "UPDATE_UNREAD_ALARM") {
+        // 안 읽은 알림 수 업데이트 처리
+        console.log("UPDATE_UNREAD_ALARM 메시지 수신:", messageData);
+        window.updateUnreadAlarmCount(messageData.unread_alarm_count);
+    } else if (messageData.type === "UPDATE_UNREAD_TOTAL") {
     console.log("UPDATE_UNREAD_TOTAL 메시지 수신:", messageData);
         window.updateUnreadMessageCount(messageData.unread_total);
         console.log("읽지 않은 메시지 수", messageData.unread_total);
@@ -35,6 +39,7 @@ globalSocket.onmessage = function (event) {
         // 알림 표시 및 드롭다운 업데이트
         showMailNotification(messageData.content, messageData.type);
         updateMailDropdown(messageData.content, messageData.type);
+    }
 };
 
 // WebSocket 에러 처리

@@ -285,25 +285,26 @@ $(document).ready(function () {
             data: { emp_idx: empIdx },
             success: function (messages) {
                 // 드롭다운 초기화
-                const messageDropdown = $("#messageDropdown");
+                const messageDropdown = $(".messageDropdown");
                 messageDropdown.empty();
 
-                // 메시지 추가
-                messages.reverse().forEach(function (message) {
-    				updateMessageDropdown(
-        				message.photo,
-       					message.name,
-        				message.content,
-        				message.chat_idx,
-        				message.rank_name
-    				);
-				});
-
-                // 읽지 않은 메시지가 있을 경우 알림 아이콘 표시
-                if (messages.length > 0) {
-                    $("#newMessageIndicator3").css("display", "block");
+                if (messages.length === 0) {
+                    // 메시지가 없을 때 표시
+                    messageDropdown.append('<div class="dropdown-item"><div class="notification-profile">새로운 메시지가 없습니다.</div></div>');
+                    $("#newMessageIndicator3").css("display", "none"); // 알림 숨김
                 } else {
-                    $("#newMessageIndicator3").css("display", "none");
+                    // 메시지가 있을 때 추가
+                    messages.reverse().forEach(function (message) {
+                        updateMessageDropdown(
+                            message.photo,
+                            message.name,
+                            message.content,
+                            message.chat_idx,
+                            message.rank_name
+                        );
+                    });
+
+                    $("#newMessageIndicator3").css("display", "block"); // 알림 표시
                 }
             },
             error: function (xhr, status, error) {

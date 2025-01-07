@@ -13,7 +13,7 @@
 			AND type = #{type}
 		</if>
 		<if test="flag != null">
-			AND flag = #{flag}
+    		AND flag = #{flag}
 		</if>
 		ORDER BY alarm_idx DESC
 		LIMIT #{limit} OFFSET #{offset}
@@ -95,5 +95,11 @@
 		WHERE alarm_idx =
 		#{alarm_idx}
 	</update>
+	
+	<select id="getUnreadAlarmCount" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM alarm
+        WHERE emp_idx = #{empIdx} AND flag = 0
+    </select>
 
 </mapper>  

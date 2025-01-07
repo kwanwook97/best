@@ -21,13 +21,12 @@
     .bus-info-card {
       border: 2px solid #30005A;
       border-radius: 10px;
-      padding: 20px;
+      padding: 0 10px;
       display: flex;
       align-items: flex-start;
-      justify-content: space-between;
-      height: 200px;
+      height: 206px;
       margin: 0.5rem;
-      overflow: auto;
+      overflow: hidden;
       cursor: pointer;
     }
 
@@ -51,14 +50,16 @@
 
 
     .bus-details {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 3열 형식 */
-      gap: 10px 20px;
+      display: flex;
+      justify-content: space-around;
       font-size: 16px;
       color: #8B6AA7; /* 연보라색 */
-      flex: 1;
       margin: auto 0;
-      margin-right: 15%;
+      margin-right: 9%;
+      overflow: hidden; /* 내용이 넘칠 경우 숨김 */
+    height: 100%; /* 부모 높이에 맞춤 */
+    width: 100%; /* 부모 너비에 맞춤 */
+    margin-left: 30px;
     }
 
     .bus-details p {
@@ -189,6 +190,7 @@
     background-color: #30005A;
     justify-content: space-between;
     height: 94%;
+    margin: 0.5rem;
 }
 .bus-info2{
 	width: 100%;
@@ -214,6 +216,9 @@
   background-color: rgba(0, 0, 0, 0.4); /* 반투명 배경 */
 }
 
+#busManageModal .modal-content{
+	height: 78%;
+}
 /* 모달 내용 */
 .modal-content {
   position: fixed;
@@ -223,8 +228,8 @@
   background-color: #FFFBF2;
   padding: 10px;
   border: 1px solid #888;
-  width: 50%;
-  height: 92%;
+  width: 30%;
+  height: 50%;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
 }
@@ -261,12 +266,46 @@
 	color: #8B6AA7;
 }
 
+table{
+	width: 315px !important;
+	table-layout: fixed; /* 테이블 레이아웃 고정 */
+}
+th{
+	background-color: #30005A;
+	color: #FFFBF2;
+	padding: 5px;
+    text-align: center !important;
+    table-layout: fixed; /* 테이블 레이아웃 고정 */
+}
+td{
+	border-bottom: 1px solid #8B6AA7;
+	padding: 0 5px;	
+}
+tbody > tr > td:first-child{
+	background-color: #8B6AA7;
+}
+
+.manage-content > th, .manage-content > td, .manage-content > td > span{
+	border-right: 1px solid #8B6AA7;
+	word-wrap: break-word; /* 긴 단어 줄바꿈 */
+    white-space: pre-wrap; /* 공백 및 줄바꿈 유지 */
+    max-width: 300px; /* 최대 폭 제한 */
+    overflow: hidden; /* 넘치는 내용 숨기기 */
+    text-overflow: ellipsis; /* 텍스트 넘칠 경우 생략 표시 (...) */
+    vertical-align: top; /* 내용 상단 정렬 */
+}
+.manage-content > td{
+	background-color: #FFFBF2 !important;
+}
+.naviPath{
+	cursor: pointer;
+}
   </style>
 </head>
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
   <div class="body">
-     <div class="naviPath bold f32 w100 tm2">
+     <div class="naviPath bold f32 w100 tm2" onclick="reloadPage()">
 		<span class="lPurple">버스정보</span>
 			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
 		<span class="purple">버스관리</span>
@@ -292,7 +331,7 @@
     <div class="bus-info">
         <div class="bus-info2"></div>
         <div class="editbtn-div">
-            <button class="editbtn" onclick="location.href='busInsert.go'"><i class="far fa-edit"></i>&nbsp;등록</button>
+            <button class="editbtn" onclick="openModal('busInsertModal', 'busInsert.go'); return false;"><i class="far fa-edit"></i>&nbsp;등록</button>
         </div>
     </div>
 
@@ -301,13 +340,57 @@
 </div>
   </div>
 </body>
-<div id="busUpdateModal" class="modal">
+
+
+
+<!-- 등록 모달 -->
+<div id="busInsertModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <iframe src="busUpdate.go" frameborder="0" style="width: 100%; height: 98%;"></iframe>
+    <span class="close" onclick="closeModal('busInsertModal')">&times;</span>
+    <iframe id="busInsertFrame" src="" frameborder="0" style="width: 100%; height: 95%;"></iframe>
   </div>
 </div>
-<script>
 
+<!-- 수정 모달 -->
+<div id="busManageModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('busManageModal')">&times;</span>
+    <iframe id="busUpdateFrame" src="" frameborder="0" style="width: 100%; height: 95%;"></iframe>
+  </div>
+</div>
+
+
+
+<script>
+//모달 열기
+function openModal(modalId, url) {
+    const modal = document.getElementById(modalId);
+    const iframe = modal.querySelector('iframe');
+    iframe.src = url; // 모달 내부에 띄울 URL
+    modal.style.display = 'block';
+}
+
+// 모달 닫기
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const iframe = modal.querySelector('iframe');
+    iframe.src = ''; // iframe src 초기화
+    modal.style.display = 'none';
+}
+
+// 모달 외부 클릭 시 닫기
+window.onclick = function (event) {
+    if (event.target.classList.contains('modal')) {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach((modal) => {
+            modal.style.display = 'none';
+            modal.querySelector('iframe').src = '';
+        });
+    }
+};
+
+function reloadPage() {
+    location.reload(); // 현재 페이지 새로고침
+}
 </script>
 </html>
