@@ -131,6 +131,9 @@ public interface DocumentDAO {
 	// 결재 문서 만들기
 	int documentWrite(FormDTO formDTO);
 	int documentReWrite(int form_idx, String form_content);
+	
+	// 결재 문서 수정하기
+	int documentUpdate(FormDTO formDTO);
 
 
 

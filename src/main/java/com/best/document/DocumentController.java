@@ -350,4 +350,11 @@ public class DocumentController {
 		documentService.documentWrite(param);
 		return "redirect:/documentWrite.go";
 	}
+	
+	// 결재문서 수정하기
+	@PostMapping(value="/documentUpdate.do")
+	public String documentUpdate(@RequestParam Map<String, String> param) {
+		documentService.documentUpdate(param);
+		return "redirect:/documentWrite.go";
+	}
 }

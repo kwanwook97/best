@@ -731,9 +731,18 @@ public class DocumentService {
 	    	);
 	    documentDao.documentReWrite(form_idx, form_content);
 	}
+	
+	// 결재문서 수정하기
+	@Transactional
+	public void documentUpdate(Map<String, String> param) {
+		FormDTO formDTO = new FormDTO();
+		formDTO.setForm_subject(param.get("subject"));
+		formDTO.setForm_content(param.get("content"));
+		documentDao.documentUpdate(formDTO);
+	}
+	
 
-
-
+	
 
 
 
@@ -833,6 +842,7 @@ public class DocumentService {
 	    alarm.setDate(new Date());
 	    return alarm;
 	}
+
 
 	
 

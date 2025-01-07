@@ -866,6 +866,10 @@
 	<update id="documentReWrite">
 		UPDATE form SET form_content = #{form_content} WHERE form_idx = #{form_idx}
 	</update>
+	
+	<update id="documentUpdate">
+		UPDATE form SET form_subject = #{form_subject}, form_content = #{form_content} WHERE form_idx = #{form_idx}
+	</update>
 
 	
 <select id="getApproverDetails" resultType="map">

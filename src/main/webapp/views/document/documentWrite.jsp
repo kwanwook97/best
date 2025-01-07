@@ -46,8 +46,6 @@
 		justify-content: center;
 	    width: 180px;
 	    height: 300px;
-	    border: 2px solid var(--primary-color);
-	    border-radius: 10px;
 	    margin-right: 20px;
 	}
 	.documentList{
@@ -66,6 +64,16 @@
 		list-style:none;
 	    margin-top: 8px;
         padding-left: 0;
+	}
+	ul.modal-list li.modal-item{
+		cursor: pointer;
+		border: 1px solid var(--primary-color);
+		border-radius: 10px;
+		margin-bottom: 5px;
+	}
+	ul.modal-list li.modal-item:hover{
+		color: white;
+		background-color: var(--secondary-color);
 	}
 	.formBorder{    
 		display: flex;
@@ -205,7 +213,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th><input type="button" value="문서 등록하기" onclick="saveForm()"/></th>
+						<td class="changeBtn"><input type="button" value="문서 등록하기" onclick="saveForm()"/></td>
 					</tr>
 				</table>
 				</form>
@@ -214,6 +222,33 @@
  	</div>
 </body>
 <script>
+function changeButtonToUpdate() {
+    // 버튼 요소 선택
+    var button = document.querySelector(".changeBtn input[type='button']");
+
+    if (button) {
+        // 버튼 텍스트 및 onclick 속성 변경
+        button.value = "문서 수정하기";
+        button.setAttribute("onclick", "updateForm()");
+        console.log("버튼이 '문서 수정하기'로 변경되었습니다.");
+    } else {
+        console.error("버튼을 찾을 수 없습니다.");
+    }
+}
+function changeFormActionToUpdate() {
+    // 폼 요소 선택
+    var form = document.querySelector("form[action='documentWrite.do']");
+
+    if (form) {
+        // action 속성 변경
+        form.setAttribute("action", "documentUpdate.do");
+        console.log("폼의 action이 'documentUpdate.do'로 변경되었습니다.");
+    } else {
+        console.error("폼을 찾을 수 없습니다.");
+    }
+}
+
+
 var config = {}
 config.editorResizeMode = "none";
 //config.toolbar = "basic";
@@ -233,6 +268,33 @@ config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로
 var editor = new RichTextEditor("#div_editor", config);
 
 function saveForm() {
+	
+	var subject = $('input[name="subject"]').val().trim();
+    if (subject === "") {
+        alert("제목을 입력해주세요.");
+        return;
+    }
+    
+    var content = editor.getHTMLCode();
+    console.log(content);
+    console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
+
+	if (content.length > 100 * 1024 * 1024) {
+        alert("100MB이상 크기는 전송이 불가능 합니다.");
+    } else {
+        $('input[name="content"]').val(content);
+        $('form').submit();
+    }
+}
+
+function updateForm() {
+	
+	var subject = $('input[name="subject"]').val().trim();
+    if (subject === "") {
+        alert("제목을 입력해주세요.");
+        return;
+    }
+    
     var content = editor.getHTMLCode();
     console.log(content);
     console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
@@ -257,7 +319,7 @@ $.ajax({
         ul.empty();
 
         data.forEach(function(form) {
-            var li = $('<li class="modal-item" onclick="documentForm('+form.form_idx+')"></li>');
+            var li = $('<li class="modal-item" onclick="documentFormUp('+form.form_idx+')"></li>');
             li.text(form.form_subject);
 
             ul.append(li);
@@ -268,7 +330,10 @@ $.ajax({
     }
 });
 
-function documentForm(form_idx) {
+// RichTextEditor 초기화
+var richTextEditorInstance = new RichTextEditor("#div_editor");
+
+function documentFormUp(form_idx) {
     $.ajax({
         type: 'GET',
         url: 'getForm.ajax',
@@ -276,8 +341,13 @@ function documentForm(form_idx) {
         dataType: 'text',
         success: function(response) {
         	console.log("Response HTML: ", response);
-         	$("#customModal").fadeOut();
-            openModal(response, form_idx);
+        	if (richTextEditorInstance) {
+                richTextEditorInstance.setHTML(response);
+                changeFormActionToUpdate();
+                changeButtonToUpdate();
+            } else {
+                console.error('RichTextEditor 인스턴스가 없습니다.');
+            }
         },
         error: function(xhr, status, error) {
             console.error('문서 요청 실패:', error);
