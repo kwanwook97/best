@@ -416,16 +416,32 @@ function openModal(content, form_idx) {
    
    	// .ipt_editor_date 클래스의 input 요소에 min 속성 설정
    	$('.ipt_editor_date').attr('min', today);
-   
+   	
    	// 날짜 값이 변경될 때마다 호출되는 함수
    	$('.ipt_editor_date').change(function() {
-   		var selectedDate = $(this).val();  // 선택된 날짜 값
+   		var selectedDate = $(this).val(); 
        
        	// 선택된 날짜가 오늘 이전이라면
        	if (selectedDate < today) {
-           	alert('오늘 이전 날짜는 선택할 수 없습니다.');
-           	$(this).val(today);  // 날짜를 오늘로 강제 설정
+           	alert('지난 날짜는 선택할 수 없습니다.');
+           	$(this).val(today);
        	}
+   	});
+   	
+ 	// 앞선 날짜와 뒤의 날짜 input 요소 지정
+   	var $startDate = $('input[name="start_date"]');
+   	var $endDate = $('input[name="end_date"]');
+
+   	// 날짜 변경 시 처리
+   	$('.ipt_editor_date').change(function () {
+   	    var startDate = $startDate.val();
+   	    var endDate = $endDate.val();
+
+   	    // 앞선 날짜가 설정되었고 뒤의 날짜가 앞선 날짜 이전이라면
+   	    if (startDate && endDate && endDate < startDate) {
+   	        alert(''+startDate+' 이후로만 선택 가능합니다.');
+   	        $endDate.val(startDate);
+   	    }
    	});
 }
 var isApprovalLineAdded = false;
@@ -561,22 +577,57 @@ function btnAction(actionType) {
 		        break;
 		        
 		    case '3':
-		        // 동적으로 추가된 input 값들을 updatedHtml에 반영
-				for (var i = 0; i < values.length; i++) { 
-				    var value = values[i];  // values 배열에서 값 가져오기
-				    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
-				
-				    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
-				
-				    // updatedHtml에서 해당 input 값을 수정
-				    updatedHtml = updatedHtml.replace(
-				        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
-				        '<input$1 value="' + value + '">'
-				    );
-				}
-	
-		        // 수정된 HTML을 다시 modal-content에 적용
-		        $('.modal-content:last-child').html(updatedHtml);
+		    	if(actionType == '수정기안' || actionType == '기안'){
+		    		for (var i = 0; i < values.length; i++) {
+		    		    var value = values[i];  // values 배열에서 값 가져오기
+		    		    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
+
+		    		    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
+
+		    		    // 정규식을 통해 input 태그 수정
+		    		    updatedHtml = updatedHtml.replace(
+		    		        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'),
+		    		        function (match, group1, group2) {
+		    		            console.log('Matched input:', match); // 매칭된 input 태그 확인
+		    		            console.log('Group1:', group1); // data-index 속성 포함 부분
+		    		            console.log('Group2:', group2); // 나머지 속성 부분
+
+		    		            // 기존 value 속성을 새 값으로 교체하거나 추가
+		    		            if (/value=["\'].*?["\']/.test(group2)) {
+		    		                group2 = group2.replace(/value=["\'].*?["\']/, 'value="' + value + '"');
+		    		            } else {
+		    		                group2 = ' value="' + value + '"' + group2;
+		    		            }
+		    		            return '<input' + group1 + group2 + '>';
+		    		        }
+		    		    );
+
+		    		    // 정규식 매칭 결과 확인
+		    		    var matches = updatedHtml.match(new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'));
+		    		    console.log('Matched inputs for data-index=' + dataIndex + ':', matches);
+		    		}
+		    		$('.modal-content:last-child').html(updatedHtml);
+		    		var doc_content = $('.modal-content:last-child .content').html();
+		    		console.log("ㅅㅂ"+doc_content);
+		    	}else{
+			        // 동적으로 추가된 input 값들을 updatedHtml에 반영
+					for (var i = 0; i < values.length; i++) { 
+					    var value = values[i];  // values 배열에서 값 가져오기
+					    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
+					
+					    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
+					
+					    // updatedHtml에서 해당 input 값을 수정
+					    updatedHtml = updatedHtml.replace(
+					        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
+					        '<input$1 value="' + value + '">'
+					    );
+					}
+					console.log("9999"+doc_content);
+			        // 수정된 HTML을 다시 modal-content에 적용
+			        $('.modal-content:last-child').html(updatedHtml);
+			        var doc_content = $('.modal-content:last-child .content').html();
+		    	}
 		        break;
 		        
 		}
@@ -588,6 +639,8 @@ function btnAction(actionType) {
 			$('.modal-content:last-child .content').find('textarea').each(function () {
 			    $(this).attr('readonly', true);
 			});
+			data.doc_content = $('.modal-content:last-child .content').html();
+			console.log("Ajax 전송 데이터:", data.doc_content);
 		}else{			
 			// 마지막으로 doc_content를 업데이트된 HTML에서 추출하여 data 객체에 저장
 			var doc_content = $('.modal-content:last-child .content').html();
@@ -595,7 +648,7 @@ function btnAction(actionType) {
 			console.log("최종"+ doc_content);
 		}
 		
-		$.ajax({
+ 		$.ajax({
 	        type: 'GET',
 	        url: 'formType.ajax',
 	        data: data,
@@ -688,11 +741,13 @@ const optionsMap = {
     received: [
         { value: 'subject', text: '제목' },
         { value: 'docNum', text: '문서번호' },
-        { value: 'emp', text: '기안자' }
+        { value: 'emp', text: '기안자' },
+        { value: 'type', text: '분류' }
     ],
     sent: [
         { value: 'subject', text: '제목' },
-        { value: 'docNum', text: '문서번호' }
+        { value: 'docNum', text: '문서번호' },
+        { value: 'type', text: '분류' }
     ]
 };
 //리스트 검색

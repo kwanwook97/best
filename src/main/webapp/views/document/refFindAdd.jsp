@@ -90,7 +90,7 @@
 }
 
 /* 사원 상세 모달 전용 스타일 */
-#employeeModal {
+#employeeModal2 {
     display: none;
     position: fixed; /* 뷰포트를 기준으로 중앙 정렬 */
     top: 50%; /* 화면의 세로 중앙 */
@@ -99,7 +99,7 @@
     z-index: 1000; /* 최상위 레이어 */
 }
 
-#employeeModal .modalD-dialog {
+#employeeModal2 .modalD-dialog {
     position: fixed; /* 화면에 고정 */
     top: 50%; /* 세로 중앙 */
     left: 50%; /* 가로 중앙 */
@@ -116,20 +116,20 @@
 }
 
 /* 모달창 스크롤바 디자인 */
-#employeeModal .modalD-dialog::-webkit-scrollbar {
+#employeeModal2 .modalD-dialog::-webkit-scrollbar {
     width: 8px; /* 스크롤바 너비 */
 }
 
-#employeeModal .modalD-dialog::-webkit-scrollbar-thumb {
+#employeeModal2 .modalD-dialog::-webkit-scrollbar-thumb {
     background-color: #30005A; /* 스크롤바 색상 */
     border-radius: 10px; /* 스크롤바 둥글게 */
 }
 
-#employeeModal .modalD-dialog::-webkit-scrollbar-track {
+#employeeModal2 .modalD-dialog::-webkit-scrollbar-track {
     background-color: #f0f0f0; /* 스크롤 트랙 색상 */
 }
 
-#employeeModal .modalD-content {
+#employeeModal2 .modalD-content {
     background-color: #FFFBF2; /* 밝은 배경 */
     border-radius: 12px;
     padding: 20px;
@@ -137,14 +137,14 @@
     box-sizing: border-box;
 }
 
-#employeeModal .modalD-header-section {
+#employeeModal2 .modalD-header-section {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
 }
 
-#employeeModal .modalD-photo {
+#employeeModal2 .modalD-photo {
     width: 120px;
     height: 120px;
     border-radius: 10px;
@@ -152,24 +152,24 @@
     margin-right: 20px;
 }
 
-#employeeModal .modalD-basic-info {
+#employeeModal2 .modalD-basic-info {
     text-align: left;
 }
 
-#employeeModal .modalD-name {
+#employeeModal2 .modalD-name {
     color: #30005A;
     font-weight: bold;
     font-size: 1.5rem;
     margin: 0;
 }
 
-#employeeModal .modalD-status {
+#employeeModal2 .modalD-status {
     color: #30005A;
     font-size: 1rem;
     margin: 5px 0;
 }
 
-#employeeModal .status-dot {
+#employeeModal2 .status-dot {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -179,23 +179,23 @@
 }
 
 /* 테이블 스타일 */
-#employeeModal .modalD-table-wrapper {
+#employeeModal2 .modalD-table-wrapper {
     margin-top: 10px;
     text-align: center;
 }
 
-#employeeModal .modalD-table {
+#employeeModal2 .modalD-table {
     width: 100%;
     border-radius: 12px;
     border-collapse: collapse;
 }
 
 
-#employeeModal .modalD-table tr {
+#employeeModal2 .modalD-table tr {
     border-bottom: 1px solid #8B6AA7;
 }
 
-#employeeModal .modalD-table td {
+#employeeModal2 .modalD-table td {
     padding: 12px 15px;
     font-size: 1rem;
     text-align: left;
@@ -203,22 +203,23 @@
     background-color: #FFFBF2;
 }
 
-#employeeModal .modalD-label {
+#employeeModal2 .modalD-label {
     background-color: #30005A;
     color: white;
     font-weight: bold;
     text-align: center;
 }
 
-#employeeModal .modalD-value {
+#employeeModal2 .modalD-value {
     color: #30005A;
     text-align: left;
     background-color: #FFFBF2;
 }
 
 /* 닫기 버튼 */
-#employeeModal .modalD-button,
-#addUserBoxModalR {
+#employeeModal2 .modalD-button,
+#addUserBoxModalR,
+#addUserBoxModalRe {
     background-color: #E9396B;
     color: white;
     border: none;
@@ -230,8 +231,9 @@
     margin-top: 10px;
 }
 
-#employeeModal .modalD-button:hover,
-#addUserBoxModalR:hover{
+#employeeModal2 .modalD-button:hover,
+#addUserBoxModalR:hover,
+#addUserBoxModalRe:hover{
     background-color: #FF6373;
 }
 
@@ -278,7 +280,7 @@
     opacity: 1 !important;
 }
 
-#searchInput{
+#searchInput2{
    margin: 0;
 }
 
@@ -319,6 +321,7 @@
 }
 .refEmp .xBtn{
     font-size: smaller;
+   	pointer-events: auto !important;
 }
 .refEmp .xBtn:hover{
 	cursor: pointer;
@@ -335,12 +338,12 @@
            <div class="refEmpBox">
 	           <div class="refEmps">
 				</div>
-	           <button id="addUserBoxModalR" class="modalD-button" style="float: right;">추가</button> <!-- 닫기 버튼 추가 -->
+	           <button id="addUserBoxModalRe" class="modalD-button" style="float: right;">추가</button> <!-- 닫기 버튼 추가 -->
 	           <button id="closeUserBoxModalR" class="modalD-button" style="float: right;">닫기</button> <!-- 닫기 버튼 추가 -->
            </div>
         </div>
         <div style="position: relative;">
-          <input type="text" id="searchInput" class="search-bar" placeholder="사원명을 검색하세요.">
+          <input type="text" id="searchInput2" class="search-bar" placeholder="사원명을 검색하세요.">
           <i class="fas fa-search search-icon"></i>
       </div>
 
@@ -351,14 +354,14 @@
 </div>
 
 <!-- 사원 상세 모달 -->
-<div id="employeeModal" class="modalD">
+<div id="employeeModal2" class="modalD">
     <div class="modalD-dialog">
         <div class="modalD-content">
             <div class="modalD-header-section">
-                <img id="modalPhoto" src="" alt="직원 사진" class="modalD-photo">
+                <img id="modalPhotoR" src="" alt="직원 사진" class="modalD-photo">
                 <div class="modalD-basic-info">
                     <h3 class="modalD-name">
-                        <span id="modalName"></span> / <span id="modalRank"></span>
+                        <span id="modalNameR"></span> / <span id="modalRankR"></span>
                     </h3>
                     <p class="modalD-status">
                         <span class="status-dot"></span> 근무 중
@@ -369,25 +372,25 @@
                 <table class="modalD-table">
                     <tr>
                         <td class="modalD-label">부서</td>
-                        <td id="modalDepartment" class="modalD-value">운영 2팀</td>
+                        <td id="modalDepartmentR" class="modalD-value">운영 2팀</td>
                     </tr>
                     <tr>
                         <td class="modalD-label">이메일</td>
-                        <td id="modalEmail" class="modalD-value">example@example.com</td>
+                        <td id="modalEmailR" class="modalD-value">example@example.com</td>
                     </tr>
                     <tr>
                         <td class="modalD-label">전화번호</td>
-                        <td id="modalPhone" class="modalD-value">02-123-4567</td>
+                        <td id="modalPhoneR" class="modalD-value">02-123-4567</td>
                     </tr>
                     <tr>
                         <td class="modalD-label">핸드폰번호</td>
-                        <td id="modalMobile" class="modalD-value">010-1234-5678</td>
+                        <td id="modalMobileR" class="modalD-value">010-1234-5678</td>
                     </tr>
                 </table>
             </div>
             <div style="text-align: right; margin-top: 20px;">
-                <button id="closeEmployeeModal" class="modalD-button">닫기</button>
-                <button id="addEmployeeButton" class="modalD-button">추가</button>
+                <button id="closeEmployeeModalR" class="modalD-button">닫기</button>
+                <button id="addEmployeeButtonR" class="modalD-button">추가</button>
             </div>
         </div>
     </div>
@@ -402,6 +405,19 @@ $(document).ready(function () {
     var routes = []; // 노선 데이터를 저장할 배열
     var selectedEmployee = null; // 현재 선택된 사원 정보 저장
     var selectedEmployees = [];  // 선택된 사원정보 쌓기.
+    
+    $(document).on("click", ".xBtn", function () {
+        var parentDiv = $(this).closest(".refEmp"); // .xBtn의 가장 가까운 부모 요소 .refEmp
+        var empIdx = parentDiv.data("emp-idx"); // 해당 요소의 emp_idx 가져오기
+        console.log("ㅇㄴㄹㄴㅁㅇㄹ" + parentDiv + "/" + empIdx);
+
+        // selectedEmployees 배열에서 제거
+        selectedEmployees = selectedEmployees.filter(emp => emp.emp_idx !== empIdx);
+        console.log("제거 후 사원 목록:", selectedEmployees);
+
+        // DOM에서 요소 제거
+        parentDiv.remove();
+    });
     
     // 데이터 로드
     function loadData() {
@@ -532,7 +548,7 @@ $(document).ready(function () {
             var employee = employees.find(emp => emp.emp_idx === empId);
             if (employee) {
            		selectedEmployee = employee;	
-                showEmployeeModal(employee);
+                showEmployeeModal2(employee);
             }
         });
 
@@ -540,34 +556,37 @@ $(document).ready(function () {
 
     // 검색 함수
     function executeSearch() {
-        var searchKeyword = $('#searchInput').val().trim(); // 검색어 읽기
+        var searchKeyword = $('#searchInput2').val().trim(); // 검색어 읽기
         if (!searchKeyword) {
             alert('검색어를 입력해주세요.');
             return;
         }
         var employee = employees.find(emp => emp.name.includes(searchKeyword));
+        console.log("이름도 붙여놔",employee);
         if (employee) {
-            showEmployeeModal(employee); // 검색된 사원 정보 표시
+        	selectedEmployee = employee;	
+            showEmployeeModal2(employee); // 검색된 사원 정보 표시
         } else {
             alert('검색된 사원이 없습니다.');
         }
     }
 
     // 사원 상세 정보 모달 표시
-    function showEmployeeModal(employee) {
+    function showEmployeeModal2(employee) {
+    console.log("이름도 붙여놔 dfsfdf",employee);
        window.selectedEmployee = employee; // 선택된 사원 정보를 저장
-        $("#modalPhoto").attr("src", "/photo/" + (employee.photo || "default_photo.jpg"));
-        $("#modalName").text(employee.name);
-        $("#modalRank").text(employee.rank_name);
-        $("#modalDepartment").text(employee.depart_name);
-        $("#modalEmail").text(employee.email);
-        $("#modalPhone").text(employee.phone);
-        $("#modalMobile").text(employee.mobile);
-        $("#employeeModal").fadeIn();
+        $("#modalPhotoR").attr("src", "/photo/" + (employee.photo || "default_photo.jpg"));
+        $("#modalNameR").text(employee.name);
+        $("#modalRankR").text(employee.rank_name);
+        $("#modalDepartmentR").text(employee.depart_name);
+        $("#modalEmailR").text(employee.email);
+        $("#modalPhoneR").text(employee.phone);
+        $("#modalMobileR").text(employee.mobile);
+        $("#employeeModal2").fadeIn();
     }
 
-    $("#closeEmployeeModal").on("click", function () {
-        $("#employeeModal").fadeOut();
+    $("#closeEmployeeModalR").on("click", function () {
+        $("#employeeModal2").fadeOut();
     });
 
     // 검색 모달의 검색 버튼
@@ -575,7 +594,7 @@ $(document).ready(function () {
         executeSearch();
     });
 
-    $('#searchInput').on('keyup', function (e) {
+    $('#searchInput2').on('keyup', function (e) {
         if (e.key === 'Enter' || e.keyCode === 13) {
             executeSearch();
         }
@@ -583,13 +602,14 @@ $(document).ready(function () {
     
     
     // 닫기 버튼 이벤트
-    $("#closeEmployeeModal").on("click", function () {
-        $("#employeeModal").fadeOut();
+    $("#closeEmployeeModalR").on("click", function () {
+        $("#employeeModal2").fadeOut();
     });
     
-  
+ 
     // 추가 버튼 이벤트
-    $("#addEmployeeButton").on("click", function () {
+    $("#addEmployeeButtonR").on("click", function () {
+ 
        if (selectedEmployee) {
           console.log("추가된 사원 정보:", selectedEmployee);
           window.selectedEmployee = selectedEmployee;
@@ -620,7 +640,7 @@ $(document).ready(function () {
 				} else {
 				    alert('최대 3명까지 참조할 수 있습니다.');
 				}
-             	$("#employeeModal").fadeOut();
+             	$("#employeeModal2").fadeOut();
          
             	 /*  $(".modal").css("display", "flex"); */
            } else {
@@ -638,13 +658,14 @@ $(document).ready(function () {
 });
 
 
+
 function refOpenUserBoxModal() {
     $(".modal").css("display", "none");
     $("#refUserBoxModal").css("display", "flex").hide().fadeIn();
     $("*").css("pointer-events", "auto");
 }
 
-function openEmployeeModal(employee) {
+/* function openEmployeeModal(employee) {
     // 직원 정보를 받아와 모달에 데이터를 세팅
     $("#modalPhoto").attr("src", "/photo/" + (employee.photo || "default_photo.jpg"));
     $("#modalName").text(employee.name);
@@ -654,11 +675,11 @@ function openEmployeeModal(employee) {
     $("#modalPhone").text(employee.phone);
     $("#modalMobile").text(employee.mobile);
 
-    $("#employeeModal").css("display", "flex").hide().fadeIn();
-}
+    $("#employeeModal2").css("display", "flex").hide().fadeIn();
+} */
 
 
-$("#addUserBoxModalR").on("click", function () {
+$("#addUserBoxModalRe").on("click", function () {
 		var managerName = selectedEmployee.name;
 		console.log("이름 :"+managerName);
 		var managerIdx = selectedEmployee.emp_idx;
@@ -691,8 +712,8 @@ $("#closeUserBoxModalR").on("click", function () {
 });
 
 // 기존의 employeeModal 닫기 이벤트 유지
-$("#closeEmployeeModal").on("click", function () {
-    $("#employeeModal").fadeOut(); // employeeModal만 닫기
+$("#closeEmployeeModalR").on("click", function () {
+    $("#employeeModal2").fadeOut(); // employeeModal만 닫기
 });
 
 </script>
