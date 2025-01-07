@@ -79,6 +79,7 @@ public class MaterialService {
 	    int totalPages = (int) Math.ceil((double) totalCount / size);
 
 	    Map<String, Object> result = new HashMap<>();
+	    logger.info("result  테스트: {}", result);
 	    result.put("data", borrowList);
 	    result.put("currentPage", page);
 	    result.put("totalPages", totalPages);

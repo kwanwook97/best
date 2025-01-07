@@ -31,6 +31,7 @@
        flex-direction: column;
        align-content:center;
        justify-content: center;
+       position: absolute;
    }
    
 /*  기본 css   */
@@ -354,6 +355,48 @@ input[type="number"] {
 	height: 0px;
 	padding: 0 0 0 0;
 }
+.btnadd {
+	position: absolute;
+	top: 68%;
+	left: -2%;
+	background-color: #6C0F6C;
+	color: #FFF5E2;
+	border: 2px solid #6C0F6C;
+	border-radius: 10px;
+	z-index: 100;
+}	
+.btnadd:hover {
+	opacity: 0.5;
+}
+.headerBox {
+	font-size: 32px;
+}
+.headerBox {
+	margin-top: 0%;
+	width: 22%;
+	display: flex;
+	flex-direction: row;
+	align-items:center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+.headerBox {
+	font-weight: bold;
+}
+.lPurple {
+	color: #8B6AA7;
+}
+.cPurple {
+	color: #30005A;
+}
+.pagination-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.pagination {
+	margin: 0 0;
+}
 
 
 
@@ -364,10 +407,14 @@ input[type="number"] {
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
+ <jsp:include page="../modal/modal.jsp"></jsp:include>
  	<div class="title-name">
-	    <h3>기자재 관리</h3>
-	    <div class="title-line"></div>
-	    <button class="btn-primary btn-addRoom" onclick="openModal()">기자재 등록</button>
+ 		<div class="headerBox">
+			<span class="lPurple">기자재</span>
+			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+			<span class="cPurple">기자재 관리</span>
+		</div>
+	    <button class="btn-addRoom btnadd" onclick="openModal()">기자재 등록</button>
 	</div>
  	<div class="dashboard-body">
 		<div class="material-container">
@@ -779,7 +826,7 @@ function renderBorrowList(data) {
         let buttonContent = '';
         if (item.flag == 0) {
             buttonContent = 
-                '<button onclick="confirmReturn(' + item.borrow_idx + ')">반납</button>'
+                '<button class="btn-normal" onclick="confirmReturn(' + item.borrow_idx + ')">반납</button>'
         } else {
             buttonContent = '<span>반납완료</span>';
         }
@@ -810,30 +857,33 @@ function noListData(){
 
 /* 반납 함수 */
 function confirmReturn(borrowIdx){
-	console.log("borrowIdx:"+borrowIdx);
-	const returnStatus = document.getElementById("returnStatusFilter").value;
+	
+	modal.showConfirm('반납 처리 하시겠습니까?', function () {
+		console.log("borrowIdx:"+borrowIdx);
+		const returnStatus = document.getElementById("returnStatusFilter").value;
 
-    $.ajax({
-        type: 'POST',
-        url: 'confirmReturn.ajax',
-        data: {
-        	"borrowIdx":borrowIdx,
-        	"loginId":3
-        },
-        dataType: 'json',
-        success: function(data) {
-        	if (data.length != 0) {
-	        	console.log("서버 응답 데이터:", data);
-	        	loadBorrowList({ returnStatus });
-	        	alert(data.msg);
-			}else {
-				noListData();
-			}
-        },
-        error: function(error) {
-            console.error("데이터 로드 실패:", error);
-        }
-    });
+	    $.ajax({
+	        type: 'POST',
+	        url: 'confirmReturn.ajax',
+	        data: {
+	        	"borrowIdx":borrowIdx,
+	        	"loginId":3
+	        },
+	        dataType: 'json',
+	        success: function(data) {
+	        	if (data.length != 0) {
+		        	console.log("서버 응답 데이터:", data);
+		        	loadBorrowList({ returnStatus });
+		        	alert(data.msg);
+				}else {
+					noListData();
+				}
+	        },
+	        error: function(error) {
+	            console.error("데이터 로드 실패:", error);
+	        }
+	    });
+	});
 }
 
 

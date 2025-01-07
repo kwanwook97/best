@@ -646,31 +646,6 @@ public class DocumentService {
 		        Integer.parseInt(approv_order),
 		        "승인"
 		    );
-		
-	    // 연차 소진 로직
-	    String formSubject = documentDao.documentName(doc_idx);
-	    if (formSubject == "연차신청서") {
-	    	Map<String, Object> result = documentDao.getDocContent(doc_idx);
-	    	String docContent = (String) result.get("doc_content");
-	    	String empIdx = (String) result.get("emp_idx");
-	    	
-	        Document htmlDoc = Jsoup.parse(docContent);
-	        Element startDateElement = htmlDoc.selectFirst("input[name=start_date]");
-	        Element endDateElement = htmlDoc.selectFirst("input[name=end_date]");
-	        Element textareaElement = htmlDoc.selectFirst("textarea");
-	        String textareaValue = textareaElement != null ? textareaElement.text() : null;
-	        String startDate = startDateElement != null ? startDateElement.attr("value") : null;
-	        String endDate = endDateElement != null ? endDateElement.attr("value") : null;
-	        
-	        Map<String, Object> map = new HashMap<String, Object>();
-	        map.put("startDate", startDate);
-	        map.put("endDate", endDate);
-	        map.put("reason", textareaValue);
-	        leaveDAO.insertLeaveHistory(map);
-	        
-	        
-		}
-		
 	}
 	// 결재 반려
 	@Transactional

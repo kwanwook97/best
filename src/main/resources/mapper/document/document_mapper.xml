@@ -837,19 +837,6 @@
     WHERE doc_idx = #{doc_idx}
 </select>
 
-<!-- 연차 소진용 로직 -->
-<select id="documentName">
-	SELECT f.form_subject FROM document d
-	JOIN 
-		form f on d.form_idx = f.form_idx
-	WHERE
-		d.doc_idx = #{param1}
-</select>
-<select id="getDocContent" resultType="map">
-    SELECT doc_content, emp_idx
-    FROM document
-    WHERE doc_idx = #{doc_idx}
-</select>
 
 	
 </mapper>  

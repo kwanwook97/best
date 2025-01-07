@@ -155,6 +155,7 @@ public class CalendarService {
 		return map;
 	}
 	
+	
 	public Map<String, Object> cancelReserve(Map<String, Object> params) {
 		Map<String, Object> map = new HashMap<String, Object>();
 	    int row = calendarDAO.cancelReserve(params);
@@ -193,7 +194,7 @@ public class CalendarService {
 		if (row > 0) {
 	        int roomIdx = ((BigInteger) params.get("roomIdx")).intValue();
 	        saveRoomMaterials(roomIdx,materialIdxList,quantityList);
-			params.put("response", "저장완료");
+			params.put("response", "회의실이 등록되었습니다.");
 		}
 		
 		return params;
@@ -260,11 +261,12 @@ public class CalendarService {
 		List<Map<String, Object>> materialList = calendarDAO.getRoomMaterialList(roomIdx);
 		List<Map<String, Object>> reserveList = calendarDAO.getReserves(roomIdx);
 		Map<String, Object> materialAndReserve = new HashMap<String, Object>();
-		if (!materialList.isEmpty()) {
+		if (/*!materialList.isEmpty()*/ roomIdx != 0 ) {
+			materialAndReserve.put("msg","성공");
 			materialAndReserve.put("materialList",materialList);
 			materialAndReserve.put("reserveList",reserveList);
 		}else {
-			materialAndReserve.put("msg", "회의실 정보 불러오기 실패!");
+			materialAndReserve.put("msg", "실패");
 		}
 		
 		logger.info("테스트1:{}" ,materialList);
@@ -294,7 +296,7 @@ public class CalendarService {
 		if (row >0 ) {
 	        return ((BigInteger) requestData.get("eventId")).intValue(); 
 		}
-		return 0;
+		return row;
 	}
 
 	public List<Map<String, Object>> getMyEvents() {

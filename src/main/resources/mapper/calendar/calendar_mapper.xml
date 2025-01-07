@@ -162,7 +162,8 @@
 	    SELECT * 
 	    FROM reserve 
 	    WHERE room_idx = #{roomIdx}
-	      AND end_datetime &lt;= NOW()
+	    AND
+		    end_datetime >= now();
 	</select>
 	
 	<!-- 회의실 삭제 -->

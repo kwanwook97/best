@@ -11,6 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Controller
 public class LoginController {
 
@@ -26,9 +29,11 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login.do")
-    public String memberLogin(Model model, HttpSession session, String id, String pw) {
+    public String memberLogin(Model model, HttpSession session, String id, String pw) throws JsonProcessingException {
         System.out.println("LoginController - /login.do reached with id: " + id);
         Map<String, Object> loginData = loginService.login(id, pw);
+        
+        //logger.info("loginData 테스트1:{}",loginData );
 
         if (loginData != null) {
             EmployeeDTO employee = (EmployeeDTO) loginData.get("employee");
@@ -36,6 +41,9 @@ public class LoginController {
             session.setAttribute("loginName", employee.getName());
             session.setAttribute("employee", employee);
             
+            ObjectMapper objectMapper = new ObjectMapper();
+            String employeeJson = objectMapper.writeValueAsString(employee);
+            logger.info("employee정보보기: {}", employeeJson);
 //            Object loginId = session.getAttribute("loginId");
 //            logger.info("loginId의 클래스 타입: " + loginId.getClass().getName());
             return "redirect:/main.go";

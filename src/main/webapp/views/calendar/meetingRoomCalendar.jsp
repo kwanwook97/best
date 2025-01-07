@@ -18,7 +18,7 @@
    }
 
     .dashboard-body{
-       margin-left: 14vw;
+       margin-left: 12vw;
        width: 85vw;
        margin-top: 7vh;
        flex-wrap: wrap;
@@ -30,6 +30,8 @@
        flex-direction: column;
        align-content:center;
        justify-content: center;
+       position: absolute;
+       left: 0;
    }
   /* 시계 스타일 */
   #clock {
@@ -40,9 +42,9 @@
   }
     .container-meetingRoom {
       display: flex;
-      width: 46%;
-      height: 73%;
-      margin: 4% 1% 0 0;
+      width: 60%;
+      height: 89%;
+      margin: 5% 1% 0 0;
     }
 
     #calendar-container {
@@ -55,9 +57,9 @@
       margin: 0 0 0 0;
     }
     #calendar-room {
-    	height: 100%;
-    	max-height: 84%;
+    	height: 94%;
     	width: 100%;
+    /* 	max-height: 84%; */
     }
 	
 	/* 캘린더 날짜 색 */
@@ -92,8 +94,18 @@
 	margin: 0 0 50px 0;
 }	
 .btnadd {
-	margin: 0 0 13px 1px;
+	position: absolute;
+	top: 110%;
+	left: 11%;
+	background-color: #6C0F6C;
+	color: #FFF5E2;
+	border: 2px solid #6C0F6C;
+	border-radius: 10px;
+	z-index: 100;
 }	
+.btnadd:hover {
+	opacity: 0.5;
+}
 
 /* 회의실 예약 모달 */
 .meetingmodal {
@@ -133,6 +145,8 @@
 }
 .groupbtn{
 	margin: 0 0 0 64%;
+	display: flex;
+	gap: 10px;
 }
 /* 미팅룸 img */
 #room-image {
@@ -205,7 +219,7 @@
 	color: black !important;
 }
 .fc-event span {
-	color: black !important;
+	color: #FFFBF2 !important;
 }
 .fc-event b {
 	color: black !important;
@@ -213,9 +227,9 @@
 .event-box {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #6C0F6C;
     box-sizing: border-box;
-    background-color: #688eec;
+    background-color: #6C0F6C;
     border-radius: 10px;
     text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
     overflow: hidden; /* 넘치는 부분 숨김 */
@@ -230,7 +244,12 @@
 .fc-event.fc-event-draggable.fc-event-resizable.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygrid-dot-event {
 	width: 100%;
 }
-
+.fc .fc-list-event-dot {
+	border:calc(var(--fc-list-event-dot-width)/2) solid #6C0F6C;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active {
+	background-color: #8B6AA7;
+}
 
 /* 회의실 예약 현황  */
         .table-container {
@@ -238,10 +257,10 @@
             border-radius: 10px;
             padding: 20px;
             background-color: #fdf8fc00;
-            width: 28%;
-            height: 34%;
+            width: 34%;
+            height: 46%;
             position: relative;
-            top:21px;
+            top:32px;
             overflow-y: auto;
         }
         .table-container h2 {
@@ -279,12 +298,14 @@
         .detail-table-container {
             border: 2px solid #30005A;
             border-radius: 10px;
-            padding: 10px;
+            padding: 20px;
             background-color: #fdf8fc00;
-            width: 28%;
+            width: 34%;
+            height:41%;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             position: relative;
-            top: 44px;
+            top:46px;
+            overflow-y:auto;
         }
         .detail-table-container h2 {
             text-align: center;
@@ -310,6 +331,10 @@
             background-color: #8B6AA7;
             color: #30005A;
             font-weight: bold;
+        }
+        .detail-table tbody {
+            border-bottom: 1px solid #8B6AA7;
+            border-top: 1px solid #8B6AA7;
         }
         .detail-table td {
             color: #333;
@@ -356,21 +381,71 @@
 #room-capacity {
 	display:contents;
 }
+.fc .fc-toolbar.fc-header-toolbar button {
+	background-color: #30005A;
+	color: #FFF5E2;
+}
+.fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
+	background-color: #30005A;
+	color: #FFF5E2;
+}
+.reserveBtn {
+	width: 100px;
+	color: white;
+	border: 1px solid;
+	border-radius: 10px;
+	padding: 5px;
+}
+.reserveBtn.first {
+	background-color: #6C0F6C;
+}
+.reserveBtn.second {
+	background-color: #E9396B;
+}
+.reserveBtn:hover {
+	opacity: 0.5;
+}
+.lPurple {
+	color: #8B6AA7;
+}
+.cPurple {
+	color: #30005A;
+}
+.headerBox {
+	font-size: 32px;
+}
+.headerBox {
+	margin-top: 0%;
+	width: 22%;
+	display: flex;
+	flex-direction: row;
+	align-items:center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+.headerBox {
+	font-weight: bold;
+}
+
 
   </style>
   
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
+ <jsp:include page="../modal/modal.jsp"></jsp:include>
   	<div class="title-name">
-	    <h3>회의실 예약</h3>
-	    <div class="title-line"></div>
+		<div class="headerBox">
+			<span class="lPurple">회의실</span>
+			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+			<span class="cPurple">회의실 예약</span>
+		</div>
+		<button class="btnadd" onclick="openModal()">예약하기</button>
 	</div>
  	<div class="dashboard-body">
 		  <div class="container-meetingRoom">
 				<!-- <h2 class="meeting-add">회의실 예약</h2> -->
 		    <div id="calendar-container">
-				<button class="btnadd btn-primary" onclick="openModal()">예약하기</button>
 				<div id='calendar-room'></div>
 		    </div>
 		  </div>
@@ -442,7 +517,7 @@
 		    <img id="room-image" src="" alt="회의실 이미지"/>
 		</div>
     <form>
-	<input type="hidden" id="emp_idx" value="1" >
+	<input type="hidden" id="emp_idx" value="${sessionScope.loginId}" >
 	
     
       <div class="form-group">
@@ -549,8 +624,8 @@
         <input type="text" id="title" name="title">
       </div>
       <div class="groupbtn">
-      <button type="submit">예약</button>
-      <button class="modalClose" type="button" onclick="closeModal()">취소</button>
+      <button type="submit" class="reserveBtn first">예약</button>
+      <button class="modalClose reserveBtn second" type="button" onclick="closeModal()">취소</button>
       </div>
     </form>
   </div>
@@ -706,11 +781,11 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                         if (response.success) {
                             arg.event.remove(); // 캘린더에서 이벤트 제거
                         } else {
-                            alert('일정 삭제에 실패했습니다.');
+                            modal.showAlert('일정 삭제에 실패했습니다.');
                         }
                     },
                     error: function() {
-                        alert('삭제 요청 중 오류가 발생했습니다.');
+                        modal.showAlert('삭제 요청 중 오류가 발생했습니다.');
                     }
                 });
             }
@@ -820,6 +895,11 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                     label.style.color = '#D32F2F'; // 텍스트 색상
                     label.style.fontSize = '0.8em'; // 텍스트 크기
                     dayNumberElement.appendChild(label);
+                    
+                    const dayNumberText = info.el.querySelector('.fc-daygrid-day-number');
+                    if (dayNumberText) {
+                        dayNumberText.style.color = '#D32F2F'; // 빨간색
+                    }
                 }
             }
 
@@ -930,7 +1010,7 @@ $(document).ready(function () {
 
 	    if (endTime <= startTime) {
 	      e.preventDefault(); // 폼 제출 방지
-	      alert("종료 시간이 시작 시간보다 커야 합니다.");
+	      modal.showAlert("종료 시간이 시작 시간보다 커야 합니다.");
 	    }
 	  });
 	});
@@ -954,27 +1034,27 @@ $(document).ready(function () {
 	    
         // 필수 항목 폼 데이터 유효성 검사
 		if (!$("#emp_idx").val()) {
-		    alert("직원 번호를 입력해주세요.");
+		    modal.showAlert("직원 번호를 입력해주세요.");
 		    return;
 		}
 		if (!$("#hidden-room-idx").val()) {
-		    alert("회의실 번호를 입력해주세요.");
+		    modal.showAlert("회의실 번호를 입력해주세요.");
 		    return;
 		}
 		if (!$("#title").val()) {
-		    alert("제목을 입력해주세요.");
+		    modal.showAlert("제목을 입력해주세요.");
 		    return;
 		}
 		if (!$("#start-time").val()|| "") {
-		    alert("시작 시간을 입력해주세요.");
+		    modal.showAlert("시작 시간을 입력해주세요.");
 		    return;
 		}
 		if (!$("#end-time").val()|| "") {
-		    alert("종료 시간을 입력해주세요.");
+		    modal.showAlert("종료 시간을 입력해주세요.");
 		    return;
 		}
 		if (!$("#date").val()) {
-		    alert("날짜를 입력해주세요.");
+		    modal.showAlert("날짜를 입력해주세요.");
 		    return;
 		}
         
@@ -1002,14 +1082,14 @@ $(document).ready(function () {
 	      processData: false,  
 	      contentType: false,  
 	      success: function (response) {
-	        alert(response.msg);
+	        modal.showAlert(response.msg);
 	        
 	        // 저장 후 캘린더에 이벤트 추가
 	        closeModal(); // 모달 닫기
 	        calendar.refetchEvents(); // 캘린더 새로고침
 	      },
 	      error: function (error) {
-	        alert("저장 중 오류가 발생했습니다: " + error);
+	        modal.showAlert("저장 중 오류가 발생했습니다: " + error);
 	      }
 	    });
 	  });
@@ -1052,7 +1132,7 @@ document.querySelectorAll('.room-btn').forEach(button => {
 		      },
 		      dataType: 'json',
 		      success: function (data) {
-		        if (!data.msg) {
+		        if (data.msg === '성공') {
 					drawRoomMaterialList(data.materialList);
                     //날짜 선택 조건
 
@@ -1067,11 +1147,11 @@ document.querySelectorAll('.room-btn').forEach(button => {
 			        }); */
 			        console.log("날짜가 선택될 때까지 대기 중...");
                 }else{
-					alert(data.msg);
+					modal.showAlert(data.msg);
 				}
 		      },
 		      error: function (error) {
-		        alert("저장 중 오류가 발생했습니다: " + error);
+		        modal.showAlert("저장 중 오류가 발생했습니다: " + error);
 		      }
 		    });
     });
@@ -1152,11 +1232,11 @@ function addMaterial(){
 	        if (!data.msg) {
 				drawMaterialList(data.materials);
 			}else{
-				alert(data.msg);
+				modal.showAlert(data.msg);
 			}
 	      },
 	      error: function (error) {
-	        alert("오류가 발생했습니다: " + error);
+	        modal.showAlert("오류가 발생했습니다: " + error);
 	      }
 	    });
 }

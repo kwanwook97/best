@@ -47,7 +47,7 @@
 		background-color: #100f0f4a;
 	}
     table {
-        width: 1272px;
+        width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
     }
@@ -73,10 +73,10 @@
         cursor: pointer;
     }
     .status-cancelled {
-        background-color: red;
+        background-color: #E9396B;
     }
     .status-modify {
-        background-color: blue;
+        background-color: #6C0F6C;
     }
     .status-done {
         background-color: gold;
@@ -131,7 +131,9 @@
 	background-color: white; 
 }
 .groupbtn{
-	margin: 0 0 0 64%;
+	margin: 0 0 0 47%;
+	display: flex;
+	gap: 10px;
 }
 /* 미팅룸 img */
 #room-image {
@@ -168,6 +170,51 @@
 #room-name {
 	display: contents;
 }
+.lPurple {
+	color: #8B6AA7;
+}
+.cPurple {
+	color: #30005A;
+}
+.headerBox {
+	font-size: 32px;
+}
+.headerBox {
+	margin-top: 0%;
+	width: 22%;
+	display: flex;
+	flex-direction: row;
+	align-items:center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+.headerBox {
+	font-weight: bold;
+}
+.reserveBtn {
+	width: 100px;
+	color: white;
+	border: 1px solid;
+	border-radius: 10px;
+	padding: 5px;
+}
+.reserveBtn.first {
+	background-color: #6C0F6C;
+}
+.reserveBtn.second {
+	background-color: #E9396B;
+}
+.reserveBtn:hover {
+	opacity: 0.5;
+}
+.pagination-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.pagination {
+	margin: 0 0;
+}
     
 	
   </style>
@@ -175,9 +222,14 @@
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
+ <jsp:include page="../modal/modal.jsp"></jsp:include>
+ 
  	<div class="title-name">
-	    <h3>내 예약 현황</h3>
-	    <div class="title-line"></div>
+		<div class="headerBox">
+			<span class="lPurple">회의실</span>
+			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+			<span class="cPurple">내 예약 현황</span>
+		</div>
 	</div>
  	<div class="dashboard-body">
 	    <div class="table-container">
@@ -220,7 +272,7 @@
 		    <img id="room-image" src="" alt="회의실 이미지"/>
 		</div>
     <form>
-	<input type="hidden" id="emp_idx" value="1" >    
+	<input type="hidden" id="emp_idx" value="${sessionScope.loginId}" >    
       <div class="form-group">
         <label class="la" for="room">회의실:</label>
 		<p id="room-name"></p>
@@ -303,8 +355,8 @@
         <input type="text" id="title" name="title">
       </div>
       <div class="groupbtn">
-      <button type="submit">예약</button>
-      <button class="modalClose" type="button" onclick="closeModal()">취소</button>
+      <button type="submit" class="reserveBtn first">예약</button>
+      <button class="modalClose reserveBtn second" type="button" onclick="closeModal()">취소</button>
       </div>
     </form>
   </div>
@@ -327,7 +379,7 @@ function pageCall(page) {
         data: {
             'page': page,
             'cnt': 10,
-            'loginId': 1
+            'loginId': loginId
         },
         dataType: 'JSON',
         success: function(data) {
@@ -408,33 +460,32 @@ function noList() {
 
 // 예약 취소 함수
 function cancelReserve(no,roomIdx) {
-    if (!confirm('예약을 취소하시겠습니까?')) {
-        return; // 취소 버튼 클릭 시 종료
-    }
+	modal.showConfirm('예약을 취소하시겠습니까?', function () {
 
-    $.ajax({
-        url: "cancelReserve.ajax",
-        method: "POST",
-        data: {
-            reserveIdx: no,
-            empIdx: 1 ,
-            roomIdx: roomIdx
-            
-        },
-        dataType: 'json',
-        success: function (response) {
-            if (response && response.msg) {
-                alert(response.msg);
-            } else {
-                alert("예약이 취소되었습니다.");
-            }
-            pageCall();
-        },
-        error: function (error) {
-            console.error("AJAX 오류:", error);
-            alert("삭제 중 오류가 발생했습니다.");
-        }
-    });
+	    $.ajax({
+	        url: "cancelReserve.ajax",
+	        method: "POST",
+	        data: {
+	            reserveIdx: no,
+	            empIdx: loginId,
+	            roomIdx: roomIdx
+	            
+	        },
+	        dataType: 'json',
+	        success: function (response) {
+	            if (response && response.msg) {
+	                modal.showAlert(response.msg);
+	            } else {
+	                modal.showAlert("예약이 취소되었습니다.");
+	            }
+	            pageCall();
+	        },
+	        error: function (error) {
+	            console.error("AJAX 오류:", error);
+	            modal.showAlert("삭제 중 오류가 발생했습니다.");
+	        }
+	    });
+	});
 }
 
 
@@ -495,14 +546,14 @@ $(document).ready(function () {
 	      // 종료 시간이 시작 시간보다 작은 경우
 	      if (endTime < startTime) {
 	          e.preventDefault(); // 폼 제출 방지
-	          alert("종료 시간이 시작 시간보다 커야 합니다.");
+	          modal.showAlert("종료 시간이 시작 시간보다 커야 합니다.");
 	          return;
 	      }
 
 	      // 시작 시간과 종료 시간이 동일한 경우
 	      if (startTime === endTime) {
 	          e.preventDefault(); // 폼 제출 방지
-	          alert("시작과 종료 시간이 같으면 안됩니다.");
+	          modal.showAlert("시작과 종료 시간이 같으면 안됩니다.");
 	          return;
 	      }
 
@@ -530,7 +581,7 @@ $(document).ready(function () {
 	    const formData = {
 	    		
 	      emp_idx: $("#emp_idx").val(),
-	    	room_idx : $("#hidden-room-idx").val(),
+	      room_idx : $("#hidden-room-idx").val(),
 	      subject: $("#title").val(),
 	      startTime: $("#start-time").val(),
 	      endTime: $("#end-time").val(),
@@ -541,7 +592,7 @@ $(document).ready(function () {
         // 폼 데이터 유효성 검사
         for (const [key, value] of Object.entries(formData)) {
             if (!value) { // 값이 비어있으면
-                alert("항목을 입력해주세요.");
+                modal.showAlert("항목을 입력해주세요.");
                 return; // 폼 제출 중단
             }
         }
@@ -553,12 +604,12 @@ $(document).ready(function () {
 	      method: "POST",
 	      data: formData,
 	      success: function (response) {
-	        alert(response.msg);
+	        modal.showAlert(response.msg);
 	        pageCall();
 	        closeModal(); // 모달 닫기
 	      },
 	      error: function (error) {
-	        alert("저장 중 오류가 발생했습니다: " + error);
+	        modal.showAlert("저장 중 오류가 발생했습니다: " + error);
 	      }
 	    });
 	  });

@@ -92,7 +92,7 @@
         	font-size: 14px;
         }
         .p-maxCapacity {
-        	margin: 0 -46px 0 0;
+        	margin: 0 -21px 0 0;
         }
 /* 모달 css  */        
 /* 모달 배경 스타일 */
@@ -113,7 +113,7 @@
     margin: 10% auto;
     padding: 20px;
     border: 1px solid #ddd;
-    width: 28%;
+    width: 35%;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     max-height: 68%;
@@ -163,7 +163,7 @@ label {
 }
 
 /* 버튼 스타일 */
-.btn-submite {
+/* .btn-submite {
     background-color: #3474c6;
     color: white;
     border: none;
@@ -174,7 +174,7 @@ label {
 
 .btn-submite:hover {
     background-color: #3d8ff8;
-}
+} */
 
 .button-area {
     text-align: center;
@@ -208,16 +208,67 @@ label {
 #equipment-list {
 	color: blue;
 }
+.lPurple {
+	color: #8B6AA7;
+}
+.cPurple {
+	color: #30005A;
+}
+.headerBox {
+	font-size: 32px;
+}
+.headerBox {
+	margin-top: 0%;
+	width: 22%;
+	display: flex;
+	flex-direction: row;
+	align-items:center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+.headerBox {
+	font-weight: bold;
+}
+.btnadd {
+	position: absolute;
+	top: 86%;
+	left: -1%;
+	background-color: #6C0F6C;
+	color: #FFF5E2;
+	border: 2px solid #6C0F6C;
+	border-radius: 10px;
+	z-index: 100;
+}	
+.btnadd:hover {
+	opacity: 0.5;
+}
+.reserveBtn {
+	width: 100px;
+	color: white;
+	border: 1px solid;
+	border-radius: 10px;
+	padding: 5px;
+}
+.reserveBtn.first {
+	background-color: #6C0F6C;
+}
+.reserveBtn:hover {
+	opacity: 0.5;
+}
 	
   </style>
   
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
+ <jsp:include page="../modal/modal.jsp"></jsp:include>
  	<div class="title-name">
-	    <h3>회의실 정보</h3>
-	    <div class="title-line"></div>
-	    <button class="btn-primary btn-addRoom" onclick="addRoom()">회의실 등록</button>
+		<div class="headerBox">
+			<span class="lPurple">회의실</span>
+			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+			<span class="cPurple">회의실 관리</span>
+		</div>
+	    <button class="btn-addRoom btnadd" onclick="addRoom()">회의실 등록</button>
 	</div>
  	<div class="dashboard-body">
 	    <div class="room-container">
@@ -268,7 +319,7 @@ label {
                 </tr>
             </table>
             <div class="button-area">
-                <button class="btn-submite" onclick="saveRoomInfo()">저장</button>
+                <button class="btn-submite reserveBtn first" onclick="saveRoomInfo()">등록</button>
             </div>
         </div>
     </div>
@@ -387,35 +438,37 @@ function saveRoomInfo() {
         processData: false, 
         contentType: false, 
         success: function(response) {
-            alert(response);
+            modal.showAlert(response.response);
         	closeModel();
             roomCard();
         },
         error: function(error) {
             console.error('저장 실패:', error);
-            alert('저장 중 오류가 발생했습니다.');
+            modal.showAlert('저장 중 오류가 발생했습니다.');
         }
     });
 }
 
 function deleteRoom(roomIdx) {
-	console.log("roomIdx: " + roomIdx);
-    $.ajax({
-        type: 'POST',
-        url: 'delRoomInfo.ajax', 
-        data: {
-        	"roomIdx":roomIdx
-        },
-        dataType: 'json',
-        success: function(data) {
-        	console.log(data.response);
-            roomCard();
-        },
-        error: function(error) {
-            console.error('저장 실패:', error);
-            alert('삭제 중 오류가 발생했습니다.');
-        }
-    });
+	modal.showConfirm('삭제 하시겠습니까?', function () {
+		console.log("roomIdx: " + roomIdx);
+	    $.ajax({
+	        type: 'POST',
+	        url: 'delRoomInfo.ajax', 
+	        data: {
+	        	"roomIdx":roomIdx
+	        },
+	        dataType: 'json',
+	        success: function(data) {
+	        	modal.showAlert(data.response);
+	            roomCard();
+	        },
+	        error: function(error) {
+	            console.error('저장 실패:', error);
+	            modal.showAlert('삭제 중 오류가 발생했습니다.');
+	        }
+	    });
+	});
 }
 
 
@@ -436,7 +489,7 @@ document.querySelector('.file-size').addEventListener('change', function(event) 
 
         reader.readAsDataURL(file); 
     } else {
-        alert('이미지 파일만 업로드 가능합니다.');
+        modal.showAlert('이미지 파일만 업로드 가능합니다.');
         previewBox.style.backgroundImage = ''; 
         event.target.value = '';
     }
