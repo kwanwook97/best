@@ -10,8 +10,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
+ 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
 	.dashboard-body{
 	    margin-left: 15vw;
@@ -87,16 +86,6 @@
 	    height: 680px;
 	    border-radius: 10px;
 	}
-	.itemList{
-		border: 1px solid var(--primary-color);
-	    width: 35%;
-    	height: 620px;
-	}
-	.expenseChart{
-		border: 1px solid var(--primary-color);
-	    width: 55%;
-	    height: 620px;
-	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
 		background-color: var(--background-color); /* 배경 색상 */
@@ -127,7 +116,72 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}
-   </style>
+	body {
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      width: 1300px;
+      height: 680px;
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .leftPanel, .rightPanel {
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .leftPanel {
+      width: 50%;
+    }
+	.categoryTable{
+
+	}
+	.categoryList{
+
+	}
+	.dailyTable{
+		
+	}
+	.dailyList{
+
+	}
+    .rightPanel {
+		width: 50%;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		align-items: center;
+		justify-content: center;
+    }
+	h3.chartText{
+		position: absolute;
+    	left: 995px;
+	}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+    }
+    #category-chart {
+      max-width: 135%;
+      max-height: 400px;
+    }
+    #daily-expense-table {
+      max-width: 135%;
+      max-height: 300px;
+    }
+</style>
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
@@ -151,44 +205,146 @@
 			</div>
 		</div>
 		<div class="docbox">
-			<div class="itemList"></div>
-			<div class="expenseChart">
-				<canvas id="myPieChart"></canvas>
+			<div class="container">
+				<!-- 왼쪽 패널 -->
+				<div class="leftPanel">
+					<div>
+						<h3>카테고리별 지출금액</h3>
+						<table class="categoryTable">
+							<thead>
+								<tr>
+									<th>카테고리</th>
+									<th>금액</th>
+								</tr>
+							</thead>
+							<tbody id="categoryList">
+							</tbody>
+						</table>
+					</div>
+					<div>
+						<h3>날짜별 지출내역</h3>
+						<table class="dailyTable">
+							<thead>
+								<tr>
+									<th>날짜</th>
+									<th>카테고리</th>
+									<th>내용</th>
+									<th>금액</th>
+									<th>비고</th>
+								</tr>
+							</thead>
+							<tbody id="dailyList">
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!-- 오른쪽 패널 -->
+				<div class="rightPanel">
+					<h3 class="chartText">지출 차트</h3>
+					<canvas id="category-chart"></canvas>
+					<canvas id="daily-expense-table"></canvas>
+				</div>
 			</div>
 		</div>
  	</div>
 </body>
 <script>
-// DOM 로드 후 실행
-document.addEventListener("DOMContentLoaded", function () {
-    // 차트가 그려질 canvas 요소 가져오기
-    const ctx = document.getElementById('myPieChart').getContext('2d');
 
-    // 데이터 설정
-    const data = {
-        labels: ['식비', '교통비', '주거비', '기타'],
+$(document).ready(function() {
+    var categoryData = [
+      { category: '식비', amount: 50000 },
+      { category: '교통비', amount: 30000 },
+      { category: '기타', amount: 20000 }
+    ];
+
+    var dailyExpenseData = [
+      { date: '2025-01-01', category: '식비', content: '점심 식사', amount: 10000, note: '' },
+      { date: '2025-01-02', category: '교통비', content: '지하철', amount: 3000, note: '' },
+      { date: '2025-01-03', category: '기타', content: '커피', amount: 4500, note: '' }
+    ];
+
+    // 카테고리별 지출 금액 테이블 생성
+    var categoryTable = '';
+    $.each(categoryData, function(index, item) {
+      categoryTable += '<tr><td>' + item.category + '</td><td>' + item.amount.toLocaleString() + '원</td></tr>';
+    });
+    $('#category-table').html(categoryTable);
+
+    // 날짜별 지출 내역 테이블 생성
+    var dailyExpenseTable = '';
+    $.each(dailyExpenseData, function(index, item) {
+      dailyExpenseTable += '<tr>' +
+        '<td>' + item.date + '</td>' +
+        '<td>' + item.category + '</td>' +
+        '<td>' + item.content + '</td>' +
+        '<td>' + item.amount.toLocaleString() + '원</td>' +
+        '<td>' + item.note + '</td>' +
+        '</tr>';
+    });
+    $('#daily-expense-table').html(dailyExpenseTable);
+
+    // 원형 차트 데이터 및 옵션
+    var ctxCategory = document.getElementById('categoryChart').getContext('2d');
+    var categoryChart = new Chart(ctxCategory, {
+      type: 'pie',
+      data: {
+        labels: categoryData.map(function(item) { return item.category; }),
         datasets: [{
-            label: '지출 내역',
-            data: [50000, 30000, 70000, 20000], // 각 항목의 데이터 값
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)', // 각 항목 색상
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)'
-            ],
-            hoverOffset: 4
+          data: categoryData.map(function(item) { return item.amount; }),
+          backgroundColor: ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD', '#D5CCDE', ''],
         }]
-    };
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          }
+        }
+      }
+    });
 
-    // 차트 설정
-    const config = {
-        type: 'pie', // 차트 타입 (파이 차트)
-        data: data
-    };
-
-    // 차트 생성
-    new Chart(ctx, config);
-});
-
+    // 꺾은선 그래프 데이터 및 옵션
+    var ctxDaily = document.getElementById('dailyChart').getContext('2d');
+    var dailyExpenseChart = new Chart(ctxDaily, {
+      type: 'line',
+      data: {
+        labels: dailyExpenseData.map(function(item) { return item.date; }),
+        datasets: [{
+          label: '일별 지출 금액',
+          data: dailyExpenseData.map(function(item) { return item.amount; }),
+          borderColor: '#36A2EB',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderWidth: 2,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: '날짜'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: '금액 (원)'
+            },
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: false,
+          }
+        }
+      }
+    });
+  });
 </script>
 </html>
