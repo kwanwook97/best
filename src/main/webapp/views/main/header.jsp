@@ -133,19 +133,19 @@ var loginId = ${sessionScope.loginId};
 							class="bi bi-envelope-paper-fill"></i> <span>메일작성</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
-					<li class="dropD-item"><a href="mail.go"> <i
+					<li class="dropD-item"><a href="mail.go?tabData=receive"> <i
 							class="bi bi-envelope-paper-fill"></i> <span>받은 메일함</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
-					<li class="dropD-item"><a href="test.go"> <i
+					<li class="dropD-item"><a href="mail.go?tabData=send"> <i
 							class="bi bi-send"></i> <span>보낸 메일함</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
-					<li class="dropD-item"><a href="javaScript:void(0);"> <i
+					<li class="dropD-item"><a href="mail.go?tabData=draft"> <i
 							class="bi bi-envelope-exclamation-fill"></i> <span>임시저장</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
-					<li class="dropD-item"><a href="javaScript:void(0);"> <i
+					<li class="dropD-item"><a href="mail.go?tabData=trash"> <i
 							class="bi bi-trash-fill"></i> <span>휴지통</span> <i
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
@@ -300,6 +300,16 @@ var loginId = ${sessionScope.loginId};
 					class="bi bi-person-fill-gear"></i> <span>내 정보관리</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
+			
+			<!-- 관욱추가 시작 2025.01.05 -->
+			<li><a href="accessManage.go"> 
+			    <i class="bi bi-shield-check"></i> 
+			    <span>권한관리</span> 
+			    <i class="fa-solid fa-angle-right"></i>
+			</a></li>
+			<!-- 관욱추가 끝 2025.01.05 -->
+			
+			
 			<li><a href="logout.do"><i
 					class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span> <i
 					class="fa-solid fa-angle-right"></i> </a></li>
@@ -624,6 +634,83 @@ function updateEndTime(){
         alert(error.message);
     }); 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 권한에 따른 메뉴바 숨기기기 */
+$(document).ready(function () {
+    // 서버에서 전달된 접근 불가능한 URL 목록 (JSON 데이터)
+    const inaccessibleUrls = ${inaccessibleUrls}; // 서버에서 전달된 배열
+    console.log('Inaccessible URLs:', inaccessibleUrls); // 디버깅용 콘솔 출력
+
+    // 모든 a 태그를 순회하며 숨김 처리
+    $('.sidebar-menu a').each(function () {
+        const href = $(this).attr('href'); // 각 a 태그의 href 속성 가져오기
+
+        // 접근 불가능한 URL 목록에 해당 href가 포함된 경우
+        if (href && inaccessibleUrls.includes(href)) {
+            // 해당 태그의 부모 li 요소 숨기기
+            $(this).closest('li').hide();
+        }
+    });
+
+    // `dropD-menu` 하위의 모든 `li`가 숨김 처리된 경우, 해당 `dropD`도 숨김 처리
+    $('.dropD').each(function () {
+        const dropDMenu = $(this).find('.dropD-menu'); // `dropD-menu` 찾기
+        const visibleItems = dropDMenu.find('li').filter(function () {
+            return $(this).css('display') !== 'none'; // 보이는 항목 필터링
+        });
+
+        if (visibleItems.length === 0) {
+            // 보이는 항목이 없으면 해당 `dropD` 숨김 처리
+            $(this).hide();
+        } else {
+            // 보이는 항목이 하나라도 있으면 `dropD`는 보임 상태 유지
+            $(this).show();
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 	<!-- 우측 하단 알림 메시지 -->

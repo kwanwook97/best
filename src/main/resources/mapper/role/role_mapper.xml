@@ -4,4 +4,154 @@
 >
 <mapper namespace="com.best.role.RoleDAO">
 
+    <!-- 접근제어 페이지 등록 -->
+    <insert id="insertPage">
+        INSERT INTO access (url, page_name)
+        VALUES (#{url}, #{page_name})
+    </insert>
+
+	<!-- 접근제어 페이지 등록시 중복체크 -->
+	<select id="checkDuplicatePage" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM access 
+	    WHERE url = #{url} OR page_name = #{page_name}
+	</select>
+	
+	<!-- 접근제어 페이지 삭제 -->
+	<delete id="deletePage" parameterType="int">
+	    DELETE FROM access WHERE page_idx = #{pageIdx}
+	</delete>
+
+
+	<!-- 페이지에 등록된 권한 모두삭제 -->
+	<delete id="deletePageRole" parameterType="int">
+		DELETE FROM role_test WHERE page_idx = #{pageIdx}
+	</delete>
+	
+
+    <!-- 부서별 권한 조회 -->
+    <select id="filterDepartmentRoles" resultType="com.best.role.PageDTO">
+        SELECT a.page_name, a.url
+        FROM role_test r
+        JOIN access a ON r.page_idx = a.page_idx
+        WHERE r.idx_name = 'depart_idx' AND r.idx_num = #{departmentId}
+    </select>
+
+    <!-- 직급별 권한 조회 -->
+    <select id="filterRankRoles" resultType="com.best.role.PageDTO">
+        SELECT a.page_name, a.url
+        FROM role_test r
+        JOIN access a ON r.page_idx = a.page_idx
+        WHERE r.idx_name = 'rank_idx' AND r.idx_num = #{rankId}
+    </select>
+
+    <!-- 페이지별 권한을 가진 부서, 직급목록조회 -->
+	<select id="getPermissions" resultType="map">
+	    SELECT 
+	        r.role_idx, 
+	        r.page_idx, 
+	        r.idx_name, 
+	        r.idx_num, 
+	        a.page_name, 
+	        a.url,
+	        CASE 
+	            WHEN r.idx_name = 'depart_idx' THEN d.depart_name
+	            WHEN r.idx_name = 'rank_idx' THEN re.rank_name
+	        END AS related_name
+	    FROM role_test r
+	    JOIN access a ON r.page_idx = a.page_idx
+	    LEFT JOIN department d ON r.idx_name = 'depart_idx' AND r.idx_num = d.depart_idx
+	    LEFT JOIN rank_emp re ON r.idx_name = 'rank_idx' AND r.idx_num = re.rank_idx
+	    WHERE a.url = #{url}
+	</select>
+
+    
+    <!-- 접근제어 페이지목록 가져오기 -->
+	 <select id="getPageList" resultType="com.best.role.PageDTO">
+	    SELECT page_idx, url, page_name
+	    FROM access
+	    <if test="query != null and query != ''">
+	        WHERE name LIKE CONCAT('%', #{query}, '%') OR url LIKE CONCAT('%', #{query}, '%')
+	    </if>
+	    ORDER BY page_idx DESC
+	</select>
+	
+	<!-- 페이지 검색 -->
+	<select id="searchPages" resultType="com.best.role.PageDTO">
+	    SELECT page_idx, url, page_name
+	    FROM access
+	    <where>
+	        <if test="searchKeyword != null and searchKeyword != ''">
+	            <if test="searchFilter == 'page_name'">
+	                page_name LIKE CONCAT('%', #{searchKeyword}, '%')
+	            </if>
+	            <if test="searchFilter == 'url'">
+	                url LIKE CONCAT('%', #{searchKeyword}, '%')
+	            </if>
+	        </if>
+	    </where>
+	    ORDER BY page_idx DESC
+	</select>
+	
+	<!-- 권한없는 부서목록 -->
+	<select id="getUnassignedDepartments" resultType="map">
+	    SELECT d.depart_idx, d.depart_name
+	    FROM department d
+	    WHERE NOT EXISTS (
+	        SELECT 1 FROM role_test r 
+	        WHERE r.page_idx = #{pageIdx} 
+	        AND r.idx_name = 'depart_idx' 
+	        AND r.idx_num = d.depart_idx
+	    )
+	    ORDER BY depart_idx ASC
+	</select>
+	
+	
+	<!-- 권한없는 직급목록 -->
+	<select id="getUnassignedRanks" resultType="map">
+	    SELECT r.rank_idx, r.rank_name
+	    FROM rank_emp r
+	    WHERE NOT EXISTS (
+	        SELECT 1 FROM role_test rt 
+	        WHERE rt.page_idx = #{pageIdx} 
+	        AND rt.idx_name = 'rank_idx' 
+	        AND rt.idx_num = r.rank_idx
+	    )
+	    ORDER BY rank_idx ASC
+	</select>
+	
+
+    <!-- 부서 또는 직급 권한 삭제 -->
+    <delete id="deleteRole">
+        DELETE FROM role_test
+        WHERE role_idx = #{roleIdx}
+    </delete>
+    
+    
+    <!-- 부서 권한 추가 -->
+    <insert id="assignDepartmentRole">
+        INSERT INTO role_test (page_idx, idx_name, idx_num)
+        VALUES (#{pageIdx}, 'depart_idx', #{departIdx})
+    </insert>
+
+    <!-- 직급 권한 추가 -->
+    <insert id="assignRankRole">
+        INSERT INTO role_test (page_idx, idx_name, idx_num)
+        VALUES (#{pageIdx}, 'rank_idx', #{rankIdx})
+    </insert>
+	
+    <!-- 모든 부서 목록 -->
+    <select id="getAllDepartments" resultType="map">
+        SELECT depart_idx, depart_name
+        FROM department
+        ORDER BY depart_idx ASC
+    </select>
+
+    <!-- 모든 직급 목록 -->
+    <select id="getAllRanks" resultType="map">
+        SELECT rank_idx, rank_name
+        FROM rank_emp
+        ORDER BY rank_idx ASC
+    </select>
+
 </mapper>  

@@ -277,6 +277,7 @@ table.my-table a:hover {
  <jsp:include page="../main/header.jsp"></jsp:include>
  <jsp:include page="../modal/modal.jsp"></jsp:include>
  <c:set var="emp_idx" value="${param.emp_idx}" />
+ <c:set var="tabData" value="${param.tabData}" />
  	<div class="dashboard-body">
 		<div class="maintext">
 			<h3 class="mail">메일함</h3>
@@ -370,17 +371,27 @@ table.my-table a:hover {
 	var mailFilter = 0; // 0: 필터X, 1: 중요필터, 2:읽음필터 
 	var special_flag = 0; // 중요여부
 	var read_flag = 0; // 읽음여부 0: 안읽은메일, 1: 읽은메일
-	var tabData = ''; // 현재 선택된 탭
+	// 현재 선택된 탭 - URL에서 전달받은 tabData를 사용해 초기 설정
+    var tabData = '<c:out value="${tabData}" default="receive" />'; // 기본값은 'receive'
+
 	
 	var status = 1; // 0: 임시저장, 1: 발송
 	var table = 'mail_receive'
 	
 	
+	// URL에서 전달받은 tabData를 사용해 초기 설정
+    $(document).ready(function () {
+	    // tabData에 따라 초기 설정
+	    updateTabAndTitle(tabData);
+	
+	    // 초기 페이지네이션 생성
+	    pageCall(showPage);
+	});
+
 	
 	
 	
-	// 초기 페이지네이션 생성.
-	pageCall(showPage);
+	
 	
     updateMailFilterOptions(); // 초기 mailFilter 설정
 
@@ -446,68 +457,71 @@ table.my-table a:hover {
 	
 
 	/* 탭 클릭시 이벤트 */
-	$('.opt div').click(function(){
-		// 선택된 탭의 데이터를 가져옴
+	$('.opt div').click(function () {
+	    // 선택된 탭의 데이터를 가져옴
 	    tabData = $(this).data('tab');
-		
-		$('.maintext').find(':last-child').html('>&nbsp;&nbsp;' + $(this).text());
-		$(this).css({
-			"color": "var(--primary-color)",
-			"font-weight": "bold",
-			"border-bottom": "3px solid var(--accent-color)"
-		});
-		$(this).siblings().not(':last-child').css({
-			"color": "var(--secondary-color)",
-			"border-bottom": "none"
-		});
-		
-		
-		// 변수 초기화
-		table = '';// 받은메일함
-		status = 1;            // 전송
-		delete_flag = 0;       // 삭제되지 않은 메일
-		
-		// 전역 변수 업데이트
+	
+	    // tabData에 따른 탭과 제목 세팅
+	    updateTabAndTitle(tabData);
+	});
+
+	
+	// tabData에 따라 탭 및 제목 설정
+	function updateTabAndTitle(tabData) {
+	    // 탭 스타일 업데이트
+	    $('.opt div').each(function () {
+	        if ($(this).data('tab') === tabData) {
+	            $(this).css({
+	                "color": "var(--primary-color)",
+	                "font-weight": "bold",
+	                "border-bottom": "3px solid var(--accent-color)"
+	            });
+
+	            // 제목 업데이트
+	            $('.maintext').find(':last-child').html('>&nbsp;&nbsp;' + $(this).text());
+	        } else {
+	            $(this).css({
+	                "color": "var(--secondary-color)",
+	                "border-bottom": "none"
+	            });
+	        }
+	    });
+
+	    // 탭에 따라 전역 변수 초기화
 	    switch (tabData) {
-	 		// 받은 메일함
-	        case 'receive':
-	            table = 'mail_receive'; // 테이블 설정
+	        case 'receive': // 받은 메일함
+	            table = 'mail_receive';
 	            status = 1; // 전송
 	            delete_flag = 0; // 삭제되지 않은 메일
 	            break;
-	         // 보낸 메일함
-	        case 'send':
+	        case 'send': // 보낸 메일함
 	            table = 'mail_send';
 	            status = 1; // 전송
 	            delete_flag = 0; // 삭제되지 않은 메일
 	            break;
-	         // 임시저장 메일함
-	        case 'draft':
+	        case 'draft': // 임시저장
 	            table = 'mail_send';
 	            status = 0; // 임시저장
 	            delete_flag = 0; // 삭제되지 않은 메일
 	            break;
-	         // 휴지통 함
-	        case 'trash':
-	        	table = 'mail_trash'; // 테이블 설정
-	            // table mail_receive, mail_send 둘다 뒤져야힘 
+	        case 'trash': // 휴지통
+	            table = 'mail_trash';
 	            status = 1; // 전송
 	            delete_flag = 1; // 삭제된 메일
 	            break;
 	    }
 
-		
-	 	// 필터 옵션 업데이트
-        updateMailFilterOptions();
-		
+	    // 필터 옵션 업데이트
+	    updateMailFilterOptions();
+
 	    // 현재 페이지 1로 초기화
 	    showPage = 1;
 
-	    // 해당 탭에 맞는 데이터를 호출
+	    // 해당 탭에 맞는 데이터 호출
 	    pageCall(showPage);
-		
-		
-	});	
+	}
+
+	
 	
 	
 	
@@ -891,6 +905,11 @@ table.my-table a:hover {
 	function handleMailClick(event, mailIdxType, mailIdx, readFlag, mail_send_idx) {
 	    event.preventDefault(); // 기본 링크 동작 차단
 
+	    // 휴지통 탭일 경우 링크 이동 차단
+	    if (tabData === 'trash') {
+	        modal.showAlert('휴지통에서는 메일을 열 수 없습니다.');
+	        return;
+	    }
 	    
 	    var targetPage = 'mailDetail.go'; // 기본 페이지
 

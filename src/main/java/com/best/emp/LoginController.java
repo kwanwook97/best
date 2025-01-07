@@ -50,6 +50,31 @@ public class LoginController {
         session.invalidate();
         return "redirect:/login.go?logout=success";
     }
+
+    
+    // 관리자 로그인페이지로 이동
+    @RequestMapping(value = "/adminLogin.go")
+    public String adminlogin() {
+        System.out.println("LoginController - /login.go reached");
+        return "main/adminLogin";
+    }
+
+    // 관리자 로그인
+    @RequestMapping(value = "/adminLogin.do")
+    public String adminLogin(String id, String pw, HttpSession session) {
+        boolean isAuthenticated = loginService.authenticateAdmin(id, pw);
+        if (isAuthenticated) {
+            session.setAttribute("isAdmin", true);
+            
+            return "redirect:/main.go";
+        } else {
+            return "redirect:/adminLogin.go?error=invalid";
+        }
+    }
+    
+    
+    
+    
 }
 
 

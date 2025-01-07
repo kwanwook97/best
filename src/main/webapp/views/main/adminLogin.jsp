@@ -60,7 +60,7 @@
 		 	<div class="text-center">
 		 		<h2 style="color:#E9396B; font-weight:700;">BEST</h2>
 		 	</div>
-		  <div class="card-title text-uppercase text-center py-3">User Login</div>
+		  <div class="card-title text-uppercase text-center py-3">Admin Login</div>
 		  
 		  
 		  
@@ -82,7 +82,7 @@
 		  
 		  
 		  
-		    <form action="login.do" method="post">
+		    <form action="adminLogin.do" method="post">
 			  <div class="form-group">
 			  <label for="exampleInputUsername" class="sr-only">Username</label>
 			   <div class="position-relative has-icon-right">
@@ -106,7 +106,7 @@
 			   <div class="icheck-material-white">
                 <input type="checkbox" id="user-checkbox" checked="" />
                 <label for="user-checkbox">Remember me</label>
-                <a class="loginType" href="adminLogin.go">Admin Login</a>
+                <a class="loginType" href="login.go">User Login</a>
 			  </div>
 			 </div>
 			 <div class="form-group col-6 text-right">

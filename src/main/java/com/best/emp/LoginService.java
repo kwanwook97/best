@@ -1,6 +1,5 @@
 package com.best.emp;
 
-import java.util.ArrayList;  
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,60 +32,50 @@ public class LoginService {
         // 사용자 정보 가져오기
         EmployeeDTO employee = loginDAO.login(id);
 
-       if (employee == null || !passwordEncoder.matches(pw, employee.getPassword())) {
+        // 암호화된 비밀번호 체크
+        if (employee == null || !passwordEncoder.matches(pw, employee.getPassword())) {
             return null; // 인증 실패
         }
 
-        // 사용자가 접근 가능한 URL 목록 조회
-        List<String> accessibleUrls = getAccessibleUrlsForUser(employee.getDepart_idx(), employee.getRank_idx());
-
-        // 권한 정보를 Spring Security Context에 설정
-        setAuthoritiesForEmployee(employee, accessibleUrls);
+        // SecurityContext에 권한 정보 설정 (URL 권한은 DynamicAuthorizationService에서 처리)
+        setAuthoritiesForEmployee(employee);
 
         // 결과 데이터를 Map에 담기
         Map<String, Object> result = new HashMap<>();
         result.put("employee", employee); // 직원 정보
-        result.put("accessibleUrls", accessibleUrls); // 접근 가능한 URL
 
         return result;
     }
 
     /**
-     * 모든 URL과 사용자 권한 기반으로 접근 가능한 URL 필터링
-     */
-    public List<String> getAccessibleUrlsForUser(int departIdx, int rankIdx) {
-        List<String> allUrls = loginDAO.findAllUrls();
-        List<String> accessibleUrls = new ArrayList<>();
-
-        for (String url : allUrls) {
-            if (loginDAO.hasAccessToUrl(url, departIdx, rankIdx) > 0) {
-                // URL 앞에 "/"를 붙여줌 (이미 "/"로 시작한다면 그대로 유지)
-                if (!url.startsWith("/")) {
-                    url = "/" + url;
-                }
-                accessibleUrls.add(url);
-            }
-        }
-
-        return accessibleUrls;
-    }
-
-
-    /**
      * SecurityContext에 권한 정보 설정
      */
-    private void setAuthoritiesForEmployee(EmployeeDTO employee, List<String> accessibleUrls) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-
-        // URL 자체를 권한으로 설정
-        for (String url : accessibleUrls) {
-            authorities.add(new SimpleGrantedAuthority(url));
-        }
-
-        // SecurityContext에 Authentication 설정
-        Authentication auth = new UsernamePasswordAuthenticationToken(employee, null, authorities);
+    private void setAuthoritiesForEmployee(EmployeeDTO employee) {
+        // 권한 추가 없이 SecurityContext에 사용자 정보만 설정
+    	// 1. principal: 인증된 사용자에 대한 정보 예) EmployeeDTO
+    	// 2. credentials: 사용자 자격증명.. 이미 인증된 상태이므로 null값세팅.
+    	// 3. authorities: 사용자 권한목록.. DynamicAuthorization에서 권한정보를 세팅했기에 null세팅.
+        Authentication auth = new UsernamePasswordAuthenticationToken(employee, null, null);
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
+
+    
+    // 관리자 로그인
+	public boolean authenticateAdmin(String id, String password) {
+        AdminDTO admin = loginDAO.getAdminById(id);
+        
+        // 로그인 성공시
+        if(passwordEncoder.matches(password, admin.getPassword())) {
+        	// admin 권한부여
+        	List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ADMIN"));
+            Authentication auth = new UsernamePasswordAuthenticationToken(admin, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            return true;
+        }
+        
+        return false;
+	}
+    
 }
 
 
