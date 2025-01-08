@@ -293,6 +293,16 @@
 .pagination {
 	margin: 0 0 !important;
 }
+.handleBtn {
+	background-color: #8B6AA7;
+	border: 0;
+	font-weight: 700;
+	color: white;
+	border-radius: 10px;
+}
+.handleBtn:hover {
+	background-color: #ae89ce;
+}
   
    </style>
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -783,7 +793,7 @@ function renderTable(records) {
         var tr = $('<tr></tr>');
         tr.html(
         	'<td data-settlement-idx="' + record.settlementIdx + '">'+
-            	'<button onclick=\'handleClick(' + JSON.stringify(record) + ')\'>' + record.company + '</button></td>' +
+            	'<button class="handleBtn" onclick=\'handleClick(' + JSON.stringify(record) + ')\'>' + record.company + '</button></td>' +
             '<td>' + record.amount + '</td>' +
             '<td>' + record.month + '</td>' +
             '<td>' + record.name + '</td>'
@@ -821,6 +831,34 @@ function updateSattlement(){
 		success: function(data){
 	        if(data.msg == '성공'){
 	            modal.showAlert("수정 되었습니다!");
+			    fetchData('','', page, cur);
+			    fetchChart(cur);
+			    hideSattlementPastModal();
+        	}else{
+    			modal.showAlert('잠시 후 다시 시도해주세요.');
+        	}
+		},
+		error: function(e){
+			modal.showAlert('잠시 후 다시 시도해주세요.');
+		}
+	});
+}
+
+function delSattlement(){
+	const settlementIdx = $('#hidden_input').val();
+	$.ajax({
+		method: 'POST',
+		url: 'delSattlement.ajax',
+		data: {
+			'settlementIdx':settlementIdx
+		},
+		dataType: 'JSON',
+		success: function(data){
+	        if(data.msg == '성공'){
+	            modal.showAlert("삭제 되었습니다!");
+			    fetchData('','', page, cur);
+			    fetchChart(cur);
+			    hideSattlementPastModal();
         	}else{
     			modal.showAlert('잠시 후 다시 시도해주세요.');
         	}

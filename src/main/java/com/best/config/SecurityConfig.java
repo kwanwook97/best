@@ -41,6 +41,7 @@ public class SecurityConfig {
             .authorizeRequests(authorize -> authorize
                 .antMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/resources/**").permitAll()
                 .antMatchers("/", "/login.go", "/login.do", "/adminLogin.go", "/adminLogin.do").permitAll()
+                .antMatchers("/main.go").permitAll()
                 .antMatchers("/*.go", "/*.do").access("@dynamicAuthorizationService.hasAccess(request.requestURI)")
                 .anyRequest().authenticated() // 로그인된 사용자만 접근가능.
             )
