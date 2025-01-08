@@ -281,7 +281,7 @@ var loginId = ${sessionScope.loginId};
 					</a></li> -->
 				</ul></li>
 
-			<li><a href="javaScript:void();"> <i
+			<li class="dropD"><a href="javaScript:void();"> <i
 					class="bi bi-wallet-fill"></i> <span>지출정산</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
@@ -297,16 +297,6 @@ var loginId = ${sessionScope.loginId};
 					class="bi bi-person-fill-gear"></i> <span>내 정보관리</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
-			
-			<!-- 관욱추가 시작 2025.01.05 -->
-			<li><a href="accessManage.go"> 
-			    <i class="bi bi-shield-check"></i> 
-			    <span>권한관리</span> 
-			    <i class="fa-solid fa-angle-right"></i>
-			</a></li>
-			<!-- 관욱추가 끝 2025.01.05 -->
-			
-			
 			<li><a href="logout.do"><i
 					class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span> <i
 					class="fa-solid fa-angle-right"></i> </a></li>
@@ -742,22 +732,74 @@ $(document).ready(function () {
             $(this).closest('li').hide();
         }
     });
-
-    // `dropD-menu` 하위의 모든 `li`가 숨김 처리된 경우, 해당 `dropD`도 숨김 처리
+    
+    
+    // 모든 .dropD 요소를 순회
     $('.dropD').each(function () {
-        const dropDMenu = $(this).find('.dropD-menu'); // `dropD-menu` 찾기
-        const visibleItems = dropDMenu.find('li').filter(function () {
-            return $(this).css('display') !== 'none'; // 보이는 항목 필터링
-        });
+        const $dropD = $(this); // 현재 .dropD 요소
+        const $dropMenu = $dropD.children('.dropD-menu'); // 직계 .dropD-menu 요소
+        const dropDLink = $dropD.find('> a'); // .dropD 바로 아래의 <a> 태그
 
-        if (visibleItems.length === 0) {
-            // 보이는 항목이 없으면 해당 `dropD` 숨김 처리
-            $(this).hide();
+        // .dropD-menu가 존재하는 경우 처리
+        if ($dropMenu.length > 0) {
+            let hasValidLink = false; // 유효한 링크가 있는지 확인
+
+            // dropD-menu 내의 모든 a 태그를 순회하여 유효한 링크가 있는지 확인
+            $dropMenu.find('a').each(function () {
+                const href = $(this).attr('href');
+                if (!href.includes('void')) {
+                	
+                    hasValidLink = true; // 유효한 링크 발견
+                    return; // 순회 종료
+                }else{
+                	// 해당 태그의 부모 li 요소 숨기기
+                    $(this).closest('li').hide();
+                }
+            });
+            
+            
+            // 유효한 링크가 없으면 dropD 숨김 처리
+            if (!hasValidLink && dropDLink.attr('href').includes('void')) {
+                $dropD.hide();
+            }
         } else {
-            // 보이는 항목이 하나라도 있으면 `dropD`는 보임 상태 유지
-            $(this).show();
+            // dropD-menu가 없고, .dropD의 a 태그가 유효하지 않으면 숨김 처리
+            if (dropDLink.attr('href').includes('void')) {
+                $dropD.hide();
+            }
         }
     });
+    
+    
+ 	// 모든 .dropD 요소를 순회
+    $('.dropD').each(function () {
+        const $dropD = $(this); // 현재 .dropD 요소
+        const $dropMenu = $dropD.children('.dropD-menu'); // 직계 .dropD-menu 요소
+        const dropDLink = $dropD.find('> a'); // .dropD 바로 아래의 <a> 태그
+
+        var hasValidLink = false;
+        
+        // .dropD-menu가 존재하는 경우 처리
+        if ($dropMenu.length > 0) {
+        	
+            // dropD-menu 내의 모든 a 태그를 순회하여 숨김처리되지 않은 링크가 있는지 확인
+            $dropMenu.find('li').each(function () {
+                if ($(this).css('display') !== 'none') {
+                	hasValidLink = true; // 유효한 링크 발견
+                    return false; // 순회 종료
+                }
+            });
+
+        }else{
+        	hasValidLink = false;	
+        }
+        
+         // 유효한 링크가 없으면 dropD 숨김 처리
+         if (!hasValidLink && dropDLink.attr('href').includes('void')) {
+        	 $dropD.hide();
+         }
+    });
+    
 });
 
 

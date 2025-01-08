@@ -66,8 +66,8 @@ public class LoginService {
         
         // 로그인 성공시
         if(passwordEncoder.matches(password, admin.getPassword())) {
-        	// admin 권한부여
-        	List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ADMIN"));
+        	// 권한 부여
+            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
             Authentication auth = new UsernamePasswordAuthenticationToken(admin, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
             return true;

@@ -40,10 +40,11 @@ public class SecurityConfig {
             // 현재 있는 페이지에 있는 경로정보들에 대해서만 처리.
             .authorizeRequests(authorize -> authorize
                 .antMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/resources/**").permitAll()
-                .antMatchers("/", "/login.go", "/login.do", "/adminLogin.go", "/adminLogin.do").permitAll()
+                .antMatchers("/", "/login.go", "/login.do", "/adminLogin.go", "/adminLogin.do", "/*.ajax").permitAll()
+                .antMatchers("/accessManage.go").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/*.go", "/*.do").access("@dynamicAuthorizationService.hasAccess(request.requestURI)")
-                .anyRequest().authenticated() // 로그인된 사용자만 접근가능.
-            )
+                .anyRequest().authenticated() // 나머지는 인증된 사용자만 허용
+                )
             .exceptionHandling()
             	.accessDeniedHandler(accessDeniedHandler) // 커스텀 AccessDeniedHandler 등록
             .and()
@@ -52,6 +53,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login.go?logout=success")
                 .invalidateHttpSession(true)
                 .permitAll();
+        	
 
         return http.build();
     }
@@ -60,6 +62,9 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
+    
+    
+    
 }
 
 

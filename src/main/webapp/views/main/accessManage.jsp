@@ -39,6 +39,7 @@
     }
 
     .content {
+      height: 40%;
       display: flex;
       justify-content: space-between;
       margin-top: 30px;
@@ -152,8 +153,15 @@
 	  background-color: var(--primary-color); 
 	  color: #fff;
 	}
+	
+	.table-container {
+	  max-height: 75%; /* 테이블 컨테이너의 최대 높이를 설정 */
+	  overflow-y: auto; /* 세로 스크롤바를 자동으로 표시 */
+	}
+	
 
     .bottom-section {
+      height: 40%;
       margin-top: 30px;
       padding: 20px;
       border: 2px solid var(--primary-color);
@@ -353,7 +361,7 @@ button.btn-add-page:hover {
   </style>
 </head>
 <body class="bg-theme bg-theme1">
-  <jsp:include page="../main/header.jsp"/>
+  <jsp:include page="../main/adminHeader.jsp"/>
 
   <div class="body">
     <div class="naviPath">
@@ -376,27 +384,28 @@ button.btn-add-page:hover {
 		  <button class="btn-add-page" onclick="showAddPageModal()">페이지 등록</button>
 		</div>
 
-
-        <table>
-          <thead>
-            <tr>
-              <th>페이지 이름</th>
-              <th>URL</th>
-              <th>삭제</th> 
-            </tr>
-          </thead>
-          <tbody id="pageList">
-            <!-- AJAX로 목록 채움 -->
-          </tbody>
-        </table>
+		<div class="table-container">
+	        <table>
+	          <thead>
+	            <tr>
+	              <th>페이지 이름</th>
+	              <th>URL</th>
+	              <th>삭제</th> 
+	            </tr>
+	          </thead>
+	          <tbody id="pageList">
+	            <!-- AJAX로 목록 채움 -->
+	          </tbody>
+	        </table>
+        </div>
       </div>
 
       <!-- Right Panel -->
       <div class="right-panel">
         <div class="tab-section">
           <ul class="tabs">
-            <li class="active" data-tab="tab1">부서목록</li>
-            <li data-tab="tab2">직급목록</li>
+            <li class="active" data-tab="tab1">부서권한</li>
+            <li data-tab="tab2">직급권한</li>
           </ul>
         </div>
 
@@ -409,17 +418,19 @@ button.btn-add-page:hover {
 			    </select>
 			    <button class="normalBtn" onclick="addDepartmentRole()">부서 추가</button>
 			  </div>
-			  <table>
-			    <thead>
-			      <tr>
-			        <th>부서</th>
-			        <th>삭제</th> 
-			      </tr>
-			    </thead>
-			    <tbody id="departmentRoles">
-			      <!-- AJAX로 채워질 내용 -->
-			    </tbody>
-			  </table>
+			  <div class="table-container">
+				  <table>
+				    <thead>
+				      <tr>
+				        <th>부서</th>
+				        <th>삭제</th> 
+				      </tr>
+				    </thead>
+				    <tbody id="departmentRoles">
+				      <!-- AJAX로 채워질 내용 -->
+				    </tbody>
+				  </table>
+			  </div>
 			</div>
 			
 			<div id="tab2" class="tab">
@@ -430,17 +441,19 @@ button.btn-add-page:hover {
 			    </select>
 			    <button class="normalBtn" onclick="addRankRole()">직급 추가</button>
 			  </div>
-			  <table>
-			    <thead>
-			      <tr>
-			        <th>직급</th>
-			        <th>삭제</th> 
-			      </tr>
-			    </thead>
-			    <tbody id="rankRoles">
-			      <!-- AJAX로 채워질 내용 -->
-			    </tbody>
-			  </table>
+			  <div class="table-container">
+				  <table>
+				    <thead>
+				      <tr>
+				        <th>직급</th>
+				        <th>삭제</th> 
+				      </tr>
+				    </thead>
+				    <tbody id="rankRoles">
+				      <!-- AJAX로 채워질 내용 -->
+				    </tbody>
+				  </table>
+			  </div>
 			</div>
 
         </div>
@@ -463,17 +476,19 @@ button.btn-add-page:hover {
 				        <!-- AJAX로 채워질 옵션 -->
 				    </select>
 		  </div>
-          <table>
-            <thead>
-              <tr>
-                <th>페이지 이름</th>
-                <th>URL</th>
-              </tr>
-            </thead>
-            <tbody id="filteredDepartmentRoles">
-              <!-- AJAX로 필터링된 내용 -->
-            </tbody>
-          </table>
+		  <div class="table-container">
+	          <table>
+	            <thead>
+	              <tr>
+	                <th>페이지 이름</th>
+	                <th>URL</th>
+	              </tr>
+	            </thead>
+	            <tbody id="filteredDepartmentRoles">
+	              <!-- AJAX로 필터링된 내용 -->
+	            </tbody>
+	          </table>
+          </div>
         </div>
 
         <div id="allRanks" class="tab">
@@ -483,17 +498,19 @@ button.btn-add-page:hover {
 					        <!-- AJAX로 채워질 옵션 -->
 					    </select>
 		  </div>
-          <table>
-            <thead>
-              <tr>
-                <th>페이지 이름</th>
-                <th>URL</th>
-              </tr>
-            </thead>
-            <tbody id="filteredRankRoles">
-              <!-- AJAX로 필터링된 내용 -->
-            </tbody>
-          </table>
+		  <div class="table-container">
+	          <table>
+	            <thead>
+	              <tr>
+	                <th>페이지 이름</th>
+	                <th>URL</th>
+	              </tr>
+	            </thead>
+	            <tbody id="filteredRankRoles">
+	              <!-- AJAX로 필터링된 내용 -->
+	            </tbody>
+	          </table>
+          </div>
         </div>
       </div>
     </div>
@@ -673,7 +690,7 @@ function deletePage(pageIdx) {
   $.ajax({
     url: "deletePage.ajax",
     method: "POST",
-    data: { pageIdx: pageIdx },
+    data: { 'pageIdx': pageIdx },
     success: function (response) {
       if (response.success) {
         alert("페이지가 성공적으로 삭제되었습니다.");

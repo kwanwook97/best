@@ -31,9 +31,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                            ModelAndView modelAndView) {
     	
-    	// 관리자 체크를 위해 세션값 가져오기
-    	HttpSession session = request.getSession(false);
-    	
     	// 요청 처리 후, ModelAndView가 존재하는 경우 실행
     	if (modelAndView != null) {
     		// Spring Security에서 현재 사용자 정보(Authentication) 가져오기
@@ -59,8 +56,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     		}
     	}
         	
-    	
-        
         
     }
 }

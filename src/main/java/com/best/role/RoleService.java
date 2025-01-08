@@ -54,7 +54,7 @@ public class RoleService {
     	
     	// 페이지에 등록된 권한목록 삭제 
     	if(row > 0) {
-    		row = roleDao.deletePageRole(pageIdx);
+    		roleDao.deletePageRole(pageIdx);
     	}
     	
  		return row;
