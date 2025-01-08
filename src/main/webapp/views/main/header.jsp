@@ -297,10 +297,6 @@ var loginId = ${sessionScope.loginId};
 							class="fa-solid fa-angle-right"></i>
 					</a></li>
 				</ul>
-			</li></i> <span>지출정산</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a></li>
-
 
 
 			<li class="sidebar-header"></li>
@@ -312,7 +308,7 @@ var loginId = ${sessionScope.loginId};
 					class="bi bi-person-fill-gear"></i> <span>내 정보관리</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
-<<<<<<< HEAD
+
 			
 			<!-- 관욱추가 시작 2025.01.05 -->
 			<li><a href="accessManage.go"> 
@@ -330,11 +326,6 @@ var loginId = ${sessionScope.loginId};
 					<i class="fa-solid fa-angle-right"></i> 
 				</a>
 			</li>
-=======
-			<li><a href="logout.do"><i
-					class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span> <i
-					class="fa-solid fa-angle-right"></i> </a></li>
->>>>>>> origin/master
 
 		</ul>
 
@@ -823,7 +814,7 @@ $(document).ready(function () {
          if (!hasValidLink && dropDLink.attr('href').includes('void')) {
             $dropD.hide();
          }
-    });
+    });23
     
 });
 

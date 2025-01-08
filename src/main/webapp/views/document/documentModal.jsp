@@ -11,7 +11,7 @@
 <script src="resources/js/read-unread.js" type="text/javascript"></script>
 <script src="resources/js/documentDetail.js" type="text/javascript"></script>
 <style>
-input, textarea, #approvalModal, button{
+input, textarea, #approvalModal, button, select, option{
 	pointer-events: auto;  /* input과 textarea는 마우스 이벤트 허용 */
 }
 .docnav {
@@ -478,9 +478,15 @@ function btnAction(actionType) {
 	    console.log("아니!!!!!!!!!!!!!!!!!!"+ managerIds);
 	    
 	    var values = [];
-	    $('input[data-index]').each(function() {
-	        values.push($(this).val());
+	    $('input[data-index], select[data-index]').each(function() {
+	        if ($(this).is('select')) {
+	            values.push($(this).val() || '');
+	        } else {
+	            values.push($(this).val());
+	        }
 	    });
+	    console.log("잘 쳐 나오라고",values);
+	    
 	    
 	    if(actionType == '수정기안' || actionType == '수정'){
 	    	updatedHtml = updatedHtml.replace(
@@ -577,22 +583,15 @@ function btnAction(actionType) {
 		        break;
 		        
 		    case '3':
-		    	if(actionType == '수정기안' || actionType == '기안'){
+		    	if (actionType == '수정기안' || actionType == '기안') {
 		    		for (var i = 0; i < values.length; i++) {
-		    		    var value = values[i];  // values 배열에서 값 가져오기
-		    		    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
+		    		    var value = values[i];
+		    		    var dataIndex = i + 1;  // data-index 값은 1부터 시작
 
-		    		    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
-
-		    		    // 정규식을 통해 input 태그 수정
+		    		    // input 태그 처리 (각 input에 대해 처리)
 		    		    updatedHtml = updatedHtml.replace(
 		    		        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'),
 		    		        function (match, group1, group2) {
-		    		            console.log('Matched input:', match); // 매칭된 input 태그 확인
-		    		            console.log('Group1:', group1); // data-index 속성 포함 부분
-		    		            console.log('Group2:', group2); // 나머지 속성 부분
-
-		    		            // 기존 value 속성을 새 값으로 교체하거나 추가
 		    		            if (/value=["\'].*?["\']/.test(group2)) {
 		    		                group2 = group2.replace(/value=["\'].*?["\']/, 'value="' + value + '"');
 		    		            } else {
@@ -602,13 +601,34 @@ function btnAction(actionType) {
 		    		        }
 		    		    );
 
+		    		    // select 태그 처리 (각 select에 대해 처리)
+		    		    updatedHtml = updatedHtml.replace(
+		    		        new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)([^>]*)>(.*?)<\/select>', 'g'),
+		    		        function (match, group1, group2, group3) {
+		    		            // 선택된 option 값을 찾기
+		    		            var selectedOptionRegex = /<option([^>]*value=["\'](.*?)["\'][^>]*)(>.*?<\/option>)/g;
+		    		            group3 = group3.replace(selectedOptionRegex, function (optionMatch, optionGroup1, optionValue, optionGroup2) {
+		    		                if (optionValue === value) {
+		    		                    // 선택된 값에 selected="selected" 추가
+		    		                    return '<option' + optionGroup1 + ' selected="selected"' + optionGroup2;
+		    		                }
+		    		                return optionMatch;
+		    		            });
+
+		    		            // select 태그를 input 태그로 변환
+		    		            return '<input' + group1 + group2 + ' value="' + value + '">' + group3;
+		    		        }
+		    		    );
+
 		    		    // 정규식 매칭 결과 확인
-		    		    var matches = updatedHtml.match(new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'));
-		    		    console.log('Matched inputs for data-index=' + dataIndex + ':', matches);
+		    		    var matches = updatedHtml.match(new RegExp('<(input|select)([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'));
+		    		    console.log('Matched inputs/selects for data-index=' + dataIndex + ':', matches);
 		    		}
+
 		    		$('.modal-content:last-child').html(updatedHtml);
 		    		var doc_content = $('.modal-content:last-child .content').html();
-		    		console.log("ㅅㅂ"+doc_content);
+		    		console.log("최종 수정된 HTML: " + doc_content);
+
 		    	}else{
 			        // 동적으로 추가된 input 값들을 updatedHtml에 반영
 					for (var i = 0; i < values.length; i++) { 
@@ -631,6 +651,7 @@ function btnAction(actionType) {
 		        break;
 		        
 		}
+		
 		if(actionType == '수정기안' || actionType == '기안'){
 			$('.modal-content:last-child .content').find('input').each(function () {
 			    $(this).attr('readonly', true);

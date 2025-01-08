@@ -86,16 +86,7 @@
 	    width: 1300px;
 	    height: 680px;
 	    border-radius: 10px;
-	}
-	.itemList{
-		border: 1px solid var(--primary-color);
-	    width: 35%;
-    	height: 620px;
-	}
-	.expenseChart{
-		border: 1px solid var(--primary-color);
-	    width: 55%;
-	    height: 620px;
+	    flex-direction: column;
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -136,7 +127,78 @@
 	        width: 93vw;
 	    }
   	}
-   </style>
+  	.date-navigation {
+		font-size: 24px;
+		font-weight: bold;
+		text-align: center;
+		width: 100%;
+	}
+	
+	.date-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		width: 100%;
+	}
+	
+	.date-button {
+		color: #30005A; /* 보라색 글씨 */
+		background-color: transparent; /* 배경색 제거 */
+		border: none; /* 테두리 제거 */
+		cursor: pointer;
+		margin: 0 10px;
+		font-weight: bold; /* 강조 효과 */
+	}
+	
+	.date-button:hover {
+		text-decoration: underline;
+	}
+	
+	.current-date {
+		margin: 0 20px;
+		color: #30005A;
+	}
+	.chart-container {
+	      display: flex;
+	      justify-content: space-between;
+	  }
+	.table-container {
+	    width: 40%;
+	    padding: 20px;
+	}
+	.chart-wrapper {
+	    width: 55%;
+	    padding: 20px;
+	}
+	table {
+	    width: 100%;
+	    border-collapse: collapse;
+	}
+	th, td {
+	    border: 1px solid #ddd;
+	    padding: 8px;
+	    text-align: center;
+	}
+   .chart-container {
+	    display: flex;
+	    justify-content: space-between;
+	    width: 100%;  /* 차트가 컨테이너를 꽉 채우도록 설정 */
+	}
+	.chart-wrapper {
+	    width: 100%;  /* 부모 컨테이너 크기에 맞춰 차트 크기 조정 */
+	    padding: 20px;
+	}
+	#stackedChart {
+	    width: 100% !important;  /* 차트가 100% 너비를 차지하도록 설정 */
+	    height: 521px;  /* 원하는 높이로 설정 */
+	}
+	/* 차트 크기 지정 */
+	#stackedChart {
+	    max-width: 500%;
+	    max-height: 800px;
+	}
+</style>
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
@@ -160,225 +222,139 @@
 			</div>
 		</div>
 		<div class="docbox">
-			<div class="itemList"></div>
-			<div class="expenseChart"></div>
+			<div class="date-navigation">
+				<div class="date-content">
+					<button class="date-button">
+						<i class="fas fa-angle-left"></i>
+					</button>
+					<span class="current-date"></span>
+					<button class="date-button">
+						<i class="fas fa-angle-right"></i>
+					</button>
+				</div>
+			</div>		
+		 	<div class="chart-container">
+	        <!-- 왼쪽: 월별 지출 금액 테이블 -->
+	        <div class="table-container">
+	            <table id="monthlyExpenseTable">
+	                <thead>
+	                    <tr>
+	                        <th>월</th>
+	                        <th>총 지출 금액 (원)</th>
+	                    </tr>
+	                </thead>
+	                <tbody></tbody>
+	            </table>
+	        </div>
+	        <!-- 오른쪽: 연별 지출 금액 막대그래프와 선그래프 -->
+	        <div class="chart-wrapper">
+	            <canvas id="stackedChart"></canvas>
+	        </div>
+	    	</div>
 		</div>
  	</div>
 </body>
 <script>
 
-/* 공지 게시판 중요 */
-var showPage = 1; // 기본으로 보여줄 페이지
-
-pageCall(showPage);
-
-function pageCall(page){
-    console.log('pageCall');
-
-    $.ajax({
-        type: 'GET',
-        url: 'noticeList.ajax',
-        data: {
-            'page': page,  // 몇 페이지 보여줄지
-            'cnt': 5       // 페이지당 보여줄 게시물 수
-        },
-        dataType: 'JSON',
-        success: function(data) {
-            console.log(data);
-
-            // 중요 공지
-            PrintImport(data.importantNotices);
-        	// 일반 공지
-            PrintGeneral(data.generalNotices);
-
-            // 페이징 플러그인 처리 - 중요 공지
-            $('#importantPagination').twbsPagination({
-                startPage: 1,
-                totalPages: data.importTotalPages,
-                visiblePages: 5,
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCallImportant(page);  // 중요 게시판 페이지 정보 받아서 수행
-                }
-            });
-
-            // 일반 공지
-            $('#generalPagination').twbsPagination({
-                startPage: 1,
-                totalPages: data.generalTotalPages,
-                visiblePages: 5,
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
-                }
-            });
-        },
-        error: function(e) {
-            console.log("오류 발생", e);
-        }
-    });
-}
-
-// 중요 게시판 글 출력 함수
-function PrintImport(notices) {
-	
-    var content = '';
-	
-	for(var item of notices){
-		content += '<tr onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">';
-		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td>'+item.subject+'</td>';
-		content += '<td>'+item.name+'</td>';
-		
-		var date = new Date(item.date);
-		var formattedDate = date.toISOString().split('T')[0];
-		
-		content += '<td>'+formattedDate+'</td>';
-		content += '<td>'+item.bhit+'</td>';
-		content += '</tr>';
+$(document).ready(function() {
+	var currentDate = new Date();
+	var year = '';
+	// 현재 날짜를 화면에 표시하는 함수{
+	function updateDateDisplay() {
+	    const currentDateElement = document.querySelector('.current-date');
+	    year = currentDate.getFullYear();
+	    currentDateElement.textContent = year + '년';
 	}
-	$('.import').html(content);
-    
-}
-
-// 일반 게시판 글 출력 함수
-function PrintGeneral(notices) {
-    
-	var content = '';
 	
-	for(var item of notices){
-		content += '<tr onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">';
-		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td>'+item.subject+'</td>';
-		content += '<td>'+item.name+'</td>';
-		
-		var date = new Date(item.date);
-		var formattedDate = date.toISOString().split('T')[0];
-		
-		content += '<td>'+formattedDate+'</td>';
-		content += '<td>'+item.bhit+'</td>';
-		content += '</tr>';
+	function incrementYear() {
+	    currentDate.setFullYear(currentDate.getFullYear() + 1);
+	    updateDateDisplay();
 	}
-	$('.general').html(content);
-}
+	function decrementYear() {
+	    currentDate.setFullYear(currentDate.getFullYear() - 1);
+	    updateDateDisplay();
+	}
+	document.querySelector('.date-button:nth-child(1)').addEventListener('click', decrementYear);  
+	document.querySelector('.date-button:nth-child(3)').addEventListener('click', incrementYear);  
+	
+	updateDateDisplay();
+	
+    // 월별 지출 데이터를 예시로 제공 (2025년 1월 ~ 12월)
+    var monthlyExpenseData = [
+        { date: '2025-01-01', amount: 10000 },
+        { date: '2025-01-15', amount: 20000 },
+        { date: '2025-02-10', amount: 15000 },
+        { date: '2025-02-25', amount: 25000 },
+        { date: '2025-03-05', amount: 30000 },
+        { date: '2025-04-12', amount: 20000 },
+        { date: '2025-05-19', amount: 50000 },
+        { date: '2025-06-21', amount: 40000 },
+        { date: '2025-07-09', amount: 60000 },
+        { date: '2025-08-13', amount: 70000 },
+        { date: '2025-09-17', amount: 80000 },
+        { date: '2025-10-20', amount: 90000 },
+        { date: '2025-11-25', amount: 110000 },
+        { date: '2025-12-30', amount: 120000 }
+    ];
 
-// 중요 공지
-function pageCallImportant(page) {
-    $.ajax({
-        type: 'GET',
-        url: 'noticeList.ajax',
-        data: {
-            'page': page,
-            'cnt': 5
-        },
-        dataType: 'JSON',
-        success: function(data) {
-        	PrintImport(data.importantNotices);
-        },
-        error: function(e) {
-            console.log("오류 발생", e);
-        }
+    // 월별 총 지출 계산
+    var monthlyTotal = Array(12).fill(0); // 12개월을 위한 배열 초기화
+    $.each(monthlyExpenseData, function(index, item) {
+        var month = new Date(item.date).getMonth(); // 0부터 11까지
+        monthlyTotal[month] += item.amount;
     });
-}
 
-// 일반 공지
-function pageCallGeneral(page) {
-    $.ajax({
-        type: 'GET',
-        url: 'noticeList.ajax',
-        data: {
-            'page': page,
-            'cnt': 5
-        },
-        dataType: 'JSON',
-        success: function(data) {
-        	PrintGeneral(data.generalNotices);
-        },
-        error: function(e) {
-            console.log("오류 발생", e);
-        }
-    });
-}
-
-// 검색
-$('.searchInp').keydown(function(event) {
-    if (event.key === 'Enter') {
-       	var searchText = $(this).val();
-        var searchOption = $('.drop').val();
-        $('.Msg').remove();
-        
-        if (searchText.trim() !== '') {
-        	$.ajax({
-                type: 'GET',
-                url: 'noticeSearch.ajax',
-                data: {
-                    'searchText': searchText,
-                    'searchOption': searchOption,
-                    'page': 1,
-                    'cnt': 5 
-                },
-                dataType: 'JSON',
-                success: function(data) {
-                    console.log(data);
-                    if (data.importantNotices.length === 0) {
-                        $('.searchCont').append('<div class="Msg">중요 공지 없음</div>');
-                    }
-                    if (data.generalNotices.length === 0) {
-                        $('.searchCont').append('<div class="Msg">일반 공지 없음</div>');
-                    }
-                    if (data.importantNotices.length > 0) {
-                        PrintImport(data.importantNotices);
-
-                        $('#importantPagination').twbsPagination({
-                            startPage: 1,
-                            totalPages: data.importTotalPages,
-                            visiblePages: 5,
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            prev: '<i class="fas fa-angle-left"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            onPageClick: function(evt, page) {
-                                console.log("evt", evt);  // 클릭 이벤트
-                                console.log("page", page);  // 클릭한 페이지 번호
-                                pageCallImportant(page);  // 중요 게시판 페이지 정보 받아서 수행
-                            }
-                        });
-                    }
-                    if (data.generalNotices.length > 0) {
-                        PrintGeneral(data.generalNotices);
-
-                        $('#generalPagination').twbsPagination({
-                            startPage: 1,
-                            totalPages: data.generalTotalPages,
-                            visiblePages: 5,
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            prev: '<i class="fas fa-angle-left"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            onPageClick: function(evt, page) {
-                                console.log("evt", evt);  // 클릭 이벤트
-                                console.log("page", page);  // 클릭한 페이지 번호
-                                pageCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
-                            }
-                        });
-                    }
-                },
-                error: function(e) {
-                    console.log("검색 오류 발생", e);
-                }
-            });
-        } else {
-            alert('검색어를 입력해주세요!');
-        }
+    // 월별 지출 금액 테이블 생성
+    var monthlyTableHtml = '';
+    for (var i = 0; i < 12; i++) {
+        monthlyTableHtml += '<tr><td>' + (i + 1) + '월</td><td>' + monthlyTotal[i].toLocaleString() + '원</td></tr>';
     }
-});
+    $('#monthlyExpenseTable tbody').html(monthlyTableHtml);
 
-
-// 공지 작성
-$('.editbtn').on('click', function(){
-	window.location.href="noticeWrite.go";
+    // 연별 차트 데이터
+    var ctxStacked = document.getElementById('stackedChart').getContext('2d');
+    var stackedChart = new Chart(ctxStacked, {
+        type: 'bar',
+        data: {
+            labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            datasets: [
+                {
+                    label: '지출 금액 (Line)',
+                    data: monthlyTotal.map(amount => amount / 3), // 예시로 금액을 3으로 나누어 Line dataset
+                    type: 'line',
+                    fill: false,
+                    borderColor: '#E9396B',
+                    tension: 0.1
+                },
+                {
+                    label: '지출 금액 (A)',
+                    data: monthlyTotal, // 월별 총 지출 금액
+                    backgroundColor: '#30005A',
+                    stack: 'Stack 0'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: '월'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: '금액 (원)'
+                    },
+                    stacked: true, // 스택형 차트 활성화
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 });
 
 </script>

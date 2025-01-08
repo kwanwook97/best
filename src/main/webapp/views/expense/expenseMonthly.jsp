@@ -23,6 +23,7 @@
 	    align-content: center;
 	    align-items: baseline;
 	    justify-content: center;
+	    width: 84%;
 	}
 	.maintext{
 		display: flex;
@@ -33,7 +34,7 @@
 		margin-right: 30px !important;
 	}
 	.docnav{
-	    width: 1290px;
+	    width: 1190px;
     	display: flex;
     	padding: 0 0 15px 0;
 	    justify-content: flex-end;
@@ -82,8 +83,8 @@
     	justify-content: space-evenly;
         align-items: center;
 		border: 2px solid var(--primary-color);
-	    width: 1300px;
-	    height: 680px;
+	    width: 1200px;
+	    height: 690px;
 	    border-radius: 10px;
 	}
 	.pagination .page-link {
@@ -116,9 +117,6 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}
-	body {
-      font-family: Arial, sans-serif;
-    }
     .container {
       width: 1300px;
       height: 680px;
@@ -130,8 +128,8 @@
       padding: 20px;
       overflow-y: auto;
     }
-    .leftPanel {
-      width: 50%;
+    .leftPanel div:first-child{
+    	margin-bottom: 20px;
     }
 	.categoryTable{
 
@@ -145,15 +143,18 @@
 	.dailyList{
 
 	}
+    .leftPanel {
+      	width: 600px;
+    }
     .rightPanel {
-		width: 50%;
+   		padding: 5px;	
+		width: 650px;
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
 		align-items: center;
-		justify-content: center;
     }
-	h3.chartText{
+	h4.chartText{
 		position: absolute;
     	left: 995px;
 	}
@@ -173,12 +174,13 @@
       display: block;
       margin: 0 auto;
     }
-    #category-chart {
+    #categoryChart {
+      transform: scale(0.9);
       max-width: 135%;
-      max-height: 400px;
+      max-height: 330px;
     }
-    #daily-expense-table {
-      max-width: 135%;
+    #dailyChart {
+      max-width: 200%;
       max-height: 300px;
     }
 </style>
@@ -206,10 +208,9 @@
 		</div>
 		<div class="docbox">
 			<div class="container">
-				<!-- 왼쪽 패널 -->
 				<div class="leftPanel">
 					<div>
-						<h3>카테고리별 지출금액</h3>
+						<h4>카테고리별 지출금액</h4>
 						<table class="categoryTable">
 							<thead>
 								<tr>
@@ -222,7 +223,7 @@
 						</table>
 					</div>
 					<div>
-						<h3>날짜별 지출내역</h3>
+						<h4>날짜별 지출내역</h4>
 						<table class="dailyTable">
 							<thead>
 								<tr>
@@ -238,11 +239,10 @@
 						</table>
 					</div>
 				</div>
-				<!-- 오른쪽 패널 -->
 				<div class="rightPanel">
-					<h3 class="chartText">지출 차트</h3>
-					<canvas id="category-chart"></canvas>
-					<canvas id="daily-expense-table"></canvas>
+					<h4 class="chartText">지출 차트</h4>
+					<canvas id="categoryChart"></canvas>
+					<canvas id="dailyChart" style="width: 574px;"></canvas>
 				</div>
 			</div>
 		</div>
@@ -250,6 +250,9 @@
 </body>
 <script>
 
+window.addEventListener('resize', function() {
+	  lineChart.resize();
+	});
 $(document).ready(function() {
     var categoryData = [
       { category: '식비', amount: 50000 },
@@ -258,9 +261,13 @@ $(document).ready(function() {
     ];
 
     var dailyExpenseData = [
-      { date: '2025-01-01', category: '식비', content: '점심 식사', amount: 10000, note: '' },
-      { date: '2025-01-02', category: '교통비', content: '지하철', amount: 3000, note: '' },
-      { date: '2025-01-03', category: '기타', content: '커피', amount: 4500, note: '' }
+      { date: '01-01', category: '식비', content: '점심 식사', amount: 2500000, note: '' },
+      { date: '01-02', category: '교통비', content: '지하철', amount: 300000, note: '' },
+      { date: '01-03', category: '기타', content: '커피', amount: 4500000, note: '' },
+      { date: '01-04', category: '기타', content: '커피', amount: 5000000, note: '' },
+      { date: '01-05', category: '식비', content: '점심 식사', amount: 10000, note: '' },
+      { date: '01-06', category: '교통비', content: '지하철', amount: 3000, note: '' },
+      { date: '01-07', category: '기타', content: '커피', amount: 4500, note: '' }
     ];
 
     // 카테고리별 지출 금액 테이블 생성
@@ -284,7 +291,7 @@ $(document).ready(function() {
     $('#dailyList').html(dailyExpenseTable);
 
     // 원형 차트 데이터 및 옵션
-    var ctxCategory = document.getElementById('category-chart').getContext('2d');
+    var ctxCategory = document.getElementById('categoryChart').getContext('2d');
     var categoryChart = new Chart(ctxCategory, {
       type: 'pie',
       data: {
@@ -305,8 +312,8 @@ $(document).ready(function() {
       }
     });
 
-    // 꺾은선 그래프 데이터 및 옵션
-    var ctxDaily = document.getElementById('daily-expense-table').getContext('2d');
+ // 멀티 축 차트 데이터 및 옵션
+    var ctxDaily = document.getElementById('dailyChart').getContext('2d');
     var dailyExpenseChart = new Chart(ctxDaily, {
       type: 'line',
       data: {
@@ -314,10 +321,19 @@ $(document).ready(function() {
         datasets: [{
           label: '일별 지출 금액',
           data: dailyExpenseData.map(function(item) { return item.amount; }),
-          borderColor: '#36A2EB',
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: '#E9396B',
           borderWidth: 2,
-          tension: 0.4
+          tension: 0.4,
+          yAxisID: 'y1'
+        }, {
+          label: '비고',
+          data: dailyExpenseData.map(function(item) { return item.note.length; }), // 예시로 note의 길이를 표시
+          borderColor: '#2C7BB6',
+          fill: false,
+          borderWidth: 2,
+          tension: 0.4,
+          fill: false,
+          yAxisID: 'y2'
         }]
       },
       options: {
@@ -330,16 +346,37 @@ $(document).ready(function() {
               text: '날짜'
             }
           },
-          y: {
+          y1: {
+            position: 'left',
             title: {
               display: true,
               text: '금액 (원)'
+            },
+            ticks: {
+              // y축의 금액 범위를 0원부터 500만원으로 설정
+              min: 0, // 최소값 0원
+              max: 5000000, // 최대값 500만원
+              stepSize: 1000000,
+              callback: function(value) {
+                return value.toLocaleString() + '원'; // 금액을 원 단위로 표시
+              }
+            }
+          },
+          y2: {
+            position: 'right',
+            title: {
+              display: true,
+              text: '비고 길이' // 비고의 길이를 표시
+            },
+            ticks: {
+              min: 0,
+              max: 10, // 비고 길이에 대한 범위 설정
+              stepSize: 1
             }
           }
         }
       }
     });
 });
-
 </script>
 </html>
