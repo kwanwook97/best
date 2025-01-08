@@ -72,9 +72,7 @@ public class LoginController {
     public String adminLogin(String id, String pw, HttpSession session) {
         boolean isAuthenticated = loginService.authenticateAdmin(id, pw);
         if (isAuthenticated) {
-            session.setAttribute("isAdmin", true);
-            
-            return "redirect:/main.go";
+            return "redirect:/accessManage.go";
         } else {
             return "redirect:/adminLogin.go?error=invalid";
         }
