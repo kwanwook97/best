@@ -58,6 +58,11 @@ public class SalesController {
 	public Map<String, Object> updateSattlement(@RequestParam Map<String, Object> params){
 		return salesService.updateSattlement(params);
 	}
+	@PostMapping(value="/delSattlement.ajax")
+	@ResponseBody
+	public Map<String, Object> delSattlement(@RequestParam Map<String, Object> params){
+		return salesService.delSattlement(params);
+	}
 }
 
 

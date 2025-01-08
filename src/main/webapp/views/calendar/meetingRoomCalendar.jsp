@@ -426,6 +426,9 @@
 .headerBox {
 	font-weight: bold;
 }
+.fc-daygrid-day-frame {
+	min-height: 104px !important;
+}
 
 
   </style>
@@ -640,6 +643,8 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
 
     calendar = new FullCalendar.Calendar(calendarEl, {
     	locale:"ko",
+        dayMaxEvents: 2,
+        contentHeight: 300,
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
@@ -888,7 +893,8 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
             // 특별한 날이 있는 경우
             if (specialDays[formattedDate]) {
                 // 날짜 셀에 텍스트 추가
-                const dayNumberElement = info.el.querySelector('.fc-daygrid-day-frame');
+                //const dayNumberElement = info.el.querySelector('.fc-daygrid-day-frame');
+                const dayNumberElement = info.el.querySelector('.fc-daygrid-day-events');
                 if (dayNumberElement) {
                     const label = document.createElement('span');
                     label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
