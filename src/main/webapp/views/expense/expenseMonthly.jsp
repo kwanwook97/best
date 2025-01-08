@@ -268,7 +268,7 @@ $(document).ready(function() {
     $.each(categoryData, function(index, item) {
       categoryTable += '<tr><td>' + item.category + '</td><td>' + item.amount.toLocaleString() + '원</td></tr>';
     });
-    $('#category-table').html(categoryTable);
+    $('#categoryList').html(categoryTable);
 
     // 날짜별 지출 내역 테이블 생성
     var dailyExpenseTable = '';
@@ -281,17 +281,17 @@ $(document).ready(function() {
         '<td>' + item.note + '</td>' +
         '</tr>';
     });
-    $('#daily-expense-table').html(dailyExpenseTable);
+    $('#dailyList').html(dailyExpenseTable);
 
     // 원형 차트 데이터 및 옵션
-    var ctxCategory = document.getElementById('categoryChart').getContext('2d');
+    var ctxCategory = document.getElementById('category-chart').getContext('2d');
     var categoryChart = new Chart(ctxCategory, {
       type: 'pie',
       data: {
         labels: categoryData.map(function(item) { return item.category; }),
         datasets: [{
           data: categoryData.map(function(item) { return item.amount; }),
-          backgroundColor: ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD', '#D5CCDE', ''],
+          backgroundColor: ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD', '#D5CCDE', '#EAE5EE'],
         }]
       },
       options: {
@@ -306,7 +306,7 @@ $(document).ready(function() {
     });
 
     // 꺾은선 그래프 데이터 및 옵션
-    var ctxDaily = document.getElementById('dailyChart').getContext('2d');
+    var ctxDaily = document.getElementById('daily-expense-table').getContext('2d');
     var dailyExpenseChart = new Chart(ctxDaily, {
       type: 'line',
       data: {
@@ -334,17 +334,12 @@ $(document).ready(function() {
             title: {
               display: true,
               text: '금액 (원)'
-            },
-            beginAtZero: true
-          }
-        },
-        plugins: {
-          legend: {
-            display: false,
+            }
           }
         }
       }
     });
-  });
+});
+
 </script>
 </html>
