@@ -586,12 +586,94 @@ function btnAction(actionType) {
 		    	if (actionType == '수정기안' || actionType == '기안') {
 		    		for (var i = 0; i < values.length; i++) {
 		    		    var value = values[i];
-		    		    var dataIndex = i + 1;  // data-index 값은 1부터 시작
+		    		    var dataIndex = i + 1;
+		    		    console.log('Processing value:', value);
+		    		    console.log('Initial updatedHtml:', updatedHtml);
 
-		    		    // input 태그 처리 (각 input에 대해 처리)
+		    		 	// 정규식으로 찾기 (태그 내용 무시)
+						var specificSelectTag1 = updatedHtml.match(
+						    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>', 'g')
+						);
+						console.log('Specific select tag for data-index="2" (no content):', specificSelectTag1);
+						
+						// 정규식으로 찾기 (태그 내용 포함)
+						var specificSelectTag2 = updatedHtml.match(
+						    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>(.*?)<\/select>', 'g')
+						);
+						console.log('Specific select tag for data-index="2" (with content):', specificSelectTag2);
+						
+						// 대체 로직으로 찾기
+						var allSelectTags = updatedHtml.match(/<select[^>]*>/g);
+						var specificSelectTag3 = null;
+						
+						if (allSelectTags) {
+						    specificSelectTag3 = allSelectTags.find(tag => tag.includes('data-index="2"'));
+						    console.log('Specific select tag for data-index="2" using alternative logic:', specificSelectTag3);
+						}
+
+
+		    		    // 대체 로직으로 특정 태그 찾기
+		    		    var allSelectTags = updatedHtml.match(/<select[^>]*>/g);
+		    		    if (allSelectTags) {
+		    		        for (var tag of allSelectTags) {
+		    		            if (tag.includes('data-index="2"')) {
+		    		                console.log('Matched specific select tag using alternative logic:', tag);
+		    		            }
+		    		        }
+		    		    }
+
+		    		    // 태그내용 없음
+		    		    var specificSelectTag1 = updatedHtml.match(
+		    		    	    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>', 'g')
+		    		    	);
+		    		    	console.log('Specific select tag for data-index="2" (no content):', specificSelectTag1);
+		    		    	
+		    		    // 태그내용 있음
+	    		    	var specificSelectTag2 = updatedHtml.match(
+	    		    		    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>([\\s\\S]*?)<\\/select>', 'g')
+	    		    		);
+	    		    		console.log('Specific select tag for data-index="2" (with content):', specificSelectTag2);
+		    		    
+		    		    // 정규식 확인
+		    		    var regex = new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>(.*?)<\/select>', 'g');
+		    		    console.log('Testing regex for data-index=' + dataIndex, regex.test(updatedHtml));
+
+		    		    
+		    		    // select 태그 처리
+		    		    updatedHtml = updatedHtml.replace(
+						    new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>([\\s\\S]*?)<\\/select>', 'g'),
+						    function (match, group1, group2) {
+						        console.log('Processing select with data-index=' + dataIndex);
+						        console.log('Value to match:', value);
+						
+						        // 선택된 option 값을 찾기
+						        var selectedText = ''; // 선택된 옵션 텍스트 저장
+						        group2.replace(
+						            /<option([^>]*value=["\'](.*?)["\']|[^>]*)>(.*?)<\/option>/g,
+						            function (optionMatch, optionGroup1, optionValue, optionText) {
+						                if (optionMatch.includes('selected')) {
+						                    selectedText = optionText.trim(); // 선택된 옵션 텍스트
+						                }
+						                return optionMatch;
+						            }
+						        );
+						
+						        console.log('Selected option text:', selectedText);
+						
+						        // input 태그로 변환
+						        var inputTag = '<input' + group1 + ' value="' + selectedText + '">';
+						        console.log('Generated input tag:', inputTag);
+						
+						        return inputTag;
+						    }
+						);
+
+
+		    		    // input 태그 처리
 		    		    updatedHtml = updatedHtml.replace(
 		    		        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'),
 		    		        function (match, group1, group2) {
+		    		            console.log('Processing input with data-index=' + dataIndex);
 		    		            if (/value=["\'].*?["\']/.test(group2)) {
 		    		                group2 = group2.replace(/value=["\'].*?["\']/, 'value="' + value + '"');
 		    		            } else {
@@ -600,31 +682,8 @@ function btnAction(actionType) {
 		    		            return '<input' + group1 + group2 + '>';
 		    		        }
 		    		    );
-
-		    		    // select 태그 처리 (각 select에 대해 처리)
-		    		    updatedHtml = updatedHtml.replace(
-		    		        new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)([^>]*)>(.*?)<\/select>', 'g'),
-		    		        function (match, group1, group2, group3) {
-		    		            // 선택된 option 값을 찾기
-		    		            var selectedOptionRegex = /<option([^>]*value=["\'](.*?)["\'][^>]*)(>.*?<\/option>)/g;
-		    		            group3 = group3.replace(selectedOptionRegex, function (optionMatch, optionGroup1, optionValue, optionGroup2) {
-		    		                if (optionValue === value) {
-		    		                    // 선택된 값에 selected="selected" 추가
-		    		                    return '<option' + optionGroup1 + ' selected="selected"' + optionGroup2;
-		    		                }
-		    		                return optionMatch;
-		    		            });
-
-		    		            // select 태그를 input 태그로 변환
-		    		            return '<input' + group1 + group2 + ' value="' + value + '">' + group3;
-		    		        }
-		    		    );
-
-		    		    // 정규식 매칭 결과 확인
-		    		    var matches = updatedHtml.match(new RegExp('<(input|select)([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'));
-		    		    console.log('Matched inputs/selects for data-index=' + dataIndex + ':', matches);
 		    		}
-
+		    		
 		    		$('.modal-content:last-child').html(updatedHtml);
 		    		var doc_content = $('.modal-content:last-child .content').html();
 		    		console.log("최종 수정된 HTML: " + doc_content);

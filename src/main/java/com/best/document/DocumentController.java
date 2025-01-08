@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.best.expense.ExpenseService;
 import com.best.leave.LeaveService;
 
 @Controller
@@ -26,7 +28,8 @@ public class DocumentController {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired DocumentService documentService;
 	@Autowired LeaveService leaveService;
-
+	@Autowired ExpenseService expenseService;
+	
 	// 전자결재 대기 리스트
 	@RequestMapping(value="/documentPending.go")
 	public String documentPending() {
@@ -317,40 +320,51 @@ public class DocumentController {
 		
 
 	// 결재 승인, 반려
-	@PostMapping(value="/approveDoc.ajax")
+	@PostMapping(value = "/approveDoc.ajax")
 	@ResponseBody
-	public ResponseEntity<Map<String, String>> approveDoc(String doc_idx, 
-			@RequestParam(required = false) String approv_order, 
-			@RequestParam(required = false) String remark,
-			@RequestParam(required = false) String emp_idx,
-			@RequestParam(required = false) List<String> one,
-			@RequestParam(required = false) List<String> two,
-			@RequestParam(required = false) List<String> three,
-			@RequestParam(required = false) List<String> four,
-			@RequestParam(required = false) List<String> five,
-			String form_idx,
-			String actionType, 
-			String doc_content){
-		Map<String, String> response = new HashMap<String, String>();
-		
-		if ("승인".equals(actionType)) {
-			if(approv_order.equals("1")) {
-				documentService.approveStatus(doc_idx, approv_order, doc_content);
-			}else if(approv_order.equals("2")) {
-				documentService.approveStatusT(doc_idx, approv_order, doc_content);
-				leaveService.addLeaveHistory(doc_idx);
-				logger.info("첫줄: {}", one);
-				logger.info("둘줄 :{}", two);
-				logger.info("삼줄 :{}", three);
-				logger.info("넷줄 :{}", four);
-				logger.info("오줄 :{}", five);
-			}
-			
-		}else if("제출".equals(actionType)) {
-			documentService.rejectStatus(doc_idx, emp_idx, remark, doc_content);
-		}			
-		return ResponseEntity.ok(response);
+	public ResponseEntity<Map<String, String>> approveDoc(
+	        String doc_idx,
+	        @RequestParam(required = false) String approv_order,
+	        @RequestParam(required = false) String remark,
+	        @RequestParam(required = false) String emp_idx,
+	        @RequestParam(required = false) List<String> one,
+	        @RequestParam(required = false) List<String> two,
+	        @RequestParam(required = false) List<String> three,
+	        @RequestParam(required = false) List<String> four,
+	        @RequestParam(required = false) List<String> five,
+	        String form_idx,
+	        String actionType,
+	        String doc_content) {
+
+	    Map<String, String> response = new HashMap<>();
+	    try {
+	        if ("승인".equals(actionType)) {
+	            if ("1".equals(approv_order)) {
+	                documentService.approveStatus(doc_idx, approv_order, doc_content);
+	            } else if ("2".equals(approv_order)) {
+	                documentService.approveStatusT(doc_idx, approv_order, doc_content);
+	                leaveService.addLeaveHistory(doc_idx);
+	                logger.info("one :{}",one);
+	                logger.info("two :{}",two);
+	                logger.info("three :{}",three);
+	                logger.info("four :{}",four);
+	                logger.info("five :{}",five);
+	                expenseService.addExpense(one, two, three, four, five, doc_idx);
+	            }
+	        } else if ("제출".equals(actionType)) {
+	            documentService.rejectStatus(doc_idx, emp_idx, remark, doc_content);
+	        }
+
+	        response.put("status", "success");
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        logger.error("Approval process failed", e);
+	        response.put("status", "failure");
+	        response.put("message", e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
+
 	
 	
 	// 결재문서 만들기

@@ -633,26 +633,33 @@ public class DocumentService {
 	}
 	@Transactional
 	public void approveStatusT(String doc_idx, String approv_order, String doc_content) {
-		String approv_date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		String approvDate= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		
-		documentDao.approveStatus(doc_idx, approv_order, approv_date);
-		
-		doc_content = doc_content.replaceFirst(
-			"(<td\\s+class=\"todayDate3\"[^>]*>)(</td>)",
-				"$1" + approvDate + "$2"
-			);
-		logger.info("뭔데 : "+ doc_content);
-		
-		documentDao.documentStatusT(doc_idx, doc_content);
-	    
-		notifyApproval(
-		        Integer.parseInt(doc_idx),
-		        Integer.parseInt(approv_order),
-		        "승인"
-		    );
-		
-	}
+        try {
+            String approv_date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String approvDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            // 데이터베이스 작업
+            documentDao.approveStatus(doc_idx, approv_order, approv_date);
+
+            doc_content = doc_content.replaceFirst(
+                "(<td\\s+class=\"todayDate3\"[^>]*>)(</td>)",
+                "$1" + approvDate + "$2"
+            );
+
+            logger.info("Updated doc_content: {}", doc_content);
+
+            documentDao.documentStatusT(doc_idx, doc_content);
+
+            notifyApproval(
+                Integer.parseInt(doc_idx),
+                Integer.parseInt(approv_order),
+                "승인"
+            );
+        } catch (Exception e) {
+            // 문제가 발생하면 예외를 던짐
+            logger.error("Approval process failed", e);
+            throw new RuntimeException("Approval process failed for doc_idx: " + doc_idx, e);
+        }
+    }
 	// 결재 반려
 	@Transactional
 	public void rejectStatus(String doc_idx, String emp_idx, String remark, String doc_content) {
