@@ -103,8 +103,18 @@ public class SalesService {
 		}else {
 			params.put("msg", "실패");
 		}
-		
-		return null;
+		return params;
+	}
+
+	public Map<String, Object> delSattlement(Map<String, Object> params) {
+		int row = salesDAO.delSattlement(params);
+		params = new HashMap<String, Object>();
+		if (row>0) {
+			params.put("msg", "성공");
+		}else {
+			params.put("msg", "실패");
+		}
+		return params;
 	}
 
 }

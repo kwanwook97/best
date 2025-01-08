@@ -737,7 +737,7 @@ function updateEndTime(){
 
 
 /* 권한에 따른 메뉴바 숨기기기 */
-$(document).ready(function () {
+/* $(document).ready(function () {
     // 서버에서 전달된 접근 불가능한 URL 목록 (JSON 데이터)
     const inaccessibleUrls = ${inaccessibleUrls}; // 서버에서 전달된 배열
     console.log('Inaccessible URLs:', inaccessibleUrls); // 디버깅용 콘솔 출력
@@ -768,7 +768,7 @@ $(document).ready(function () {
             $(this).show();
         }
     });
-});
+}); */
 
 
 

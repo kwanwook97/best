@@ -262,6 +262,18 @@ select option {
 	    padding: 0;
 	    margin: 0;
 	}
+	.fc .fc-toolbar.fc-header-toolbar button {
+		background-color: #30005A;
+		color: #FFF5E2;
+	}
+	.fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
+		background-color: #30005A;
+		color: #FFF5E2;
+	}
+	.fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) {
+		background-color: #30005A !important;
+		color: #FFF5E2 !important;
+	}
     
     
   </style>
@@ -425,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         	console.log("info.event.start.toISOString():{}",info.event.start.toISOString())
         	console.log("info.event.end ? info.event.end.toISOString() : null:{}",info.event.end ? info.event.end.toISOString() : null)
         	console.log("info.event.allDay:{}",info.event.allDay)
-            if (info.event.extendedProps.employeeIdx !== 3) {
+            if (info.event.extendedProps.employeeIdx !== loginId) {
                 modal.showAlert('수정 권한이 없습니다.');
                 info.revert(); // 원래 위치로 되돌림
                 return;
@@ -620,7 +632,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         date.setHours(date.getHours() + 9);
                         return date.toISOString();
                     };
-
                     const filteredEvents = data.map(event => ({
                         ...event,
                         start: addNineHours(event.start),
@@ -638,6 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
                    // console.log("filteredEvents테스트:"+filteredEvents);
                     successCallback(filteredEvents);
+                    updateTodoList(new Date());
                 })
                 .catch(error => {
                     failureCallback(error);
@@ -712,12 +724,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (subjectBox) {
             subjectBox.textContent = clickedDate + ' To Do List!';
         }
-
         const visibilityFilter = document.getElementById('visibilityFilter').value; 
-        const allEvents = calendar.getEvents(); 
+        const allEvents = calendar.getEvents();
+        	console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
         const eventsForDate = allEvents.filter(function(event) {
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 
+        	/* console.log("테스트종:"+JSON.stringify(eventStartDate, null, 2));
+        	console.log("테스트종:"+JSON.stringify(eventEndDate, null, 2));
+        	console.log("테스트종clickedDate:"+JSON.stringify(clickedDate, null, 2)); */
             const isInDateRange = clickedDate == eventStartDate && clickedDate <= eventEndDate;
             return isInDateRange;
 
@@ -781,7 +796,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 todoList.appendChild(emptyMessage);
             }
         }
-
+        
     }
 
 
