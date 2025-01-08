@@ -7,6 +7,7 @@
   <link href="resources/css/dashBoard.css" rel="stylesheet"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
+  <script src="/BEST/resources/js/index.global.js"></script>
   <style>
 #newMessageIndicator2 {
 	background-color: #E9396B;
@@ -146,6 +147,37 @@
 #current-location{
 	font-size: 20px;
 }
+
+/* 캘린더 css */
+.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+	height: 60px;
+}
+#calendar {
+	max-height: 93% !important;
+}
+.fc-event-main {
+	background-color: #6C0F6C;
+	border-radius: 10px;
+}
+.fc-event-time {
+	color: #6C0F6C;
+    white-space: nowrap;      
+    overflow: hidden;         
+    text-overflow: ellipsis; 
+    max-width: 100%;        
+    display: block;
+}
+.fc-event-title {
+	color: #6C0F6C;
+}
+.fc-sticky {
+	color: white;
+}
+#visibilityFilter {
+	position: relative;
+}
+
+
   </style>
 </head>
  <jsp:include page="../main/header.jsp"></jsp:include>
@@ -229,7 +261,12 @@
  		</div>
  	</div>
  	<div class="dash-calendar">
- 	
+		<select id="visibilityFilter">
+		    <option value="all">전체</option>
+		    <option value="private">개인</option>
+		    <option value="public">부서</option>
+		</select>
+		<div id="calendar" class="calendar-calendar"></div>
  	</div>
  	<div class="todoList">
  		<div><span>To Do List!</span></div>
@@ -599,7 +636,236 @@ $(document).ready(function () {
     }
 });
 
+/*  캘린더 js */
 
+var userDepartment = ${employee.depart_idx};
+var specialDays = ${specialDaysJson};
+
+    const calendarEl = document.getElementById('calendar');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        dayMaxEventRows: true,
+        dayMaxEvents: 3,
+        locale: "ko",
+        timeZone: "Asia/Seoul",
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek'
+        },
+        initialDate: new Date(),
+        eventDidMount: function(info) {
+            const resizer = info.el.querySelector('.fc-event-resizer');
+            if (resizer) {
+                resizer.style.width = '10px';
+                resizer.style.height = '10px';
+                resizer.style.backgroundColor = '#007bff';
+                resizer.style.cursor = 'se-resize';
+            }
+        },
+            events: function(fetchInfo, successCallback, failureCallback) {
+            const filter = document.getElementById('visibilityFilter').value;
+
+            fetch('events.ajax')
+                .then(response => response.json())
+                .then(data => {
+                    const addNineHours = (utcTime) => {
+                        const date = new Date(utcTime);
+                        date.setHours(date.getHours() + 9);
+                        return date.toISOString();
+                    };
+                    const filteredEvents = data.map(event => ({
+                        ...event,
+                        start: addNineHours(event.start),
+                        end: addNineHours(event.end)
+                    })).filter(event => {
+                        if (filter === 'public') {
+                            return event.department === userDepartment && event.visibility === 'public';
+                        } else if (filter === 'private') {
+                        	return event.employeeIdx === loginId && event.visibility === 'private';
+                        } else if (filter === 'all') {
+                        	return event.visibility === 'all';
+                        }
+                        return false;
+                    });
+                    console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
+                   // console.log("filteredEvents테스트:"+filteredEvents);
+                    successCallback(filteredEvents);
+                    updateTodoList(new Date());
+                })
+                .catch(error => {
+                    failureCallback(error);
+                });
+        },
+        dayCellDidMount: function(info) {
+            const viewType = info.view.type;
+            const day = info.date.getDay();
+            const formattedDate = info.date.toISOString().split('T')[0];
+            if (specialDays[formattedDate]) {
+                // 날짜 셀에 텍스트 추가
+                const dayNumberElement = info.el.querySelector('.fc-daygrid-day-frame');
+                if (dayNumberElement) {
+                    const label = document.createElement('span');
+                    label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
+                    label.style.color = '#D32F2F'; // 텍스트 색상
+                    label.style.fontSize = '0.8em'; // 텍스트 크기
+                    dayNumberElement.appendChild(label);
+                    
+                    const dayNumberText = info.el.querySelector('.fc-daygrid-day-number');
+                    if (dayNumberText) {
+                        dayNumberText.style.color = '#D32F2F'; // 빨간색
+                    }
+                }
+            }
+
+            if (viewType === 'timeGridWeek') {
+                if (day === 6 || day === 0 ) {
+                    const timeSlots = document.querySelectorAll(
+                        '.fc-timegrid-col[data-date="' + formattedDate + '"]'
+                    );
+                    timeSlots.forEach(slot => {
+                        slot.style.setProperty('background-color', '#FFEBEE', 'important');
+                    });
+                }
+                return;
+            }
+
+            const dayCellElement = info.el;
+            if (dayCellElement) {
+                if (day === 6 || day === 0) {
+                    const dayNumberElement = info.el.querySelector('.fc-daygrid-day-number');
+                    if (dayNumberElement) {
+                        dayNumberElement.style.setProperty('color', '#D32F2F', 'important');
+                    }
+                    info.el.style.setProperty('background-color', '#FFEBEE', 'important');
+                }
+            }
+        }
+    });
+
+    calendar.render();
+    const todayDate = new Date(); 
+    updateTodoList(todayDate);
+    function updateTodoList(date){
+        const clickedDate = date.toISOString().split('T')[0];
+
+        const subjectBox = document.querySelector('#todo-subject-box h2');
+        if (subjectBox) {
+            subjectBox.textContent = clickedDate + ' To Do List!';
+        }
+        const visibilityFilter = document.getElementById('visibilityFilter').value; 
+        const allEvents = calendar.getEvents();
+        	console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
+        const eventsForDate = allEvents.filter(function(event) {
+            const eventStartDate = event.start.toISOString().split('T')[0]; 
+            const eventEndDate = event.end.toISOString().split('T')[0]; 
+            const isInDateRange = clickedDate == eventStartDate && clickedDate <= eventEndDate;
+            return isInDateRange;
+
+        });
+
+        // 3. `todolist`에 들어갈 데이터 업데이트
+        const todoList = document.getElementById('todolist');
+        if (todoList) {
+            // 기존 내용 제거
+            todoList.innerHTML = '';
+
+            // 이벤트 데이터 추가
+            eventsForDate.forEach(function(event) {
+                const listBox = document.createElement('div');
+                listBox.className = 'list-box';
+
+                // `date-time` 생성 및 내용 추가
+                const dateTime = document.createElement('div');
+                dateTime.className = 'date-time';
+                const eventTime = event.allDay
+                ? 'All Day' // 하루 종일 이벤트
+                : formatTimeWithOffset(event.start, -9) + 
+                  ' ~ ' + (event.end ? formatTimeWithOffset(event.end, -9) : 'End');
+
+                function formatTimeWithOffset(date, offsetHours) {
+                    const adjustedDate = new Date(date.getTime());
+                    
+                    adjustedDate.setHours(adjustedDate.getHours() + offsetHours);
+                    
+                    const hours = adjustedDate.getHours().toString().padStart(2, '0');
+                    const minutes = adjustedDate.getMinutes().toString().padStart(2, '0');
+                    return hours + ':' + minutes;
+                }
+
+                dateTime.textContent = eventTime;
+
+                // `date-content` 생성 및 내용 추가
+                const dateContent = document.createElement('div');
+                dateContent.className = 'date-content';
+                dateContent.textContent = event.title + ' - ' + event.extendedProps.employeeName;
+
+                // `list-box`에 추가
+                listBox.appendChild(dateTime);
+                listBox.appendChild(dateContent);
+
+                // `todolist`에 추가
+                todoList.appendChild(listBox);
+            });
+
+            // 이벤트가 없을 경우 메시지 표시
+            if (eventsForDate.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.textContent = '등록된 일정이 없습니다.';
+                todoList.appendChild(emptyMessage);
+            }
+        }
+        
+    }
+
+
+    // 필터 변경 시 이벤트 갱신
+    document.getElementById('visibilityFilter').addEventListener('change', function() {
+        // 기존 이벤트 소스 제거
+        calendar.getEventSources().forEach(source => source.remove());
+
+        // 새 이벤트 소스 추가
+        calendar.addEventSource({
+            events: function(fetchInfo, successCallback, failureCallback) {
+                const filter = document.getElementById('visibilityFilter').value;
+
+                fetch('events.ajax')
+                    .then(response => response.json())
+                    .then(data => {
+                        const addNineHours = (utcTime) => {
+                            const date = new Date(utcTime);
+                            date.setHours(date.getHours() + 9);
+                            return date.toISOString();
+                        };
+
+                        const filteredEvents = data.map(event => ({
+                            ...event,
+                            start: addNineHours(event.start),
+                            end: addNineHours(event.end)
+                        })).filter(event => {
+                            if (filter === 'public') {
+                                return event.department === userDepartment && event.visibility === 'public';
+                            } else if (filter === 'private') {
+                            	return event.employeeIdx === loginId && event.visibility === 'private';
+                            } else if (filter === 'all') {
+                            	return event.visibility === 'all';
+                            }
+                            return false;
+                        });
+
+                        successCallback(filteredEvents);
+                    })
+                    .catch(error => {
+                        failureCallback(error);
+                    });
+            }
+        });
+
+        // 캘린더 다시 로드
+        calendar.refetchEvents();
+    }); 
+
+/* 여기까지 캘린더 */ 
 
 
 

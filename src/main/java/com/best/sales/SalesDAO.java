@@ -24,4 +24,6 @@ public interface SalesDAO {
 
 	int updateSattlement(Map<String, Object> params);
 
+	int delSattlement(Map<String, Object> params);
+
 }
