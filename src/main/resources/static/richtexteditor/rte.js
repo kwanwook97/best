@@ -156,35 +156,37 @@ RTE_DefaultConfig.htmlTemplates = [
     ["신청서 템플릿", `
 	    <h3 style=" width: 800px; text-align: center;">신청서</h3>
 	    <input type="hidden" name="form_idx" value="">
-		<table border="1" cellpadding="5" cellspacing="0" style=" border-collapse: collapse; font-size: 12px; font-weight: bold;">
-			<tbody>
-				<tr style="width: 200px;">
-					<td style="background: #ddd; width: 80px; text-align: center;">기안자</td>
-					<td style="width: 120px;"><span class="comp_item name"></span></td>
-				</tr>
-				<tr style="width: 200px;">
-					<td style="background: #ddd; width: 80px; text-align: center;">기안부서</td>
-					<td style="width: 120px;"><span class="comp_item depart_name"></span></td>
-				</tr>
-				<trstyle="width: 200px;">
-					<td style="background: #ddd; width: 80px; text-align: center;">기안일</td>
-					<td style="width: 120px;"><span class="comp_item todayDate"></span></td>
-				</tr>
-				<tr style="width: 200px;">
-					<td style="background: #ddd; width: 80px; text-align: center;">문서번호</td>
-					<td style="width: 120px;"><span class="comp_item doc_number"></span></td>
-				</tr>
-				<tr style="width: 200px;">
-					<td style="background: #ddd; width: 80px; text-align: center;">참조</td>
-					<td style="width: 120px;"><span class="comp_item referenceName"></span></td>
-				</tr>
-			</tbody>
-		</table>
+	    <div style="display: flex;">
+			<table class="tableDoc" border="1" cellpadding="5" cellspacing="0" style=" border-collapse: collapse; font-size: 12px; font-weight: bold; margin-right: 70px;">
+				<tbody>
+					<tr style="width: 200px;">
+						<td style="background: #ddd; width: 80px; text-align: center;">기안자</td>
+						<td style="width: 120px;"><span class="comp_item name"></span></td>
+					</tr>
+					<tr style="width: 200px;">
+						<td style="background: #ddd; width: 80px; text-align: center;">기안부서</td>
+						<td style="width: 120px;"><span class="comp_item depart_name"></span></td>
+					</tr>
+					<trstyle="width: 200px;">
+						<td style="background: #ddd; width: 80px; text-align: center;">기안일</td>
+						<td style="width: 120px;"><span class="comp_item todayDate"></span></td>
+					</tr>
+					<tr style="width: 200px;">
+						<td style="background: #ddd; width: 80px; text-align: center;">문서번호</td>
+						<td style="width: 120px;"><span class="comp_item doc_number"></span></td>
+					</tr>
+					<tr style="width: 200px;">
+						<td style="background: #ddd; width: 80px; text-align: center;">참조</td>
+						<td style="width: 120px;"><span class="comp_item referenceName"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 		<br/>
 		<table border="1" cellpadding="5" cellspacing="0" style="width: 800px; border-collapse: collapse; font-size: 14px; font-weight: bold;">
 			<tbody>
 				<tr>
-					<td style="background: #ddd; width: 80px; text-align: center;">제목</td>
+					<td style="background: #ddd; width: 80px; text-align: center; border: none;">제목</td>
 					<td>	
 						<input class="ipt_editor" type="text" name="doc_subject" maxlength="15">
 					</td>
@@ -206,38 +208,40 @@ RTE_DefaultConfig.htmlTemplates = [
     `]
     ,  
     ["신청서 템플릿 2", `
-	    <h3 style=" width: 800px; text-align: center;">신청서</h3>
-	    <input type="hidden" name="form_idx" value="">
-		<table border="1" cellpadding="5" cellspacing="0" style=" border-collapse: collapse; font-size: 12px; font-weight: bold;">
-			<tbody>
-				<tr>
-					<td style="background: #ddd; width: 80px; text-align: center;">기안자</td>
-					<td style="width: 120px;"><span class="comp_item name"></span></td>
-				</tr>
-				<tr>
-					<td style="background: #ddd; width: 80px; text-align: center;">기안부서</td>
-					<td style="width: 120px;"><span class="comp_item depart_name"></span></td>
-				</tr>
-				<tr>
-					<td style="background: #ddd; width: 80px; text-align: center;">기안일</td>
-					<td style="width: 120px;"><span class="comp_item todayDate"></span></td>
-				</tr>
-				<tr>
-					<td style="background: #ddd; width: 80px; text-align: center;">문서번호</td>
-					<td style="width: 120px;"><span class="comp_item doc_number"></span></td>
-				</tr>
-				<tr>
-					<td style="background: #ddd; width: 80px; text-align: center;">참조</td>
-					<td style="width: 120px;"><span class="comp_item referenceName"></span></td>
-				</tr>
-			</tbody>
-		</table>
+		<h3 style=" width: 800px; text-align: center;">신청서</h3>
+		<input type="hidden" name="form_idx" value="">
+		<div style="display: flex;">
+			<table class="tableDoc" border="1" cellpadding="5" cellspacing="0" style=" border-collapse: collapse; font-size: 12px; font-weight: bold; margin-right: 70px;">
+				<tbody>
+					<tr>
+						<td style="background: #ddd; width: 80px; text-align: center;">기안자</td>
+						<td style="width: 120px;"><span class="comp_item name"></span></td>
+					</tr>
+					<tr>
+						<td style="background: #ddd; width: 80px; text-align: center;">기안부서</td>
+						<td style="width: 120px;"><span class="comp_item depart_name"></span></td>
+					</tr>
+					<tr>
+						<td style="background: #ddd; width: 80px; text-align: center;">기안일</td>
+						<td style="width: 120px;"><span class="comp_item todayDate"></span></td>
+					</tr>
+					<tr>
+						<td style="background: #ddd; width: 80px; text-align: center;">문서번호</td>
+						<td style="width: 120px;"><span class="comp_item doc_number"></span></td>
+					</tr>
+					<tr>
+						<td style="background: #ddd; width: 80px; text-align: center;">참조</td>
+						<td style="width: 120px;"><span class="comp_item referenceName"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 		<table border="1" cellpadding="5" cellspacing="0" style="width: 800px; border-collapse: collapse; font-size: 14px; font-weight: bold; margin-bottom: 20px;">
 			<tbody>
 				<tr>
 					<td style="background: #ddd; width: 80px; text-align: center;">제목</td>
 					<td>	
-						<input class="ipt_editor" type="text" name="doc_subject" maxlength="15">
+						<input class="ipt_editor" type="text" name="doc_subject" maxlength="15" style="border: none;">
 					</td>
 				</tr>
 				<tr>
@@ -259,48 +263,48 @@ RTE_DefaultConfig.htmlTemplates = [
 					<tbody>
 						<tr>
 							<th>1</th>
-							<th><input id="no1_1" class="ipt_editor" type="text" name="item1" maxlength="15"></th>
-							<th><input id="no2_1" class="ipt_editor" type="text" name="item2" maxlength="15"></th>
-							<th><input id="no3_1" class="ipt_editor" type="text" name="item3" maxlength="15"></th>
-							<th><input id="no4_1" class="ipt_editor" type="text" name="item4" maxlength="15"></th>
-							<th><input id="no5_1" class="ipt_editor" type="text" name="item5" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no1_1" class="ipt_editor" type="text" name="item1" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no2_1" class="ipt_editor" type="text" name="item2" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no3_1" class="ipt_editor" type="text" name="item3" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no4_1" class="ipt_editor" type="text" name="item4" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no5_1" class="ipt_editor" type="text" name="item5" maxlength="15"></th>
 						</tr>
 						<tr>
 							<th>2</th>
-							<th><input id="no1_2" class="ipt_editor" type="text" name="item6" maxlength="15"></th>
-							<th><input id="no2_2" class="ipt_editor" type="text" name="item7" maxlength="15"></th>
-							<th><input id="no3_2" class="ipt_editor" type="text" name="item8" maxlength="15"></th>
-							<th><input id="no4_2" class="ipt_editor" type="text" name="item9" maxlength="15"></th>
-							<th><input id="no5_2" class="ipt_editor" type="text" name="item10" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no1_2" class="ipt_editor" type="text" name="item6" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no2_2" class="ipt_editor" type="text" name="item7" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no3_2" class="ipt_editor" type="text" name="item8" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no4_2" class="ipt_editor" type="text" name="item9" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no5_2" class="ipt_editor" type="text" name="item10" maxlength="15"></th>
 						</tr>
 						<tr>
 							<th>3</th>
-							<th><input id="no1_3" class="ipt_editor" type="text" name="item11" maxlength="15"></th>
-							<th><input id="no2_3" class="ipt_editor" type="text" name="item12" maxlength="15"></th>
-							<th><input id="no3_3" class="ipt_editor" type="text" name="item13" maxlength="15"></th>
-							<th><input id="no4_3" class="ipt_editor" type="text" name="item14" maxlength="15"></th>
-							<th><input id="no5_3" class="ipt_editor" type="text" name="item15" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no1_3" class="ipt_editor" type="text" name="item11" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no2_3" class="ipt_editor" type="text" name="item12" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no3_3" class="ipt_editor" type="text" name="item13" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no4_3" class="ipt_editor" type="text" name="item14" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no5_3" class="ipt_editor" type="text" name="item15" maxlength="15"></th>
 						</tr>
 						<tr>
 							<th>4</th>
-							<th><input id="no1_4" class="ipt_editor" type="text" name="item16" maxlength="15"></th>
-							<th><input id="no2_4" class="ipt_editor" type="text" name="item17" maxlength="15"></th>
-							<th><input id="no3_4" class="ipt_editor" type="text" name="item18" maxlength="15"></th>
-							<th><input id="no4_4" class="ipt_editor" type="text" name="item19" maxlength="15"></th>
-							<th><input id="no5_4" class="ipt_editor" type="text" name="item20" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no1_4" class="ipt_editor" type="text" name="item16" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no2_4" class="ipt_editor" type="text" name="item17" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no3_4" class="ipt_editor" type="text" name="item18" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no4_4" class="ipt_editor" type="text" name="item19" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no5_4" class="ipt_editor" type="text" name="item20" maxlength="15"></th>
 						</tr>
 						<tr>
 							<th>5</th>
-							<th><input id="no1_5" class="ipt_editor" type="text" name="item21" maxlength="15"></th>
-							<th><input id="no2_5" class="ipt_editor" type="text" name="item22" maxlength="15"></th>
-							<th><input id="no3_5" class="ipt_editor" type="text" name="item23" maxlength="15"></th>
-							<th><input id="no4_5" class="ipt_editor" type="text" name="item24" maxlength="15"></th>
-							<th><input id="no5_5" class="ipt_editor" type="text" name="item25" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no1_5" class="ipt_editor" type="text" name="item21" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no2_5" class="ipt_editor" type="text" name="item22" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no3_5" class="ipt_editor" type="text" name="item23" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no4_5" class="ipt_editor" type="text" name="item24" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no5_5" class="ipt_editor" type="text" name="item25" maxlength="15"></th>
 						</tr>
 						<tr>
 							<th colspan="4">총 계</th>
-							<th><input id="no1_6" class="ipt_editor" type="text" name="item26" maxlength="15"></th>
-							<th><input id="no2_6" class="ipt_editor" type="text" name="item27" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no1_6" class="ipt_editor" type="text" name="item26" maxlength="15"></th>
+							<th><input style="width: 120px; border: none;" id="no2_6" class="ipt_editor" type="text" name="item27" maxlength="15"></th>
 						</tr>
 					</tbody>
 				</table>

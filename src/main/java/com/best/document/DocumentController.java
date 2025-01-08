@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.best.leave.LeaveService;
 
@@ -324,8 +323,11 @@ public class DocumentController {
 			@RequestParam(required = false) String approv_order, 
 			@RequestParam(required = false) String remark,
 			@RequestParam(required = false) String emp_idx,
-			@RequestParam(required = false) List<String> item,
-			@RequestParam(required = false) List<String> price,
+			@RequestParam(required = false) List<String> one,
+			@RequestParam(required = false) List<String> two,
+			@RequestParam(required = false) List<String> three,
+			@RequestParam(required = false) List<String> four,
+			@RequestParam(required = false) List<String> five,
 			String form_idx,
 			String actionType, 
 			String doc_content){
@@ -337,8 +339,11 @@ public class DocumentController {
 			}else if(approv_order.equals("2")) {
 				documentService.approveStatusT(doc_idx, approv_order, doc_content);
 				leaveService.addLeaveHistory(doc_idx);
-				logger.info("품목: {}", item);
-				logger.info("가격 :{}", price);
+				logger.info("첫줄: {}", one);
+				logger.info("둘줄 :{}", two);
+				logger.info("삼줄 :{}", three);
+				logger.info("넷줄 :{}", four);
+				logger.info("오줄 :{}", five);
 			}
 			
 		}else if("제출".equals(actionType)) {

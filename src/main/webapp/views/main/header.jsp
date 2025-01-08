@@ -285,7 +285,19 @@ var loginId = ${sessionScope.loginId};
 				</ul></li>
 
 			<li class="dropD"><a href="javaScript:void();"> <i
-					class="bi bi-wallet-fill"></i> <span>지출정산</span> <i
+					class="bi bi-wallet-fill"></i> <span>지출정산</span> <i class="fa-solid fa-angle-right"></i>
+			</a>
+				<ul class="dropD-menu">
+					<li class="dropD-item"><a href="expenseMonthly.go"> <i
+							class="bi bi-bar-chart-fill"></i> <span>월별현황</span> <i
+							class="fa-solid fa-angle-right"></i>
+					</a></li>
+					<li class="dropD-item"><a href="expenseYearly.go"> <i
+							class="bi bi-graph-up"></i> <span>연별현황</span> <i
+							class="fa-solid fa-angle-right"></i>
+					</a></li>
+				</ul>
+			</li></i> <span>지출정산</span> <i
 					class="fa-solid fa-angle-right"></i>
 			</a></li>
 
@@ -814,7 +826,6 @@ $(document).ready(function () {
     });
     
 });
-
 
 
 
