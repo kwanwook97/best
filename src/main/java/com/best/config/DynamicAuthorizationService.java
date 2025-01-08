@@ -79,6 +79,12 @@ public class DynamicAuthorizationService {
             System.out.println("Access denied: No authentication found");
             return false; // 인증되지 않은 사용자
         }
+        
+        // 관리자 권한 확인
+        if (authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))) {
+            return true; // 관리자는 모든 URL 접근 허용
+        }
 
         // 3. Principal에서 EmployeeDTO 가져오기.
         Object principal = authentication.getPrincipal();
