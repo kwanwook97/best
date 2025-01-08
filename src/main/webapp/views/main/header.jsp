@@ -89,10 +89,13 @@ var loginId = ${sessionScope.loginId};
 					</a></li>
 				</ul></li>
 
-			<li class="dropD"><a href="calendar.go"> <i
-					class="fa-regular fa-calendar-check"></i> <span>캘린더</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a></li>
+			<li class="dropD">
+				<a href="calendar.go"> 
+					<i class="fa-regular fa-calendar-check"></i> 
+						<span>캘린더</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
 
 			<li class="dropD"><a href="javaScript:void(0);"> <i
 					class="bi bi-bus-front-fill"></i> <span>버스정보</span> <i
@@ -307,9 +310,13 @@ var loginId = ${sessionScope.loginId};
 			<!-- 관욱추가 끝 2025.01.05 -->
 			
 			
-			<li><a href="logout.do"><i
-					class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span> <i
-					class="fa-solid fa-angle-right"></i> </a></li>
+			<li>
+				<a href="logout.do">
+					<i class="fa-solid fa-right-to-bracket"></i> 
+						<span>로그아웃</span> 
+					<i class="fa-solid fa-angle-right"></i> 
+				</a>
+			</li>
 
 		</ul>
 
@@ -371,13 +378,13 @@ var loginId = ${sessionScope.loginId};
 						<div class="dropdown-menu-custom myPageDropdown dropdownMenu">
 							<div class="dropdown-item">
                     			<a href="myDetail.go?emp_idx=${sessionScope.loginId}">
-                    				<i class="bi bi-person-fill-gear"></i>
+                    				<i class="bi bi-person-fill-gear" style="color:#FFFBF2;"></i>&nbsp;&nbsp;
                     				<span>나의 정보 관리</span>
                     			</a>
                 			</div>
 							<div class="dropdown-item">
                     			<a href="logout.do">
-                    				<i class="fa-solid fa-right-to-bracket"></i>
+                    				<i class="fa-solid fa-right-to-bracket" style="color:#FFFBF2;"></i>&nbsp;&nbsp;
                     				<span>로그아웃</span>
                     			</a>
                 			</div>
@@ -727,7 +734,7 @@ function updateEndTime(){
 
 
 /* 권한에 따른 메뉴바 숨기기기 */
-$(document).ready(function () {
+/* $(document).ready(function () {
     // 서버에서 전달된 접근 불가능한 URL 목록 (JSON 데이터)
     const inaccessibleUrls = ${inaccessibleUrls}; // 서버에서 전달된 배열
     console.log('Inaccessible URLs:', inaccessibleUrls); // 디버깅용 콘솔 출력
@@ -759,7 +766,7 @@ $(document).ready(function () {
         }
     });
 });
-
+ */
 
 
 

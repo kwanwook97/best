@@ -72,9 +72,9 @@
 		e.emp_idx AS employeeId,
 		r.subject AS subject
 		FROM reserve r
-		JOIN employee e ON r.emp_idx =
-		e.emp_idx
-		WHERE TIMESTAMPDIFF(MINUTE, NOW(), r.start_datetime) = 10
+		JOIN employee e ON r.emp_idx = e.emp_idx
+		WHERE TIMESTAMPDIFF(MINUTE, NOW(), r.start_datetime) = 10;
+		AND SECOND(NOW()) BETWEEN 0 AND 2;
 	</select>
 
 	<!-- 10분 전 캘린더 일정 가져오기 -->
@@ -86,9 +86,10 @@
 		AS subject,
 		s.emp_idx AS employeeId
 		FROM schedule s
-		WHERE
-		TIMESTAMPDIFF(MINUTE, NOW(), s.start_datetime) = 10
+		WHERE TIMESTAMPDIFF(MINUTE, NOW(), s.start_datetime) = 10;
+		AND SECOND(NOW()) BETWEEN 0 AND 2;
 	</select>
+	
 	<update id="updateAlarmFlag">
 		UPDATE alarm
 		SET flag = #{flag}

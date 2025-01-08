@@ -626,11 +626,11 @@ public class DocumentService {
 		documentDao.documentStatus(doc_idx, doc_content);
 		
 		// 결재 알림 처리
-//	    notifyApproval(
-//	        Integer.parseInt(doc_idx),
-//	        Integer.parseInt(approv_order),
-//	        "승인"
-//	    );
+	    notifyApproval(
+	        Integer.parseInt(doc_idx),
+	        Integer.parseInt(approv_order),
+	        "승인"
+	    );
 	}
 	@Transactional
 	public void approveStatusT(String doc_idx, String approv_order, String doc_content) {
