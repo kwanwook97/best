@@ -72,9 +72,4 @@ public interface RoleDAO {
     // 부서 삭제
     int deleteDepartment(int departIdx);
     
-    // 모든 직책 목록 가져오기
-	List<Map<String, Object>> getAllPositions();
-	
-	// 직책 변경
-    int updateRankPosition(int rankIdx, int positionIdx);
 }

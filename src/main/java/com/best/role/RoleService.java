@@ -134,13 +134,4 @@ public class RoleService {
         return roleDao.deleteDepartment(departIdx);
     }
 
-    // 모든 직급체계 목록 가져오기
-	public List<Map<String, Object>> getAllPositions() {
-		return roleDao.getAllPositions();
-	}
-	
-	// 직급체계 변경
-	public int updateRankPosition(int rankIdx, int positionIdx) {
-        return roleDao.updateRankPosition(rankIdx, positionIdx);
-    }
 }

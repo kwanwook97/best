@@ -72,8 +72,4 @@ public interface EmployeeDAO {
 	// 새 파일이름 가져오기
 	String getNewFileName(String fileName);
 
-	// 상급자 가져오기
-	List<Map<String, String>> getParent(int rank_idx);
-	
-
 }

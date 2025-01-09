@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -300,23 +299,6 @@ public class RoleController {
         return response;
     }
     
-    // 모든 직책 목록 가져오기
-    @GetMapping("/getAllPositions.ajax")
-    @ResponseBody
-    public Map<String, Object> getAllPositions() {
-    	Map<String, Object> response = new HashMap<>();
-    	try {
-    		List<Map<String, Object>> positions = roleService.getAllPositions(); // 직책 목록 가져오기
-    		response.put("success", true);
-    		response.put("positions", positions);
-    	} catch (Exception e) {
-    		response.put("success", false);
-    		response.put("message", e.getMessage());
-    	}
-    	return response;
-    }
-
-    
     // 직급관리 페이지로 이동
     @RequestMapping(value = "/rankManage.go")
     public String rankManage(HttpSession session) {
@@ -421,25 +403,5 @@ public class RoleController {
         return response;
     }
 
-    // 직급체계 변경
-    @PostMapping("/updateRankPosition.ajax")
-    @ResponseBody
-    public Map<String, Object> updateRankPosition(@RequestBody Map<String, Object> requestData) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            int rankIdx = Integer.parseInt(requestData.get("rankIdx").toString()); // String을 Integer로 변환
-            int positionIdx = Integer.parseInt(requestData.get("positionIdx").toString());
-            int result = roleService.updateRankPosition(rankIdx, positionIdx);
-
-            response.put("success", result > 0);
-            if (result <= 0) {
-                response.put("message", "데이터베이스 업데이트 실패");
-            }
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
-        }
-        return response;
-    }
 
 }

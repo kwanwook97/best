@@ -156,13 +156,6 @@
         ORDER BY r.rank_idx ASC
     </select>
     
-    <!-- 모든 직책 목록 -->
-    <select id="getAllPositions" resultType="map">
-        SELECT position_idx, position_name
-        FROM positions
-        ORDER BY position_idx DESC
-    </select>
-    
     <!-- 직급 추가 -->
     <insert id="addRank">
         INSERT INTO rank_emp (rank_name) VALUES (#{rankName})
@@ -196,12 +189,5 @@
     <delete id="deleteDepartment">
         DELETE FROM department WHERE depart_idx = #{departIdx}
     </delete>
-    
-    <!-- 직급체계 변경 -->
-    <update id="updateRankPosition">
-	    UPDATE rank_emp
-	    SET position_idx = #{positionIdx}
-	    WHERE rank_idx = #{rankIdx}
-	</update>
 
 </mapper>  

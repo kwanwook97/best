@@ -241,16 +241,6 @@
   	color: var(--primary-color) !important;
   	text-align: left;
   }    
-  
-  select option {
-	 background-color: #fff !important;
-	 color: var(--primary-color) !important; /* 선택한 텍스트 색상 */
-	 width: 100%;
-  }
-  
-  select{
-  	width: 100%;
-  }
     
   </style>
 </head>
@@ -278,7 +268,6 @@
               <tr>
                 <th>직급 ID</th>
                 <th>직급 이름</th>
-                <th>직급체계</th>
                 <th>수정</th>
                 <th>삭제</th>
               </tr>
@@ -311,15 +300,11 @@
 // 모든 직급 데이터를 저장할 변수
 var ranks = [];
 
-//모든 직급체계 데이터를 저장할 변수
-var positions = [];
 
   $(document).ready(function () {
     loadAllRanks();
   });
 
-  loadAllPositions();
-  
 //모든 직급 목록 가져오기
   function loadAllRanks() {
       $.ajax({
@@ -339,69 +324,21 @@ var positions = [];
       });
   }
   
-//모든 직책 목록 가져오기
-  function loadAllPositions() {
-      $.ajax({
-          url: "getAllPositions.ajax",
-          method: "GET",
-          success: function (response) {
-              if (response.success) {
-                  positions = response.positions; // 데이터를 positions 배열에 저장
-              } else {
-                  alert("직급 목록을 가져오는 데 실패했습니다.");
-              }
-          },
-          error: function () {
-              alert("서버 요청 중 오류가 발생했습니다.");
-          }
-      });
-  }
 
-//직급 데이터를 테이블에 렌더링
+  // 직급 데이터를 테이블에 렌더링
   function renderRanks(data) {
       var rows = "";
-      $.each(data, function (index, rank) {
-          // 직급체계 select 태그 생성
-          var positionOptions = "";
-          $.each(positions, function (i, position) {
-              var selected = position.position_idx === rank.position_idx ? "selected" : "";
-              positionOptions += "<option value='" + position.position_idx + "' " + selected + ">" + position.position_name + "</option>";
-          });
-
+      for (var i = 0; i < data.length; i++) {
+          var rank = data[i];
           rows += "<tr>" +
-                  "<td>" + rank.rank_idx + "</td>" +
-                  "<td>" + rank.rank_name + "</td>" +
-                  "<td>" +
-                  "<select onchange='updateRankPosition(" + rank.rank_idx + ", this.value)'>" + positionOptions + "</select>" +
-                  "</td>" +
-                  "<td><button onclick='updateRank(" + rank.rank_idx + ", \"" + rank.rank_name + "\")'>수정</button></td>" +
-                  "<td><button onclick='deleteRank(" + rank.rank_idx + ")'>삭제</button></td>" +
-                  "</tr>";
-      });
+              "<td>" + rank.rank_idx + "</td>" +
+              "<td>" + rank.rank_name + "</td>" +
+              "<td><button onclick=\"updateRank(" + rank.rank_idx + ", '" + rank.rank_name + "')\">수정</button></td>" +
+              "<td><button onclick=\"deleteRank(" + rank.rank_idx + ")\">삭제</button></td>" +
+              "</tr>";
+      }
       $("#rankTable").html(rows);
   }
-
-  // 직급체계 변경 이벤트 처리
-	function updateRankPosition(rankIdx, positionIdx) {
-	    $.ajax({
-	        url: "updateRankPosition.ajax",
-	        method: "POST",
-	        contentType: "application/json",
-	        data: JSON.stringify({ rankIdx: rankIdx, positionIdx: positionIdx }),
-	        success: function (response) {
-	            if (response.success) {
-	                alert("직책이 성공적으로 변경되었습니다.");
-	                loadAllRanks(); // 변경 후 직급 목록 갱신
-	            } else {
-	                alert("직책 변경 실패: " + response.message);
-	            }
-	        },
-	        error: function () {
-	            alert("서버 요청 중 오류가 발생했습니다.");
-	        }
-	    });
-	}
-
 
 //직급 추가
   function addRank() {
@@ -467,7 +404,6 @@ var positions = [];
       renderRanks(filteredRanks); // 필터링된 데이터 렌더링
   }
   
-	
   // 모달 닫기
   function closeModal(modalId) {
     $("#" + modalId).fadeOut();

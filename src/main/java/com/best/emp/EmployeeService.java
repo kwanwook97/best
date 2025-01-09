@@ -181,19 +181,17 @@ public class EmployeeService {
 				rank_idx = numCol;
 			}
 			
-			/* 나의 직급체계 가져오기 */
-			
 			
 			/* 상급자 정보수정 */
-			if (3 < rank_idx) {                         // 임직원이라면, 상급자 => 같은 부서의 임원
-				// 같은부서 임원의 정보를 가져와서 put
+			if (3 < rank_idx) {                         // 팀원이라면, 상급자 => 같은 부서의 팀장
+				// 같은부서 팀장의 정보를 가져와서 put
 				parentCondition.put("rank_idx", 3);	
 				parentCondition.put("depart_idx", depart_idx);	
-			} else if (rank_idx == 3) {                 // 임원이라면, 상급자 => 같은부서 이사
+			} else if (rank_idx == 3) {                 // 팀장이라면, 상급자 => 같은부서 상무
 			    // 같은부서 상무의 정보를 가져와서 put
 				parentCondition.put("rank_idx", 2);	
 				parentCondition.put("depart_idx", depart_idx);
-			} else if (rank_idx < 3) {                   // 임원, 대표라면, 상급자 => 대표
+			} else if (rank_idx < 3) {                   // 상무, 대표라면, 상급자 => 대표
 			    // 대표의 정보를 가져와서 put
 				parentCondition.put("rank_idx", 1);	
 			}                     

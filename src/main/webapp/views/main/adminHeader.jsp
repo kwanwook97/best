@@ -39,6 +39,17 @@
 	width: 45%;
 	display: none;
 }
+/* 텍스트 선택 시 배경색과 글자색 지정 */
+::selection {
+  background-color: #FFEB3B; /* 노란색 배경 */
+  color: #000; /* 검정색 텍스트 */
+}
+
+/* 웹킷 기반 브라우저 (크롬, 사파리) 전용 */
+::-webkit-selection {
+  background-color: #FFEB3B; /* 노란색 배경 */
+  color: #000; /* 검정색 텍스트 */
+}
 </style>
 
 <body>
