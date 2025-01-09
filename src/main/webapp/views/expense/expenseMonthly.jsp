@@ -16,7 +16,6 @@
 	    margin-left: 15vw;
 	    margin-top: 10vh;
 	    flex-wrap: wrap;
-	    padding: 2vh;
 	    color: var(--primary-color);
 	    display: flex;
 	    flex-direction: column;
@@ -36,8 +35,23 @@
 	.docnav{
 	    width: 1190px;
     	display: flex;
-    	padding: 0 0 15px 0;
-	    justify-content: flex-end;
+    	padding: 0 0 10px 0;
+	    justify-content: space-between;
+	}
+	.chartOption{
+	    display: flex;
+	    margin-left: 5px;
+	    align-items: flex-end;
+	}
+	.chartOption div{
+		cursor: pointer;
+	    font-size: large;
+	    margin-right: 10px;
+	    color: var(--secondary-color);
+	}
+	.chartOption div:hover{
+		font-weight: bold;
+		color: var(--primary-color);
 	}
 	.searchbox{
 		display: flex;
@@ -80,53 +94,53 @@
 	}
 	.docbox{
     	display: flex;
+   	    flex-direction: column;
     	justify-content: space-evenly;
         align-items: center;
 		border: 2px solid var(--primary-color);
 	    width: 1200px;
-	    height: 690px;
+	    height: 710px;
 	    border-radius: 10px;
 	}
-	.pagination .page-link {
-		color: var(--primary-color); /* 글자 색상 */
-		background-color: var(--background-color); /* 배경 색상 */
-		border: var(--background-color) !important; /* 테두리 */
-		font-family: 'Arial', sans-serif; /* 폰트 */
-		font-size: 16px; /* 글자 크기 */
-		box-shadow: none !important;
-	}
-	/* 호버 시 스타일 */
-	.pagination .page-link:hover {
+	.date-navigation {
+		font-size: 24px;
 		font-weight: bold;
-		color: var(--accent-color) !important;
-		background-color: var(--background-color) !important;
+		text-align: center;
+		width: 100%;
 	}
-	/* 활성화된 페이지 스타일 */
-	.pagination .active .page-link {
-		font-weight: bold;
-		color: var(--accent-color) !important;
-		background-color: var(--background-color) !important;
+	.date-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		width: 100%;
 	}
-	/* 클릭 시 생기는 테두리 제거 */
-	.pagination .page-link:focus {
-	  outline: none;
-	  box-shadow: none; /* 부가적인 그림자 효과도 제거 */
+	.date-button {
+		color: #30005A; /* 보라색 글씨 */
+		background-color: transparent; /* 배경색 제거 */
+		border: none; /* 테두리 제거 */
+		cursor: pointer;
+		margin: 0 10px;
+		font-weight: bold; /* 강조 효과 */
 	}
-	/* 비활성화된 페이지 스타일 */
-	.pagination .disabled .page-link {
-		color: var(--background-color) !important;
-		background-color: var(--background-color) !important;
+	.date-button:hover {
+		text-decoration: underline;
+	}
+	.current-date {
+		margin: 0 20px;
+		color: #30005A;
 	}
     .container {
-      width: 1300px;
-      height: 680px;
-      display: flex;
-      border-radius: 8px;
-      overflow: hidden;
+		transform: scale(0.9);
+     	width: 1300px;
+     	height: 680px;
+		display: flex;
+      	border-radius: 8px;
+      	overflow: hidden;
     }
     .leftPanel, .rightPanel {
-      padding: 20px;
-      overflow-y: auto;
+      	padding: 20px;
+      	overflow-y: auto;
     }
     .leftPanel div:first-child{
     	margin-bottom: 20px;
@@ -183,6 +197,36 @@
       max-width: 200%;
       max-height: 300px;
     }
+	.pagination .page-link {
+		color: var(--primary-color); /* 글자 색상 */
+		background-color: var(--background-color); /* 배경 색상 */
+		border: var(--background-color) !important; /* 테두리 */
+		font-family: 'Arial', sans-serif; /* 폰트 */
+		font-size: 16px; /* 글자 크기 */
+		box-shadow: none !important;
+	}
+	/* 호버 시 스타일 */
+	.pagination .page-link:hover {
+		font-weight: bold;
+		color: var(--accent-color) !important;
+		background-color: var(--background-color) !important;
+	}
+	/* 활성화된 페이지 스타일 */
+	.pagination .active .page-link {
+		font-weight: bold;
+		color: var(--accent-color) !important;
+		background-color: var(--background-color) !important;
+	}
+	/* 클릭 시 생기는 테두리 제거 */
+	.pagination .page-link:focus {
+	  outline: none;
+	  box-shadow: none; /* 부가적인 그림자 효과도 제거 */
+	}
+	/* 비활성화된 페이지 스타일 */
+	.pagination .disabled .page-link {
+		color: var(--background-color) !important;
+		background-color: var(--background-color) !important;
+	}
 </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -190,9 +234,14 @@
  	<div class="dashboard-body">
 		<div class="maintext">
 			<h3 class="document">지출정산</h3>
-			<h3>>&nbsp;&nbsp;월별현황</h3>
+			<h3>>&nbsp;&nbsp;월별현황(전체)</h3>
 		</div>
 		<div class="docnav">
+			<div class="chartOption">
+				<div class="empOpt" onclick="changeList('일반')">일반</div>
+				<div class="busOpt" onclick="changeList('버스관리')">버스관리</div>
+				<div class="salaryOpt" onclick="changeList('급여')">급여</div>
+			</div>	
 			<div class="searchbox">
 				<div class="searchCont">
 				</div>
@@ -207,6 +256,17 @@
 			</div>
 		</div>
 		<div class="docbox">
+			<div class="date-navigation">
+				<div class="date-content">
+					<button class="date-button">
+						<i class="fas fa-angle-left"></i>
+					</button>
+					<span class="current-date"></span>
+					<button class="date-button">
+						<i class="fas fa-angle-right"></i>
+					</button>
+				</div>
+			</div>		
 			<div class="container">
 				<div class="leftPanel">
 					<div>
@@ -237,6 +297,15 @@
 							<tbody id="dailyList">
 							</tbody>
 						</table>
+						<div class="dailyContainer" id="dailyListCont">
+					        <nav aria-label="Page navigation">
+					            <ul class="pagination">
+					                <li class="page-item" id="prevWeek"><a class="page-link" href="#">← 이전 주</a></li>
+					                <li class="page-item"><span class="page-link" id="weekRange"></span></li>
+					                <li class="page-item" id="nextWeek"><a class="page-link" href="#">다음 주 →</a></li>
+					            </ul>
+					        </nav>
+					    </div>
 					</div>
 				</div>
 				<div class="rightPanel">
@@ -249,134 +318,260 @@
  	</div>
 </body>
 <script>
-
-window.addEventListener('resize', function() {
-	  lineChart.resize();
-	});
+	
 $(document).ready(function() {
-    var categoryData = [
-      { category: '식비', amount: 50000 },
-      { category: '교통비', amount: 30000 },
-      { category: '기타', amount: 20000 }
-    ];
+	
+	var currentDate = new Date();
+	var year = '';
+	
+	function updateDateDisplay() {
+	    var currentDateElement = document.querySelector('.current-date');
+	    var year = currentDate.getFullYear();
+	    var month = currentDate.getMonth() + 1; // 0부터 시작하므로 +1
+	    currentDateElement.textContent = year + '년 ' + month + '월';
+	    
+	    // 변수로 연도와 월 저장
+	    window.currentYear = year; // 연도 변수
+	    window.currentMonth = month; // 월 변수
+	    console.log("현재 연도:", currentYear);
+	    console.log("현재 월:", currentMonth);
+	}
 
-    var dailyExpenseData = [
-      { date: '01-01', category: '식비', content: '점심 식사', amount: 2500000, note: '' },
-      { date: '01-02', category: '교통비', content: '지하철', amount: 300000, note: '' },
-      { date: '01-03', category: '기타', content: '커피', amount: 4500000, note: '' },
-      { date: '01-04', category: '기타', content: '커피', amount: 5000000, note: '' },
-      { date: '01-05', category: '식비', content: '점심 식사', amount: 10000, note: '' },
-      { date: '01-06', category: '교통비', content: '지하철', amount: 3000, note: '' },
-      { date: '01-07', category: '기타', content: '커피', amount: 4500, note: '' }
-    ];
+	// 다음 달로 이동
+	function incrementMonth() {
+	    currentDate.setMonth(currentDate.getMonth() + 1); // 월 증가
+	    updateDateDisplay();
+	}
 
-    // 카테고리별 지출 금액 테이블 생성
-    var categoryTable = '';
-    $.each(categoryData, function(index, item) {
-      categoryTable += '<tr><td>' + item.category + '</td><td>' + item.amount.toLocaleString() + '원</td></tr>';
-    });
-    $('#categoryList').html(categoryTable);
+	// 이전 달로 이동
+	function decrementMonth() {
+	    currentDate.setMonth(currentDate.getMonth() - 1); // 월 감소
+	    updateDateDisplay();
+	}
 
-    // 날짜별 지출 내역 테이블 생성
-    var dailyExpenseTable = '';
-    $.each(dailyExpenseData, function(index, item) {
-      dailyExpenseTable += '<tr>' +
-        '<td>' + item.date + '</td>' +
-        '<td>' + item.category + '</td>' +
-        '<td>' + item.content + '</td>' +
-        '<td>' + item.amount.toLocaleString() + '원</td>' +
-        '<td>' + item.note + '</td>' +
-        '</tr>';
-    });
-    $('#dailyList').html(dailyExpenseTable);
+	// 이벤트 핸들러 연결
+	document.querySelector('.date-button:nth-child(1)').addEventListener('click', decrementMonth);
+	document.querySelector('.date-button:nth-child(3)').addEventListener('click', incrementMonth);
 
-    // 원형 차트 데이터 및 옵션
-    var ctxCategory = document.getElementById('categoryChart').getContext('2d');
-    var categoryChart = new Chart(ctxCategory, {
-      type: 'pie',
-      data: {
-        labels: categoryData.map(function(item) { return item.category; }),
-        datasets: [{
-          data: categoryData.map(function(item) { return item.amount; }),
-          backgroundColor: ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD', '#D5CCDE', '#EAE5EE'],
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-          }
-        }
-      }
-    });
+	// 초기 날짜 설정
+	var currentDate = new Date();
+	updateDateDisplay();
+	
+	window.changeList = function (name) {
+	    pageName = name;
+	    categoryList(name);
+	    fetchWeeklyData(pageName);
+	    console.log("tq" + pageName);
+	};
+	
+	window.addEventListener('resize', function() {
+		lineChart.resize();
+	});
+	
+	document.addEventListener('DOMContentLoaded', function () {
+	    console.log("Page loaded. Fetching initial data...");
+	    fetchWeeklyData(pageName); // 페이지 로드 시 초기 실행
+	});
+	
+	var pageName = '일반';
+	var categoryChart;
+	var dailyExpenseChart;
+	
+    categoryList(pageName);
+    
+	function categoryList(pageName){
+		$.ajax({
+			type: 'GET',
+			url: 'categoryList.ajax',
+			data: {pageName: pageName},
+			success: function(data) {
+				var categoryData = [];
+				data.forEach(function (item) {
+			        categoryData.push({
+			            category: item.category,
+			            amount: item.amount
+			        });
+			    });
+			    // 카테고리별 지출 금액 테이블 생성
+			    var categoryTable = '';
+			    $.each(categoryData, function(index, item) {
+			      categoryTable += '<tr><td>' + item.category + '</td><td>' + item.amount.toLocaleString() + '원</td></tr>';
+			    });
+			    $('#categoryList').html(categoryTable);
+			    
+			    if (categoryChart) {
+	                // 기존 차트 데이터 갱신
+	                categoryChart.data.labels = categoryData.map(function (item) { return item.category; });
+	                categoryChart.data.datasets[0].data = categoryData.map(function (item) { return item.amount; });
+	                categoryChart.update();
+	            } else {
+	                // 새 차트 생성
+	                var ctxCategory = document.getElementById('categoryChart').getContext('2d');
+	                categoryChart = new Chart(ctxCategory, {
+	                    type: 'pie',
+	                    data: {
+	                        labels: categoryData.map(function (item) { return item.category; }),
+	                        datasets: [{
+	                            data: categoryData.map(function (item) { return item.amount; }),
+	                            backgroundColor: ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD', '#D5CCDE', '#EAE5EE'],
+	                        }]
+	                    },
+	                    options: {
+	                        responsive: true,
+	                        maintainAspectRatio: false,
+	                        plugins: {
+	                            legend: {
+	                                position: 'bottom',
+	                            }
+	                        }
+	                    }
+	                });
+	            }
+	        },error: function(e) {
+			    console.log("오류 발생", e);
+			}
+		});
+	}
 
- // 멀티 축 차트 데이터 및 옵션
-    var ctxDaily = document.getElementById('dailyChart').getContext('2d');
-    var dailyExpenseChart = new Chart(ctxDaily, {
-      type: 'line',
-      data: {
-        labels: dailyExpenseData.map(function(item) { return item.date; }),
-        datasets: [{
-          label: '일별 지출 금액',
-          data: dailyExpenseData.map(function(item) { return item.amount; }),
-          borderColor: '#E9396B',
-          borderWidth: 2,
-          tension: 0.4,
-          yAxisID: 'y1'
-        }, {
-          label: '비고',
-          data: dailyExpenseData.map(function(item) { return item.note.length; }), // 예시로 note의 길이를 표시
-          borderColor: '#2C7BB6',
-          fill: false,
-          borderWidth: 2,
-          tension: 0.4,
-          fill: false,
-          yAxisID: 'y2'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: '날짜'
-            }
-          },
-          y1: {
-            position: 'left',
-            title: {
-              display: true,
-              text: '금액 (원)'
-            },
-            ticks: {
-              // y축의 금액 범위를 0원부터 500만원으로 설정
-              min: 0, // 최소값 0원
-              max: 5000000, // 최대값 500만원
-              stepSize: 1000000,
-              callback: function(value) {
-                return value.toLocaleString() + '원'; // 금액을 원 단위로 표시
-              }
-            }
-          },
-          y2: {
-            position: 'right',
-            title: {
-              display: true,
-              text: '비고 길이' // 비고의 길이를 표시
-            },
-            ticks: {
-              min: 0,
-              max: 10, // 비고 길이에 대한 범위 설정
-              stepSize: 1
-            }
-          }
-        }
-      }
-    });
+	var currentWeekStart = new Date(); // 현재 날짜
+	currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // 주의 첫날(일요일)
+
+	function formatDate(date) {
+	    return date.toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 변환
+	}
+
+	function updateWeekRange() {
+	    const weekEnd = new Date(currentWeekStart);
+	    weekEnd.setDate(currentWeekStart.getDate() + 6); // 주의 마지막 날(토요일)
+	    $('#weekRange').text(formatDate(currentWeekStart) + " ~ " + formatDate(weekEnd));
+	}
+	
+	function fetchWeeklyData(pageName) {
+	    const startDate = formatDate(currentWeekStart);
+	    const endDate = formatDate(new Date(currentWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000)); // 6일 후
+
+	    console.log("Received pageName in fetchWeeklyData:", pageName);
+
+	    $.ajax({
+	        type: 'GET',
+	        url: 'dailyList.ajax',
+	        data: {
+	            pageName: pageName,
+	            startDate: startDate,
+	            endDate: endDate
+	        },
+	        dataType: 'JSON',
+	        success: function (data) {
+	            console.log(data);
+
+	            // 테이블 업데이트
+	            var dailyExpenseTable = '';
+	            $.each(data.dailyExpenses, function (index, item) {
+	                dailyExpenseTable += '<tr>' +
+	                    '<td>' + item.ex_date + '</td>' +
+	                    '<td>' + item.ex_item + '</td>' +
+	                    '<td>' + item.description + '</td>' +
+	                    '<td>' + item.ex_amount.toLocaleString() + '원</td>' +
+	                    '<td>' + item.remark + '</td>' +
+	                    '</tr>';
+	            });
+	            $('#dailyList').html(dailyExpenseTable);
+
+	            // 데이터 그룹화
+	            function groupBy(array, key) {
+	                return array.reduce((result, currentValue) => {
+	                    (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
+	                    return result;
+	                }, {});
+	            }
+
+	            var groupedData = groupBy(data.dailyExpenses, 'ex_item'); // 종류별 데이터 그룹화
+	            var colorPalette = ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD'];
+
+	            var datasets = Object.keys(groupedData).map(function (item, index) {
+	                return {
+	                    label: item, // 종류 이름
+	                    data: groupedData[item].map(function (entry) { return entry.ex_amount; }),
+	                    borderColor: colorPalette[index % colorPalette.length], // 고정된 색상 배열에서 순환
+	                    borderWidth: 2,
+	                    tension: 0.4
+	                };
+	            });
+
+
+	            // 차트 관리: 기존 차트가 있으면 업데이트, 없으면 새로 생성
+	            var ctxDaily = document.getElementById('dailyChart').getContext('2d');
+	            if (dailyExpenseChart) {
+	                // 기존 차트 데이터 갱신
+	                dailyExpenseChart.data.labels = data.dailyExpenses.map(function (item) { return item.ex_date; });
+	                dailyExpenseChart.data.datasets = datasets;
+	                dailyExpenseChart.update();
+	            } else {
+	                // 새 차트 생성
+	                dailyExpenseChart = new Chart(ctxDaily, {
+	                    type: 'line',
+	                    data: {
+	                        labels: data.dailyExpenses.map(function (item) { return item.ex_date; }),
+	                        datasets: datasets
+	                    },
+	                    options: {
+	                        responsive: true,
+	                        maintainAspectRatio: false,
+	                        scales: {
+	                            x: {
+	                                title: {
+	                                    display: true,
+	                                    text: '날짜'
+	                                }
+	                            },
+	                            y: {
+	                                title: {
+	                                    display: true,
+	                                    text: '지출 금액 (원)'
+	                                },
+	                                ticks: {
+	                                    callback: function (value) {
+	                                        return value.toLocaleString() + '원'; // 금액을 원 단위로 표시
+	                                    }
+	                                }
+	                            }
+	                        }
+	                    }
+	                });
+	            }
+	        },
+	        error: function (e) {
+	            console.error("오류 발생:", e);
+	        }
+	    });
+	}
+
+	// 이전 주로 이동
+	$('#prevWeek').on('click', function (e) {
+	    e.preventDefault();
+	    currentWeekStart.setDate(currentWeekStart.getDate() - 7); // 이전 주로 이동
+	    updateWeekRange();
+	    fetchWeeklyData(pageName);
+	    console.log("전"+pageName);
+	    console.log("After moving to previous week:", currentWeekStart);
+	});
+
+	// 다음 주로 이동
+	$('#nextWeek').on('click', function (e) {
+	    e.preventDefault();
+	    currentWeekStart.setDate(currentWeekStart.getDate() + 7); // 다음 주로 이동
+	    updateWeekRange();
+	    fetchWeeklyData(pageName);
+	    console.log("g후"+pageName);
+	});
+
+	// 초기화
+	$(document).ready(function () {
+	    updateWeekRange();
+	    fetchWeeklyData(pageName);
+	});
+
+
 });
 </script>
 </html>

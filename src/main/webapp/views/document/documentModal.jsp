@@ -213,6 +213,10 @@ input.manager, input.today2, input.today3{
     padding: 0; /* 여백 제거 */
     font: inherit; /* 상속받은 글꼴 사용 */
 }
+select option{
+	background: white;
+}
+}
 </style>
 </head>
 <body>
@@ -583,6 +587,8 @@ function btnAction(actionType) {
 		        break;
 		        
 		    case '3':
+		    case '4':
+		    case '5':
 		    	if (actionType == '수정기안' || actionType == '기안') {
 		    		for (var i = 0; i < values.length; i++) {
 		    		    var value = values[i];

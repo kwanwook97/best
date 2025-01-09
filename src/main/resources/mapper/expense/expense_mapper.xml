@@ -4,9 +4,40 @@
 >
 <mapper namespace="com.best.expense.ExpenseDAO">
 
+	<!-- 지출 내역 -->
 	<insert id="addExpense" parameterType="map">
-		INSERT INTO expense(doc_idx, ex_date, ex_item, description, ex_amount, remark)
-			VALUES(#{doc_idx}, #{ex_date}, #{ex_item}, #{description}, #{ex_amount}, #{remark})
+		INSERT INTO expense(form_idx, doc_idx, ex_date, ex_item, description, ex_amount, remark)
+			VALUES(#{form_idx}, #{doc_idx}, #{ex_date}, #{ex_item}, #{description}, #{ex_amount}, #{remark})
 	</insert>
 
+	<!-- 월별 카테고리 지출 -->
+	<select id="categoryList" resultType="map">
+		SELECT ex_item AS category, SUM(ex_amount) AS amount
+		FROM expense
+	    <where>
+	        <if test="form_idx > 0">
+	            form_idx = #{form_idx}
+	        </if>
+	    </where>
+		GROUP BY ex_item
+	</select>
+	
+	<!-- 일별 지출 -->
+	<select id="dailyList" resultType="Map">
+	    SELECT 
+	        ex_date, 
+	        ex_item, 
+	        description, 
+	        ex_amount, 
+	        remark
+	    FROM 
+	        expense
+	    WHERE
+	        ex_date BETWEEN #{startDate} AND #{endDate}
+	        <if test="form_idx > 0">
+			    AND form_idx = #{form_idx}
+			</if>
+	    ORDER BY 
+        ex_date ASC
+	</select>
 </mapper>

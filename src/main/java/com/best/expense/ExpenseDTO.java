@@ -6,6 +6,7 @@ public class ExpenseDTO {
 
 	private int ex_idx;
 	private int doc_idx;
+	private int form_idx;	
 	private LocalDate ex_date;
 	private String ex_item;
 	private String description;
@@ -23,6 +24,12 @@ public class ExpenseDTO {
 	}
 	public void setDoc_idx(int doc_idx) {
 		this.doc_idx = doc_idx;
+	}
+	public int getForm_idx() {
+		return form_idx;
+	}
+	public void setForm_idx(int form_idx) {
+		this.form_idx = form_idx;
 	}
 	public LocalDate getEx_date() {
 		return ex_date;
@@ -54,5 +61,4 @@ public class ExpenseDTO {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	
 }

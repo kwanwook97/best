@@ -21,7 +21,7 @@ public class ExpenseService {
 	
 	// 지출 내역
 	public void addExpense(List<String> one, List<String> two, List<String> three, List<String> four,
-			List<String> five, String doc_idx) {
+			List<String> five, String doc_idx, String form_idx) {
 	
         List<List<String>> expenseList = Arrays.asList(one, two, three, four, five);
 
@@ -62,9 +62,11 @@ public class ExpenseService {
             String description = exList.get(2).replaceAll("[\\[\\]\"]", "");
             String exAmountStr = exList.get(3).replaceAll("[^\\d]", "");
             long ex_amount = Long.parseLong(exAmountStr);
-            String remark = exList.size() > 4 ? exList.get(4) : null;
-            remark = remark.replaceAll("[\\[\\]\"]", "");
+            String remark = exList.size() > 4 ? exList.get(4).replaceAll("[\\[\\]\"]", "") : null;
+            
             Map<String, Object> params = new HashMap<String, Object>();
+            
+            params.put("form_idx", form_idx);
             params.put("doc_idx", doc_idx);
             params.put("ex_date", ex_date);
             params.put("ex_item", ex_item);
@@ -74,6 +76,48 @@ public class ExpenseService {
 
             expenseDao.addExpense(params);
         }
+	}
+
+	
+	// 월별 카테고리 지출
+	public List<Map<String, Object>> categoryList(String pageName) {
+		
+		int form_idx = 0;
+		
+		if(pageName.equals("일반")) {
+			form_idx = 3;
+			return expenseDao.categoryList(form_idx);
+		}else if(pageName.equals("버스관리")) {
+			form_idx = 4;
+			return expenseDao.categoryList(form_idx);
+		}else if(pageName.equals("급여")) {
+			form_idx = 5;
+			return expenseDao.categoryList(form_idx);
+		}else {
+			return expenseDao.categoryList(form_idx);
+		}
+		
+	}
+
+
+	// 일별 지출
+	public List<ExpenseDTO> dailyList( String pageName, String startDate, String endDate) {
+		
+		int form_idx = 0;
+		
+		if(pageName.equals("일반")) {
+			form_idx = 3;
+			return expenseDao.dailyList(form_idx, startDate, endDate);
+		}else if(pageName.equals("버스관리")) {
+			form_idx = 4;
+			return expenseDao.dailyList(form_idx, startDate, endDate);
+		}else if(pageName.equals("급여")) {
+			form_idx = 5;
+			return expenseDao.dailyList(form_idx, startDate, endDate);
+		}else {
+			return expenseDao.dailyList(form_idx, startDate, endDate);
+		}
+	
 	}
 	
 }

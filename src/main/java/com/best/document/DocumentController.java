@@ -349,7 +349,7 @@ public class DocumentController {
 	                logger.info("three :{}",three);
 	                logger.info("four :{}",four);
 	                logger.info("five :{}",five);
-	                expenseService.addExpense(one, two, three, four, five, doc_idx);
+	                expenseService.addExpense(one, two, three, four, five, doc_idx, form_idx);
 	            }
 	        } else if ("제출".equals(actionType)) {
 	            documentService.rejectStatus(doc_idx, emp_idx, remark, doc_content);
