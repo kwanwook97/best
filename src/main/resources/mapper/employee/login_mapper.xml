@@ -68,4 +68,17 @@
         WHERE id = #{id}
     </select>
 	
+	
+	
+	<select id="findByIdAndEmail" parameterType="map" resultType="com.best.emp.EmployeeDTO">
+    SELECT emp_idx, email, password
+    FROM employee
+    WHERE emp_idx = #{empIdx} AND email = #{email}
+</select>
+	<update id="chagePassword">
+    UPDATE employee 
+    SET password = #{newPassword} 
+    WHERE emp_idx = #{empIdx};
+</update>
+
 </mapper>  

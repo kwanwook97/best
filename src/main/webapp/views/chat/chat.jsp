@@ -5,7 +5,8 @@
   <meta charset="utf-8"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>var loginId = ${sessionScope.loginId};</script>
     <script src="resources/js/chat/chat.js"></script>
   <link href="resources/css/chat/chat.css" rel="stylesheet"/>
@@ -52,9 +53,13 @@
 					
 			      </div>
 			      <div class="message-input">
-			        <input type="text" id="messageInput" placeholder="메시지 입력">
-			        <button id="sendButton">전송</button>
-			      </div>
+    				<button id="emojiButton" class="emoji-button">
+        				<i class="fa fa-smile-o"></i>
+    				</button>
+    				<input type="text" id="messageInput" placeholder="메시지 입력">
+    				<button id="sendButton">전송</button>
+				</div>
+
 			    </div>
 			
 			
@@ -164,7 +169,23 @@
 </div>
 
 
-<script>
+<script type="module">
+import { EmojiButton } from 'https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.js';
+
+const emojiButton = document.querySelector('#emojiButton');
+const picker = new EmojiButton({
+  position: 'bottom-start' // 'top-end', 'bottom-start', 'bottom-end' 등으로 바꿔가며 테스트
+});
+
+picker.on('emoji', (emoji) => {
+  document.querySelector('#messageInput').value += emoji.emoji;
+});
+
+emojiButton.addEventListener('click', () => {
+  picker.togglePicker(emojiButton);
+  console.log('isPickerVisible:', picker.isPickerVisible());
+});
 
 </script>
+
 </html>

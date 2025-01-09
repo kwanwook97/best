@@ -24,14 +24,17 @@
 
 /* 날짜 네비게이션 */
 .date-navigation {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin: 20px 0;
-	font-size: 24px;
-	font-weight: bold;
-	text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    margin: 20px 0;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    width: 120%;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-left: -10px;
 }
 
 .date-content {
@@ -206,7 +209,8 @@ select option {
 }
 
 .tm2 {
-	margin-top: 2%;
+	margin-left: -1%;
+	margin-top: -2%;
 	width: 21%;
 	display: flex;
 	flex-direction: row;

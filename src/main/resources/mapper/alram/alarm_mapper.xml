@@ -102,5 +102,21 @@
         FROM alarm
         WHERE emp_idx = #{empIdx} AND flag = 0
     </select>
+    
+<select id="getUpcomingBorrowEvents" resultType="map">
+    SELECT 
+        b.borrow_idx AS borrowId,
+        b.end_datetime AS endTime,
+        e.emp_idx AS employeeId,
+        CONCAT(m.material_name, ' ', b.quantity, '개') AS subject
+    FROM borrow b
+    JOIN employee e ON b.emp_idx = e.emp_idx
+    JOIN material m ON b.material_idx = m.material_idx
+    WHERE b.flag = 0
+    AND TIMESTAMPDIFF(MINUTE, NOW(), b.end_datetime) = -10 
+    AND SECOND(NOW()) BETWEEN 0 AND 2 
+</select>
+
+    
 
 </mapper>  

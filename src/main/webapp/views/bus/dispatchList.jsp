@@ -96,7 +96,8 @@ tbody tr {
 }
 
 .tm2 {
-	margin-top: 2%;
+	margin-left: -1%;
+	margin-top: -2%;
 	width: 21%;
 	display: flex;
 	flex-direction: row;
@@ -303,7 +304,8 @@ tbody i {
 </body>
 
 <script>
-const loggedInEmpIdx = 44;
+var loginId = ${sessionScope.loginId};
+var emp_idx = parseInt(loginId);
 
 window.onload = function () {
     console.log("Window loaded!");
@@ -472,7 +474,7 @@ $(document).on("ajaxComplete", function () {
 });
 
 $(".startBtn").on("click", function () {
-    const empIdx = loggedInEmpIdx;
+    const empIdx = emp_idx;
     const date = $(".current-date").text();
 
     if (!empIdx || !date) {
@@ -503,7 +505,7 @@ $(".startBtn").on("click", function () {
 });
 
 $(".stopBtn").on("click", function () {
-    const empIdx = loggedInEmpIdx; // emp_idx 가져오기
+    const empIdx = emp_idx; // emp_idx 가져오기
     const date = $(".current-date").text(); // 현재 날짜 가져오기
 
     if (!empIdx || !date) {

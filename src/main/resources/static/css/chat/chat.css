@@ -776,4 +776,6 @@ search {
 #noticeContent::placeholder {
     color: #8B6AA7 !important;
 }
-
+.fa-circle{
+	color: #1DD20C;
+}

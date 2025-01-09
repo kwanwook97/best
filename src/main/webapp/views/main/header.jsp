@@ -311,6 +311,13 @@ var loginId = ${sessionScope.loginId};
             </ul>
          </li>
 
+			<li>
+				<a href="orgChart.go"> 
+					<i class="bi bi-diagram-3-fill"></i>
+					<span>조직도</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
 
          <li class="dropD">
             <a href="javaScript:void(0);"> 

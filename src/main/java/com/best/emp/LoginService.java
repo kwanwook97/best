@@ -3,8 +3,11 @@ package com.best.emp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginService {
 
+	private JavaMailSender mailSender;
     private final LoginDAO loginDAO;
     private final PasswordEncoder passwordEncoder;
 
@@ -75,8 +79,6 @@ public class LoginService {
         
         return false;
 	}
-    
-}
 
 
     
@@ -88,32 +90,54 @@ public class LoginService {
 //	// 2. 받아온 pw(plain) 와 Db 에 저장된 pw(encode 가 같은지 비교
 //	return encoder.matches(pw, pass);
 //}
-//public void sendTemporaryPassword(String email, String temporaryPassword) {
-//    SimpleMailMessage message = new SimpleMailMessage();
-//    message.setTo(email);
-//    message.setSubject("임시 비밀번호 안내");
-//    message.setText("임시 비밀번호는 다음과 같습니다: " + temporaryPassword + "\n로그인 후 반드시 비밀번호를 변경해주세요.");
-//    mailSender.send(message);
-//}
-//public String resetPassword(String id, String email) {
-//    // 1. 임시 비밀번호 생성
-//    String temporaryPassword = UUID.randomUUID().toString().substring(0, 8);
-//
-//    // 2. 암호화된 비밀번호 저장
-//    String encryptedPassword = encoder.encode(temporaryPassword);
-//    Map<String, String> params = new HashMap<>();
-//    params.put("id", id);
-//    params.put("pw", encryptedPassword);
-//    loginDAO.updatePassword(params);
-//
-//    // 3. 이메일로 임시 비밀번호 전송
-//    sendTemporaryPassword(email, temporaryPassword);
-//
-//    return "임시 비밀번호가 이메일로 전송되었습니다.";
-//}
+public void sendTemporaryPassword(String email, String temporaryPassword) {
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setTo(email);
+    message.setSubject("임시 비밀번호 안내");
+    message.setText("임시 비밀번호는 다음과 같습니다: " + temporaryPassword + "\n로그인 후 반드시 비밀번호를 변경해주세요.");
+    mailSender.send(message);
+}
+public String resetPassword(String id, String email) {
+    // 1. 임시 비밀번호 생성
+    String temporaryPassword = UUID.randomUUID().toString().substring(0, 8);
+
+    // 2. 암호화된 비밀번호 저장
+    String encryptedPassword = passwordEncoder.encode(temporaryPassword);
+    Map<String, String> params = new HashMap<>();
+    params.put("id", id);
+    params.put("pw", encryptedPassword);
+    loginDAO.updatePassword(params);
+
+    // 3. 이메일로 임시 비밀번호 전송
+    sendTemporaryPassword(email, temporaryPassword);
+
+    return "임시 비밀번호가 이메일로 전송되었습니다.";
+}
+
+public boolean validateUser(String id, String email, String currentPassword) {
+	int empIdx = Integer.parseInt(id);
+    EmployeeDTO user = loginDAO.findByIdAndEmail(empIdx, email);
+    if (user != null && user.getPassword().equals(currentPassword)) {
+        return true;
+    }
+    return false;
+}
+
+public boolean changePassword(String id, String newPassword) {
+    int empIdx = Integer.parseInt(id);
+
+    // 비밀번호 암호화
+    String encodedPassword = passwordEncoder.encode(newPassword);
+
+    // 암호화된 비밀번호를 데이터베이스에 업데이트
+    int result = loginDAO.chagePassword(empIdx, encodedPassword);
+
+    return result > 0; // 성공 여부 반환
+}
 
 
-    
+
+}
     
     
     

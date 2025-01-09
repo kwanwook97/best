@@ -454,13 +454,16 @@
  	<div class="body">
 	    <div class="naviPath">
 		    <c:if test="${ empty empIdx}">
-				<span class="lPurple">근태관리</span>	
-		     	<span class="cPurple">&gt; 출퇴근 기록</span>
+				<span class="lPurple">근태관리</span>
+				<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>	
+		     	<span class="cPurple">출퇴근 기록</span>
 		    </c:if>
 		    <c:if test="${not empty empIdx}">
 		      <span class="lPurple">근태관리</span>
-		      <span class="cPurple">&gt; 사원목록</span>
-		      <span class="cPurple">&gt; ${name}님</span>
+		      <i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+		      <span class="cPurple" style="color:#8B6AA7;">사원목록</span>
+		      <i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+		      <span class="cPurple">${name}님</span>
 		    </c:if>
 	    </div>
 			<div class="contentTop">

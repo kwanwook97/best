@@ -9,16 +9,16 @@
   <meta name="author" content=""/>
   <title>BEST</title>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
   <!-- Bootstrap core CSS-->
   <link href="resources/css/bootstrap.min.css" rel="stylesheet"/>
   <!-- Custom Style-->
   <link href="resources/css/app-style.css" rel="stylesheet"/>
+  <script src="resources/js/bootstrap.min.js"></script>
   <style>
   .bg-th111{
-    		background-image: url('img/loginBus5.jpg');
-    		background-size: cover; /* 이미지가 화면 전체를 덮도록 설정 */
-   	 		background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+    		background-image: url('resources/img/bestbus.webp');
+    		 background-size: cover; /* 이미지가 화면 전체를 덮도록 설정 */
+   	 		/*background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */ */
     		background-position: center; 
     	}
     .modal-content{
@@ -27,8 +27,19 @@
     	top: 244px;
     	color: #FFFBF2;
     	border-radius: 10px;
+    	position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, .2);
+    outline: 0;
     }
-    #resetPasswordForm button{
+    .modal-header{
+    	padding: 1rem;
+    }
+    #resetPasswordForm button, #changePasswordForm button{
     	background-color: #E9396B;
     	border-color: #30005A;
     }
@@ -41,6 +52,9 @@
     .loginType:hover{
     	color: #E9396B;
     }
+    .resetPW{
+		color: #FFFBF2 !important;
+	}
   </style>
 </head>
 
@@ -104,13 +118,12 @@
 			<div class="form-row">
 			 <div class="form-group col-6">
 			   <div class="icheck-material-white">
-                <input type="checkbox" id="user-checkbox" checked="" />
-                <label for="user-checkbox">Remember me</label>
                 <a class="loginType" href="adminLogin.go">Admin Login</a>
 			  </div>
 			 </div>
 			 <div class="form-group col-6 text-right">
-			  <a href="#" data-toggle="modal" data-target="#resetPasswordModal">Reset Password</a>
+			  <a href="#" class="resetPW" data-toggle="modal" data-target="#resetPasswordModal">Reset Password</a>
+			  <a href="#" class="resetPW" data-toggle="modal" data-target="#changePasswordModal">Change Password</a>
 			 </div>
 			</div>
 			 <button type="submit" class="btn btn-light btn-block">Sign In</button>
@@ -120,7 +133,7 @@
 		   </div>
 		  </div>
 	     </div>
-    <div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="resetPasswordModalLabel" aria-hidden="true" data-backdrop="false">
+<div class="modal fade" id="resetPasswordModal" tabindex="0" role="dialog" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -145,22 +158,106 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="changePasswordModal" tabindex="0" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="changePasswordForm" action="chagnePw.do" method="post">
+          <div class="form-group">
+            <label for="resetId">ID</label>
+            <input type="text" class="form-control" id="changeId" name="id" placeholder="Enter User ID" required>
+          </div>
+          <div class="form-group">
+            <label for="resetEmail">Email Address</label>
+            <input type="email" class="form-control" id="changeEmail" name="email" placeholder="Enter Email Address" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="changePassword" name="pw" placeholder="Enter Password" required>
+          </div>
+          <div class="form-group">
+            <label for="changPw">Change Password</label>
+            <input type="password" class="form-control" id="changPw" name="changPw" placeholder="Enter Change Password" required>
+          </div>
+          <div class="form-group">
+            <label for="resetEmail">Change Password Check</label>
+            <input type="password" class="form-control" id="changPwcheck" name="pwCheck" placeholder="Enter Change Password Check" required>
+          	<div id="pwCheckMessage" class="text-center mt-2"></div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
      <!--Start Back To Top Button-->
     <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
     <!--End Back To Top Button-->
 
 	</div><!--wrapper-->
-	
-  <!-- Bootstrap core JavaScript-->
-<!--   <script src="recources/js/jquery.min.js"></script>
-  <script src="recources/js/popper.min.js"></script> -->
-  <script src="resources/js/bootstrap.min.js"></script>
-	
-  <!-- sidebar-menu js -->
-<!--   <script src="recources/js/sidebar-menu.js"></script>
-   -->
-  <!-- Custom scripts -->
-<!--   <script src="recources/js/app-script.js"></script> -->
+
   
 </body>
+<script>
+//문서 전체에서 클릭 이벤트 감지
+$(document).on('click', function (event) {
+    // 클릭한 요소가 모달 내부(.modal-content) 또는 모달 자체가 아닌 경우만 닫기
+    if (!$(event.target).closest('.modal-content').length && !$(event.target).is('#resetPasswordModal')) {
+        if ($('#resetPasswordModal').is(':visible')) {
+            $('#resetPasswordModal').modal('hide'); // 모달 닫기
+        }
+    }
+});
+
+
+$(document).ready(function () {
+    $('#changePasswordForm').on('submit', function (event) {
+        const id = $('#changeId').val(); // 변경된 ID
+        const email = $('#changeEmail').val(); // 변경된 Email
+        const currentPw = $('#changePassword').val(); // 현재 비밀번호
+        const newPassword = $('#changPw').val(); // 새 비밀번호
+        const passwordCheck = $('#changPwcheck').val(); // 확인용 비밀번호
+
+        // 비밀번호 확인
+        if (newPassword !== passwordCheck) {
+            alert('Change Password와 Change Password Check가 일치하지 않습니다.');
+            event.preventDefault(); // 폼 제출 막기
+            return false;
+        }
+
+        // 필수 값 확인
+        if (!id || !email || !currentPw) {
+            alert('ID, Email 또는 현재 비밀번호를 입력해주세요.');
+            event.preventDefault(); // 폼 제출 막기
+            return false;
+        }
+
+        // 검증 통과 -> 서버로 제출
+        return true;
+    });
+});
+
+$(document).ready(function () {
+    // 비밀번호 확인 실시간 처리
+    $('#changPwcheck').on('keyup', function () {
+        const password = $('#changPw').val(); // 변경할 비밀번호
+        const passwordCheck = $(this).val(); // 확인용 비밀번호
+
+        const messageDiv = $('#pwCheckMessage'); // 메시지 표시 영역
+
+        if (password === passwordCheck) {
+            messageDiv.text('비밀번호가 일치합니다.').css('color', '#FFFBF2');
+        } else {
+            messageDiv.text('비밀번호가 일치하지 않습니다.').css('color', '#E9396B');
+        }
+    });
+});
+</script>
 </html>

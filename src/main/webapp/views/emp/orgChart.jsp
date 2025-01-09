@@ -42,13 +42,15 @@
 
 .maintext {
 	display: flex;
-	margin-left: 0.625rem;
+	margin-left: -0.375rem;
 }
 
 .document {
-	color: var(--secondary-color);
+	color: #30005A;
 	margin-right: 1.875rem;
-	margin-bottom: 1.75rem;
+	margin-bottom: 0.75rem;
+	font-size: 32px;
+	font-weight: bold;
 }
 
 .mainbox {
@@ -489,7 +491,6 @@
 		<div class="textbox">
 			<div class="maintext">
 				<h3 class="document">조직도</h3>
-				<h3>>&nbsp;&nbsp;조직도</h3>
 			</div>
 			<div style="position: relative;">
 		        <input type="text" class="search-bar" placeholder="사원명을 검색하세요.">
