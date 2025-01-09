@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -298,8 +299,147 @@ public class RoleController {
         }
         return response;
     }
+    
+    // 모든 직책 목록 가져오기
+    @GetMapping("/getAllPositions.ajax")
+    @ResponseBody
+    public Map<String, Object> getAllPositions() {
+    	Map<String, Object> response = new HashMap<>();
+    	try {
+    		List<Map<String, Object>> positions = roleService.getAllPositions(); // 직책 목록 가져오기
+    		response.put("success", true);
+    		response.put("positions", positions);
+    	} catch (Exception e) {
+    		response.put("success", false);
+    		response.put("message", e.getMessage());
+    	}
+    	return response;
+    }
 
     
+    // 직급관리 페이지로 이동
+    @RequestMapping(value = "/rankManage.go")
+    public String rankManage(HttpSession session) {
+    	
+    	return "main/rankManage";
+    }
     
+    // 부서관리 페이지로 이동
+    @RequestMapping(value = "/departManage.go")
+    public String departManage(HttpSession session) {
+    	
+    	return "main/departManage";
+    }
     
+    // 직급 추가
+    @PostMapping("/addRank.ajax")
+    @ResponseBody
+    public Map<String, Object> addRank(@RequestParam String rankName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.addRank(rankName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+    
+    // 직급 변경
+    @PostMapping("/updateRank.ajax")
+    @ResponseBody
+    public Map<String, Object> updateRank(@RequestParam int rankIdx, @RequestParam String rankName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.updateRank(rankIdx, rankName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    // 직급 삭제
+    @PostMapping("/deleteRank.ajax")
+    @ResponseBody
+    public Map<String, Object> deleteRank(@RequestParam int rankIdx) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.deleteRank(rankIdx);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+    
+    // 부서 추가
+    @PostMapping("/addDepartment.ajax")
+    @ResponseBody
+    public Map<String, Object> addDepartment(@RequestParam String departName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.addDepartment(departName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    // 부서 수정
+    @PostMapping("/updateDepartment.ajax")
+    @ResponseBody
+    public Map<String, Object> updateDepartment(@RequestParam int departIdx, @RequestParam String departName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.updateDepartment(departIdx, departName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    // 부서 삭제
+    @PostMapping("/deleteDepartment.ajax")
+    @ResponseBody
+    public Map<String, Object> deleteDepartment(@RequestParam int departIdx) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.deleteDepartment(departIdx);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    // 직급체계 변경
+    @PostMapping("/updateRankPosition.ajax")
+    @ResponseBody
+    public Map<String, Object> updateRankPosition(@RequestBody Map<String, Object> requestData) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int rankIdx = Integer.parseInt(requestData.get("rankIdx").toString()); // String을 Integer로 변환
+            int positionIdx = Integer.parseInt(requestData.get("positionIdx").toString());
+            int result = roleService.updateRankPosition(rankIdx, positionIdx);
+
+            response.put("success", result > 0);
+            if (result <= 0) {
+                response.put("message", "데이터베이스 업데이트 실패");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
 }

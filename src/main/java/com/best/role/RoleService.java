@@ -104,6 +104,43 @@ public class RoleService {
         return roleDao.getAllRanks();
     }
 
+    // 직급 추가
+    public int addRank(String rankName) {
+        return roleDao.addRank(rankName);
+    }
 
+    // 직급 변경
+    public int updateRank(int rankIdx, String rankName) {
+        return roleDao.updateRank(rankIdx, rankName);
+    }
 
+    // 직급 삭제
+    public int deleteRank(int rankIdx) {
+        return roleDao.deleteRank(rankIdx);
+    }
+
+    // 부서 추가
+    public int addDepartment(String departName) {
+        return roleDao.addDepartment(departName);
+    }
+
+    // 부서 수정
+    public int updateDepartment(int departIdx, String departName) {
+        return roleDao.updateDepartment(departIdx, departName);
+    }
+
+    // 부서 삭제
+    public int deleteDepartment(int departIdx) {
+        return roleDao.deleteDepartment(departIdx);
+    }
+
+    // 모든 직급체계 목록 가져오기
+	public List<Map<String, Object>> getAllPositions() {
+		return roleDao.getAllPositions();
+	}
+	
+	// 직급체계 변경
+	public int updateRankPosition(int rankIdx, int positionIdx) {
+        return roleDao.updateRankPosition(rankIdx, positionIdx);
+    }
 }

@@ -378,7 +378,7 @@ autoComplete div:hover {
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
   <jsp:include page="../modal/findAdd.jsp"></jsp:include>
-  <c:set var="emp_idx" value="${param.emp_idx}" />
+  <c:set var="empIdx" value="${sessionScope.loginId}" />
   <div class="dashboard-body">
     <div class="maintext">
       <h3 class="mail">메일함</h3>
@@ -486,6 +486,8 @@ autoComplete div:hover {
 	                    <i class="fas fa-paper-plane"></i> 메일전송
 	                </button>
 	            </td>
+	            <!-- 0: 발송 1: 임시저장 -->
+				<input type="hidden" name="status"/>
 	        </tr>
 	    </table>
 	</form>
@@ -496,7 +498,7 @@ autoComplete div:hover {
 <script>
 /* 전역 변수 */
 var receiverList = []; // 수신자 및 참조자 데이터를 담을 배열
-var emp_idx = 1; // 작성자 사번
+var emp_idx = "${empIdx}"; // 작성자 사번
 var filesArr = []; // 첨부파일 데이터를 담을 배열
 var mailIdx = '${param.idx}'; // 메일 인덱스
 
@@ -532,7 +534,7 @@ function loadForwardData() {
     $.ajax({
         type: "POST",
         url: "mailDetail.ajax",
-        data: { idx: mailIdx },
+        data: { 'idx': mailIdx },
         dataType: "json",
         success: function (response) {
             var senderDto = response.senderDto; // 발신자 정보

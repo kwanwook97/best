@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,7 @@ public class EmployeeController {
 	public String empDetail(String emp_idx, Model model) {
 		
 		model.addAttribute("detail", empService.empDetail(emp_idx));
-		
+		model.addAttribute("attendance",empService.empOverTime(emp_idx));
 		
 		return "empManage/empDetail";
 	}
@@ -100,6 +102,7 @@ public class EmployeeController {
 	
 	// 파일 다운로드
 	@GetMapping(value = "/fileDownload.do")
+	@ResponseBody
 	public ResponseEntity<Resource> fileDownload(String file_name) {
 		
 		return empService.fileDownload(file_name);
@@ -218,7 +221,26 @@ public class EmployeeController {
 	}
 	
 	
-	
+	// 프로필사진 수정
+	@PostMapping(value = "/profilePhotoUpload.do")
+	@ResponseBody
+	public Map<String, Object> profilePhotoUpload(
+	        @RequestParam("emp_idx") String empIdx,
+	        @RequestParam("photoFile") MultipartFile photoFile) {
+
+	    // 서비스 호출
+	    int row = empService.updateProfilePhoto(empIdx, photoFile);
+
+	    // 응답 데이터 생성
+	    Map<String, Object> response = new HashMap<>();
+	    if (row > 0) {
+	        response.put("success", "성공");
+	    } else {
+	        response.put("success", "실패");
+	    }
+
+	    return response;
+	}
 	
 	
 	

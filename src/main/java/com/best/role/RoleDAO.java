@@ -54,5 +54,27 @@ public interface RoleDAO {
     // 모든 직급 목록 가져오기
     List<Map<String, Object>> getAllRanks();
     
+    // 직급 추가
+    int addRank(String rankName);
+
+    // 직급 변경
+    int updateRank(int rankIdx, String rankName);
+
+    // 직급 삭제
+    int deleteRank(int rankIdx);
     
+    // 부서 추가
+    int addDepartment(String departName);
+
+    // 부서 수정
+    int updateDepartment(int departIdx, String departName);
+
+    // 부서 삭제
+    int deleteDepartment(int departIdx);
+    
+    // 모든 직책 목록 가져오기
+	List<Map<String, Object>> getAllPositions();
+	
+	// 직책 변경
+    int updateRankPosition(int rankIdx, int positionIdx);
 }

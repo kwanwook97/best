@@ -378,7 +378,7 @@ autoComplete div:hover {
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
   <jsp:include page="../modal/findAdd.jsp"></jsp:include>
-  <c:set var="emp_idx" value="${param.emp_idx}" />
+  <c:set var="empIdx" value="${sessionScope.loginId}" />
   <div class="dashboard-body">
     <div class="maintext">
       <h3 class="mail">메일함</h3>
@@ -491,6 +491,8 @@ autoComplete div:hover {
 	                    <i class="fas fa-paper-plane"></i> 메일전송
 	                </button>
 	            </td>
+	            <!-- 0: 발송 1: 임시저장 -->
+				<input type="hidden" name="status"/>
 	        </tr>
 	    </table>
 	</form>
@@ -502,7 +504,7 @@ autoComplete div:hover {
 /* 전역변수 */
 var receiverList = []; // 수신자 데이터 저장용 배열
 
-var emp_idx = 1; // 작성자 사번
+var emp_idx = "${empIdx}"; // 작성자 사번
 var receiver_idx = []; // 수신자 또는 참조자의 사번
 
 var mailIdx = '${param.idx}';
@@ -861,22 +863,6 @@ function addReceiverOrReferHandler(input, listContainerId, type) {
         $(input).val("");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
