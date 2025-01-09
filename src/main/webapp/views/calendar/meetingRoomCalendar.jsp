@@ -57,7 +57,7 @@
       margin: 0 0 0 0;
     }
     #calendar-room {
-    	height: 94%;
+    	height: 100%;
     	width: 100%;
     /* 	max-height: 84%; */
     }
@@ -227,9 +227,9 @@
 .event-box {
     width: 100%;
     padding: 10px;
-    border: 1px solid #6C0F6C;
+    border: 1px solid #30005A;
     box-sizing: border-box;
-    background-color: #6C0F6C;
+    background-color: #30005A;
     border-radius: 10px;
     text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
     overflow: hidden; /* 넘치는 부분 숨김 */
@@ -245,12 +245,8 @@
 	width: 100%;
 }
 .fc .fc-list-event-dot {
-	border:calc(var(--fc-list-event-dot-width)/2) solid #6C0F6C;
+	border:calc(var(--fc-list-event-dot-width)/2) solid #30005A;
 }
-.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active {
-	background-color: #8B6AA7;
-}
-
 /* 회의실 예약 현황  */
         .table-container {
             border: 2px solid #30005A;
@@ -381,14 +377,6 @@
 #room-capacity {
 	display:contents;
 }
-.fc .fc-toolbar.fc-header-toolbar button {
-	background-color: #30005A;
-	color: #FFF5E2;
-}
-.fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
-	background-color: #30005A;
-	color: #FFF5E2;
-}
 .reserveBtn {
 	width: 100px;
 	color: white;
@@ -429,6 +417,23 @@
 .fc-daygrid-day-frame {
 	min-height: 104px !important;
 }
+
+.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr button {
+	background-color: #00000000 !important; 
+ 	color: #30005A !important; 
+ 	border: 0px !important;
+ 	border-radius: 10px !important;
+}
+.fc-scroller::-webkit-scrollbar {
+    display: none !important;
+}
+[role="presentation"] {
+	width: 100% !important;
+}
+.fc-daygrid-body.fc-daygrid-body-unbalanced {
+	width: 100% !important;
+}
+
 
 
   </style>
@@ -915,7 +920,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                         '.fc-timegrid-col[data-date="' + formattedDate + '"]'
                     );
                     timeSlots.forEach(slot => {
-                        slot.style.setProperty('background-color', '#FFEBEE', 'important');
+                        slot.style.setProperty('background-color', '#FFEBEE00', 'important');
                     });
                 }
                 return;
@@ -928,7 +933,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                     if (dayNumberElement) {
                         dayNumberElement.style.setProperty('color', '#D32F2F', 'important');
                     }
-                    info.el.style.setProperty('background-color', '#FFEBEE', 'important');
+                    info.el.style.setProperty('background-color', '#FFEBEE00', 'important');
                 }
             }
         }

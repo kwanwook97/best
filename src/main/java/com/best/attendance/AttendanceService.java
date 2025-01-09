@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,8 +186,25 @@ public class AttendanceService {
 		return map;
 	}
 
-	public Map<String, Object> checkButton(Map<String, Object> params) {
-		Map<String, Object> map = attendanceDAO.checkButton(params);
+	public Map<String, Object> checkButton(Map<String, Object> params, HttpServletRequest request) {
+		String empIp = attendanceDAO.getEmpIp(params);
+	    String clientIp = request.getHeader("X-Forwarded-For");
+		logger.info("clientIp 첫번쨰 인자:{}"+clientIp);
+	    if (clientIp != null && !clientIp.isEmpty() && !"unknown".equalsIgnoreCase(clientIp)) {
+	        clientIp = clientIp.split(",")[0];
+	    } else {
+	        clientIp = request.getHeader("X-Real-IP");
+	    }
+	    if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+	        clientIp = request.getRemoteAddr();
+	    }
+	    if ("0:0:0:0:0:0:0:1".equals(clientIp)) {
+	        clientIp = "127.0.0.1";
+	    }
+		logger.info("clientIp :{}"+clientIp);
+		
+	    Map<String, Object> response = attendanceDAO.checkButton(params);
+
 			
 //		int s = (int) map.get("startTime");
 //		int a = (int) map.get("endTime");
@@ -193,15 +212,23 @@ public class AttendanceService {
 //		logger.info("시작:{}",map.get("startTime"));
 //		logger.info("끝:{}",map.get("endTime"));
 //		logger.info("맵:{}",map);
-	    if (map == null || map.isEmpty()) {
-	    	map = new HashMap<>(); // 빈 Map을 생성
-	    	map.put("msg", "출근 기록이 없습니다.");
-	    	map.put("startTime", 0);
-	    	map.put("endTime", 0);
+	    if (response == null || response.isEmpty()) {
+	    	response = new HashMap<>();
+			if (!clientIp.equals(empIp)) {
+				response.put("ipMsg", "불일치");
+			}
+	    	response.put("msg", "출근 기록이 없습니다.");
+	    	response.put("startTime", 0);
+	    	response.put("endTime", 0);
+	    }else {
+			if (!clientIp.equals(empIp)) {
+				response.put("ipMsg", "불일치");
+			}
+	    	return response;
 	    }
 		
 		
-		return map;
+		return response;
 	}
 
 	public Map<String, Object> updateEndTime(Map<String, Object> params) {

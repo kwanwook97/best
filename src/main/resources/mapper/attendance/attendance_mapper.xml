@@ -156,6 +156,10 @@
 	        ah.attend_update_idx DESC
 	</select>
 	
+	<select id="getEmpIp" parameterType="map">
+		SELECT ip FROM employee WHERE emp_idx = #{loginId}
+	</select>
+	
 	
 	
 </mapper>  

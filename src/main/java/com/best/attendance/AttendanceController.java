@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +62,10 @@ public class AttendanceController {
 	
 	@PostMapping(value="/checkButton.ajax")
 	@ResponseBody
-	public Map<String, Object> checkButton (@RequestBody Map<String, Object> params){
+	public Map<String, Object> checkButton (@RequestBody Map<String, Object> params, HttpServletRequest request){
 		logger.info("params:{}",params);
-		return attendanceService.checkButton(params);
+		
+		return attendanceService.checkButton(params,request);
 	}
 	
 	// 퇴근 버튼 로직

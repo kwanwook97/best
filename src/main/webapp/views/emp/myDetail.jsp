@@ -71,6 +71,7 @@
   display: grid;
   grid-template-rows: 5fr 5fr;
   gap: 20px;
+  overflow-y:hidden; 
 }
 
 .top-section {
@@ -143,7 +144,7 @@
   display: grid;
   grid-template-columns: 30% 41% 23%;
   gap: 3%;
-  height: 100%;
+  height: 627px;
 }
 
 .status-info,
@@ -154,6 +155,10 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow-y:auto;
+}
+.history-info::-webkit-scrollbar {
+    display: none;
 }
 
 .status-info h2,
@@ -358,6 +363,29 @@ form{
   color: black;
   text-decoration: none;
 }
+.infoTitle {
+	background-color: #8B6AA700;
+	color: #30005A;
+	font-size: 24px !important;
+	font-weight: 700 !important;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
+.infoTitle-th {
+	width: 17%;
+	height: 100%;
+}
+
+
+
+.infoTbody-tr {
+    height: 50px; /* 원하는 높이로 설정 */
+    line-height: 50px; /* 텍스트의 세로 정렬을 맞추기 위해 line-height 추가 */
+}
+
+/* .infoTbody-tr td {
+    padding: 10px; /* 내부 여백 추가로 높이 조정 */
+} */
 
   </style>
 </head>
@@ -490,7 +518,7 @@ form{
             </tr>
             <tr>
               <th>이메일</th>
-              <td>${detail.email}<div class="btn_area"><button class="normalBtn" id="email">변경하기</button></div></td>
+              <td>${detail.email}<div class="btn_area"><!-- <button class="normalBtn" id="email">변경하기</button> --></div></td>
               <th>전화번호</th>
               <td>${detail.phone}<div class="btn_area"><button class="normalBtn" id="phone">변경하기</button></div></td>
             </tr>
@@ -549,11 +577,30 @@ form{
             <tr><th>이번 달 연장근로 시간</th><td>${attendance.totalOverTime} &nbsp;시간</td></tr>
           </table>
         </div>
+        
         <div class="history-info">
-          <h2>인사 변경 내역</h2>
+          <h2>변경 내역</h2>
           <table>
-            <tr><th>부서</th><th>직급</th><th>근무 시작일</th><th>근무 종료일</th><th>연봉</th></tr>
-            <c:set var="maxRows" value="6" /> <!-- 최대 행 개수 설정 -->
+		  <thead>
+            <tr class="infoTitle-tr"><th class="infoTitle-th">
+            	<select class="infoTitle">
+					<option>전체</option>
+					<option>부서</option>
+					<option>직급</option>
+					<option>연봉</option>
+					<option>계좌번호</option>
+					<option>전화번호</option>
+					<option>핸드폰번호</option>
+					<option>퇴사일</option>
+					<option>주소</option>
+					<option>IP주소</option>
+				</select>
+            </th><th>변경전</th><th>변경후</th><th>변경 일시</th><th>변경자</th></tr>
+            </thead>
+            <tbody class="addTbody">
+
+            </tbody>
+<%--             <c:set var="maxRows" value="6" /> <!-- 최대 행 개수 설정 -->
 			<c:set var="rowCount" value="${fn:length(detail.list)}" />
 			
 			<c:set var="prevDepart" value="${detail.depart_name}" />
@@ -602,7 +649,7 @@ form{
 			      </c:choose>
 			    </td>
 			  </tr>
-			</c:forEach>
+			</c:forEach> 
 
 			
 			<!-- 빈 행 추가 -->
@@ -614,14 +661,14 @@ form{
 			    <td></td>
 			    <td></td>
 			  </tr>
-			</c:forEach>
+			</c:forEach>--%>
           </table>
         </div>
         <div class="attachment-info">
         	
 		  <h2>첨부 파일</h2>
 		  <table>
-		    <tr><th>파일명</th><th>업로드 날짜</th><th>삭제</th></tr>
+		    <tr><th>파일명</th><th>업로드 날짜</th></tr>
 			
 			<c:set var="index" value="0" />
 			<c:set var="maxRows" value="5" />
@@ -629,7 +676,6 @@ form{
 		        <tr>
 		            <td><a href="fileDownload.do?file_name=${file.file_name}">${file.file_name}</a></td>
 		            <td>${file.date}</td>
-		            <td><button onclick="delFile(this)" class="normalBtn"><i class="bi bi-trash-fill"></i></button></td>
 		        </tr>
 		        <c:set var="index" value="${index + 1}" />
 			</c:forEach>
@@ -637,7 +683,6 @@ form{
 			<!-- 부족한 행만큼 빈 행 추가 -->
 			<c:forEach begin="${fn:length(detail.fileList)}" end="${maxRows - 1}" var="i">
 			    <tr>
-			        <td></td>
 			        <td></td>
 			        <td></td>
 			    </tr>
@@ -1051,6 +1096,130 @@ function checkSign(){
         }
       });
 }
+
+
+infoHistoryCheck()
+function infoHistoryCheck(){
+    $.ajax({
+        type: 'POST',
+        url: 'infoHistoryCheck.ajax',
+        data: {
+        	"emp_idx":loginId,
+        },
+        dataType:'json',
+        success: function(response) {
+        		console.log("테스트:"+JSON.stringify(response, null, 2));
+        		//console.log("테스트:"+response.list.length);
+        		  $('.addTbody').empty();
+        	if (response.msg === '성공') {
+                let fixedList = Array.from({ length: 10 }, (_, i) => response.list[i] || {
+                    category: '*',
+                    before_update: '*',
+                    after_update: '*',
+                    date: '*',
+                    name: '*',
+                    emp_manage_idx: null
+                });
+                
+                fixedList.forEach(function(item) {
+                      let categoryDisplay = "";
+                      switch (item.category) {
+                          case "depart_idx":
+                              categoryDisplay = "부서";
+                              break;
+                          case "rank_idx":
+                              categoryDisplay = "직급";
+                              break;
+                          case "salary":
+                              categoryDisplay = "연봉";
+                              break;
+                          case "account_number":
+                              categoryDisplay = "계좌번호";
+                              break;
+                          case "phone":
+                              categoryDisplay = "전화번호";
+                              break;
+                          case "mobile":
+                              categoryDisplay = "핸드폰번호";
+                              break;
+                          case "end_date":
+                              categoryDisplay = "퇴사일";
+                              break;
+                          case "address":
+                              categoryDisplay = "주소";
+                              break;
+                          case "ip":
+                              categoryDisplay = "IP주소";
+                              break;
+                          default:
+                              categoryDisplay = "*";
+                      }
+                      
+                      const row = 
+                          '<tr class = "infoTbody-tr">' +
+                              '<td>' + categoryDisplay + '</td>' +
+                              '<td>' + (item.before_update || '*')+ '</td>' +
+                              '<td>' + (item.after_update || '*')+ '</td>' +
+                              '<td>' + (item.date || '*')+ '</td>' +
+                              '<td>' + (loginId ===  item.emp_manage_idx ? '본인' : (item.name || '*')) + '</td>' +
+                          '</tr>';
+                      $('.addTbody').append(row);
+                  });
+        		} else {
+        	        for (let i = 0; i < 10; i++) {
+        	            const row =
+        	                '<tr>' +
+        	                '<td>*</td>' +
+        	                '<td>*</td>' +
+        	                '<td>*</td>' +
+        	                '<td>*</td>' +
+        	                '<td>*</td>' +
+        	                '</tr>';
+        	            $('.addTbody').append(row);
+        	        }
+        		}
+         
+        },
+        error: function() {
+          alert('에러');
+        }
+      });
+}
+
+$('.infoTitle').on('change', function () {
+    const selectedCategory = $(this).val(); 
+    console.log("Selected Category:", selectedCategory);
+    $('.addTbody .empty-row').remove();
+    $('.addTbody tr').hide();
+    let filteredRows = [];
+    if (selectedCategory === '전체') {
+        filteredRows = $('.addTbody tr').toArray();
+    } else {
+        $('.addTbody tr').each(function () {
+            const categoryText = $(this).find('td:first').text();
+            if (categoryText === selectedCategory) {
+                filteredRows.push(this);
+            }
+        });
+    }
+    const totalRows = filteredRows.length;
+
+    if (totalRows < 10) {
+        for (let i = totalRows; i < 10; i++) {
+            const emptyRow = 
+                '<tr class="empty-row">'+
+                    '<td>*</td>'+
+                    '<td>*</td>'+
+                    '<td>*</td>'+
+                    '<td>*</td>'+
+                    '<td>*</td>'+
+                '</tr>';
+            $('.addTbody').append(emptyRow);
+        }
+    }
+    $(filteredRows).show();
+});
+
 
 
 	

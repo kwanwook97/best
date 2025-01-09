@@ -5,7 +5,7 @@
 <mapper namespace="com.best.sales.SalesDAO">
 	<insert id="saveSettlement" parameterType="map">
 		insert into settlement (company,amount,month,emp_idx)
-		values (#{company},#{amount},STR_TO_DATE(CONCAT(#{month}, '-01'), '%Y-%m-%d'),#{loginId})
+		values (#{company},#{amount},#{month},#{loginId})
 	</insert>
 	
 <select id="filterSettlement" parameterType="map" resultType="map">
@@ -13,12 +13,12 @@
   	s.settlement_idx AS settlementIdx,
     s.company AS company,
     s.amount AS amount,
-    DATE_FORMAT(s.month, '%Y-%m') AS month,
+    s.month AS month,
     e.name AS name
   FROM settlement s
   JOIN employee e ON e.emp_idx = s.emp_idx
   WHERE 
-      s.month = STR_TO_DATE(CONCAT(#{month, jdbcType=VARCHAR}, '-01'), '%Y-%m-%d')
+      s.month LIKE CONCAT(#{month, jdbcType=VARCHAR}, '%')
       <choose>
         <when test="searchField == 'subject' and searchInput != null and searchInput != ''">
           AND s.company LIKE CONCAT('%', #{searchInput}, '%')
@@ -39,7 +39,7 @@
   FROM settlement s
   INNER JOIN employee e ON e.emp_idx = s.emp_idx
   WHERE 
-      s.month = STR_TO_DATE(CONCAT(#{month, jdbcType=VARCHAR}, '-01'), '%Y-%m-%d')
+      s.month LIKE CONCAT(#{month, jdbcType=VARCHAR}, '%')
       <choose>
         <when test="searchField == 'subject' and searchInput != null and searchInput != ''">
           AND s.company LIKE CONCAT('%', #{searchInput}, '%')
@@ -55,24 +55,28 @@
 <select id="fetchChart" parameterType="map" resultType="map">
 	SELECT
 		company,
-		amount
-	FROM settlement 
+		SUM(amount) AS totalAmount
+	FROM settlement
 	WHERE 
-      	month = STR_TO_DATE(CONCAT(#{month, jdbcType=VARCHAR}, '-01'), '%Y-%m-%d')
+		month LIKE CONCAT(#{month, jdbcType=VARCHAR}, '%')
+	GROUP BY
+		company
+	ORDER BY
+		company ASC
 </select>
 
 <select id="fetchYearChart" parameterType="map" resultType="map">
 	SELECT 
-  		RIGHT(LEFT(month, 7), 2) AS month,
+  		DATE_FORMAT(month, '%c월') AS month,
 	    SUM(amount) AS totalAmount 
 	FROM 
 	    settlement
 	WHERE 
-	    month BETWEEN CONCAT(#{year}, '-01-01') AND CONCAT(#{year}, '-12-01')
+	    month BETWEEN CONCAT(#{year}, '-01-01') AND CONCAT(#{year}, '-12-31')
 	GROUP BY 
-	    LEFT(month, 7) 
+	    DATE_FORMAT(month, '%Y-%m') 
 	ORDER BY 
-	    RIGHT(LEFT(month, 7), 2) ASC;
+	    DATE_FORMAT(month, '%m') ASC
 </select>
 <select id="fetchYearCompanyList" parameterType="map" resultType="string">
     SELECT DISTINCT 
@@ -86,22 +90,24 @@
 </select>
 
 <select id="getChartData" parameterType="map">
-    SELECT 
-        RIGHT(LEFT(month, 7), 2) AS month,
-        amount
-    FROM 
-        settlement
-    WHERE 
-        company = #{company}
-        AND month BETWEEN CONCAT(#{year}, '-01-01') AND CONCAT(#{year}, '-12-01')
-    ORDER BY 
-        month ASC
+	SELECT 
+	    CONCAT(MONTH(month), '월') AS month,
+	    SUM(amount) AS amount
+	FROM 
+	    settlement
+	WHERE 
+	    company = #{company}
+	    AND month BETWEEN CONCAT(#{year}, '-01-01') AND CONCAT(#{year}, '-12-31')
+	GROUP BY 
+	    MONTH(month)
+	ORDER BY 
+	    MONTH(month) ASC
 </select>
 
 <update id="updateSattlement" parameterType="map">
 	update settlement
 	set company = #{company}, amount = #{amount}, 
-	month = STR_TO_DATE(CONCAT(#{month}, '-01'), '%Y-%m-%d'),
+	month = #{month},
 	emp_idx = #{loginId}
 	where settlement_idx = #{settlementIdx}
 </update>

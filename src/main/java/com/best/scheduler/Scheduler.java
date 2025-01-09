@@ -55,8 +55,10 @@ public class Scheduler {
     public void leaveCheck() {
     	leaveService.updateLeave();
     }
+    
+    // 결근 체크 한시 고정
     //@Scheduled(cron = "*/10 * * * * *")
-	@Scheduled(cron = "0 0 13 ? * MON-FRI")
+    @Scheduled(cron = "0 0 13 ? * MON-FRI")
 	public void checkAttendance() {
 	    LocalDate today = LocalDate.now();
 	    List<LocalDate> holidays = calendarService.getHolidayCalculate();

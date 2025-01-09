@@ -439,7 +439,7 @@ public class EmployeeService {
 		return params;
 	}
 
-
+	@Transactional
 	public Map<String, Object> updateMyDetail(Map<String, Object> params) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -448,6 +448,7 @@ public class EmployeeService {
 		// 성공했다면
 		if(row > 0) {
 			map.put("success", "성공");
+			empDAO.insertEmpHistory(params);
 		}
 		
 		return map;
@@ -483,6 +484,23 @@ public class EmployeeService {
 			map = new HashMap<>();
 			map.put("msg", "실패");
 		}
+		return map;
+	}
+
+
+
+
+	public Map<String, Object> infoHistoryCheck(int emp_idx) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<Map<String, Object>> list = empDAO.infoHistoryCheck(emp_idx);
+		
+		if (list.size() > 0 && list != null) {
+			map.put("msg", "성공");
+			map.put("list", list);
+		}else {
+			map.put("msg", "실패");
+		}
+		
 		return map;
 	}
 

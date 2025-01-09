@@ -121,9 +121,9 @@
 	
 	/* 캘린더 이벤트 등록된 배경색 */
 	.fc-event-main {
-	  background-color: #6C0F6C; 
+	  background-color: #30005A !important; 
 	  color: white; 
-	  border: 2px solid #6C0F6C; 
+	  border: 2px solid #30005A !important; 
 	  border-radius: 5px; 
 	  display: block;
 	}
@@ -185,12 +185,19 @@
 	display: block;
 }
 select option {
-	background-color: white !important;
+	background-color: #30005A !important;
+	color: white !important;
 }
+
 #visibilityFilter {
 	position: relative;
 	left: 18%;
-	top: 4%;
+	top: 27px;
+	color: #30005A;
+	background-color: #30005a00 !important;
+	font-size: 15px !important;
+	font-weight: 500;
+	border: 0px !important;
 }
 
 /* 투두 모달 스타일 */
@@ -262,17 +269,24 @@ select option {
 	    padding: 0;
 	    margin: 0;
 	}
-	.fc .fc-toolbar.fc-header-toolbar button {
-		background-color: #30005A;
-		color: #FFF5E2;
+	
+	.fc-daygrid-event-dot {
+		border:calc(var(--fc-daygrid-event-dot-width)/2) solid #30005A !important;
 	}
-	.fc-direction-ltr .fc-button-group > .fc-button:not(:last-child) {
-		background-color: #30005A;
-		color: #FFF5E2;
+	.fc-event-time {
+		color: #30005A;
 	}
-	.fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) {
-		background-color: #30005A !important;
-		color: #FFF5E2 !important;
+	.fc-event-title {
+		color: #30005A;
+	}
+	.fc-sticky {
+		color: white;
+	}
+	.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr button {
+		background-color: #30005a00 !important;
+		color: #30005A !important;
+		border: 0px !important;
+		border-radius: 10px !important;
 	}
     
     
@@ -338,6 +352,7 @@ select option {
 
 <script>
 var userDepartment = ${employee.depart_idx};
+var userRank = ${employee.rank_idx};
 console.log("userDepartment종원테스트:"+userDepartment );
 var specialDays = ${specialDaysJson};
 
@@ -579,8 +594,17 @@ document.addEventListener('DOMContentLoaded', function() {
             calendar.unselect();
         }, */
         select: function (arg) {
-            $("#todoModal").css("display", "flex").hide().fadeIn();
-
+        	const filterValue = document.getElementById("visibilityFilter").value;
+        	if (filterValue === "all") {
+                if (userDepartment === 2 || userDepartment === 3) {
+                    $("#todoModal").css("display", "flex").hide().fadeIn();
+                }
+                if (userRank === 2 || userRank === 1) {
+                    $("#todoModal").css("display", "flex").hide().fadeIn();
+				}
+        	}
+            //$("#todoModal").css("display", "flex").hide().fadeIn();
+            console.log("userDepartment ,userRank" + userDepartment  +" **"+userRank );
             $('#saveTodo').off('click').on('click', function () {
                 const inputValue = $('#todoInput').val();
                 if (inputValue.trim() === "") {
@@ -646,7 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         return false;
                     });
-                    console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
+                    //console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
                    // console.log("filteredEvents테스트:"+filteredEvents);
                     successCallback(filteredEvents);
                     updateTodoList(new Date());
@@ -695,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         '.fc-timegrid-col[data-date="' + formattedDate + '"]'
                     );
                     timeSlots.forEach(slot => {
-                        slot.style.setProperty('background-color', '#FFEBEE', 'important');
+                        slot.style.setProperty('background-color', '#FFEBEE00', 'important');
                     });
                 }
                 return;
@@ -708,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (dayNumberElement) {
                         dayNumberElement.style.setProperty('color', '#D32F2F', 'important');
                     }
-                    info.el.style.setProperty('background-color', '#FFEBEE', 'important');
+                    info.el.style.setProperty('background-color', '#FFEBEE00', 'important');
                 }
             }
         }
@@ -726,7 +750,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const visibilityFilter = document.getElementById('visibilityFilter').value; 
         const allEvents = calendar.getEvents();
-        	console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
+        	//console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
         const eventsForDate = allEvents.filter(function(event) {
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 

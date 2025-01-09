@@ -159,11 +159,10 @@
 	    height: 100%; 
 	    border-radius: 10px;
 	    border: 2px solid #30005A;
-	    right: 8%;
 	    display: flex;
 	    flex-direction: column;
 	    align-items: center;
-	    margin: 50 25;
+	    margin: 16px 50px;
 	}
 	.year-graph span{
 		font-size: 24px;
@@ -232,7 +231,7 @@
 	.container-wrapper {
 		display: flex;
 		width: 100%;
-		height: 81%;
+		height: 88%;
 	}
 /* 기간	 */
 .date-navigation {
@@ -241,9 +240,8 @@
 	font-size: 24px;
 	font-weight: bold;
 	text-align: center;
-	width: 51%;
 	position: relative;
-	left: 20%;
+	left: 43%;
 }
 
 .date-content {
@@ -251,7 +249,6 @@
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
-	width: 50%;
 }
 
 .date-button {
@@ -305,9 +302,6 @@
 
  	<div class="dashboard-body">
 		<div class="maintext">
-<!-- 			<h3 class="document">매출현황</h3>
-			<h3 class="midle-subject">>&nbsp;&nbsp;월별 현황&nbsp;&nbsp;</h3>
-			<h3 class="last-subject">>&nbsp;&nbsp;2024-12월</h3> -->
 			<div class="headerBox">
 				<span class="lPurple">매출현황</span>
 				<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
@@ -319,12 +313,8 @@
 
 		<div class="docbox">
 		    <div class="docbox-header">
-		       <!--  <h3 class="docbox-subject">&lt;&lt; &nbsp;&nbsp;&lt;&nbsp;&nbsp; 2024-12 &nbsp;&nbsp; &gt;&nbsp;&nbsp;&gt;&gt;</h3> -->
 				<div class="date-navigation">
 					<div class="date-content">
-<!-- 						<button class="date-button">
-							<i class="fas fa-angle-double-left"></i>
-						</button> -->
 						<button class="date-button">
 							<i class="fas fa-angle-left"></i>
 						</button>
@@ -332,50 +322,19 @@
 						<button class="date-button">
 							<i class="fas fa-angle-right"></i>
 						</button>
-<!-- 						<button class="date-button">
-							<i class="fas fa-angle-double-right"></i>
-						</button> -->
 					</div>
 				</div>
 				
 		        <div class="docnav">
 		            <div class="searchbox">
 		                <select class="drop" id="searchField">
-<!-- 		                    <option value="subject">카드사</option>
-		                    <option value="content">이름</option> -->
 						    <option value="all">전체</option> 
 		                </select>
-<!-- 		                <div class="search">
-		                    <input type="text" id="searchInput" placeholder="검색어 입력">
-		                    <i class="fas fa-search" onclick="performSearch()"></i>
-		                </div> -->
 		            </div>
 		        </div>
 		    </div>
 		    
 		    <div class="container-wrapper">
-<!-- 				<div class="table-box">
-				    <table class="card-table">
-				        <thead>
-				            <tr>
-				                <th>카드사</th>
-				                <th>금액(원)</th>
-				                <th>정산월</th>
-				                <th>담당자</th>
-				            </tr>
-				        </thead>
-      				    <tbody id="tableBody">
-
-				        </tbody>
-				    </table>
-					 <div class="pagination-wrapper">
-					     <nav aria-label="Page navigation">
-					         <ul class="pagination activ" id="pagination"></ul>
-					     </nav>
-					 </div>
-			    </div> -->
-	
-	
 			 	<div class="year-graph">
 			 		<div><span>연별 정산</span></div>
 			 		<div class="year-graph2">
@@ -389,29 +348,6 @@
 
 </body>
 <script>
-/* const inputField = document.getElementById("card_company");
-let isComposing = false;
-function validateInput() {
-  const value = inputField.value;
-  const filteredValue = value.replace(/[^가-힣]/g, "");
-  if (value !== filteredValue) {
-    modal.showAlert("카드사 이름은 한글로만 입력해주세요.");
-    inputField.value = filteredValue; 
-  }
-}
-inputField.addEventListener("compositionstart", () => {
-  isComposing = true;
-});
-inputField.addEventListener("compositionend", () => {
-  isComposing = false;
-  validateInput();
-});
-inputField.addEventListener("input", () => {
-  if (!isComposing) {
-    validateInput();
-  }
-}); */
-
 let myChart; 
 
 function renderChart(labels,amounts){
@@ -424,7 +360,6 @@ function renderChart(labels,amounts){
 	
 	const barColors = amounts.map(value => {
 	  if (value === maxValue) return '#E9396B'; 
-	  /* if (value === minValue) return '#6C0F6C'; */
 	  if (value === minValue) return '#FFD700';
 	  return '#30005A'; 
 	});
@@ -481,9 +416,35 @@ function fetchChart(date){
 		},
 		dataType: 'JSON',
 		success: function(data){
-		  	//console.log("테스트종원:"+JSON.stringify(data, null, 2));
-	        const labels = data.list? data.list.map(item => item.month): null;
-	        const amounts = data.list? data.list.map(item => item.totalAmount): null;
+		  	console.log("테스트종원:"+JSON.stringify(data, null, 2));
+	        //const labels = data.list? data.list.map(item => item.month): null;
+	        //const amounts = data.list? data.list.map(item => item.totalAmount): null;
+            const baseLabels = ['1월', '2월', '3월', '4월', '5월', '6월', 
+                '7월', '8월', '9월', '10월', '11월', '12월'];
+			let labels = [];
+			let amounts = [];
+			
+			if (data.list) {
+			
+				baseLabels.forEach(month => {
+				    const item = data.list.find(d => d.month === month);
+				    if (item) {
+				        labels.push(item.month);
+				        amounts.push(item.totalAmount);
+				    } else {
+				        labels.push(month);
+				        amounts.push(0); 
+				    }
+				});
+			} else {
+			labels = baseLabels;
+			amounts = Array(12).fill(0);
+			}
+	        if(data.msg == '성공'){
+	            renderChart(labels, amounts);
+        	}else{
+	            renderChart([], []);
+        	}
 	        if(data.msg == '성공'){
 	            renderChart(labels, amounts);
         	}else{
@@ -528,8 +489,27 @@ $(document).on('change', '#searchField', function() {
         dataType: 'json',
 		success: function(data){
 		  	console.log("테스트종원:"+JSON.stringify(data, null, 2));
-	        const labels = data.list? data.list.map(item => item.month): null;
-	        const amounts = data.list? data.list.map(item => item.amount): null;
+            const baseLabels = ['1월', '2월', '3월', '4월', '5월', '6월', 
+                '7월', '8월', '9월', '10월', '11월', '12월'];
+			let labels = [];
+			let amounts = [];
+			
+			if (data.list) {
+			
+				baseLabels.forEach(month => {
+				    const item = data.list.find(d => d.month === month);
+				    if (item) {
+				        labels.push(item.month);
+				        amounts.push(item.amount);
+				    } else {
+				        labels.push(month);
+				        amounts.push(0); 
+				    }
+				});
+			} else {
+			labels = baseLabels;
+			amounts = Array(12).fill(0);
+			}
 	        if(data.msg == '성공'){
 	            renderChart(labels, amounts);
         	}else{
@@ -545,76 +525,6 @@ $(document).on('change', '#searchField', function() {
 
 
 
-/* 모달*/
-/* function addSattlementModal(){
-	$(".driver_modal.modal_change").css("display","flex").hide().fadeIn();
-}  	
-
-function hideSattlementModal() {
-	$(".driver_modal.modal_change").fadeOut();
-	$('#card_company').val('');
-	$('#amount').val('');
-	$('#month').val('');
-}
-
-$('.full_btn_regist').on('click', function() {
-    modal.showConfirm('등록 하시겠습니까?', function () {
-    	saveSettlement(); 
-    });
-}); */
-
-
-/* function saveSettlement(){
-    const company = $('#card_company').val(); 
-    const amount = $('#amount').val();
-    const month = $('#month').val();
-
-    if (!loginId) {
-        modal.showAlert("로그인 해주세요");
-        return;
-    }
-    if (!company) {
-    	modal.showAlert("카드사를 입력해주세요.");
-        $('#card_company').focus();
-        return;
-    }
-
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
-    	modal.showAlert("올바른 금액을 입력해주세요.");
-        $('#amount').focus();
-        return;
-    }
-    if (!month) {
-    	modal.showAlert("정산월를 선택해주세요.");
-        $('#month').focus();
-        return;
-    }
-	
-	$.ajax({
-		method: 'POST',
-		url: 'saveSettlement.ajax',
-		data: {
-			'loginId': loginId,
-			'company': $('#card_company').val(),
-			'amount': $('#amount').val(),
-			'month': $('#month').val()
-		},
-		dataType: 'JSON',
-		success: function(data){
-			if(data.msg == '성공'){
-				modal.showAlert('등록 되었습니다.');   
-				hideSattlementModal();
-        	}else{
-        		modal.showAlert('등록 안 되었습니다.');
-				hideSattlementModal();
-        	}
-		},
-		error: function(e){
-			modal.showAlert('잠시 후 다시 시도해주세요.');
-		}
-	});
-}
- */
 /* 날짜 바꾸는 기능 */
 //현재 날짜 객체를 저장
 let currentDate = new Date();
@@ -624,20 +534,10 @@ function updateDateDisplay() {
     const currentDateElement = document.querySelector('.current-date');
     const dateHeaderElement = document.querySelector('.dateHeader');
     year = currentDate.getFullYear();
-    //const month = currentDate.getMonth() + 1;
-    currentDateElement.textContent = year + '년';
+    currentDateElement.textContent = year + '년 정산';
     dateHeaderElement.textContent = year + '년';
-    //fetchData('','', page, currentDateElement.textContent);
     fetchChart(year);
 }
-/* function incrementMonth() {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    updateDateDisplay();
-}
-function decrementMonth() {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    updateDateDisplay();
-} */
 function incrementYear() {
     currentDate.setFullYear(currentDate.getFullYear() + 1);
     updateDateDisplay();
@@ -648,96 +548,10 @@ function decrementYear() {
 }
 document.querySelector('.date-button:nth-child(1)').addEventListener('click', decrementYear);  
 document.querySelector('.date-button:nth-child(3)').addEventListener('click', incrementYear);  
-/* document.querySelector('.date-button:nth-child(4)').addEventListener('click', incrementMonth);  
-document.querySelector('.date-button:nth-child(5)').addEventListener('click', incrementYear);  */ 
 updateDateDisplay();
-//여기 까지}
 
 
 
-/* 검색바 와 기본 리스트 조절 하기  */
-//var page = 1;
-//var getDate = document.querySelector('.current-date') ? document.querySelector('.current-date').textContent : '';
-//fetchData('','', page, getDate);
-/* function performSearch() {
-    const searchField = document.getElementById('searchField') ? document.getElementById('searchField').value : '';
-    const searchInput = document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
-    const selectDate = document.querySelector('.current-date') ? document.querySelector('.current-date').textContent : '';
-    const searchInputElement = document.getElementById('searchInput');
-//    fetchData(searchField, searchInput, page, selectDate);
-    if (searchInputElement) {
-        searchInputElement.value = '';
-    }
-}
-document.getElementById('searchInput').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        performSearch(); 
-        
-    }
-}); */
-
-/* function fetchData(searchField = '없음', searchInput = '없음', page = 1, selectDate = '없음') {
-    console.log('Fetch Data 호출:', { searchField, searchInput, page, selectDate });
-    $.ajax({
-        url: 'filterSettlement.ajax',
-        type: 'POST',
-        data: {
-            'page': page,
-            'cnt': 10,
-            'searchField': searchField || '없음',
-            'searchInput': searchInput || '없음',
-            'month': selectDate || '없음'
-        },
-        dataType: 'json',
-        success: function(data) {
-            console.log('AJAX 데이터:', data);
-            if (data.msg == '성공') {
-                renderTable(data.list);
-                    $('#pagination').twbsPagination('destroy');
-                    $('#pagination').twbsPagination({
-                        startPage: data.currentPage,
-                        totalPages: data.totalPages,
-                        visiblePages: 5,
-                        onPageClick: function(evt, clickedPage) {
-                            if (clickedPage !== page) {
-                                fetchData(searchField, searchInput, clickedPage, selectDate);
-                            }
-                        }
-                    });
-            } else {
-                noList();
-            }
-        },
-        error: function(error) {
-            console.error('Error:', error);
-            noList();
-        }
-    });
-} */
-
-/* function renderTable(records) {
-    var tbody = $('#tableBody');
-    tbody.empty();
-    records.forEach(function(record) {
-        var tr = $('<tr></tr>');
-        tr.html(
-            '<td>' + record.company + '</td>' +
-            '<td>' + record.amount + '</td>' +
-            '<td>' + record.month + '</td>' +
-            '<td>' + record.name + '</td>'
-        );
-        tbody.append(tr);
-    });
-}
-
-function noList() {
-    var tbody = $('#tableBody');
-    tbody.empty();
-    tbody.append('<tr><td colspan="4">등록된 데이터가 없습니다.</td></tr>');
-    if ($('#pagination').data("twbsPagination")) {
-        $('#pagination').twbsPagination('destroy');
-    }
-} */
 
 </script>
 </html>

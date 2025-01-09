@@ -193,7 +193,7 @@
 	}
 	 */
 	.card-table {
-	    width: 100%;
+	    width: 101%;
 	    margin: 0 0;
 	    border-collapse: collapse;
 	    border: 2px solid #30005A; /* 테두리 색상 */
@@ -213,7 +213,7 @@
 	    border-bottom: 2px solid #30005A; /* 셀 구분선 */
 	}
 	.table-box {
-		width: 42%;
+		width: 46%;
 		height: 100%;
 		display: flex;
 		flex-direction: column;
@@ -303,6 +303,12 @@
 .handleBtn:hover {
 	background-color: #ae89ce;
 }
+#cardChart {
+	width: 100%;
+}
+/* .delActive {
+	background-color: white !important;
+} */
   
    </style>
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -368,7 +374,7 @@
 				            <tr>
 				                <th>카드사</th>
 				                <th>금액(원)</th>
-				                <th>정산월</th>
+				                <th>정산일</th>
 				                <th>담당자</th>
 				            </tr>
 				        </thead>
@@ -416,9 +422,9 @@
 	        </td>
 	      </tr>
 	      <tr>
-	        <th>정산월</th>
+	        <th>정산일</th>
 	        <td>
-	          <input type="month" id="month" class="input_field">
+	          <input type="date" id="month" class="input_field">
 	        </td>
 	      </tr>
 	      <tr>
@@ -438,7 +444,7 @@
 	<div class="driver_modal modal_change update_modal">
 	  <div class="driver_modal_container">
 	    <!-- 제목을 동적으로 설정할 부분 -->
-	    <h2 id="modalTitle" class="driver_modal_title">매출 등록</h2>
+	    <h2 id="modalTitle" class="driver_modal_title">매출 수정</h2>
 	    <table class="modal_table">
 	      <tr>
 	        <th>카드사</th>
@@ -454,9 +460,9 @@
 	        </td>
 	      </tr>
 	      <tr>
-	        <th>정산월</th>
+	        <th>정산일</th>
 	        <td>
-	          <input type="month" id="month_past" class="input_field">
+	          <input type="date" id="month_past" class="input_field">
 	        </td>
 	      </tr>
 	      <tr>
@@ -468,7 +474,7 @@
 	    </table>
 	    <div class="driver_modal_footer">
 	      <button class="full_btn_regist ss" onclick="updateSattlement()">수정하기</button>
-	      <button class="full_btn_cancel" onclick="delSattlement()">삭제</button>
+	      <button class="full_btn_cancel delActive" onclick="delSattlement()">삭제</button>
 	      <button class="full_btn_cancel" onclick="hideSattlementPastModal()">닫기</button>
 	    </div>
 	  </div>
@@ -567,9 +573,9 @@ function fetchChart(date){
 		},
 		dataType: 'JSON',
 		success: function(data){
-			console.log("테스트 데이터:"+data)
+			//console.log("테스트 데이터:"+data)
 	        const labels = data.list? data.list.map(item => item.company): null;
-	        const amounts = data.list? data.list.map(item => item.amount): null;
+	        const amounts = data.list? data.list.map(item => item.totalAmount): null;
 			
 	        if(data.msg == '성공'){
 	            renderChart(labels, amounts);
@@ -598,11 +604,11 @@ function hideSattlementModal() {
 	$('#month').val('');
 }
 function handleClick(record){
-	console.log("테스트 데이터:"+JSON.stringify(record, null, 2))
+	//console.log("테스트 데이터:"+JSON.stringify(record, null, 2))
     if (typeof record === "string") {
         record = JSON.parse(record);
     }
-    console.log("클릭된 레코드:", record);
+    //console.log("클릭된 레코드:", record);
     
 	const company = $('#card_company_past').val(record.company); 
     const amount = $('#amount_past').val(record.amount);
@@ -650,7 +656,7 @@ function saveSettlement(){
         return;
     }
     if (!month) {
-    	modal.showAlert("정산월를 선택해주세요.");
+    	modal.showAlert("정산일을 선택해주세요.");
         $('#month').focus();
         return;
     }
@@ -747,7 +753,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(even
 });
 
 function fetchData(searchField = '없음', searchInput = '없음', page = 1, selectDate = '없음') {
-    console.log('Fetch Data 호출:', { searchField, searchInput, page, selectDate });
+    //console.log('Fetch Data 호출:', { searchField, searchInput, page, selectDate });
     $.ajax({
         url: 'filterSettlement.ajax',
         type: 'POST',
@@ -760,7 +766,7 @@ function fetchData(searchField = '없음', searchInput = '없음', page = 1, sel
         },
         dataType: 'json',
         success: function(data) {
-            console.log('AJAX 데이터:', data);
+            //console.log('AJAX 데이터:', data);
             if (data.msg == '성공') {
                 renderTable(data.list);
                     $('#pagination').twbsPagination('destroy');

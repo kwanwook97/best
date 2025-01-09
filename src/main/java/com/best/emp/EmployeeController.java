@@ -185,10 +185,8 @@ public class EmployeeController {
 	@GetMapping(value="/myDetail.go")
 	public String myDetail(String emp_idx, Model model) {
 		//logger.info("디테일:{}",empService.empDetail(emp_idx));
-		
 		model.addAttribute("detail", empService.empDetail(emp_idx));
 		model.addAttribute("attendance",empService.empOverTime(emp_idx));
-		
 		return "emp/myDetail";
 	}
 	
@@ -215,6 +213,14 @@ public class EmployeeController {
 	public Map<String, Object> delSign(@RequestParam Map<String, Object> params){
 		
 		return empService.delSign(params);
+	}
+	
+	@PostMapping(value="/infoHistoryCheck.ajax")
+	@ResponseBody
+	public Map<String, Object> infoHistoryCheck(@RequestParam Map<String, Object> params){
+		int emp_idx = Integer.parseInt((String)params.get("emp_idx")); 
+		
+		return empService.infoHistoryCheck(emp_idx);
 	}
 	
 	

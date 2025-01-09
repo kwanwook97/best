@@ -8,6 +8,7 @@
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <script src="/BEST/resources/js/index.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
 #newMessageIndicator2 {
 	background-color: #E9396B;
@@ -150,14 +151,37 @@
 
 /* 캘린더 css */
 .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-	height: 60px;
+	height: 68px;
 }
 #calendar {
 	max-height: 93% !important;
+	width: 97% !important;
+	
 }
+.fc-scroller.fc-scroller-liquid-absolute::-webkit-scrollbar {
+    display: none !important;
+}
+.fc-scroller::-webkit-scrollbar{
+    display: none !important;
+}
+.fc.fc-scrollgrid-liquid .fc-col-header {
+	width: 100% !important;
+}
+.fc-col-header {
+	width: 100% !important;
+}
+.fc-daygrid-body.fc-daygrid-body-balanced {
+	width: 100% !important;
+}
+.fc-scrollgrid-sync-table {
+	width: 100% !important;
+}
+
+
 .fc-event-main {
-	background-color: #6C0F6C;
+	background-color: #30005A;
 	border-radius: 10px;
+	padding: 0 0 2px 5px;
 }
 .fc-event-time {
 	color: #6C0F6C;
@@ -175,8 +199,119 @@
 }
 #visibilityFilter {
 	position: relative;
+	top: 1px;
+	left: 108px;
+	border: 0px;
+	background-color: #00000000;
+	color: #30005A;
+}
+.fc-header-toolbar button {
+	background-color : #30005a00 !important;
+	color: #30005A !important;
+	border: 0px !important;
+	border-radius: 10px !important;
 }
 
+select option {
+	background-color: #30005A !important;
+	color: white !important;
+}
+.fc-daygrid-event-dot {
+	border: calc(var(--fc-daygrid-event-dot-width) / 2) solid #30005A;
+}
+
+/* 투두리스트 */
+	#todo-container {
+	  flex: 1;
+	  background-color: #8b6aa700;
+	  border-radius: 8px;
+	  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	  display: flex;
+	  flex-direction: column;
+	  overflow-y: auto; /* 넘칠 경우 스크롤 표시 */
+	  height: 100%;
+	  width: 100%;
+	  margin: 14px 0 0 0;
+	}
+
+    #todo-container h2 {
+      margin: 0 0 0 0;
+      text-align: center;
+      font-size: 24px;
+      color: #FFF5E2;
+      
+    }
+    
+.list-box {
+  display: flex; 
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff00; 
+  border: 2px solid #30005A; 
+  border-radius: 10px;
+  padding: 5px; 
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #30005A; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+.date-time {
+  font-weight: bold; 
+  margin-right: 20px;
+  flex-shrink: 0; 
+}
+
+.date-content {
+  flex-grow: 1; 
+  text-align: left; 
+  color: #30005A; 
+}
+
+
+#todolist {
+  flex: 1;
+  overflow-y: auto;
+  display: flex; /* Flexbox 활성화 */
+  flex-direction: column; /* 세로 방향으로 정렬 */
+  padding: 10px; /* 내부 여백 추가 (선택 사항) */
+  width: 90%;
+}
+#todolist::-webkit-scrollbar {
+	display: none;
+}
+
+
+    .todo-item {
+      background-color: #fff;
+      padding: 10px;
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+	#todo-subject-box{
+	  background-color: #30005A;
+	  border-radius: 10px;
+	  display: flex; 
+	  align-items: center; 
+	  justify-content: center; 
+	  padding: 10px; 
+	}
+
+	
+	/* 차트 css */
+#cardChart {
+	width: 94% !important;
+	height: 82% !important;
+	margin: 1% 0 0 0 !important;
+	
+}
+.box-wrapper {
+	display: flex;
+}
+.span-active {
+	margin: 0 0 0 1%;
+}
+	
 
   </style>
 </head>
@@ -219,47 +354,19 @@
  			
  		</div>
  	</div>
- 	<div class="year-graph">
- 		<div><span>연간 매출</span></div>
- 		<div class="year-graph2">
- 			<div>
- 				<div class="year-graph3"></div><span>1월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>2월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>3월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>4월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>5월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>6월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>7월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>8월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>9월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>10월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>11월</span>
- 			</div>
- 			<div>
- 				<div class="year-graph3"></div><span>12월</span>
- 			</div>
- 		</div>
- 	</div>
+	<div class="year-graph">
+		<div class="box-wrapper">
+			<div class="date-navigation">
+				<div class="date-content">
+					<span class="current-date"></span>
+				</div>
+			</div>
+			<span class="span-active">정산</span>
+		</div>
+		<div class="year-graph2">
+			<canvas id="cardChart"></canvas>
+		</div>
+	</div>
  	<div class="dash-calendar">
 		<select id="visibilityFilter">
 		    <option value="all">전체</option>
@@ -269,8 +376,16 @@
 		<div id="calendar" class="calendar-calendar"></div>
  	</div>
  	<div class="todoList">
- 		<div><span>To Do List!</span></div>
- 		<div class="todoList2"></div>
+<!--  		<div><span>To Do List!</span></div>
+ 		<div class="todoList2"></div> -->
+		    <div id="todo-container">
+			    <div id="todo-subject-box">
+			      <h2>Today To Do List !</h2>
+			    </div>
+		      	<div id="todolist">
+
+		      	</div>
+		    </div>
  	</div>
  	<div class="road-info">
  		<div><span>오늘의 교통 정보</span></div>
@@ -653,6 +768,11 @@ var specialDays = ${specialDaysJson};
             center: 'title',
             right: 'dayGridMonth,timeGridWeek'
         },
+        views: {
+            timeGridWeek: {
+                titleFormat: {month: 'short', day: 'numeric' } 
+            }
+        },
         initialDate: new Date(),
         eventDidMount: function(info) {
             const resizer = info.el.querySelector('.fc-event-resizer');
@@ -688,7 +808,7 @@ var specialDays = ${specialDaysJson};
                         }
                         return false;
                     });
-                    console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
+                    //console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
                    // console.log("filteredEvents테스트:"+filteredEvents);
                     successCallback(filteredEvents);
                     updateTodoList(new Date());
@@ -724,7 +844,7 @@ var specialDays = ${specialDaysJson};
                         '.fc-timegrid-col[data-date="' + formattedDate + '"]'
                     );
                     timeSlots.forEach(slot => {
-                        slot.style.setProperty('background-color', '#FFEBEE', 'important');
+                        slot.style.setProperty('background-color', '#FFEBEE00', 'important');
                     });
                 }
                 return;
@@ -737,7 +857,7 @@ var specialDays = ${specialDaysJson};
                     if (dayNumberElement) {
                         dayNumberElement.style.setProperty('color', '#D32F2F', 'important');
                     }
-                    info.el.style.setProperty('background-color', '#FFEBEE', 'important');
+                    info.el.style.setProperty('background-color', '#FFEBEE00', 'important');
                 }
             }
         }
@@ -755,7 +875,7 @@ var specialDays = ${specialDaysJson};
         }
         const visibilityFilter = document.getElementById('visibilityFilter').value; 
         const allEvents = calendar.getEvents();
-        	console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
+        	//console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
         const eventsForDate = allEvents.filter(function(event) {
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 
@@ -866,9 +986,115 @@ var specialDays = ${specialDaysJson};
     }); 
 
 /* 여기까지 캘린더 */ 
+/* 차트 */
+let currentDate = new Date();
+var year = '';
+function updateDateDisplay() {
+    const currentDateElement = document.querySelector('.current-date');
+    year = currentDate.getFullYear();
+    currentDateElement.textContent = year + '년';
+    fetchChart(year);
+}
+updateDateDisplay();
 
+function fetchChart(date){
+	$.ajax({
+		method: 'POST',
+		url: 'fetchYearChart.ajax',
+		data: {
+			'year': date
+		},
+		dataType: 'JSON',
+		success: function(data){
+            const baseLabels = ['1월', '2월', '3월', '4월', '5월', '6월', 
+                '7월', '8월', '9월', '10월', '11월', '12월'];
+			let labels = [];
+			let amounts = [];
+			
+			if (data.list) {
+			
+				baseLabels.forEach(month => {
+				    const item = data.list.find(d => d.month === month);
+				    if (item) {
+				        labels.push(item.month);
+				        amounts.push(item.totalAmount);
+				    } else {
+				        labels.push(month);
+				        amounts.push(0); 
+				    }
+				});
+			} else {
+			labels = baseLabels;
+			amounts = Array(12).fill(0);
+			}
+	        if(data.msg == '성공'){
+	            renderChart(labels, amounts);
+        	}else{
+	            renderChart([], []);
+        	}
+		},
+		error: function(e){
+			modal.showAlert('잠시 후 다시 시도해주세요.');
+		}
+	});
+	
+}
+function renderChart(labels,amounts){
 
+	const maxValue = Math.max(...amounts);
+	const minValue = Math.min(...amounts);
+	
+	const barColors = amounts.map(value => {
+	  if (value === maxValue) return '#E9396B'; 
+	  /* if (value === minValue) return '#6C0F6C'; */
+	  if (value === minValue) return '#FFD700';
+	  return '#30005A'; 
+	});
+	const ctx = document.getElementById('cardChart').getContext('2d');
+	 myChart = new Chart(ctx, {
+	  type: 'bar',
+	  data: {
+	    labels: labels, 
+	    datasets: [{
+	      label: '월별 정산',
+	      data: amounts, 
+	      backgroundColor: barColors, 
+	      borderRadius: 10, 
+	      borderSkipped: false, 
+	    }]
+	  },
+	  options: {
+	    plugins: {
+	      legend: {
+	        display: false, 
+	      }
+	    },
+	    scales: {
+	      x: {
+	        ticks: {
+	          color: '#30005A', 
+	          font: {
+	              size: 14, 
+	              weight: 'bold', 
+	            }
+	        }
+	      },
+	      y: {
+	        beginAtZero: true, 
+	        ticks: {
+	          color: '#30005A', 
+	          font: {
+	              size: 14, 
+	              weight: 'bold', 
+	            }
+	        }
+	      }
+	    }
+	  }
+	});
+};
 
+/* 여기까지 차트 end */
 
 </script>
 </html>

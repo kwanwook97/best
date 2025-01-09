@@ -119,9 +119,8 @@ li{
 }
 .year-graph2{
 	display: flex;
-	margin-top: 8vw;
 	width: 100%;
-	height: auto;
+	height: 100%;
     flex-direction: row;
     justify-content: center;
 }

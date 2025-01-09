@@ -37,6 +37,8 @@ public interface AttendanceDAO {
 
 	List<Map<String, Object>> getAttendanceHistory(Map<String, Object> params);
 
+	String getEmpIp(Map<String, Object> params);
+
 
 
 }

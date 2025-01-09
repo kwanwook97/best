@@ -768,9 +768,27 @@ function updateClock() {
     const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
     const dayName = dayNames[curtime.getDay()];
     const dateString = year + "/" + month + "/" + date + "(" + dayName + ")";
+    const finish = document.querySelector('.btn-finish-work');
+    if (StartTimeCheck && finish.disabled != true ) {
+        const [startHour, startMinute] = StartTimeCheck.split(":").map(Number);
+        const [currentHour, currentMinute] = timeString.split(":").map(Number);
+        const startMinutes = startHour * 60 + startMinute;
+        const currentMinutes = currentHour * 60 + currentMinute;
+        const diffMinutes = currentMinutes - startMinutes;
+        const diffHours = Math.floor(diffMinutes / 60).toString().padStart(2, "0");
+        const remainingMinutes = (diffMinutes % 60).toString().padStart(2, "0");
+        const currentWorkTime = diffHours + ":" + remainingMinutes;
+        console.log("테테종:"+currentWorkTime);
+    	$('#clock').text(currentWorkTime)
+	}else{
+	    $('#clock').text(timeString)
+	}
+    
+    console.log("테테종:"+StartTimeCheck);
 
-    $('#clock').text(timeString)
+
     $('#day').text(dateString)
+
 }
 
 updateTime()

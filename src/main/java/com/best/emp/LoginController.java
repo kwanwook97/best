@@ -40,6 +40,7 @@ public class LoginController {
             session.setAttribute("loginId", String.valueOf(employee.getEmp_idx()));
             session.setAttribute("loginName", employee.getName());
             session.setAttribute("employee", employee);
+           
             
             ObjectMapper objectMapper = new ObjectMapper();
             String employeeJson = objectMapper.writeValueAsString(employee);

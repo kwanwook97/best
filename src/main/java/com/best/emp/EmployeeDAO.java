@@ -62,6 +62,10 @@ public interface EmployeeDAO {
 	Map<String, Object> checkSign(Map<String, Object> params);
 
 	int delSign(Map<String, Object> params);
+
+	List<Map<String, Object>> infoHistoryCheck(int emp_idx);
+
+	void insertEmpHistory(Map<String, Object> params);
 	
 
 }
