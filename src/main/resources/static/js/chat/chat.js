@@ -376,7 +376,7 @@ $(document).ready(function() {
                             	'<img src="/photo/' + profile.photo + '" alt="프로필 사진" class="custom-image">' +
                             	'<div>' +
                             		'<span>' + empName + '</span>' +
-                            		'<span>' + (profile.state == 1 ? '근무 중' : '근무 종료') + '</span>' +
+                            		'<span>' + (profile.state == 1 ? '<i class="fas fa-circle"></i> 근무 중' : '근무 종료') + '</span>' +
                             	'</div>' +
                             '</div>' +
                             '<ul>' +
@@ -913,3 +913,6 @@ $(document).ready(function () {
         }
     });
 });
+
+
+

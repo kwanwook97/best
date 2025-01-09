@@ -83,18 +83,22 @@
    	cursor: pointer;
    	height: 36px;
    	font-size: 18px;
+   	color: #8B6AA7;
 }
 .filter:hover{
 	border-bottom: 2px solid #E9396B;
+	color: #30005A;
 }
 /* 위쪽 필터 활성화 */
 .content-header .filter.active {
     border-bottom: 2px solid #E9396B;
+    color: #30005A;
 }
 
 /* 아래쪽 필터 활성화 */
 .body.header .filter.active {
     border-bottom: 2px solid #E9396B;
+    color: #30005A;
 }
 
 table, th, td{

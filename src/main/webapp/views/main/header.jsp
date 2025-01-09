@@ -53,10 +53,10 @@ var loginId = ${sessionScope.loginId};
 					<span style="color: #E9396B;">BEST</span>
 				</h4>
 				<h5 class="logo-text">
-					<span style="color: #E9396B;">B</span>us <span
-						style="color: E9396B;">E</span>mployee <span
-						style="color: #E9396B;">S</span>ervice <span
-						style="color: #E9396B;">T</span>ool
+					<span style="color: #E9396B;">B</span>us 
+					<span style="color: E9396B;">E</span>mployee 
+					<span style="color: #E9396B;">S</span>ervice 
+					<span style="color: #E9396B;">T</span>ool
 				</h5>
 			</a>
 		</div>
@@ -69,255 +69,387 @@ var loginId = ${sessionScope.loginId};
 		</div>
 		<ul class="sidebar-menu do-nicescrol">
 			<li class="sidebar-header"></li>
-			<li><a href="main.go"> <i class="mdi mdi-view-dashboard"></i>
-					<span>대쉬보드</span> <i class="fa-solid fa-angle-right"></i>
-			</a></li>
-
-			<li class="dropD"><a href="javaScript:void(0);"> <i
-					class="bi bi-clock-fill"></i> <span>근태관리</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
-
-				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="attendance.go"> <i
-							class="bi bi-clock-fill"></i> <span>출퇴근 기록</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="attendanceEmpList.go"> <i
-							class="bi bi-person-vcard"></i><span>사원목록</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
-
-			<li class="dropD">
-				<a href="calendar.go"> 
-					<i class="fa-regular fa-calendar-check"></i> 
-						<span>캘린더</span> 
+			<li>
+				<a href="main.go"> 
+					<i class="mdi mdi-view-dashboard"></i>
+					<span>대쉬보드</span> 
 					<i class="fa-solid fa-angle-right"></i>
 				</a>
 			</li>
 
-			<li class="dropD"><a href="javaScript:void(0);"> <i
-					class="bi bi-bus-front-fill"></i> <span>버스정보</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
+			<li class="dropD">
+				<a href="javaScript:void(0);"> 
+					<i class="bi bi-clock-fill"></i> 
+					<span>근태관리</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="driveInfo.go"> <i
-							class="fa-solid fa-road"></i> <span>운행현황</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="dispatchList.go"> <i
-							class="fa-solid fa-user-tie"></i> <span>배차현황</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="busDispatch.go"> <i
-							class="fa-solid fa-user-tie"></i> <span>배차관리</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="busDetail.go"> <i
-							class="bi bi-bus-front"></i> <span>버스관리</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
+					<li class="dropD-item">
+						<a href="attendance.go"> 
+							<i class="bi bi-clock-fill"></i> 
+							<span>출퇴근 기록</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="attendanceEmpList.go"> 
+							<i class="bi bi-person-vcard"></i>
+							<span>사원목록</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
 
-			<li style="position: relative;"><a href="chatList.go"> <i
-					class="bi bi-chat-left-text-fill"></i> <span>메신져</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
-				<div id="newMessageIndicator" class="newMessageIndicator"></div></li>
+			<li class="dropD">
+				<a href="calendar.go"> 
+					<i class="fa-regular fa-calendar-check"></i> 
+					<span>캘린더</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
 
-			<li class="dropD"><a href="javaScript:void(0);"> <i
-					class="bi bi-envelope-fill"></i> <span>메일함</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
-				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="mailWrite.go"> <i
-							class="bi bi-envelope-paper-fill"></i> <span>메일작성</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="mail.go?tabData=receive"> <i
-							class="bi bi-envelope-paper-fill"></i> <span>받은 메일함</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="mail.go?tabData=send"> <i
-							class="bi bi-send"></i> <span>보낸 메일함</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="mail.go?tabData=draft"> <i
-							class="bi bi-envelope-exclamation-fill"></i> <span>임시저장</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="mail.go?tabData=trash"> <i
-							class="bi bi-trash-fill"></i> <span>휴지통</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
-
-
-			<li class="dropD"><a href="javaScript:void();"> <i
-					class="fa-regular fa-clipboard"></i> <span>결재문서</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
+			<li class="dropD">
+				<a href="javaScript:void(0);"> 
+					<i class="bi bi-bus-front-fill"></i> 
+					<span>버스정보</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="documentPending.go"> <i
-							class="bi bi-file-text-fill"></i> <span>대기</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="documentBoard.go"> <i
-							class="bi bi-file-text-fill"></i> <span>진행중</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="documentApproved.go"> <i
-							class="bi bi-file-earmark-check-fill"></i> <span>완료</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="documentReject.go"> <i
-							class="bi bi-file-earmark-break-fill"></i> <span>반려</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="documentReference.go"> <i
-							class="bi bi-file-earmark-arrow-up-fill"></i> <span>참조</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="documentDraft.go"> <i
-							class="bi bi-file-earmark-arrow-up-fill"></i> <span>임시저장</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="documentWrite.go"> <i
-							class="bi bi-file-earmark-arrow-up-fill"></i> <span>양식 만들기</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
+					<li class="dropD-item">
+						<a href="driveInfo.go"> 
+							<i class="fa-solid fa-road"></i> 
+							<span>운행현황</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="dispatchList.go"> 
+							<i class="fa-solid fa-user-tie"></i> 
+							<span>배차현황</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="busDispatch.go"> 
+							<i class="fa-solid fa-user-tie"></i> 
+							<span>배차관리</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="busDetail.go"> 
+							<i class="bi bi-bus-front"></i> 
+							<span>버스관리</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
 
-			<li><a href="orgChart.go"> <i class="bi bi-diagram-3-fill"></i>
-					<span>조직도</span> <i class="fa-solid fa-angle-right"></i>
-			</a></li>
+			<li style="position: relative;">
+				<a href="chatList.go"> 
+					<i class="bi bi-chat-left-text-fill"></i> 
+					<span>메신져</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+				<div id="newMessageIndicator" class="newMessageIndicator"></div>
+			</li>
 
-			<li class="dropD"><a href="javaScript:void();"> <i
-					class="bi bi-layout-text-window-reverse"></i> <span>게시판</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
+			<li class="dropD">
+				<a href="javaScript:void(0);"> 
+					<i class="bi bi-envelope-fill"></i> 
+					<span>메일함</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+				<ul class="dropD-menu">
+					<li class="dropD-item">
+						<a href="mailWrite.go"> 
+							<i class="bi bi-envelope-paper-fill"></i> 
+							<span>메일작성</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="mail.go?tabData=receive"> 
+							<i class="bi bi-envelope-paper-fill"></i> 
+							<span>받은 메일함</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="mail.go?tabData=send"> 
+							<i class="bi bi-send"></i> 
+							<span>보낸 메일함</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="mail.go?tabData=draft"> 
+							<i class="bi bi-envelope-exclamation-fill"></i> 
+							<span>임시저장</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="mail.go?tabData=trash"> 
+							<i class="bi bi-trash-fill"></i> 
+							<span>휴지통</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
+
+
+			<li class="dropD">
+				<a href="javaScript:void();"> 
+					<i class="fa-regular fa-clipboard"></i> 
+					<span>결재문서</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="noticeBoard.go"> <i
-							class="bi bi-megaphone-fill"></i> <span>공지사항</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="freeBoard.go"> <i
-							class="bi bi-window-stack"></i> <span>자유 게시판</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
+					<li class="dropD-item">
+						<a href="documentPending.go"> 
+							<i class="bi bi-file-text-fill"></i> 
+							<span>대기</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="documentBoard.go"> 
+							<i class="bi bi-file-text-fill"></i> 
+							<span>진행중</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="documentApproved.go"> 
+							<i class="bi bi-file-earmark-check-fill"></i> 
+							<span>완료</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="documentReject.go"> 
+							<i class="bi bi-file-earmark-break-fill"></i> 
+							<span>반려</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="documentReference.go"> 
+							<i class="bi bi-file-earmark-arrow-up-fill"></i> 
+							<span>참조</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="documentDraft.go"> 
+							<i class="bi bi-file-earmark-arrow-up-fill"></i> 
+							<span>임시저장</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="documentWrite.go"> 
+							<i class="bi bi-file-earmark-arrow-up-fill"></i> 
+							<span>양식 만들기</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
 
+			<li>
+				<a href="orgChart.go"> 
+					<i class="bi bi-diagram-3-fill"></i>
+					<span>조직도</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
 
-			<li class="dropD"><a href="javaScript:void(0);"> <i
-					class="fa-regular fa-calendar-check"></i> <span>회의실</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
+			<li class="dropD">
+				<a href="javaScript:void();"> 
+					<i class="bi bi-layout-text-window-reverse"></i> 
+					<span>게시판</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="meetingRoomCalendar.do"> <i
-							class="fa-regular fa-calendar-check"></i> <span>회의실 예약</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="myReserve.go"> <i
-							class="fa-regular fa-calendar-check"></i> <span>내 예약 현황</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="roomInfo.go"> <i
-							class="fa-regular fa-calendar-check"></i> <span>회의실 관리</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
+					<li class="dropD-item">
+						<a href="noticeBoard.go"> 
+							<i class="bi bi-megaphone-fill"></i> 
+							<span>공지사항</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="freeBoard.go"> 
+							<i class="bi bi-window-stack"></i> 
+							<span>자유 게시판</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
+
+
+			<li class="dropD">
+				<a href="javaScript:void(0);"> 
+					<i class="fa-regular fa-calendar-check"></i> 
+					<span>회의실</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+
+				<ul class="dropD-menu">
+					<li class="dropD-item">
+						<a href="meetingRoomCalendar.do"> 
+							<i class="fa-regular fa-calendar-check"></i> 
+							<span>회의실 예약</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="myReserve.go"> 
+							<i class="fa-regular fa-calendar-check"></i> 
+							<span>내 예약 현황</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="roomInfo.go"> 
+							<i class="fa-regular fa-calendar-check"></i> 
+							<span>회의실 관리</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
 
 			<!-- 종원 기자재 -->
-			<li class="dropD"><a href="javaScript:void(0);"> <i
-					class="fa-regular fa-calendar-check"></i> <span>기자재</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
+			<li class="dropD">
+				<a href="javaScript:void(0);"> 
+					<i class="fa-regular fa-calendar-check"></i> 
+					<span>기자재</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="material.go"> <i
-							class="fa-regular fa-calendar-check"></i> <span>기자재 관리</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
+					<li class="dropD-item">
+						<a href="material.go"> 
+							<i class="fa-regular fa-calendar-check"></i> 
+							<span>기자재 관리</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
 
 
 			<!-- 관욱수정 2024.12.12 시작 -->
-			<li class="dropD"><a href="javaScript:void();"> <i
-					class="bi bi-person-vcard"></i> <span>사원관리</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
+			<li class="dropD">
+				<a href="javaScript:void();"> 
+					<i class="bi bi-person-vcard"></i> 
+					<span>사원관리</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="empList.go"> <i
-							class="bi bi-person-vcard"></i> <span>사원목록</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="empCreate.go"> <i
-							class="bi bi-person-vcard"></i> <span>사원등록</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-				</ul></li>
+					<li class="dropD-item">
+						<a href="empList.go"> 
+							<i class="bi bi-person-vcard"></i> 
+							<span>사원목록</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="empCreate.go"> 
+							<i class="bi bi-person-vcard"></i> 
+							<span>사원등록</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
+			</li>
 
 			<!-- 관욱수정 2024.12.12 끝 -->
-			<li class="dropD"><a href="javaScript:void();"> <i
-					class="bi bi-bar-chart-fill"></i> <span>매출현황</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a>
+			<li class="dropD">
+				<a href="javaScript:void();"> 
+					<i class="bi bi-bar-chart-fill"></i> 
+					<span>매출현황</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
 
 				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="monthlyChart.go"> <i
-							class="bi bi-bar-chart-fill"></i> <span>월별현황</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="yearlyChart.go"> <i
-							class="bi bi-graph-up"></i> <span>연별현황</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
+					<li class="dropD-item">
+						<a href="monthlyChart.go"> 
+							<i class="bi bi-bar-chart-fill"></i> 
+							<span>월별현황</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					<li class="dropD-item">
+						<a href="yearlyChart.go"> 
+							<i class="bi bi-graph-up"></i> 
+							<span>연별현황</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
 					<!-- <li class="dropD-item"><a href="javaScript:void();"> <i
 							class="bi bi-file-earmark-bar-graph-fill"></i> <span>매출등록</span>
 							<i class="fa-solid fa-angle-right"></i>
 					</a></li> -->
-				</ul></li>
-
-			<li class="dropD"><a href="javaScript:void();"> <i
-					class="bi bi-wallet-fill"></i> <span>지출정산</span> <i class="fa-solid fa-angle-right"></i>
-			</a>
-				<ul class="dropD-menu">
-					<li class="dropD-item"><a href="expenseMonthly.go"> <i
-							class="bi bi-bar-chart-fill"></i> <span>월별현황</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
-					<li class="dropD-item"><a href="expenseYearly.go"> <i
-							class="bi bi-graph-up"></i> <span>연별현황</span> <i
-							class="fa-solid fa-angle-right"></i>
-					</a></li>
 				</ul>
-			</li></i> <span>지출정산</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a></li>
+			</li>
 
-
+			<li class="dropD">
+				<a href="javaScript:void();"> 
+					<i class="bi bi-wallet-fill"></i> 
+					<span>지출정산</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+				<ul class="dropD-menu">
+					<li class="dropD-item">
+						<a href="expenseMonthly.go"> 
+							<i class="bi bi-bar-chart-fill"></i> 
+							<span>월별현황</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+					
+					<li class="dropD-item">
+						<a href="expenseYearly.go"> 
+							<i class="bi bi-graph-up"></i> 
+							<span>연별현황</span> 
+							<i class="fa-solid fa-angle-right"></i>
+						</a>
+					</li>
+				</ul>
 
 			<li class="sidebar-header"></li>
-			<li><a href="alarm.go"> <i
-					class="fa-regular fa-bell"></i> <span>알림</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a></li>
-			<li><a href="myDetail.go?emp_idx=${sessionScope.loginId}"> <i
-					class="bi bi-person-fill-gear"></i> <span>내 정보관리</span> <i
-					class="fa-solid fa-angle-right"></i>
-			</a></li>
-<<<<<<< HEAD
-			
+			<li>
+				<a href="alarm.go">  
+					<i class="fa-regular fa-bell"></i> 
+					<span>알림</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
+			<li>
+				<a href="myDetail.go?emp_idx=${sessionScope.loginId}"> 
+					<i class="bi bi-person-fill-gear"></i> 
+					<span>내 정보관리</span> 
+					<i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
+
 			<!-- 관욱추가 시작 2025.01.05 -->
 			<li><a href="accessManage.go"> 
 			    <i class="bi bi-shield-check"></i> 
-			    <span>권한관리</span> 
+		    	<span>권한관리</span> 
 			    <i class="fa-solid fa-angle-right"></i>
 			</a></li>
 			<!-- 관욱추가 끝 2025.01.05 -->
@@ -330,11 +462,6 @@ var loginId = ${sessionScope.loginId};
 					<i class="fa-solid fa-angle-right"></i> 
 				</a>
 			</li>
-=======
-			<li><a href="logout.do"><i
-					class="fa-solid fa-right-to-bracket"></i> <span>로그아웃</span> <i
-					class="fa-solid fa-angle-right"></i> </a></li>
->>>>>>> origin/master
 
 		</ul>
 

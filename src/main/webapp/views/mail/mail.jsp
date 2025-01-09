@@ -21,9 +21,7 @@
 	.dashboard-body{
 	    margin-left: 14vw;
 	    width: 85vw;
-	    margin-top: 7vh;
 	    flex-wrap: wrap;
-	    padding: 2vh;
 	    height: 92%;
 	    display: flex;
 	    flex-direction: column;
@@ -34,6 +32,14 @@
 	.maintext{
 		display: flex;
 		margin-left: 10px;
+		font-size: 32px;
+		font-weight: bold;
+		gap: 20px;
+	    align-items: center;
+	    margin-bottom: 20px;
+	}
+	.lPurple {
+		color: #8B6AA7;
 	}
 	.mail{
 		color: var(--secondary-color);
@@ -280,8 +286,9 @@ table.my-table a:hover {
  <c:set var="tabData" value="${param.tabData}" />
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="mail">메일함</h3>
-			<h3>>&nbsp;&nbsp;받은 메일함</h3>
+			<span class="lPurple">메일함</span>
+			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+			<span class="purple"></span>
 		</div>
 		<div class="mailbox">
 			<div class="mailnav">
@@ -478,7 +485,7 @@ table.my-table a:hover {
 	            });
 
 	            // 제목 업데이트
-	            $('.maintext').find(':last-child').html('>&nbsp;&nbsp;' + $(this).text());
+	            $('.maintext').find(':last-child').html($(this).text());
 	        } else {
 	            $(this).css({
 	                "color": "var(--secondary-color)",

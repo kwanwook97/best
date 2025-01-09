@@ -177,7 +177,6 @@
 	position: relative;
 }
 
-
   </style>
 </head>
  <jsp:include page="../main/header.jsp"></jsp:include>
@@ -191,13 +190,13 @@
  		</ul>
  		<ul class="sidebar-menu">
  			<li>
- 				<a href="#">
+ 				<a href="documentPending.go">
           			<i class="fa-regular fa-clipboard"></i> <span>결재 할 문서</span>
           			<i class="fa-solid fa-angle-right"></i>
         		</a>
  			</li>
  			<li>
- 				<a href="#">
+ 				<a href="mail.go">
           			<i class="bi bi-envelope-fill"></i><span>새로운 메일</span>
           			<i class="fa-solid fa-angle-right"></i>
         		</a>
@@ -213,13 +212,13 @@
  			</li>
  		</ul>
  	</div>
- 	<div class="drive-info">
+ 	<div class="drive-info" onclick="location.href='driveInfo.go'">
  		<div class="drive-info2"><span>현재 운행 정보</span></div>
  		<div class="drive-info3"> 		
  			
  		</div>
  	</div>
- 	<div class="year-graph">
+ 	<div class="year-graph" onclick="location.href='yearlyChart.go'">
  		<div><span>연간 매출</span></div>
  		<div class="year-graph2">
  			<div>

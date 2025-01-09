@@ -29,5 +29,9 @@ public interface LoginDAO {
 	// 관리자 로그인
 	AdminDTO getAdminById(String id);
 
+	EmployeeDTO findByIdAndEmail(int empIdx, String email);
+
+	int chagePassword(int empIdx, String newPassword);
+
 
 }

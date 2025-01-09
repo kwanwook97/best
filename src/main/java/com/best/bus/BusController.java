@@ -199,7 +199,7 @@ public class BusController {
 	            result.put("success", true);
 	        } else {
 	            result.put("success", false);
-	            result.put("message", "중복된 데이터가 존재합니다.");
+	            result.put("message", "이미 등록된 배차입니다.");
 	        }
 	    } catch (Exception e) {
 	        result.put("success", false);

@@ -24,7 +24,9 @@
 				
 		</div>
 	</div>
-	<div class="date-navigation">
+    <div class="body-content">
+    <div class="dispatch-insert">
+    <div class="date-navigation">
       <div class="date-content">
         <button class="date-button"><i class="fas fa-angle-double-left"></i></button>
         <button class="date-button"><i class="fas fa-angle-left"></i></button>
@@ -32,13 +34,7 @@
         <button class="date-button"><i class="fas fa-angle-right"></i></button>
         <button class="date-button"><i class="fas fa-angle-double-right"></i></button>
       </div>
-      <div class="search-bar-container">
-        <input type="text" class="search-bar" placeholder="검색"> 
-        <i class="fas fa-search search-icon"></i>
-      </div>
     </div>
-    <div class="body-content">
-    <div class="dispatch-insert">
     	<form id="dispatchForm">
   <div class="body2">
     <div class="content">

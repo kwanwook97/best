@@ -24,5 +24,7 @@ public interface AlarmDAO {
 
 	int getUnreadAlarmCount(int empIdx);
 
+	List<Map<String, Object>> getUpcomingBorrowEvents();
+
 
 }
