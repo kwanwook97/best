@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
@@ -121,6 +122,7 @@
 </head>
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
+  <c:set var="empIdx" value="${sessionScope.loginId}" />
   <div class="dashboard-body">
     <div class="maintext">
       <h3 class="mail">메일함</h3>
@@ -177,6 +179,7 @@
 <script>
 $(document).ready(function () {
   var mailIdx = '${param.idx}';
+  var emp_idx = ${empIdx}; // 작성자 사번
 
   // AJAX 요청
   $.ajax({
@@ -190,7 +193,7 @@ $(document).ready(function () {
       var fileList = response.fileList; // 첨부파일 데이터 추가
 
       // 보낸 사람인지 확인
-      if (senderDto.sender_idx === 1) {
+      if (senderDto.sender_idx === emp_idx) {
     	// 보낸 사람이면 "전달" 및 "답장하기" 버튼 숨김
         $('.forward-btn').hide();
         $('.reply-btn').hide();  

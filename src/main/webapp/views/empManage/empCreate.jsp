@@ -14,11 +14,23 @@
   margin-left: 320px;
 }
 
+body .body {
+   transform: scale(0.56); /* 67%로 축소 */
+   transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
+   width: 150%; /* 축소에 따른 여백 보정 */
+   overflow-x: hidden; /* 가로 스크롤 제거 */
+   position: absolute;
+   top: 1px;
+   left: -37px;
+   height: 187%;
+ }
+
 .naviPath {
-  font-size: 24px;
+  font-size: 49px;
   font-weight: bold;
   margin-bottom: 20px;
 }
+
 
 .lPurple {
   color: #8B6AA7;

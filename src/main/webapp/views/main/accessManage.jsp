@@ -282,6 +282,7 @@ table tr.selected-page {
 
 .search {
   position: relative;
+  flex-grow: 1; /* 검색창이 가능한 넓게 확장 */
 }
 
 .search input {
@@ -364,9 +365,7 @@ button.btn-add-page:hover {
   <jsp:include page="../main/adminHeader.jsp"/>
 
   <div class="body">
-    <div class="naviPath">
-      권한 관리
-    </div>
+    <div class="naviPath">권한 관리</div>
 
     <div class="content">
        <!-- Left Panel -->

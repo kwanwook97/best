@@ -39,6 +39,17 @@
 	width: 45%;
 	display: none;
 }
+/* 텍스트 선택 시 배경색과 글자색 지정 */
+::selection {
+  background-color: #FFEB3B; /* 노란색 배경 */
+  color: #000; /* 검정색 텍스트 */
+}
+
+/* 웹킷 기반 브라우저 (크롬, 사파리) 전용 */
+::-webkit-selection {
+  background-color: #FFEB3B; /* 노란색 배경 */
+  color: #000; /* 검정색 텍스트 */
+}
 </style>
 
 <body>
@@ -66,14 +77,41 @@
 		</div>
 		<ul class="sidebar-menu do-nicescrol">
 			<li class="sidebar-header"></li>
-
-			<!-- 관욱추가 시작 2025.01.05 -->
-			<li><a href="accessManage.go"> 
-			    <i class="bi bi-shield-check"></i> 
-			    <span>권한관리</span> 
-			    <i class="fa-solid fa-angle-right"></i>
-			</a></li>
-			<!-- 관욱추가 끝 2025.01.05 -->
+			<li>
+	            <a href="orgChart.go"> 
+	               <i class="bi bi-diagram-3-fill"></i>
+	               <span>조직도</span> 
+	               <i class="fa-solid fa-angle-right"></i>
+	            </a>
+	        </li>
+			<li>
+	            <a href="empList.go"> 
+                    <i class="bi bi-person-vcard"></i> 
+                    <span>사원목록</span> 
+                    <i class="fa-solid fa-angle-right"></i>
+                 </a>
+	        </li>
+			<li>
+				<a href="accessManage.go"> 
+				    <i class="bi bi-shield-check"></i> 
+				    <span>권한관리</span> 
+				    <i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
+			<li>
+				<a href="departManage.go"> 
+				    <i class="bi bi-diagram-3"></i>
+				    <span>부서관리</span> 
+				    <i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
+			<li>
+				<a href="rankManage.go"> 
+				    <i class="bi bi-award"></i> <!-- 수상 -->
+				    <span>직급관리</span> 
+				    <i class="fa-solid fa-angle-right"></i>
+				</a>
+			</li>
 			
 			
 			<li>

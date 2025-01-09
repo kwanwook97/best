@@ -218,6 +218,8 @@ tr input[type='text'] {
 		text-align: right;
 	}
 	
+	
+	
   /* Placeholder 스타일 적용 */
   input::placeholder {
     color: #888 !important; /* 원하는 색상으로 변경 */
@@ -228,10 +230,6 @@ tr input[type='text'] {
     color: #888 !important; /* 텍스트 영역 placeholder 색상 */
     opacity: 1 !important;
   }
-  
-  
-  
-  
   
   
 .receiver-item {
@@ -378,7 +376,7 @@ autoComplete div:hover {
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
   <jsp:include page="../modal/findAdd.jsp"></jsp:include>
-  <c:set var="emp_idx" value="${param.emp_idx}" />
+  <c:set var="empIdx" value="${sessionScope.loginId}" />
   <div class="dashboard-body">
     <div class="maintext">
       <h3 class="mail">메일함</h3>
@@ -489,6 +487,8 @@ autoComplete div:hover {
 	                    <i class="fas fa-paper-plane"></i> 메일전송
 	                </button>
 	            </td>
+	            <!-- 0: 발송 1: 임시저장 -->
+				<input type="hidden" name="status"/>
 	        </tr>
 	    </table>
 	</form>
@@ -499,7 +499,7 @@ autoComplete div:hover {
 <script>
 /* 전역 변수 */
 var receiverList = []; // 수신자 및 참조자 데이터를 담을 배열
-var emp_idx = 1; // 작성자 사번
+var emp_idx = "${empIdx}"; // 작성자 사번
 var filesArr = []; // 첨부파일 데이터를 담을 배열
 var mailIdx = '${param.idx}'; // 메일 인덱스
 
@@ -639,8 +639,8 @@ function loadDraftData() {
             $('#hidden_content').val(contentWithDivider); // hidden 필드에 값 업데이트
             editor.setHTMLCode(contentWithDivider); // 에디터에 값 업데이트
             
-            // 내 정보를 receiverListData에서 제거
-            receiverListData = receiverListData.filter(receiver => receiver.receiver_idx !== emp_idx);
+         	// 내 정보를 receiverListData에서 제거
+            receiverListData = receiverListData.filter(receiver => String(receiver.receiver_idx) !== String(emp_idx));
 
             // 보낸사람 데이터를 받는사람 목록에 추가
             if (senderDto) {
