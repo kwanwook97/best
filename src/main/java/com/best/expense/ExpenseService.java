@@ -101,23 +101,69 @@ public class ExpenseService {
 
 
 	// 일별 지출
-	public List<ExpenseDTO> dailyList( String pageName, String startDate, String endDate) {
-		
+	public Map<String, Object> dailyList(String pageName, String ex_date, int page, int cnt) {
+		int offset = (page-1) * cnt;
 		int form_idx = 0;
 		
+		Map<String, Object> result = new HashMap<>();
+		
 		if(pageName.equals("일반")) {
+			
 			form_idx = 3;
-			return expenseDao.dailyList(form_idx, startDate, endDate);
+			int totalPages = expenseDao.allCount(ex_date, cnt, form_idx);		
+			
+			result.put("totalPages", totalPages);
+			result.put("dailyList", expenseDao.dailyList(ex_date, cnt, offset, form_idx));
+	        
 		}else if(pageName.equals("버스관리")) {
+			
 			form_idx = 4;
-			return expenseDao.dailyList(form_idx, startDate, endDate);
+			int totalPages = expenseDao.allCount(ex_date, cnt, form_idx);	
+			
+			result.put("totalPages", totalPages);
+			result.put("dailyList", expenseDao.dailyList(ex_date, cnt, offset, form_idx));
+	        
 		}else if(pageName.equals("급여")) {
+			
 			form_idx = 5;
-			return expenseDao.dailyList(form_idx, startDate, endDate);
-		}else {
-			return expenseDao.dailyList(form_idx, startDate, endDate);
+			int totalPages = expenseDao.allCount(ex_date, cnt, form_idx);	
+			
+			result.put("totalPages", totalPages);
+			result.put("dailyList", expenseDao.dailyList(ex_date, cnt, offset, form_idx));
+	        
 		}
-	
+		return result;
 	}
 	
+
+
+	// 연별 지출 차트
+	public Map<String, long[]> yearlyList(int year) {
+		List<Map<String, Object>> groupedData = expenseDao.yearlyList(year);
+
+	    // 결과 초기화 (12개월, 각 카테고리)
+	    Map<String, long[]> categorizedData = new HashMap<>();
+	    categorizedData.put("basic", new long[12]);
+	    categorizedData.put("bus", new long[12]);
+	    categorizedData.put("emp", new long[12]);
+
+	    // 데이터를 월별로 분류
+	    for (Map<String, Object> row : groupedData) {
+	        int month = (int) row.get("month") - 1; // 0-based index
+	        int formIdx = (int) row.get("form_idx");
+	        long totalAmount = ((Number) row.get("total_amount")).longValue();
+
+	        if (formIdx == 3) {
+	            categorizedData.get("basic")[month] += totalAmount;
+	        } else if (formIdx == 4) {
+	            categorizedData.get("bus")[month] += totalAmount;
+	        } else if (formIdx == 5) {
+	            categorizedData.get("emp")[month] += totalAmount;
+	        }
+	    }
+
+	    return categorizedData;
+	}
+
+
 }

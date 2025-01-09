@@ -23,21 +23,32 @@
 	</select>
 	
 	<!-- 일별 지출 -->
-	<select id="dailyList" resultType="Map">
-	    SELECT 
-	        ex_date, 
-	        ex_item, 
-	        description, 
-	        ex_amount, 
-	        remark
-	    FROM 
-	        expense
-	    WHERE
-	        ex_date BETWEEN #{startDate} AND #{endDate}
-	        <if test="form_idx > 0">
-			    AND form_idx = #{form_idx}
-			</if>
-	    ORDER BY 
-        ex_date ASC
+	<select id="allCount" resultType="int">
+	    SELECT CEIL(COUNT(ex_idx) / #{cnt}) AS pages
+	    FROM expense
+	    WHERE ex_date LIKE #{ex_date} AND form_idx = #{form_idx}
+	</select>
+	<select id="dailyList" resultType="map">
+	    SELECT ex_date, ex_item, description, ex_amount, remark
+	    FROM expense
+	    WHERE ex_date LIKE #{ex_date} AND form_idx = #{form_idx}
+	    ORDER BY ex_idx DESC 
+	    LIMIT #{cnt} OFFSET #{offset}
+	</select>
+	
+	<!-- 연별 지출 차트 -->
+	<select id="yearlyList" resultType="map">
+		SELECT 
+		    MONTH(ex_date) AS month, 
+		    form_idx, 
+		    SUM(ex_amount) AS total_amount
+		FROM 
+		    expense
+		WHERE 
+		    YEAR(ex_date) = #{year}
+		GROUP BY 
+		    MONTH(ex_date), form_idx
+		ORDER BY 
+		    month ASC, form_idx ASC
 	</select>
 </mapper>
