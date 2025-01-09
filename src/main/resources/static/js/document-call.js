@@ -10,7 +10,7 @@ $(document).ready(function() {
             newRow.addClass('copyRow' + rowCount); // 새로운 행에 고유 클래스 추가
 
             // 각 입력 필드의 name 속성 및 ID 수정
-            newRow.find('input').each(function(index) {
+            newRow.find('input, select').each(function(index) {
                 var id = $(this).attr('id');
                 if (id) {
                     // '_숫자'를 제거하고 행 번호 + 순서 번호를 추가

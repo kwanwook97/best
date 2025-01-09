@@ -613,24 +613,15 @@ function docAction(actionType) {
 			var approv_order = (manager === emp_name) ? 2 : 1;
 			console.log("야 "+approv_order);
 			
+			var data = {
+				doc_idx: doc_idx,
+			    form_idx: form_idx,
+			    actionType: actionType,
+		        doc_content: doc_content,
+		        approv_order:approv_order
+			};
+			
 			if(manager === emp_name){
-				/* var item = [];
-				var price = [];
-
-				$('input[data-index]').each(function() {
-				    var index = parseInt($(this).attr('data-index'));
-				    
-				    if ([1, 6, 11, 16].includes(index)) {
-				    	item.push($(this).val());
-				    }
-				    else if ([4, 9, 14, 19].includes(index)) {
-				    	price.push($(this).val());
-				    }
-				});
-
-				console.log("item:", item);
-				console.log("price:", price);   */
-				// 그룹화된 데이터를 저장할 배열
 			    var one = [];
 			    var two = [];
 			    var three = [];
@@ -653,27 +644,12 @@ function docAction(actionType) {
 			            five.push($(this).val());
 			        }
 			    });
-
-			    // 결과 확인용 콘솔 출력
-			    console.log("one:", one);
-			    console.log("two:", two);
-			    console.log("three:", three);
-			    console.log("four:", four);
-			    console.log("five:", five);
+			    if (one.length > 0) data.one = JSON.stringify(one);
+			    if (two.length > 0) data.two = JSON.stringify(two);
+			    if (three.length > 0) data.three = JSON.stringify(three);
+			    if (four.length > 0) data.four = JSON.stringify(four);
+			    if (five.length > 0) data.five = JSON.stringify(five);
 			}
-			
-			var data = {
-					doc_idx: doc_idx,
-				    form_idx: form_idx,
-				    actionType: actionType,
-			        doc_content: doc_content,
-			        approv_order:approv_order,
-			        one: JSON.stringify(one),
-			        two: JSON.stringify(two),
-			        three: JSON.stringify(three),
-			        four: JSON.stringify(four),
-			        five: JSON.stringify(five)
-				};
 
 			$.ajax({
 	            type: 'POST',

@@ -11,7 +11,7 @@
 <script src="resources/js/read-unread.js" type="text/javascript"></script>
 <script src="resources/js/documentDetail.js" type="text/javascript"></script>
 <style>
-input, textarea, #approvalModal, button{
+input, textarea, #approvalModal, button, select, option{
 	pointer-events: auto;  /* input과 textarea는 마우스 이벤트 허용 */
 }
 .docnav {
@@ -212,6 +212,10 @@ input.manager, input.today2, input.today3{
     background: none; /* 배경 제거 */
     padding: 0; /* 여백 제거 */
     font: inherit; /* 상속받은 글꼴 사용 */
+}
+select option{
+	background: white;
+}
 }
 </style>
 </head>
@@ -478,9 +482,15 @@ function btnAction(actionType) {
 	    console.log("아니!!!!!!!!!!!!!!!!!!"+ managerIds);
 	    
 	    var values = [];
-	    $('input[data-index]').each(function() {
-	        values.push($(this).val());
+	    $('input[data-index], select[data-index]').each(function() {
+	        if ($(this).is('select')) {
+	            values.push($(this).val() || '');
+	        } else {
+	            values.push($(this).val());
+	        }
 	    });
+	    console.log("잘 쳐 나오라고",values);
+	    
 	    
 	    if(actionType == '수정기안' || actionType == '수정'){
 	    	updatedHtml = updatedHtml.replace(
@@ -577,22 +587,99 @@ function btnAction(actionType) {
 		        break;
 		        
 		    case '3':
-		    	if(actionType == '수정기안' || actionType == '기안'){
+		    case '4':
+		    case '5':
+		    	if (actionType == '수정기안' || actionType == '기안') {
 		    		for (var i = 0; i < values.length; i++) {
-		    		    var value = values[i];  // values 배열에서 값 가져오기
-		    		    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
+		    		    var value = values[i];
+		    		    var dataIndex = i + 1;
+		    		    console.log('Processing value:', value);
+		    		    console.log('Initial updatedHtml:', updatedHtml);
 
-		    		    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
+		    		 	// 정규식으로 찾기 (태그 내용 무시)
+						var specificSelectTag1 = updatedHtml.match(
+						    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>', 'g')
+						);
+						console.log('Specific select tag for data-index="2" (no content):', specificSelectTag1);
+						
+						// 정규식으로 찾기 (태그 내용 포함)
+						var specificSelectTag2 = updatedHtml.match(
+						    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>(.*?)<\/select>', 'g')
+						);
+						console.log('Specific select tag for data-index="2" (with content):', specificSelectTag2);
+						
+						// 대체 로직으로 찾기
+						var allSelectTags = updatedHtml.match(/<select[^>]*>/g);
+						var specificSelectTag3 = null;
+						
+						if (allSelectTags) {
+						    specificSelectTag3 = allSelectTags.find(tag => tag.includes('data-index="2"'));
+						    console.log('Specific select tag for data-index="2" using alternative logic:', specificSelectTag3);
+						}
 
-		    		    // 정규식을 통해 input 태그 수정
+
+		    		    // 대체 로직으로 특정 태그 찾기
+		    		    var allSelectTags = updatedHtml.match(/<select[^>]*>/g);
+		    		    if (allSelectTags) {
+		    		        for (var tag of allSelectTags) {
+		    		            if (tag.includes('data-index="2"')) {
+		    		                console.log('Matched specific select tag using alternative logic:', tag);
+		    		            }
+		    		        }
+		    		    }
+
+		    		    // 태그내용 없음
+		    		    var specificSelectTag1 = updatedHtml.match(
+		    		    	    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>', 'g')
+		    		    	);
+		    		    	console.log('Specific select tag for data-index="2" (no content):', specificSelectTag1);
+		    		    	
+		    		    // 태그내용 있음
+	    		    	var specificSelectTag2 = updatedHtml.match(
+	    		    		    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>([\\s\\S]*?)<\\/select>', 'g')
+	    		    		);
+	    		    		console.log('Specific select tag for data-index="2" (with content):', specificSelectTag2);
+		    		    
+		    		    // 정규식 확인
+		    		    var regex = new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>(.*?)<\/select>', 'g');
+		    		    console.log('Testing regex for data-index=' + dataIndex, regex.test(updatedHtml));
+
+		    		    
+		    		    // select 태그 처리
+		    		    updatedHtml = updatedHtml.replace(
+						    new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>([\\s\\S]*?)<\\/select>', 'g'),
+						    function (match, group1, group2) {
+						        console.log('Processing select with data-index=' + dataIndex);
+						        console.log('Value to match:', value);
+						
+						        // 선택된 option 값을 찾기
+						        var selectedText = ''; // 선택된 옵션 텍스트 저장
+						        group2.replace(
+						            /<option([^>]*value=["\'](.*?)["\']|[^>]*)>(.*?)<\/option>/g,
+						            function (optionMatch, optionGroup1, optionValue, optionText) {
+						                if (optionMatch.includes('selected')) {
+						                    selectedText = optionText.trim(); // 선택된 옵션 텍스트
+						                }
+						                return optionMatch;
+						            }
+						        );
+						
+						        console.log('Selected option text:', selectedText);
+						
+						        // input 태그로 변환
+						        var inputTag = '<input' + group1 + ' value="' + selectedText + '">';
+						        console.log('Generated input tag:', inputTag);
+						
+						        return inputTag;
+						    }
+						);
+
+
+		    		    // input 태그 처리
 		    		    updatedHtml = updatedHtml.replace(
 		    		        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'),
 		    		        function (match, group1, group2) {
-		    		            console.log('Matched input:', match); // 매칭된 input 태그 확인
-		    		            console.log('Group1:', group1); // data-index 속성 포함 부분
-		    		            console.log('Group2:', group2); // 나머지 속성 부분
-
-		    		            // 기존 value 속성을 새 값으로 교체하거나 추가
+		    		            console.log('Processing input with data-index=' + dataIndex);
 		    		            if (/value=["\'].*?["\']/.test(group2)) {
 		    		                group2 = group2.replace(/value=["\'].*?["\']/, 'value="' + value + '"');
 		    		            } else {
@@ -601,14 +688,12 @@ function btnAction(actionType) {
 		    		            return '<input' + group1 + group2 + '>';
 		    		        }
 		    		    );
-
-		    		    // 정규식 매칭 결과 확인
-		    		    var matches = updatedHtml.match(new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'));
-		    		    console.log('Matched inputs for data-index=' + dataIndex + ':', matches);
 		    		}
+		    		
 		    		$('.modal-content:last-child').html(updatedHtml);
 		    		var doc_content = $('.modal-content:last-child .content').html();
-		    		console.log("ㅅㅂ"+doc_content);
+		    		console.log("최종 수정된 HTML: " + doc_content);
+
 		    	}else{
 			        // 동적으로 추가된 input 값들을 updatedHtml에 반영
 					for (var i = 0; i < values.length; i++) { 
@@ -631,6 +716,7 @@ function btnAction(actionType) {
 		        break;
 		        
 		}
+		
 		if(actionType == '수정기안' || actionType == '기안'){
 			$('.modal-content:last-child .content').find('input').each(function () {
 			    $(this).attr('readonly', true);
