@@ -1,13 +1,14 @@
 package com.best.emp;
 
-import java.io.File; 
+import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,7 +54,7 @@ public class EmployeeService {
 	// 사원목록 가져오기
 	public Map<String, Object> empList(Map<String, String> map) {
 		
-		int state = Integer.parseInt(map.get("state"));
+		int enable = Integer.parseInt(map.get("enable"));
 		int page = Integer.parseInt(map.get("page"));
 		int cnt = Integer.parseInt(map.get("cnt"));
 		
@@ -69,7 +73,7 @@ public class EmployeeService {
 		
 		// 검색 조건들을 담을 Map변수
 		Map<String, Object> condition = new HashMap<String, Object>();
-		condition.put("state", state);
+		condition.put("enable", enable);
 		condition.put("page", page);
 		condition.put("cnt", cnt);
 		condition.put("limit", limit);
@@ -160,7 +164,7 @@ public class EmployeeService {
 		    	}
 		    }
 		    
-		// 부서나 직책정보 업데이트인 경우 int형으로 형변환후 condition에 put
+		// 부서나 직급정보 업데이트인 경우 int형으로 형변환후 condition에 put
 		} else if(col.equals("depart_idx") || col.equals("rank_idx")) {
 			int parentFind = Integer.parseInt(params.get("parentFind"));
 			int depart_idx = 0;
@@ -179,11 +183,11 @@ public class EmployeeService {
 			
 			
 			/* 상급자 정보수정 */
-			if (3 < rank_idx && rank_idx < 9) {          // 팀원이라면, 상급자 => 같은 부서의 팀장
+			if (3 < rank_idx) {                         // 팀원이라면, 상급자 => 같은 부서의 팀장
 				// 같은부서 팀장의 정보를 가져와서 put
 				parentCondition.put("rank_idx", 3);	
 				parentCondition.put("depart_idx", depart_idx);	
-			} else if (rank_idx == 3) {                  // 팀장이라면, 상급자 => 같은부서 상무
+			} else if (rank_idx == 3) {                 // 팀장이라면, 상급자 => 같은부서 상무
 			    // 같은부서 상무의 정보를 가져와서 put
 				parentCondition.put("rank_idx", 2);	
 				parentCondition.put("depart_idx", depart_idx);
@@ -202,9 +206,9 @@ public class EmployeeService {
 			
 			
 			// 같은부서에 상급자가 있는지 체크
-			int parent_idx = empDAO.parentCheck(condition);
+			Integer parent_idx = empDAO.parentCheck(condition);
 			// 같은부서에 상급자가 없다면, 상급자 => 대표
-			if(parent_idx == 0) {
+			if(parent_idx != null) {
 				parentCondition.put("rank_idx", 1);
 				parentCondition.remove("depart_idx");
 			}
@@ -319,10 +323,28 @@ public class EmployeeService {
 	}
 
 	// 파일 다운로드
-	public ResponseEntity<Resource> fileDownload(String file_name) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<Resource> fileDownload(String fileName) {
+		
+		// 새 파일명 가져오기
+		String new_filename = empDAO.getNewFileName(fileName);
+		
+		//body
+		Resource res = new FileSystemResource("C:/upload/"+new_filename);
+		
+		//header
+		HttpHeaders header = new HttpHeaders();		
+		header.add("content-type", "application/octet-stream");
+		try {
+			String filename = URLEncoder.encode(fileName, "UTF-8");
+			header.add("content-Disposition", "attechment;filename=\""+filename+"\"");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		
+		//body, header, status
+		return new ResponseEntity<Resource>(res, header, HttpStatus.OK);
 	}
+
 
 	// 기사정보 관리
 	public int driverUpsert(Map<String, String> params) {
@@ -502,6 +524,38 @@ public class EmployeeService {
 		}
 		
 		return map;
+		
+	}
+	
+	// 프로필 사진 업데이트
+	@Transactional
+	public int updateProfilePhoto(String empIdx, MultipartFile photoFile) {
+	    int row = 0;
+
+	    // 기존 파일명 가져오기
+	    String oldFileName = empDAO.getPhotoFileName(empIdx);
+
+	    try {
+	        // 새 파일 저장
+	        String newFileName = UUID.randomUUID().toString() + photoFile.getOriginalFilename();
+	        Path newFilePath = Paths.get("C:/upload/" + newFileName);
+	        Files.write(newFilePath, photoFile.getBytes());
+
+	        // DB 업데이트
+	        row = empDAO.updatePhotoFile(empIdx, newFileName);
+
+	        // 기존 파일 삭제
+	        if (oldFileName != null && !oldFileName.isEmpty()) {
+	            File oldFile = new File("C:/upload/" + oldFileName);
+	            if (oldFile.exists()) {
+	                oldFile.delete();
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+
+	    return row;
 	}
 
 }

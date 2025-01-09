@@ -41,6 +41,20 @@ var loginId = ${sessionScope.loginId};
 .spanAction {
    width: 45%;
    display: none;
+<<<<<<< HEAD
+=======
+}
+/* 텍스트 선택 시 배경색과 글자색 지정 */
+::selection {
+  background-color: #FFEB3B; /* 노란색 배경 */
+  color: #000; /* 검정색 텍스트 */
+}
+
+/* 웹킷 기반 브라우저 (크롬, 사파리) 전용 */
+::-webkit-selection {
+  background-color: #FFEB3B; /* 노란색 배경 */
+  color: #000; /* 검정색 텍스트 */
+>>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
 }
 </style>
 
@@ -331,14 +345,23 @@ var loginId = ${sessionScope.loginId};
          </li>
 
          <!-- 종원 기자재 -->
+<<<<<<< HEAD
          <li>
             <a href="material.go"> 
+=======
+         <li class="dropD">
+            <a href="javaScript:void(0);"> 
+>>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
                <i class="fa-regular fa-calendar-check"></i> 
                <span>기자재</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
 
+<<<<<<< HEAD
 <!--             <ul class="dropD-menu">
+=======
+            <ul class="dropD-menu">
+>>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
                <li class="dropD-item">
                   <a href="material.go"> 
                      <i class="fa-regular fa-calendar-check"></i> 
@@ -346,7 +369,11 @@ var loginId = ${sessionScope.loginId};
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
+<<<<<<< HEAD
             </ul> -->
+=======
+            </ul>
+>>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
          </li>
 
 
@@ -446,6 +473,7 @@ var loginId = ${sessionScope.loginId};
             </a>
          </li>
 
+<<<<<<< HEAD
          <!-- 관욱추가 시작 2025.01.05 -->
          <li><a href="accessManage.go"> 
              <i class="bi bi-shield-check"></i> 
@@ -453,6 +481,8 @@ var loginId = ${sessionScope.loginId};
              <i class="fa-solid fa-angle-right"></i>
          </a></li>
          <!-- 관욱추가 끝 2025.01.05 -->
+=======
+>>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
          
          
          <li>
@@ -475,7 +505,11 @@ var loginId = ${sessionScope.loginId};
                      <i class="bi bi-clock-history"></i>
                        <button class="btn-start-work" onclick="updateStartTime()">출근</button>
                      <span class="spanAction"> 
+<<<<<<< HEAD
                           <span></span>   ~ <span></span>
+=======
+                          <span>startTime </span>   ~ <span>endTime</span>
+>>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
                      </span>
                        <button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
                    </div>
@@ -773,7 +807,6 @@ function checkButton(){
        if (data.ipMsg == '불일치') {
     	   ipMsg = '불일치'; 
 		}
-        
     })
     .catch(error => {
         console.error('출근 처리 오류:', error);

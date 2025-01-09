@@ -298,8 +298,110 @@ public class RoleController {
         }
         return response;
     }
+    
+    // 직급관리 페이지로 이동
+    @RequestMapping(value = "/rankManage.go")
+    public String rankManage(HttpSession session) {
+    	
+    	return "main/rankManage";
+    }
+    
+    // 부서관리 페이지로 이동
+    @RequestMapping(value = "/departManage.go")
+    public String departManage(HttpSession session) {
+    	
+    	return "main/departManage";
+    }
+    
+    // 직급 추가
+    @PostMapping("/addRank.ajax")
+    @ResponseBody
+    public Map<String, Object> addRank(@RequestParam String rankName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.addRank(rankName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+    
+    // 직급 변경
+    @PostMapping("/updateRank.ajax")
+    @ResponseBody
+    public Map<String, Object> updateRank(@RequestParam int rankIdx, @RequestParam String rankName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.updateRank(rankIdx, rankName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
 
+    // 직급 삭제
+    @PostMapping("/deleteRank.ajax")
+    @ResponseBody
+    public Map<String, Object> deleteRank(@RequestParam int rankIdx) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.deleteRank(rankIdx);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
     
-    
-    
+    // 부서 추가
+    @PostMapping("/addDepartment.ajax")
+    @ResponseBody
+    public Map<String, Object> addDepartment(@RequestParam String departName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.addDepartment(departName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    // 부서 수정
+    @PostMapping("/updateDepartment.ajax")
+    @ResponseBody
+    public Map<String, Object> updateDepartment(@RequestParam int departIdx, @RequestParam String departName) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.updateDepartment(departIdx, departName);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    // 부서 삭제
+    @PostMapping("/deleteDepartment.ajax")
+    @ResponseBody
+    public Map<String, Object> deleteDepartment(@RequestParam int departIdx) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            int result = roleService.deleteDepartment(departIdx);
+            response.put("success", result > 0);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+
 }

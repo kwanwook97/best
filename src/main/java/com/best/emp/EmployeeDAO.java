@@ -49,7 +49,7 @@ public interface EmployeeDAO {
 	int empCreate(EmployeeDTO empDTO);
 
 	// 상급자 존재여부 체크
-	int parentCheck(Map<String, Object> condition);
+	Integer parentCheck(Map<String, Object> condition);
 	
 	// 상급자정보 업데이트
 	int parentUpdate(Map<String, Object> parentCondition);
@@ -67,5 +67,13 @@ public interface EmployeeDAO {
 
 	void insertEmpHistory(Map<String, Object> params);
 	
+	// 기존 프로필 사진 파일명 가져오기
+	String getPhotoFileName(String empIdx);
+
+	// 새 프로필 사진 파일명 업데이트
+	int updatePhotoFile(String empIdx, String newFileName);
+
+	// 새 파일이름 가져오기
+	String getNewFileName(String fileName);
 
 }

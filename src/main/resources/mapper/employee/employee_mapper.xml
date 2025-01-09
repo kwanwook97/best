@@ -24,7 +24,7 @@
         INNER JOIN 
             rank_emp rp 
             ON ee.rank_idx = rp.rank_idx
-        WHERE state = #{state}
+        WHERE enable = #{enable}
         <if test="searchKeyword != null and searchKeyword != ''">
             <choose>
                 <when test="searchFilter == 'name'">
@@ -47,7 +47,7 @@
         INNER JOIN 
             department dt 
             ON ee.depart_idx = dt.depart_idx
-        WHERE state = #{state} 
+        WHERE enable = #{enable} 
         <if test="searchKeyword != null and searchKeyword != ''">
             <choose>
                 <when test="searchFilter == 'name'">
@@ -199,6 +199,13 @@
 		AND file_name = #{file_name}
 	</select>
 	
+	<!-- 새 파일명 정보 가져오기 -->
+	<select id="getNewFileName" parameterType="String">
+		SELECT newfile_name FROM attachment
+		WHERE attach_category = 3
+		AND file_name = #{file_name}
+	</select>
+	
 	<!-- 파일삭제 -->
 	<delete id="fileDel" parameterType="map">
 		DELETE FROM attachment
@@ -209,12 +216,22 @@
 	
 	<!-- 파일업로드 -->
 	<insert id="fileUpload" parameterType="map">
-		INSERT INTO attachment(attach_category, idx_num, file_name, newfile_Name)
+		INSERT INTO attachment(attach_category, idx_num, file_name, newfile_name)
 		VALUES(3, #{emp_idx}, #{fileName}, #{newFileName})
 	</insert>
 
 	
 	
+	<!-- 기존 프로필 사진 파일명 가져오기 -->
+	<select id="getPhotoFileName" resultType="String">
+	    SELECT photo FROM employee WHERE emp_idx = #{empIdx}
+	</select>
+	
+	
+	<!-- 새 프로필 사진 파일명 업데이트 -->
+	<update id="updatePhotoFile">
+	    UPDATE employee SET photo = #{newFileName} WHERE emp_idx = #{empIdx}
+	</update>
 	
 	
 	
@@ -268,6 +285,20 @@
 			#{password}	
 		)
 	</insert>
+	
+	<!-- 상급자 가져오기 -->
+	<select id="getParent" parameterType="int">
+        SELECT position_idx, position_name
+        FROM positions
+        ORDER BY position_idx ASC
+	</select>
+	
+	<!-- 내 직급순위 가져오기 -->
+	<select id="getMyPosition">
+		SELECT position_idx
+		FROM rank_emp
+		WHERE rank_idx = #{rank_idx}
+	</select>
 	
 	<!-- 상급자 존재여부 체크 -->
 	<select id="parentCheck" parameterType="map">
@@ -324,7 +355,7 @@
         LEFT JOIN
         	driver dr
         	ON ee.emp_idx = dr.emp_idx
-        WHERE state = 1
+        WHERE enable = 1
         <if test="depart_idx != null">
         	AND dt.depart_idx = #{depart_idx}
         </if>
