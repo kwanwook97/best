@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
@@ -13,9 +14,19 @@
   margin-top: 110px;
   margin-left: 320px;
 }
+ body .body {
+    transform: scale(0.56); /* 67%로 축소 */
+    transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
+    width: 150%; /* 축소에 따른 여백 보정 */
+    overflow-x: hidden; /* 가로 스크롤 제거 */
+    position: absolute;
+    top: 1px;
+    left: -37px;
+    height: 187%;
+  }
 
 .naviPath {
-  font-size: 24px;
+  font-size: 49px;
   font-weight: bold;
   margin-bottom: 20px;
 }
@@ -28,7 +39,7 @@
   color: #30005A;
 }
 
-.normalBtn {
+.normalBtn, .deleteFileBtn, saveFileBtn {
   background-color: #30005A;
   color: #fff;
   font-weight: bold;
@@ -311,7 +322,12 @@ form{
 <body class="bg-theme bg-theme1">
   <c:set var="emp_idx" value="${param.emp_idx}" />
 
-  <jsp:include page="../main/header.jsp"></jsp:include>
+  <sec:authorize access="!hasAuthority('ROLE_ADMIN')">
+  	<jsp:include page="../main/header.jsp"></jsp:include>
+  </sec:authorize>
+  <sec:authorize access="hasAuthority('ROLE_ADMIN')">
+  	<jsp:include page="../main/adminHeader.jsp"></jsp:include>
+  </sec:authorize>
   <!-- 기본 모달, 사원정보 변경 모달 -->
   <jsp:include page="../modal/modal.jsp"></jsp:include>
   <!-- 기사정보 관리 모달 -->
@@ -355,8 +371,9 @@ form{
     <div class="content">
       <div class="top-section">
       	<div class="photo-container">
-		    <div class="photo">
+		    <div class="photo" id="photoSection">
 		        <img alt="Profile Photo" src="/photo/${detail.photo}"/>
+		        <input type="file" id="profileUpload" name="photoFile" accept="image/*" style="display: none;" />
 		    </div>
 		    <div class="photo-bottom">
 		    	<div class="state">
@@ -421,13 +438,13 @@ form{
               <th>이메일</th>
               <td>${detail.email}</td>
               <th>전화번호</th>
-              <td>${detail.phone}</td>
+              <td>${detail.phone}<div class="btn_area"><button class="normalBtn" id="phone">변경하기</button></div></td>
             </tr>
             <tr>
               <th>주소</th>
-              <td>${detail.address}</td>
+              <td>${detail.address}<div class="btn_area"><button class="normalBtn" id="address">변경하기</button></div></td>
               <th>핸드폰번호</th>
-              <td>${detail.mobile}</td>
+              <td>${detail.mobile}<div class="btn_area"><button class="normalBtn" id="mobile">변경하기</button></div></td>
             </tr>
             <tr>
               <th>입사일</th>
@@ -469,8 +486,8 @@ form{
             <tr><th>잔여 연차</th><td>${detail.remain_leave}</td></tr>
             <tr><th>연차 시작일</th><td>${detail.lv_start_date}</td></tr>
             <tr><th>연차 종료일</th><td>${detail.lv_end_date}</td></tr>
-            <tr><th>이번 달 근무일수</th><td>${detail.work_cnt}</td></tr>
-            <tr><th>이번 달 연장근로 시간</th><td></td></tr>
+            <tr><th>이번 달 근무일수</th><td>${attendance.workDays}&nbsp;일</td></tr>
+            <tr><th>이번 달 연장근로 시간</th><td>${attendance.totalOverTime} &nbsp;시간</td></tr>
           </table>
         </div>
         <div class="history-info">
@@ -552,9 +569,9 @@ form{
 			
 			<c:forEach items="${detail.fileList}" var="file">
 		        <tr>
-		            <td><a href="fileDownload.do?file_name=${file.file_name}">${file.file_name}</a></td>
+		            <td><a href="fileDownload.do?file_name=${fn:escapeXml(file.file_name)}">${file.file_name}</a></td>
 		            <td>${file.date}</td>
-		            <td><button onclick="delFile(this)" class="normalBtn"><i class="bi bi-trash-fill"></i></button></td>
+		            <td><button onclick="delFile(this)" class="deleteFileBtn"><i class="bi bi-trash-fill"></i></button></td>
 		        </tr>
 		        <c:set var="index" value="${index + 1}" />
 			</c:forEach>
@@ -573,7 +590,7 @@ form{
 			      <td colspan="2"><input type="file" id="fileUpload" name="files" multiple/></td>
 			      <td>
 					<input type="text" name="emp_idx" value="${emp_idx}" hidden/>
-					<button type="submit" class="normalBtn">저장</button>
+					<button type="submit" class="saveFileBtn">저장</button>
 			      </td>
 		      </form>
 		    </tr>
@@ -596,6 +613,13 @@ form{
 	var license = '${detail.license}';         // 면허번호
     var license_period = '${detail.license_period}';  // 면허유효기간
     var certificate = '${detail.certificate}';     // 자격증번호
+    
+    
+ 	// 이미 업로드된 파일 목록 가져오기 (JSP에서 서버에서 전달받은 데이터 활용)
+    var uploadedFiles = [];
+    <c:forEach items="${detail.fileList}" var="file">
+        uploadedFiles.push("${file.file_name}");
+    </c:forEach>;
     
 	
 	/* 직원정보 변경 모달창 관련 기능 */
@@ -656,8 +680,6 @@ form{
 	        $('#newVal').html(inputTag); // 변경할 값 부분을 교체
 	    }
 	    	
-	 	
-        
 	    // 모달 타이틀과 현재 값 설정
 	    showChangeModal(changeName + ' 변경', currentVal, '담당자입니다.(sessionId로 교체 예정)');
 	});
@@ -739,8 +761,9 @@ form{
 
 	// 기사정보 관리 모달창 닫기	
 	function hideDriverModal() {
-	  document.querySelector('.driver_modal.modal_change').style.display = 'none';
+    	document.querySelector('.driver_modal.modal_change').style.display = 'none';
 	}
+
 	
 	// 기사정보 수정하기
 	$('.full_btn_regist').on('click', function() {
@@ -792,46 +815,118 @@ form{
 	
 	
 	/* 파일 관련 기능 */
-	// 파일 선택 이벤트
-    $('#fileUpload').on('change', function () {
-        var selectedFiles = this.files; // 새로 선택된 파일 목록
-        var totalFiles = fileCnt + selectedFiles.length; // 총 파일 개수 계산
-
-        // 파일 개수 초과 여부 확인
-        if (totalFiles > 5) {
-        	modal.showAlert("파일은 최대 5개까지 업로드 가능합니다.");
-            $(this).val(''); // 선택된 파일 초기화
-        }
-        
-    });
+    // 파일 선택 이벤트에서 중복 파일 체크 및 업로드 제한
+	$('#fileUpload').on('change', function () {
+	    var selectedFiles = this.files; // 새로 선택된 파일 목록
+	    var totalFiles = fileCnt + selectedFiles.length; // 총 파일 개수 계산
+	
+	    // 파일 개수 초과 여부 확인
+	    if (totalFiles > 5) {
+	        modal.showAlert("파일은 최대 5개까지 업로드 가능합니다.");
+	        $(this).val(''); // 선택된 파일 초기화
+	        return;
+	    }
+	
+	    // 중복 파일 확인
+	    for (var i = 0; i < selectedFiles.length; i++) {
+	        if (uploadedFiles.includes(selectedFiles[i].name)) {
+	            modal.showAlert(`이미 업로드된 파일입니다: ${selectedFiles[i].name}`);
+	            $(this).val(''); // 선택된 파일 초기화
+	            return;
+	        }
+	    }
+	});
 	
 	
 	// 파일삭제 함수
 	function delFile(button) {
-		// 삭제할 파일이름 세팅
-		fileName = $(button).closest('tr').find('td').eq(0).text();
-		// ajax를 이용한삭제
-		$.ajax({
+	    // 삭제할 파일 이름 설정
+	    fileName = $(button).closest('tr').find('td').eq(0).text();
+	
+	    // Ajax 요청으로 파일 삭제 처리
+	    $.ajax({
 	        method: 'POST',
 	        url: 'fileDel.ajax',
 	        data: {
 	            'idx_num': empIdx,    // 사번
-	            'file_name': fileName // 파일이름
+	            'file_name': fileName // 파일 이름
 	        },
 	        dataType: 'JSON',
 	        success: function(data) {
-	        	if(data.success == '성공'){
-	        	    modal.showConfirm('파일삭제에 성공했습니다.', function () {
-        	    		location.reload(); // 페이지 새로고침 
-	        	    });
-	        		
-	        	}else{
-	        		modal.showAlert('정보수정에 실패했습니다.');
-	        	}
+	            if (data.success === '성공') {
+	                modal.showConfirm('파일 삭제에 성공했습니다.', function () {
+	                    location.reload(); // 페이지 새로고침
+	                });
+	            } else {
+	                modal.showAlert('파일 삭제에 실패했습니다.');
+	            }
 	        },
 	        error: function(e) {
 	            modal.showAlert('잠시 후 다시 시도해주세요.');
 	        }
+	    });
+	}
+
+
+	
+	// 클릭 이벤트 등록
+	$("#photoSection").on("click", function () {
+	    // 직접 클릭 이벤트 발생시키기 (중복 호출 방지)
+	    if (!$("#profileUpload").data("triggered")) {
+	        $("#profileUpload").data("triggered", true); // 상태 플래그 설정
+	        $("#profileUpload").click();
+	    }
+	});
+
+	// 파일 선택 이벤트 처리
+	$("#profileUpload").on("change", function () {
+	    var file = this.files[0]; // 선택된 파일
+
+	    if (file) {
+	        var reader = new FileReader();
+
+	        reader.onload = function (e) {
+	            // 미리보기 이미지 설정
+	            $("#photoSection img").attr("src", e.target.result);
+	        };
+
+	        reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
+
+	        // 서버로 파일 전송
+	        uploadProfilePhoto(file);
+
+	        // 플래그 초기화
+	        $(this).data("triggered", false);
+	    }
+	});
+
+	
+	function uploadProfilePhoto(file) {
+	    if (!file) {
+	        alert("파일이 선택되지 않았습니다.");
+	        return;
+	    }
+
+	    var formData = new FormData();
+	    formData.append("emp_idx", "${detail.emp_idx}");
+	    formData.append("photoFile", file);
+
+	    $.ajax({
+	        url: "profilePhotoUpload.do",
+	        type: "POST",
+	        data: formData,
+	        contentType: false,
+	        processData: false,
+	        success: function (response) {
+	            if (response.success === "성공") {
+	                alert("프로필 사진이 성공적으로 변경되었습니다.");
+	            } else {
+	                alert("사진 변경에 실패했습니다. 다시 시도해주세요.");
+	            }
+	        },
+	        error: function () {
+	            alert("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+	        },
 	    });
 	}
 

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
@@ -428,7 +429,14 @@
 </style>
 </head>
 <body class="bg-theme bg-theme1">
-	<jsp:include page="../main/header.jsp"></jsp:include>
+	<sec:authorize access="!hasAuthority('ROLE_ADMIN')">
+		<c:set var="user_rank_idx" value="${sessionScope.employee.rank_idx}" />
+		<jsp:include page="../main/header.jsp"></jsp:include>
+	</sec:authorize>
+	<sec:authorize access="hasAuthority('ROLE_ADMIN')">
+		<jsp:include page="../main/adminHeader.jsp"></jsp:include>
+	</sec:authorize>
+	
 	<jsp:include page="../modal/modal.jsp"></jsp:include>
 	
 <!-- 모달창 -->

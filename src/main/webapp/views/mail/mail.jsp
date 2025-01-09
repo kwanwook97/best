@@ -169,7 +169,7 @@ select option:hover {
 /* 드롭다운 선택 시 */
 select option:checked {
     background-color: #F9F6F1; /* 선택된 옵션 배경 */
-    color: var(--primary-color); /* 선택된 텍스트 색상 */
+    color: var(--secondary-color);
 }
 
 
@@ -188,9 +188,10 @@ select option:checked {
 	table.my-table{
 		border-collapse: separate !important;
         border-spacing: 0;
+        margin-top: 2%;
 	}
 	table{
-		width: -webkit-fill-available;
+		width: 95%;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
 		margin: 0 48px;
@@ -214,6 +215,44 @@ select option:checked {
 		text-align: center; /* 텍스트 중앙 정렬 */
     	vertical-align: middle; /* 세로 중앙 정렬 */
 		box-sizing: border-box; /* 패딩 포함하여 크기 계산 */
+		white-space: nowrap; /* 줄바꿈 방지 */
+	    overflow: hidden; /* 넘치는 내용 숨기기 */
+	    text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+	}
+	
+	td:nth-child(5), /* 제목 열 */ 
+	th:nth-child(5) { 
+	    max-width: 150px; /* 최대 너비 150px 제한 */
+	    white-space: nowrap; /* 줄바꿈 방지 */
+	    overflow: hidden; /* 넘치는 내용 숨기기 */
+	    text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+	}
+	td:nth-child(6), /* 제목 열 */ 
+	th:nth-child(6) { 
+	    max-width: 150px; /* 최대 너비 150px 제한 */
+	    white-space: nowrap; /* 줄바꿈 방지 */
+	    overflow: hidden; /* 넘치는 내용 숨기기 */
+	    text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+	}
+	
+	td:nth-child(7), /* 내용 열 */ 
+	th:nth-child(7) { 
+	    max-width: 200px; /* 최대 너비 200px 제한 */
+	    white-space: nowrap; /* 줄바꿈 방지 */
+	    overflow: hidden; /* 넘치는 내용 숨기기 */
+	    text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+	}
+	
+	
+	
+	/* thead의 첫 번째 th (왼쪽 상단) */
+	thead tr:first-child th:first-child {
+	    border-top-left-radius: 10px; /* 둥근 모서리 */
+	}
+	
+	/* thead의 마지막 th (오른쪽 상단) */
+	thead tr:first-child th:last-child {
+	    border-top-right-radius: 10px; /* 둥근 모서리 */
 	}
 	.read-column {
 	    display: table-cell; /* 숨기거나 보이더라도 높이 유지 */
@@ -277,12 +316,18 @@ table.my-table a:hover {
     transition: color 0.3s ease; /* 색상 변경 애니메이션 */
 }
 
+thead{
+	background-color: var(--primary-color);
+	color: #FFF5E2;
+}
+
+
 </style>
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
  <jsp:include page="../modal/modal.jsp"></jsp:include>
- <c:set var="emp_idx" value="${param.emp_idx}" />
+ <c:set var="empIdx" value="${sessionScope.loginId}" />
  <c:set var="tabData" value="${param.tabData}" />
  	<div class="dashboard-body">
 		<div class="maintext">
@@ -336,16 +381,9 @@ table.my-table a:hover {
 					</tr>
 				</thead>
 				<tbody class="email-list">
-					<tr>
-						<td>1</td>
-						<td><i class="bi bi-star" title="일반"></i></td>
-						<td><i class="fas fa-envelope" title="읽지 않음"></i></td>
-						<td>example1@example.com</td>
-						<td>읽지 않은 메일 제목</td>
-						<td>이메일 내용 미리보기...</td>
-						<td>2024-12-07 10:30</td>
-						<td><i class="fas fa-trash-alt"></i></td>
-					</tr>
+				    <tr class="no-data-row" style="display: none;">
+				        <td colspan="10" style="text-align: center;">메일이 없습니다.</td>
+				    </tr>
 					
 					
 		          <!-- 이메일 데이터가 들어가는 영역 -->
@@ -373,7 +411,7 @@ table.my-table a:hover {
 	
 	
 	/* 페이지네이션 관련 전역변수 */
-	var empIdx = 1; // 사번
+	var empIdx = "${empIdx}"; // 사번
 	var delete_flag = 0; // 0: 정상, 1: 휴지통, 2: 완전삭제
 	var mailFilter = 0; // 0: 필터X, 1: 중요필터, 2:읽음필터 
 	var special_flag = 0; // 중요여부
@@ -677,6 +715,18 @@ table.my-table a:hover {
 	        $('.restore-column').hide();
 	    }
 	
+		
+	    // 데이터가 없을 경우 "메일 없음" 메시지 표시
+	    if (data.length === 0) {
+	        $(area).html(
+	            '<tr class="no-data-row">' +
+	                '<td colspan="10" style="text-align: center;">메일이 없습니다.</td>' +
+	            '</tr>'
+	        );
+	        return; // 함수 종료
+	    }
+		
+		
 	    if (data.length > 0) {
 	    	// 페이지네이션에 따른 시작 번호 계산
 	    	var startIdx = totalCnt - (showPage - 1) * 12; // 12는 페이지당 항목 수 (cnt)
@@ -938,5 +988,8 @@ table.my-table a:hover {
 	}
 	
 	
+	
+
+		
 </script>
 </html>

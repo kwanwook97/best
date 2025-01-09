@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
@@ -16,11 +18,26 @@
   <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
   
   <style>
+  	body{
+  		height: auto;
+  	}
+  
     .body {
       width: 83%;
       margin-top: 110px;
       margin-left: 320px;
     }
+    
+    body .body {
+	    transform: scale(0.56); /* 67%로 축소 */
+	    transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
+	    width: 150%; /* 축소에 따른 여백 보정 */
+	    overflow: hidden; /* 스크롤바 제거 */
+	    position: absolute;
+	    top: 1px;
+	    left: -37px;
+	    height: 187%;
+	  }
 
     /* 페이지 제목 */
     .naviPath {
@@ -123,11 +140,6 @@
     align-content: flex-start; /* 위쪽 정렬 */
     padding-left: 20px; /* 왼쪽 시작 지점에 gap 추가 */
   }
-  .employee-list a{
-  	width: 24%;
-  	height: 23%;
-  	
-  }
 	
   /* 사원 카드 */
   .employee-card {
@@ -138,14 +150,15 @@
     padding: 5%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
-    height: 90%;
-    flex-grow: 0; /* 고정 크기 */
+    height: 100%;
+    flex-grow: 1; /* 카드가 부모 컨테이너에서 남는 공간을 채움 */
+    overflow: hidden; /* 카드의 내용이 영역을 벗어나지 않도록 설정 */
   }
 
   /* 프로필 사진 */
   .profile-pic {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
     background-color: #E0E0E0;
     border-radius: 10px;
     border: 2px solid #30005A;
@@ -163,21 +176,28 @@
   /* 사원 정보 */
   .employee-details {
     margin-left: 20px;
-    font-size: 16px;
+    font-size: 24px;
     color: #30005A;
     flex: 1; /* 가변 너비 */
+    height: 100%;
   }
 
   .employee-details .name-title {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: bold;
     margin-bottom: 10px;
+    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+    overflow: hidden; /* 넘치는 텍스트를 숨김 */
+    text-overflow: ellipsis; /* 숨겨진 텍스트에 "..." 추가 */
   }
 
   .employee-details p {
     color: #8B6AA7;
     margin: 5px 0;
     display: flex;
+    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+    overflow: hidden; /* 넘치는 텍스트를 숨김 */
+    text-overflow: ellipsis; /* 숨겨진 텍스트에 "..." 추가 */
   }
 
   .employee-details p strong {
@@ -189,6 +209,9 @@
 
   .employee-details p span {
     flex-grow: 1;
+    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+    overflow: hidden; /* 넘치는 텍스트를 숨김 */
+    text-overflow: ellipsis; /* 숨겨진 텍스트에 "..." 추가 */
   }
 
 	.bold{
@@ -248,15 +271,89 @@
 	}
 	
 	
+	.pagination {
+	    display: inline-flex; /* inline-flex를 사용해 공백 제거 */
+	    justify-content: center; /* 요소를 가운데 정렬 */
+	    padding: 0; /* 기본 padding 제거 */
+	    margin: 0; /* 기본 margin 제거 */
+	    list-style: none; /* 기본 불릿 스타일 제거 */
+	}
+	
+	.pagination li {
+	    margin: 0 5px; /* 좌우 여백 조정 */
+	    padding: 0; /* padding 제거 */
+	}
+	
+	.pagination a {
+	    text-decoration: none; /* 링크 밑줄 제거 */
+	    padding: 8px 12px; /* 클릭 영역 조정 */
+	    border: 1px solid #30005A; /* 테두리 추가 */
+	    border-radius: 5px; /* 둥근 모서리 */
+	    color: #30005A; /* 텍스트 색상 */
+	    background-color: #fff; /* 배경색 */
+	}
+	
+	.pagination a:hover {
+	    background-color: #30005A; /* 호버 시 배경색 */
+	    color: #fff; /* 호버 시 텍스트 색상 */
+	}
 	
 	
 	
+	.employee-card-container {
+	    display: inline-block; /* 기존 <a> 태그처럼 인라인 블록으로 동작 */
+	    width: 24%; /* 기존 <a> 태그와 동일한 너비 */
+	    height: 23%; /* 기존 <a> 태그와 동일한 높이 */
+	    text-decoration: none; /* 텍스트 장식 제거 (기존 <a> 태그 스타일 반영) */
+	    color: inherit; /* 텍스트 색상 상속 */
+	}
+
+	.employee-details .action-buttons {
+	    display: flex; /* 버튼들을 가로로 배치 */
+	    gap: 10px; /* 버튼 간격 */
+	    margin-top: 10px; /* 버튼과 다른 요소 간격 */
+	    justify-content: flex-end; /* 버튼들을 오른쪽 정렬 */
+	}
+
+	.employee-details .action-buttons .btn1{
+	    padding: 8px 16px; /* 버튼 크기 */
+	    border: 2px solid #30005A; /* 버튼 테두리 */
+	    border-radius: 5px; /* 둥근 모서리 */
+	    background-color: #30005A; 
+	    color: #fff; 
+	    font-size: 24px; /* 글씨 크기 */
+	    cursor: pointer; /* 클릭 커서 */
+	    font-weight: bold;
+	}
+	
+	.employee-details .action-buttons .btn2{
+	    padding: 8px 16px; /* 버튼 크기 */
+	    border: 2px solid #30005A; /* 버튼 테두리 */
+	    border-radius: 5px; /* 둥근 모서리 */
+	    background-color: #8B6AA7; /* 배경색 */
+	    color: #fff;
+	    font-size: 24px; /* 글씨 크기 */
+	    cursor: pointer; /* 클릭 커서 */
+	    font-weight: bold;
+	}
+	
+	
+		
+		
   </style>
   
 </head>
 <body class="bg-theme bg-theme1">
   <jsp:include page="../modal/modal.jsp"></jsp:include>
-  <jsp:include page="../main/header.jsp"></jsp:include>
+  
+  <sec:authorize access="!hasAuthority('ROLE_ADMIN')">
+  	<c:set var="user_rank_idx" value="${sessionScope.employee.rank_idx}" />
+  	<jsp:include page="../main/header.jsp"></jsp:include>
+  </sec:authorize>
+  <sec:authorize access="hasAuthority('ROLE_ADMIN')">
+  	<jsp:include page="../main/adminHeader.jsp"></jsp:include>
+  </sec:authorize>
+  
   
   <div class="body">
     <!-- 페이지 제목 -->
@@ -330,11 +427,31 @@
 	/* 전역변수 */
 	var showPage = 1;          // 기본 보여줄 페이지
 	var content = '';          // 가공한 리스트 담을 변수
-	var tabNum = 1;            // 선택한 탭번호 변수
 	var pagination = '';       // 페이지네이션 선택자 변수
 	var searchFilter = 'name'; // 검색 필터 값 담을 변수
 	var searchKeyword = '';    // 검색 값 담을 변수
+
 	
+	
+	// 유저 팀장여부 체크
+	var leaderChk = 0;
+	var user_rank_idx = '${user_rank_idx}';
+	
+	if(user_rank_idx === '3'){
+		leaderChk = 1;
+	};
+	
+	
+	var adminChk = 0;
+	// user_rank_idx가 비어있으면 admin으로 간주
+	if(user_rank_idx === ''){
+		adminChk = 1;
+	}
+	
+	
+	// 페이지 로드 시 tabNum 설정
+	// 값이 안담겨 있는경우 1(활성탭) 선택
+    var tabNum = sessionStorage.getItem('tabNum') ? parseInt(sessionStorage.getItem('tabNum')) : 1;
 
     // select 태그의 change 이벤트
     $('.search-container .search-filter').on('change', function () {
@@ -374,29 +491,41 @@
 		
 	} 
 	
-	
- 	// 활성사원 리스트 가져오기
-	pageCall(showPage, tabNum);
-	
-	// 탭 이벤트 발생시
-	$( function() {
-	    $( "#tabs" ).tabs({
-	    	activate: function(event, ui) {
-	            // 현재 활성화된 탭의 ID를 확인
-	            var activeTab = ui.newPanel.attr('id');
 
-	            if (activeTab === 'activ_emp') {
-	                // 활성 사원 탭일 때
-	                tabNum = 1;
-	                pageCall(showPage, tabNum); // 초기 페이지는 1로 호출
-	            } else if (activeTab === 'inactiv_emp') {
-	                // 비활성 사원 탭일 때
-	                tabNum = 0;
-	                pageCall(showPage, tabNum);
-	            }
-	        }
-	    });
-	} );
+    // 초기 데이터 로드
+    pageCall(showPage, tabNum);
+    
+	
+ // 탭 이벤트 발생시
+    $(function () {
+        // 페이지 로드 시 sessionStorage에서 tabNum 읽기
+        var tabNum = sessionStorage.getItem('tabNum') ? parseInt(sessionStorage.getItem('tabNum')) : 1;
+
+        $("#tabs").tabs({
+            active: tabNum === 1 ? 0 : 1, // tabNum에 따라 활성화 탭 설정 (활성 사원이 1번 탭, 비활성 사원이 2번 탭)
+            activate: function (event, ui) {
+                // 현재 활성화된 탭의 ID를 확인
+                var activeTab = ui.newPanel.attr("id");
+
+                if (activeTab === "activ_emp") {
+                    // 활성 사원 탭일 때
+                    tabNum = 1;
+                    pageCall(showPage, tabNum); // 초기 페이지는 1로 호출
+                } else if (activeTab === "inactiv_emp") {
+                    // 비활성 사원 탭일 때
+                    tabNum = 0;
+                    pageCall(showPage, tabNum);
+                }
+
+                // 현재 탭 상태를 sessionStorage에 저장
+                sessionStorage.setItem('tabNum', tabNum);
+            },
+        });
+
+        // 초기 데이터 로드
+        pageCall(showPage, tabNum);
+    });
+
 	
 	
 	// 페이지네이션 함수
@@ -419,7 +548,7 @@
 	        data:{
 	        	'page' : page,  // 몇페이지 보여줘?
 	        	'cnt' : 16,     // 페이지당 몇개의 게시물을 보여줘?
-	        	'state' : tabNum, // 활성화 or 비활성화 여부
+	        	'enable' : tabNum, // 활성화 or 비활성화 여부
 	        	'searchFilter' : searchFilter,   // 검색필터
 	        	'searchKeyword' : searchKeyword // 검색 키워드
 	        },
@@ -455,7 +584,19 @@
 					}
 				});
 				
+				// 팀장인경우 사원상세버튼 숨기기
+				if (leaderChk === 1) {
+				    $(document).ready(function () {
+				        $(".action-buttons button:contains('사원상세')").hide();
+				    });
+				}
 				
+				// admin인경우 근태관리버튼 숨기기
+				if (adminChk === 1) {
+				    $(document).ready(function () {
+				        $(".action-buttons button:contains('근태관리')").hide();
+				    });
+				}
 	        },
 	        error: function(e) {
 	        	modal.showAlert('잠시 후 다시 시도해주세요.');         
@@ -488,17 +629,24 @@
 	      		// 변수 초기화
 	            content = '';
 	      		
-	      	    content =  '<a href="empDetail.go?emp_idx=' + item.emp_idx + '">' +
-		      	    		   '<div class="employee-card">' +
-		      	                    '<div class="profile-pic"><div class="photo"><img alt="Profile Photo" src="/photo/' + item.photo + '"/></div></div>' +
-		      	                    '<div class="employee-details">' +
-		      	                        '<div class="name-title">' + item.depart_name + ' ' + item.name + ' ' + item.rank_name + '</div>' +
-		      	                        '<p><strong>email:</strong> ' + item.email + '</p>' +
-		      	                        '<p><strong>tel:</strong> ' + item.phone + '</p>' +
-		      	                        '<p><strong>mobile:</strong> ' + item.mobile + '</p>' +
-		      	                    '</div>' +
-		      	               '</div>' +
-	      	               '</a>';
+	      	    content =  '<div class="employee-card-container">' +
+			    			'<div class="employee-card">' +
+				               '<div class="profile-pic"><div class="photo"><img alt="Profile Photo" src="/photo/' + item.photo + '"/></div></div>' +
+				               '<div class="employee-details">' +
+				                   '<div class="name-title">' + item.depart_name + ' ' + item.name + ' ' + item.rank_name + '</div>' +
+				                   '<p><strong>email:</strong> ' + item.email + '</p>' +
+				                   '<p><strong>tel:</strong> ' + item.phone + '</p>' +
+				                   '<p><strong>mobile:</strong> ' + item.mobile + '</p>' +
+				                   '<div class="action-buttons">' +
+				                       '<button class="btn1" onclick="location.href=\'empDetail.go?emp_idx=' + item.emp_idx + '\'">사원상세</button>' +
+				                       '<button class="btn2" onclick="location.href=\'attendance.go?emp_idx=' + item.emp_idx +
+				                           '&name=' + encodeURIComponent(item.name) +
+				                           '&depart_name=' + encodeURIComponent(item.depart_name) +
+				                           '&rank_name=' + encodeURIComponent(item.rank_name) + '\'">근태관리</button>' +
+				                   '</div>' +
+				               '</div>' +
+				           	 '</div>'
+				           '</div>';
 	      	                
 	 	        // 사원목록의 사원카드 정보 업데이트        
 	      	    $(area).append(content);

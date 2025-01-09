@@ -169,7 +169,7 @@ public class MailService {
 	    Integer mailSendIdx = map.get("mail_send_idx") != null
 	            ? Integer.parseInt(map.get("mail_send_idx").toString())
 	            : null;
-
+	    
 	    // special_flag와 status 값 처리
 	    int specialFlag = map.get("special_flag") != null ? Integer.parseInt(map.get("special_flag").toString()) : 0;
 	    int status = map.get("status") != null ? Integer.parseInt(map.get("status").toString()) : 1;
