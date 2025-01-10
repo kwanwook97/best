@@ -40,9 +40,9 @@ public class SecurityConfig {
             // 현재 있는 페이지에 있는 경로정보들에 대해서만 처리.
             .authorizeRequests(authorize -> authorize
                 .antMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/resources/**").permitAll()
-                .antMatchers("/", "/login.go", "/login.do", "/adminLogin.go", "/adminLogin.do", "/*.ajax", "/resetPassword.do").permitAll()
+                .antMatchers("/", "/login.go", "/login.do", "/adminLogin.go", "/adminLogin.do", "/*.ajax", "/resetPassword.do", "/changePw.do").permitAll()
                 .antMatchers("/accessManage.go", "/rankManage.go", "/departManage.go").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/*.go", "/*.do").access("@dynamicAuthorizationService.hasAccess(request.requestURI)")
+                .antMatchers("/*.go", "/*.do").access("hasAuthority('ROLE_ADMIN') or @dynamicAuthorizationService.hasAccess(request.requestURI)")
                 .anyRequest().authenticated() // 나머지는 인증된 사용자만 허용
                 )
             .exceptionHandling()
