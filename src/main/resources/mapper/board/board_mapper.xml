@@ -97,11 +97,26 @@
 	</select>
 	<!-- 자유 게시판 댓글 리스트 -->
 	<select id="commentList" resultType="map">
-	    SELECT comment_idx, content, emp_idx, emp_name, com_date
-		FROM comment
-		WHERE board_idx = #{board_idx} AND parent_idx IS NULL
-		ORDER BY com_date DESC
-	    LIMIT #{cnt} OFFSET #{offset}
+	    SELECT 
+		    c1.comment_idx, 
+		    c1.content, 
+		    c1.emp_name, 
+		    c1.parent_idx,
+		    c1.com_date,
+		    c2.comment_idx AS reply_idx, 
+		    c2.content AS reply_content, 
+		    c2.emp_name AS reply_name, 
+		    c2.parent_idx AS reply_parent_idx,
+		    c2.com_date AS reply_date
+		FROM 
+		    comment c1
+		JOIN 
+		    comment c2 ON c1.comment_idx = c2.parent_idx
+		WHERE 
+		    c1.board_idx = #{board_idx} AND c1.parent_idx IS NULL
+		ORDER BY 
+		    c1.comment_idx ASC, c2.comment_idx ASC
+		LIMIT #{cnt} OFFSET #{offset}
 	</select>
 	
 	

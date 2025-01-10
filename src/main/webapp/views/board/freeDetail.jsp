@@ -210,19 +210,19 @@
 	
 	var showPage = 1;
 
-	loadComments(showPage);
+	loadComments(board_idx, showPage);
 
 	var cnt = 5;
 
 	// 댓글 목록 로드 및 페이지네이션 초기화
-	function loadComments(boardIdx, page, itemsPerPage) {
+	function loadComments(board_idx, page) {
 	    $.ajax({
 	        type: 'GET',
 	        url: 'commentList.ajax',
 	        data: {
 	            board_idx: board_idx,
 	            page: page,
-	            cnt: itemsPerPage
+	            cnt: 10
 	        },
 	        dataType: 'JSON',
 	        success: function(response) {
@@ -238,7 +238,7 @@
 	                    '<div class="comment-item">' +
 	                        '<strong>' + comment.emp_name + '</strong>' +
 	                        '<div class="comment-content">' + comment.content + '</div>' +
-	                        '<div class="comment-date">' + comment.date + '</div>' +
+	                        '<div class="comment-date">' + comment.com_date + '</div>' +
 	                        '<div class="reply-list" id="replies-' + comment.comment_idx + '"></div>' +
 	                    '</div>';
 	                commentList.append(commentHtml);
@@ -250,9 +250,9 @@
 	                        var reply = comment.children[j];
 	                        var replyHtml = 
 	                            '<div class="reply-item">' +
-	                                '<strong>' + reply.emp_name + '</strong>' +
+	                                '<strong>' + reply.reply_name + '</strong>' +
 	                                '<div class="comment-content">' + reply.content + '</div>' +
-	                                '<div class="comment-date">' + reply.date + '</div>' +
+	                                '<div class="comment-date">' + reply.reply_date + '</div>' +
 	                            '</div>';
 	                        replyList.append(replyHtml);
 	                    }

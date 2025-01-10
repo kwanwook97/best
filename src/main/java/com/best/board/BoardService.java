@@ -1,5 +1,6 @@
 package com.best.board;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,18 +133,52 @@ public class BoardService {
 
 	// 자유 게시판 댓글 리스트
 	public Map<String, Object> commentList(String board_idx, int page, int cnt) {
+	    int offset = (page - 1) * cnt;
 
-		int offset = (page-1) * cnt;
-		
-		Map<String, Object> result = new HashMap<>();
-		
-		int totalPages = boardDao.commentCount(board_idx, cnt);	
-	
-        result.put("totalPages", totalPages);
-        result.put("comment", boardDao.commentList(board_idx, cnt, offset));
+	    // 쿼리 결과를 List<Map<String, Object>>로 받음
+	    List<CommentDTO> rawComments = boardDao.commentList(board_idx, cnt, offset);
+	    
+	    List<CommentDTO> comments = new ArrayList<CommentDTO>();
+	    Map<Integer, CommentDTO> commentMap = new HashMap<>();
 
-        return result;
+	    // 댓글과 대댓글을 분리하여 계층 구조 생성
+	    for (Map<String, Object> row : rawComments) {
+	        Integer commentIdx = (Integer) row.get("comment_idx");
+	        Integer parentIdx = (Integer) row.get("parent_idx");
+
+	        if (parentIdx == null) {
+	            // 댓글 추가
+	            CommentDTO comment = new CommentDTO();
+	            comment.setComment_idx(commentIdx);
+	            comment.setContent((String) row.get("content"));
+	            comment.setEmp_name((String) row.get("emp_name"));
+	            comment.setCom_date((String) row.get("com_date"));
+	            comment.setChildren(new ArrayList<>()); // 대댓글 리스트 초기화
+	            comments.add(comment);
+	            commentMap.put(commentIdx, comment);
+	        } else {
+	            // 대댓글 추가
+	            CommentDTO reply = new CommentDTO();
+	            reply.setComment_idx(commentIdx);
+	            reply.setContent((String) row.get("content"));
+	            reply.setEmp_name((String) row.get("emp_name"));
+	            reply.setCom_date((String) row.get("com_date"));
+
+	            // 부모 댓글의 children 리스트에 추가
+	            if (commentMap.containsKey(parentIdx)) {
+	                commentMap.get(parentIdx).getChildren().add(reply);
+	            }
+	        }
+	    }
+
+	    // 결과 반환
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("comments", comments);
+	    result.put("totalPages", boardDao.commentCount(board_idx, cnt));
+
+	    return result;
 	}
+
 	
 	
 	// 자유 게시판 댓글 작성

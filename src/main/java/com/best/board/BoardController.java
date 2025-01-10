@@ -118,13 +118,13 @@ public class BoardController {
 	
 	
 	// 자유 게시판 댓글 리스트
-	@GetMapping(value="/commentList.ajax")
+	@GetMapping(value = "/commentList.ajax")
 	@ResponseBody
 	public Map<String, Object> commentList(String board_idx, String page, String cnt) {
-		int page_ = Integer.parseInt(page);
-		int cnt_ = Integer.parseInt(cnt);
-		
-		return boardService.commentList(board_idx, page_, cnt_);
+	    int page_ = (page != null) ? Integer.parseInt(page) : 1;
+	    int cnt_ = (cnt != null) ? Integer.parseInt(cnt) : 10;
+
+	    return boardService.commentList(board_idx, page_, cnt_);
 	}
 	
 	
