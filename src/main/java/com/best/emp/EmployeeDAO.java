@@ -19,8 +19,6 @@ public interface EmployeeDAO {
 	Map<String, Object> empAttend(int emp_idx);
 	// 연차정보
 	Map<String, Object> empLeave(int emp_idx);
-	// 변경내역
-	List<Map<String, Object>> empHistory(int emp_idx);
 	// 첨부파일
 	List<Map<String, Object>> empAttach(int emp_idx);
 

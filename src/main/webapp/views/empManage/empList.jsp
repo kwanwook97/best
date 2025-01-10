@@ -29,7 +29,7 @@
     }
     
     body .body {
-	    transform: scale(0.56); /* 67%로 축소 */
+	    transform: scale(0.55);
 	    transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
 	    width: 150%; /* 축소에 따른 여백 보정 */
 	    overflow: hidden; /* 스크롤바 제거 */
@@ -41,7 +41,7 @@
 
     /* 페이지 제목 */
     .naviPath {
-      font-size: 36px;
+      font-size: 48px;
       font-weight: bold;
       margin-bottom: 20px;
     }
@@ -176,14 +176,14 @@
   /* 사원 정보 */
   .employee-details {
     margin-left: 20px;
-    font-size: 24px;
+    font-size: 18px;
     color: #30005A;
     flex: 1; /* 가변 너비 */
     height: 100%;
   }
 
   .employee-details .name-title {
-    font-size: 32px;
+    font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
     white-space: nowrap; /* 텍스트를 한 줄로 표시 */
@@ -311,7 +311,6 @@
 	.employee-details .action-buttons {
 	    display: flex; /* 버튼들을 가로로 배치 */
 	    gap: 10px; /* 버튼 간격 */
-	    margin-top: 10px; /* 버튼과 다른 요소 간격 */
 	    justify-content: flex-end; /* 버튼들을 오른쪽 정렬 */
 	}
 
@@ -321,7 +320,7 @@
 	    border-radius: 5px; /* 둥근 모서리 */
 	    background-color: #30005A; 
 	    color: #fff; 
-	    font-size: 24px; /* 글씨 크기 */
+	    font-size: 18px; /* 글씨 크기 */
 	    cursor: pointer; /* 클릭 커서 */
 	    font-weight: bold;
 	}
@@ -332,7 +331,7 @@
 	    border-radius: 5px; /* 둥근 모서리 */
 	    background-color: #8B6AA7; /* 배경색 */
 	    color: #fff;
-	    font-size: 24px; /* 글씨 크기 */
+	    font-size: 18px; /* 글씨 크기 */
 	    cursor: pointer; /* 클릭 커서 */
 	    font-weight: bold;
 	}

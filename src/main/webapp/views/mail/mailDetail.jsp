@@ -16,7 +16,7 @@
     }
 
     .dashboard-body {
-      margin-left: 16vw;
+      margin-left: 16%;
       width: 85vw;
       margin-top: 7vh;
       padding: 2vh;

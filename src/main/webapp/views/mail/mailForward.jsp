@@ -24,7 +24,7 @@
 		--accent-color: #E9396B;
 	}
 	.dashboard-body{
-	    margin-left: 12vw;
+	    margin-left: 16%;
 	    width: 85vw;
 	    margin-top: 7vh;
 	    flex-wrap: wrap;
@@ -539,22 +539,39 @@ function loadForwardData() {
         success: function (response) {
             var senderDto = response.senderDto; // 발신자 정보
             var fileList = response.fileList || []; // 기존 첨부파일
+            var receiverData = response.receiverList || []; // 수신자 및 참조자 데이터
 
             // 제목에 'FW:' 추가
             $('#subject').val('FW: ' + senderDto.subject);
 
             // 본문 구성
             var contentWithDivider =
-            	"<p><br></p>" +
+                "<p><br></p>" +
                 "<p><br></p>" +
                 "<p><br></p>" +
                 "<p>-----Original Message-----</p>" +
                 "<p><strong>보낸사람: </strong>" + senderDto.sender_name + " &lt;" + senderDto.sender_email + "&gt;</p>" +
                 "<p><strong>수신날짜: </strong>" + senderDto.date + "</p>" +
-                "<p><strong>내용: </strong>" +senderDto.content+ "</p>";
+                "<p><strong>내용: </strong>" + senderDto.content + "</p>";
 
             $('#hidden_content').val(contentWithDivider); // hidden 필드에 값 설정
             editor.setHTMLCode(contentWithDivider); // 에디터에 내용 설정
+
+            // 기존 데이터(receiverListData)를 receiverList에 추가하고 UI 업데이트
+            receiverData.forEach(function (receiver) {
+                var newEntry = {
+                    name: receiver.receiver_name,
+                    email: receiver.receiver_email,
+                    type: receiver.receiver_type, // 0: 받는 사람, 1: 참조
+                    emp_idx: receiver.receiver_idx
+                };
+
+                // receiverList에 추가
+                receiverList.push(newEntry);
+
+                // UI 업데이트
+                addReceiverOrRefer(newEntry, newEntry.type === 0 ? "receiver-list" : "refer-list");
+            });
 
             // 첨부파일 유지
             fileList.forEach(function (file) {
@@ -570,6 +587,131 @@ function loadForwardData() {
         }
     });
 }
+
+
+function findAdd(type) {
+    console.log("findAdd 호출됨. 타입:", type);
+
+    openUserBoxModal();
+
+    // 선택된 사원 정보 확인
+    $("#addEmployeeButton").off("click").on("click", function () {
+        if (window.selectedEmployee) {
+            console.log("선택된 사원 정보:", window.selectedEmployee);
+
+            addReceiverOrReferHandler(
+                window.selectedEmployee, // 전역 변수에서 가져오기
+                type === 0 ? "receiver-list" : "refer-list",
+                type
+            );
+
+            $(".modalD").fadeOut();
+            // 검색창 값 비워주기
+            $("#searchInput").val('');
+        } else {
+            console.error("선택된 사원 정보가 없습니다.");
+        }
+    });
+}
+
+//수신자 입력 필드에 대한 엔터 키 이벤트 핸들러
+$("#receiver-input").keypress(function (e) {
+    if (e.which === 13) { // Enter 키
+        e.preventDefault(); // 기본 동작 방지
+        addReceiverOrReferHandler("#receiver-input", "receiver-list", 0); // 수신자 추가
+    }
+});
+
+$("#refer-input").keypress(function (e) {
+    if (e.which === 13) { // Enter 키
+        e.preventDefault(); // 기본 동작 방지
+        addReceiverOrReferHandler("#refer-input", "refer-list", 1); // 참조자 추가
+    }
+});
+
+//수신자 및 참조자 추가 핸들러
+function addReceiverOrReferHandler(input, listContainerId, type) {
+    var inputVal, isObjectInput = typeof input === "object";
+
+    if (isObjectInput) { // 사원목록에서 추가한 경우
+        inputVal = input.email;
+    } else { // 텍스트로 추가한 경우
+        inputVal = $(input).val().trim();
+    }
+
+    // 입력값 유효성 검사
+    if (inputVal === "") {
+        alert("이름 또는 이메일을 입력하세요.");
+        return;
+    }
+
+    // 중복 확인 (receiverList에서 검사)
+        // 중복 확인 (기존 receiverList 배열에서 중복 검사)
+    var isDuplicate = receiverList.some(function (item) {
+        return (
+            item.name === inputVal || item.email === inputVal
+        );
+    });
+
+    if (isDuplicate) {
+        alert("이미 추가된 항목입니다.");
+        return;
+    }
+
+    // 입력값 처리
+    var newEntry;
+
+    if (isObjectInput) { // 사원목록에서 추가한 경우
+        newEntry = {
+            name: input.name,
+            email: input.email,
+            emp_idx: input.emp_idx,
+            type: type
+        };
+        receiverList.push(newEntry);
+        addReceiverOrRefer(newEntry, listContainerId);
+    } else { // 텍스트로 추가한 경우
+        empInfo(inputVal, type, listContainerId);
+    }
+
+    if (!isObjectInput) {
+        $(input).val("");
+    }
+}
+
+function addReceiverOrRefer(entry, listContainerId) {
+    if (!entry || !entry.name || !entry.email) {
+        return; // 잘못된 entry가 전달되면 종료
+    }
+
+    var displayText = entry.name + " <" + entry.email + ">";
+    var $newDiv = $("<div>").addClass("receiver-item").text(displayText);
+
+    // 삭제 버튼 추가
+    var $removeBtn = $("<button>").text("x").on("click", function () {
+        // 배열에서 해당 항목 제거
+        receiverList = receiverList.filter(item => !(item.email === entry.email));
+        $newDiv.remove();
+
+        // hidden input 데이터 갱신
+        updateHiddenField();
+    });
+
+    $newDiv.append($removeBtn);
+    $("#" + listContainerId).append($newDiv);
+
+    // hidden input 데이터 갱신
+    updateHiddenField();
+}
+
+
+/* 수신자/참조자 데이터를 hidden input으로 업데이트 */
+function updateHiddenField() {
+    var jsonData = JSON.stringify(receiverList);
+    $("#receiver-data").val(jsonData);
+    console.log("Receiver Data JSON:", jsonData);
+}
+
 
 /* 첨부파일 목록 렌더링 */
 function renderFileList() {
@@ -601,7 +743,7 @@ function sendMail(status) {
     $('input[name="content"]').val(content);
 
     // 필수 항목 검증
-    if (receiverList.length === 1) {
+    if (receiverList.length === 0) {
         alert("받는 사람 주소를 입력해 주세요.");
         return;
     }
@@ -644,20 +786,30 @@ function empInfo(inputVal, type, listContainerId) {
             if (list.length > 0) {
                 if (type !== 2) {
                     var $list = $("#autocomplete-list" + type).empty().show();
-                    list.forEach(item => {
-                        var $option = $("<div>").text(item.name + " <" + item.email + ">").data(item);
+
+                    // 중복 항목 제외 처리
+                    var filteredList = list.filter(item => {
+                        return !receiverList.some(existing =>
+                            existing.email === item.email
+                        );
+                    });
+
+                    filteredList.forEach(item => {
+                        var $option = $("<div>")
+                            .text(item.name + " <" + item.email + ">")
+                            .data("item", item); // 선택된 데이터를 저장
                         $option.on("click", function () {
-                            var selected = $(this).data();
+                            var selected = $(this).data("item"); // 저장된 데이터를 가져옴
                             var newEntry = {
                                 email: selected.email,
-                                type,
+                                type: type,
                                 name: selected.name,
                                 emp_idx: selected.emp_idx
                             };
                             receiverList.push(newEntry);
-                            addReceiverOrRefer(newEntry, listContainerId);
-                            $("#receiver-input").val('');
-                            $list.hide();
+                            addReceiverOrRefer(newEntry, listContainerId); // UI 업데이트
+                            $("#receiver-input").val(''); // 입력값 초기화
+                            $list.hide(); // 목록 숨기기
                         });
                         $list.append($option);
                     });
@@ -677,6 +829,8 @@ function empInfo(inputVal, type, listContainerId) {
         }
     });
 }
+
+
 
 /* 첨부파일 추가 */
 function addFile() {
