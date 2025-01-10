@@ -77,7 +77,7 @@ public class LeaveService {
 	                            workDays++;
 	                        }
 	                    }
-		                if (workDays == row) {
+		                if (workDays <= row) {
 		                	leaveDAO.updateLeave(empIdx,1);
 		                	text = "1년미만 사원 1개월 근로 연차 지급 내역";
 		                	leaveDAO.insertAnnualLeave(empIdx,1,text);
@@ -204,7 +204,7 @@ public class LeaveService {
 	    if (formSubject.equals("연차신청서")) {
 	    	Map<String, Object> result = leaveDAO.getDocContent(doc_idx);
 	    	String docContent = (String) result.get("doc_content");
-	    	String empIdx = (String) result.get("emp_idx");
+	    	int empIdx = (int) result.get("emp_idx");
 	    	
 	        Document htmlDoc = Jsoup.parse(docContent);
 	        Element startDateElement = htmlDoc.selectFirst("input[name=start_date]");
@@ -215,8 +215,8 @@ public class LeaveService {
 	        String endDate = endDateElement != null ? endDateElement.attr("value") : null;
 	        
 	        
-	        LocalDate start = LocalDate.parse("2025-01-01"); // 예: "2025-01-01"
-	        LocalDate end = LocalDate.parse("2025-01-05");     // 예:
+	        LocalDate start = LocalDate.parse(startDate); // 예: "2025-01-01"
+	        LocalDate end = LocalDate.parse(endDate);     // 예:
 	        long days = ChronoUnit.DAYS.between(start, end) + 1;
 	        
 	        Map<String, Object> map = new HashMap<String, Object>();
@@ -225,6 +225,8 @@ public class LeaveService {
 	        map.put("reason", textareaValue);
 	        map.put("empIdx", empIdx);
 	        map.put("days", days);
+	        
+	        logger.info("map테스트:{}",map);
 	        
 	        leaveDAO.insertLeaveHistory(map);
 	        leaveDAO.updateRemainLeave(map);

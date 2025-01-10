@@ -85,13 +85,13 @@ var loginId = ${sessionScope.loginId};
          </li>
 
          <li class="dropD">
-            <a href="javaScript:void(0);"> 
+            <a href="attendance.go"> 
                <i class="bi bi-clock-fill"></i> 
                <span>근태관리</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
 
-            <ul class="dropD-menu">
+<!--             <ul class="dropD-menu">
                <li class="dropD-item">
                   <a href="attendance.go"> 
                      <i class="bi bi-clock-fill"></i> 
@@ -106,7 +106,7 @@ var loginId = ${sessionScope.loginId};
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
-            </ul>
+            </ul> -->
          </li>
 
          <li class="dropD">
@@ -314,7 +314,7 @@ var loginId = ${sessionScope.loginId};
 
          <li class="dropD">
             <a href="javaScript:void(0);"> 
-               <i class="bi bi-building"></i>
+               <i class="bi bi-journals"></i> 
                <span>회의실</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
@@ -322,21 +322,21 @@ var loginId = ${sessionScope.loginId};
             <ul class="dropD-menu">
                <li class="dropD-item">
                   <a href="meetingRoomCalendar.do"> 
-                     <i class="bi bi-calendar-range"></i>
+                     <i class="bi bi-journal"></i> 
                      <span>회의실 예약</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
                <li class="dropD-item">
                   <a href="myReserve.go"> 
-                     <i class="bi bi-calendar2-heart"></i>
+                     <i class="bi bi-journal-check"></i> 
                      <span>내 예약 현황</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
                <li class="dropD-item">
                   <a href="roomInfo.go"> 
-                     <i class="bi bi-building-check"></i> 
+                     <i class="bi bi-journal-plus"></i> 
                      <span>회의실 관리</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -347,12 +347,11 @@ var loginId = ${sessionScope.loginId};
          <!-- 종원 기자재 -->
          <li class="dropD">
             <a href="material.go"> 
-             	<i class="bi bi-box"></i> 
-               	<span>기자재</span> 
-               	<i class="fa-solid fa-angle-right"></i>
-         	</a>
-		</li>
-
+                <i class="bi bi-layout-text-window-reverse"></i> 
+                  <span>기자재</span> 
+                  <i class="fa-solid fa-angle-right"></i>
+            </a>
+      </li>
 
 
          <!-- 관욱수정 2024.12.12 시작 -->

@@ -279,7 +279,11 @@ public class CalendarController {
     }
     
     
-	
+	@PostMapping(value="/getDepartmentNmae.ajax")
+	@ResponseBody
+	public Map<String, Object> getDepartmentNmae(@RequestParam Map<String, Object> params){ 
+		return calendarService.getDepartmentNmae(params);
+	}
 	
 	
 	

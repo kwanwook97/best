@@ -31,17 +31,17 @@ public class Scheduler {
     	this.leaveService = leaveService;
     }
 	
-	@Scheduled(cron = "0 0 0 1 1 *")//매년 1월 1일 00:00:00 에 실행
+	@Scheduled(cron = "0 0 0 1 1 *")//매년 1월 1일 00:00:00 에 실행 휴일 데이터 저장하기
 	public void insertHolidays() {
 		calendarService.insertHolidays();
 	}
 	
 	 
-	@Scheduled(cron = "0 0 6 ? * MON-FRI")
+    //@Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 6 ? * MON-FRI")
 	public void executeExcludingHolidays() {
 	    LocalDate today = LocalDate.now();
 	    List<LocalDate> holidays = calendarService.getHolidayCalculate();
-	    
 	    // 출근 행 늘리기
 	    if (!holidays.contains(today)) {
 	    	attendanceService.insertAttendance(today);
@@ -49,9 +49,9 @@ public class Scheduler {
 	    
 	}
 	
-    //@Scheduled(cron = "*/10 * * * * *")
 	// 연차 체크
-    @Scheduled(cron = "0 0 0 * * ?")  
+    //@Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 0 * * ?") 
     public void leaveCheck() {
     	leaveService.updateLeave();
     }
@@ -73,6 +73,12 @@ public class Scheduler {
     public void checkForUpcomingEvents() {
         alarmService.sendUpcomingEventAlarms();
     }
+	
+	// 결재 승인시 연차 소진로직 테스트용
+//    @Scheduled(cron = "*/10 * * * * *")
+//    public void ssssss() {
+//    	leaveService.addLeaveHistory("1122");
+//    }
 	
 	
 

@@ -418,6 +418,20 @@ public class CalendarService {
 		return calendarDAO.getHolidayCalculate();
 	}
 
+	public Map<String, Object> getDepartmentNmae(Map<String, Object> params) {
+		
+		String departmentName = calendarDAO.getDepartmentNmae(params);
+		params = new HashMap<String, Object>();
+		if (departmentName != null && !departmentName.isEmpty()) {
+			params.put("msg", "성공");
+			params.put("departmentName", departmentName);
+		}else {
+			params.put("msg", "실패");
+		}
+			
+		return params;
+	}
+
 
 
 

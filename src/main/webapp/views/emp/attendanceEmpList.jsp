@@ -415,7 +415,7 @@
 	// 페이지네이션 함수
 	function pageCall(page, tabNum){
 		
-		/* console.log("함수보기 "+ page +"d"+tabNum) page 1 , tabNum 1 기준 */
+		/* //console.log("함수보기 "+ page +"d"+tabNum) page 1 , tabNum 1 기준 */
 		// 페이지네이션 선택자 초기화
 		pagination = '';
 		
@@ -425,8 +425,8 @@
 			pagination = '.pagination.inactiv';
 		}
 		
-		console.log('searchFilter : ' + searchFilter);
-		console.log('searchKeyword : ' + searchKeyword);
+		//console.log('searchFilter : ' + searchFilter);
+		//console.log('searchKeyword : ' + searchKeyword);
 		
 	    $.ajax({
 	        type: 'POST',
@@ -440,7 +440,7 @@
 	        },
 	        dataType: 'json', 
 	        success: function(data) {
-				console.log(data);
+				//console.log(data);
 				searchKeyword = '';    // 검색 값 초기화
 				
 				// 검색 결과가 없을 경우 modal 창 표시
@@ -502,7 +502,7 @@
 	      	$.each(data, function(idx, item) {
 	      		// 변수 초기화
 	            content = '';
-	      		/* console.log("item{}"+ JSON.stringify(item)); */
+	      		/* //console.log("item{}"+ JSON.stringify(item)); */
 	      		
 	      	    content =  '<a href="attendance.go?emp_idx=' + item.emp_idx +
 	      	  										'&name=' + encodeURIComponent(item.name) +

@@ -75,10 +75,10 @@ public class AttendanceController {
 		return attendanceService.updateEndTime(params);
 	}
 	
-	@GetMapping(value="/attendanceEmpList.go")
-	public String attendanceEmpListGo(){
-		return "emp/attendanceEmpList";
-	}
+//	@GetMapping(value="/attendanceEmpList.go")
+//	public String attendanceEmpListGo(){
+//		return "emp/attendanceEmpList";
+//	}
 	
 	// 출퇴근 기록 수정 데이터 가져오기
 	@PostMapping(value="/updateAttendance.ajax")

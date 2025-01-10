@@ -371,7 +371,7 @@ select option {
 		<select id="visibilityFilter">
 		    <option value="all">전체</option>
 		    <option value="private">개인</option>
-		    <option value="public">부서</option>
+		    <option class="departName" value="public">부서</option>
 		</select>
 		<div id="calendar" class="calendar-calendar"></div>
  	</div>
@@ -972,6 +972,7 @@ var specialDays = ${specialDaysJson};
                         });
 
                         successCallback(filteredEvents);
+                        updateTodoList(todayDate);
                     })
                     .catch(error => {
                         failureCallback(error);
@@ -1091,6 +1092,34 @@ function renderChart(labels,amounts){
 	  }
 	});
 };
+
+getDepartmentNmae();
+function getDepartmentNmae(){
+	$.ajax({
+	    url: "getDepartmentNmae.ajax", 
+	    type: "POST",                 
+	    data: { 
+	        loginId: loginId         
+	    },
+	    dataType: 'json',            
+	    success: function (response) {
+	        if (response && response.msg === "성공") {  
+	            $('.departName').empty();              
+	            let row = response.departmentName; 
+	            if (row == '미발령') {
+					row = '부서';
+				}
+	            $('.departName').text(row);           
+	        } else {
+	        }
+	    },
+	    error: function (xhr, status, error) {
+	        console.error("에러:", error);
+	    }
+	});
+
+	
+}
 
 /* 여기까지 차트 end */
 

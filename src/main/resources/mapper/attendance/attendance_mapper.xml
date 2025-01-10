@@ -5,17 +5,28 @@
 <mapper namespace="com.best.attendance.AttendanceDAO">
 
 	<insert id="insertAttendance">
-	  INSERT INTO attendance (emp_idx, status, content)
-	  SELECT 
-	    e.emp_idx,
-	    CASE 
-	        WHEN lh.start_date &lt;= CURDATE() AND lh.end_date >= CURDATE() THEN '연차'
-	        ELSE NULL 
-	    END AS status,
-	    'SYSTEM' AS content
-	  FROM employee e
-	  LEFT JOIN leave_history lh ON e.emp_idx = lh.emp_idx
-	  WHERE e.end_date = '9999-12-31';
+		INSERT INTO attendance (emp_idx, status, content)
+		SELECT 
+		    e.emp_idx,
+		    CASE 
+		        WHEN fl.row_num = 1 THEN '연차'
+		        ELSE NULL
+		    END AS status,
+		    'SYSTEM' AS content
+		FROM employee e
+		LEFT JOIN (
+		    SELECT 
+		        emp_idx,
+		        start_date,
+		        end_date,
+		        ROW_NUMBER() OVER (
+		            PARTITION BY emp_idx 
+		            ORDER BY DATEDIFF(end_date, start_date) DESC
+		        ) AS row_num
+		    FROM leave_history
+		    WHERE start_date &lt;= CURDATE() AND end_date >= CURDATE()
+		) fl ON e.emp_idx = fl.emp_idx AND fl.row_num = 1
+		WHERE e.end_date = '9999-12-31';
 	</insert>
 	
 	<select id="checkHistory" parameterType="java.time.LocalDate">

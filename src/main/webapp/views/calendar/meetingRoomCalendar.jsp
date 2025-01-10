@@ -669,11 +669,11 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
         editable: true,
         selectable: true,
         dateClick: function (info) {
-            console.log("클릭된 날짜:", info.dateStr);
+            ////console.log("클릭된 날짜:", info.dateStr);
 
             // 캘린더의 모든 이벤트 가져오기
             const events = calendar.getEvents();
-            console.log("캘린더에 로드된 이벤트:", events);
+            ////console.log("캘린더에 로드된 이벤트:", events);
 
             if (events.length === 0) {
                 console.error("캘린더에 로드된 이벤트가 없습니다.");
@@ -687,7 +687,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 return eventDate === info.dateStr; // 클릭된 날짜와 비교
             });
 
-            console.log("해당 날짜의 이벤트:", filteredEvents);
+            ////console.log("해당 날짜의 이벤트:", filteredEvents);
 
             // 회의실 예약 현황 리스트 업데이트
             const listContainer = document.querySelector('#reservation-list'); // 리스트 컨테이너 div
@@ -809,11 +809,11 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                     end: info.end.toISOString()     // ISO 형식으로 변환된 종료 날짜
                 },
                 success: function(response) {
-                    console.log("서버 응답 데이터: ", response);
+                    //console.log("서버 응답 데이터: ", response);
 
                     // FullCalendar 형식으로 데이터 변환
                     const events = response.map(event => {
-                        console.log("이벤트 데이터 변환: ", event); // 여기서 각 이벤트 데이터를 확인
+                        //console.log("이벤트 데이터 변환: ", event); // 여기서 각 이벤트 데이터를 확인
                         return {
                             id: event.id,
                             title: event.title,
@@ -833,7 +833,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                         };
                     });
 
-                    console.log("변환된 이벤트 목록: ", events); // 변환된 배열 전체를 확인
+                    //console.log("변환된 이벤트 목록: ", events); // 변환된 배열 전체를 확인
                     successCallback(events); // FullCalendar에 전달
                 },
 
@@ -844,8 +844,8 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
             });
         },
         eventContent: function(arg) {
-            console.log("전체 이벤트 객체 확인:", arg.event);
-            console.log("extendedProps 데이터 확인 (from _def):", arg.event._def.extendedProps);
+            //console.log("전체 이벤트 객체 확인:", arg.event);
+            //console.log("extendedProps 데이터 확인 (from _def):", arg.event._def.extendedProps);
 
             // `_def.extendedProps`에서 데이터 가져오기
             const extendedProps = arg.event._def.extendedProps;
@@ -860,15 +860,15 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            console.log("startTime :", startTime);
-            console.log("endTime :", startTime);
-            console.log("extendedProps :", extendedProps);
+            //console.log("startTime :", startTime);
+            //console.log("endTime :", startTime);
+            //console.log("extendedProps :", extendedProps);
 
             const roomName = extendedProps.room_name || '정보 없음';
             const reserverName = extendedProps.name || '알 수 없음';
             const rankName = extendedProps.rank_name || '직급 없음';
 
-            console.log("렌더링 데이터 확인:", { roomName, reserverName, rankName, startTime, endTime });
+            //console.log("렌더링 데이터 확인:", { roomName, reserverName, rankName, startTime, endTime });
 
             return {
                 html: 
@@ -958,7 +958,7 @@ function saveCall(){
 	    },
 	    success: function(response) {
 	        // 요청이 성공했을 때 실행되는 함수
-	        console.log(response); // 서버에서 받은 응답 데이터
+	        //console.log(response); // 서버에서 받은 응답 데이터
 	    },
 	    error: function(xhr, status, error) {
 	        // 요청이 실패했을 때 실행되는 함수
@@ -1072,7 +1072,7 @@ $(document).ready(function () {
         
         const checkboxes = document.querySelectorAll('.material-checkbox:checked');
         if (checkboxes.length === 0) {
-        	console.log("체크박스가 선택되지 않았습니다.");
+        	//console.log("체크박스가 선택되지 않았습니다.");
 		}else{
 		    checkboxes.forEach(function(checkbox) {
 		        const materialIdx = checkbox.value;
@@ -1084,7 +1084,7 @@ $(document).ready(function () {
 		    });
 		}
         
-	    console.log(formMaterial);
+	    //console.log(formMaterial);
 	    // 서버에 데이터 저장
 	    $.ajax({
 	      url: "saveCalendar.ajax", // 서버의 엔드포인트 URL
@@ -1152,11 +1152,11 @@ document.querySelectorAll('.room-btn').forEach(button => {
 			        // 날짜 선택 이벤트 리스너 등록
 			        dateInput.addEventListener("change", function () {
 			            if (dateInput.value) {
-			                console.log("선택된 날짜:", dateInput.value);
+			                //console.log("선택된 날짜:", dateInput.value);
 			                selectDateOption(data.reserveList); // 날짜 선택 후 실행
 			            }
 			        }); */
-			        console.log("날짜가 선택될 때까지 대기 중...");
+			        //console.log("날짜가 선택될 때까지 대기 중...");
                 }else{
 					modal.showAlert(data.msg);
 				}
@@ -1278,7 +1278,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 한국 시간으로 조정 (UTC + 9시간)
   now.setHours(now.getHours());
-  console.log("now: ", now);
+  //console.log("now: ", now);
 
   // 'YYYY-MM-DD' 형식으로 변환된 오늘 날짜
   const today = now
@@ -1289,7 +1289,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .replace(/\. /g, "-")
     .replace(/\./g, "");
-  console.log("today", today);
+  //console.log("today", today);
 
   // 날짜 입력 필드에 최소 날짜 설정
   dateInput.setAttribute("min", today);
@@ -1301,7 +1301,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 현재 시간 객체 생성 및 KST로 조정
     const currentTime = new Date();
     currentTime.setHours(currentTime.getHours());
-    console.log("currentTime: ", currentTime);
+    //console.log("currentTime: ", currentTime);
 
     // 오늘 날짜인 경우만 필터링
     if (selectedDate === today) {
