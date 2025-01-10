@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%-- <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html lang="ko">
 <head>
@@ -340,12 +340,10 @@
 			 		<div class="year-graph2">
 						<canvas id="cardChart"></canvas>
 			 		</div>
-			 		
 			 	</div>
 		 	</div>
 		</div>
 	</div>
-
 </body>
 <script>
 let myChart; 

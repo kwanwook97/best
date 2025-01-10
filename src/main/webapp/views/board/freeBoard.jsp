@@ -36,13 +36,19 @@
 	}
 	.docbox{
     	display: flex;
-    	justify-content: center;
-		border: 2px solid var(--primary-color);
-	    width: 50vw;
-		height: 89%;
+	    justify-content: center;
 	    border: 2px solid var(--primary-color);
+	    width: 1000px;
+	    height: 640px;
 	    border-radius: 10px;
-        align-content: center;
+	    flex-direction: column;
+	    align-items: center;
+	}
+	.dropBox{
+	    margin-top: 8px;
+	    width: 85%;
+	    display: flex;
+	    justify-content: flex-end;
 	}
 	.docnav{
 	    width: 55vw;
@@ -98,65 +104,65 @@
 	table.my-table{
 		border-collapse: separate !important;
         border-spacing: 0;
-	}
-	table{
-		width: 45vw;
 		border-radius: 10px;
-		margin: 33px 48px 55px 48px;
+		margin: 10px 48px 55px 48px;
 	}
 	table.my-table tr:not(:last-child) td, table.my-table th {
         border-bottom: 1px solid var(--primary-color) !important;
     }
-	table.my-table tr{
+    table.my-table thead tr{
+   	    background-color: var(--primary-color);
+    	color: white;
+    }
+    table.my-table thead tr th{
+   	   	padding: 3px 0 4px 0;
+    }
+	table.my-table thead tr th:first-child {
+    border-top-left-radius: 5px;
+	}
+	
+	table.my-table thead tr th:last-child {
+	    border-top-right-radius: 5px;
+	}
+	table.my-table tbody tr{
 		height: 30px;
 	}
-	table.my-table tr:hover{
+	table.my-table td:hover{
 		cursor: pointer;
 		color: var(--accent-color);
 	}
-	td{
-		padding-left: 21px;
-	    font-size: small;
+	table.my-table th{
+		text-align: center;
 	}
-    td:nth-child(1) {
-        width: 5%;
+	table.my-table td{
+		padding: 3px 0 4px 0;
+	    text-align: center;
+	    font-size: 14px;
+	}
+    table.my-table td:nth-child(1) {
+        width: 1%;
     }
-    td:nth-child(2) {
-        width: 15%;
+    table.my-table td:nth-child(2) {
+        width: 10%;
     }
-    td:nth-child(3) {
-        width: 5%;
+    table.my-table td:nth-child(3) {
+        width: 3%;
     }
-    td:nth-child(4) {
-        width: 5%;
+    table.my-table td:nth-child(4) {
+        width: 2%;
     }
-    td:nth-child(5) {
+    table.my-table td:nth-child(5) {
         width: 2%;
     }
 	.container nav{
 		display:flex;
 		justify-content: center;
 	}
-	.table1{
+	table.my-table{
 		border: 2px solid var(--primary-color);
-	    position: fixed;
-    	top: 9rem;
 	}
-	#importCont{
-	    position: fixed;
-	    top: 21rem;
-	}
-	.table2{
-		border: 1px solid var(--primary-color);
-	    position: fixed;
-    	top: 22rem;
-	}
-	.table1 i{
+	table.my-table i{
 	    color: var(--accent-color);
-	}
-	#generalCont{
-	    position: fixed;
-        top: 47rem;
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -201,28 +207,19 @@
 	        height: 102vh;
 	        width: 93vw;
 	    }
-	    .table1{
+	    .my-table{
             width: 83vw;
 	        top: 120px;
 	        left: 0px;
-    	}
-	    .table2{
-	    	width: 83vw;
-	    	top: 342px;
-	    	left: 0px;
-	    }
-	    
+    	}	    
   	}
   	@media (max-width: 959px) {
 	    .container {
 	        max-width: 100vw !important;
 	    }
-	    #importCont{
+	    #freeCont{
 	    	top: 19rem;
 	    }
-	    #generalCont {
-		    top: 46rem;
-		}
 	}
    </style>
 </head>
@@ -236,7 +233,6 @@
 		<div class="docnav">
 			<div class="searchbox">
 				<div class="searchCont">
-					
 				</div>
 				<select class="drop">
 				  <option value="subject">제목</option>
@@ -249,14 +245,32 @@
 			</div>
 		</div>
 		<div class="docbox">
-			<!-- 중요 공지 -->
-			<table class="table1 my-table">
-				<tbody class="import">
+			<div class="dropBox">
+				<div class="drop">
+				    <select class="drop cntSelector">
+				        <option value="5">5개씩 보기</option>
+				        <option value="10">10개씩 보기</option>
+				        <option value="15" selected>15개씩 보기</option>
+				        <option value="20">20개씩 보기</option>
+				    </select>
+				</div>
+			</div>
+			<table class="my-table">
+				<thead>
+					<tr>
+						<th>NO</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일</th>
+						<th>조회수</th>
+					</tr>
+				</thead>
+				<tbody class="freeBoard">
 				</tbody>
 			</table>
-			<div class="container" id="importCont">
+			<div class="container" id="freeCont">
 			    <nav aria-label="Page navigation">
-			        <ul class="pagination" id="importantPagination"></ul>
+			        <ul class="pagination" id="freePagination"></ul>
 			    </nav>
 			</div>
 		</div>
@@ -264,51 +278,34 @@
 </body>
 <script>
 
-/* 공지 게시판 중요 */
-var showPage = 1; // 기본으로 보여줄 페이지
+var showPage = 1;
+var itemsPerPage = 15;
 
 pageCall(showPage);
 
-function pageCall(page){
+//페이지 호출 함수
+function pageCall(page) {
     console.log('pageCall');
+    console.log("itemsPerPage: " + itemsPerPage);
 
     $.ajax({
         type: 'GET',
-        url: 'noticeList.ajax',
+        url: 'freeBoardList.ajax',
         data: {
-            'page': page,  // 몇 페이지 보여줄지
-            'cnt': 5       // 페이지당 보여줄 게시물 수
+            'page': page,
+            'cnt': itemsPerPage
         },
         dataType: 'JSON',
         success: function(data) {
-            console.log(data);
-
-            // 중요 공지
-            PrintImport(data.importantNotices);
-        	// 일반 공지
-            PrintGeneral(data.generalNotices);
-
-            // 페이징 플러그인 처리 - 중요 공지
-            $('#importantPagination').twbsPagination({
-                startPage: 1,
-                totalPages: data.importTotalPages,
+            var startNumber = (page - 1) * itemsPerPage + 1; // 시작 번호 계산
+            printList(data.freeList, startNumber); // 시작 번호 전달
+            $('#freePagination').twbsPagination('destroy'); // 기존 페이지네이션 제거
+            $('#freePagination').twbsPagination({
+                startPage: page,
+                totalPages: data.totalPages,
                 visiblePages: 5,
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCallImportant(page);  // 중요 게시판 페이지 정보 받아서 수행
-                }
-            });
-
-            // 일반 공지
-            $('#generalPagination').twbsPagination({
-                startPage: 1,
-                totalPages: data.generalTotalPages,
-                visiblePages: 5,
-                onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
+                onPageClick: function(evt, page) {
+                    pageCallList(page); // 클릭 시 페이지 호출
                 }
             });
         },
@@ -318,61 +315,46 @@ function pageCall(page){
     });
 }
 
-// 중요 게시판 글 출력 함수
-function PrintImport(notices) {
-	
+// 항목 개수 변경 이벤트
+$('.cntSelector').on('change', function() {
+    itemsPerPage = parseInt($(this).val()); // 사용자가 선택한 개수
+    showPage = 1; // 첫 페이지로 초기화
+    pageCall(showPage); // 첫 페이지 데이터 로드
+});
+
+// 리스트 출력 함수
+function printList(list, startNumber) {
     var content = '';
-	
-	for(var item of notices){
-		content += '<tr onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">';
-		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td>'+item.subject+'</td>';
-		content += '<td>'+item.name+'</td>';
-		
-		var date = new Date(item.date);
-		var formattedDate = date.toISOString().split('T')[0];
-		
-		content += '<td>'+formattedDate+'</td>';
-		content += '<td>'+item.bhit+'</td>';
-		content += '</tr>';
-	}
-	$('.import').html(content);
-    
+    var i = startNumber; // 시작 번호 설정
+    for (var item of list) {
+        content += '<tr onclick="window.location.href=\'freeDetail.go?idx=' + item.board_idx + '\'">';
+        content += '<td>' + i++ + '</td>'; // 번호 증가
+        content += '<td>' + item.subject + '</td>';
+        content += '<td>' + item.name + '</td>';
+
+        var date = new Date(item.date);
+        var formattedDate = date.toISOString().split('T')[0];
+
+        content += '<td>' + formattedDate + '</td>';
+        content += '<td>' + item.bhit + '</td>';
+        content += '</tr>';
+    }
+    $('.freeBoard').html(content);
 }
 
-// 일반 게시판 글 출력 함수
-function PrintGeneral(notices) {
-    
-	var content = '';
-	
-	for(var item of notices){
-		content += '<tr onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">';
-		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td>'+item.subject+'</td>';
-		content += '<td>'+item.name+'</td>';
-		
-		var date = new Date(item.date);
-		var formattedDate = date.toISOString().split('T')[0];
-		
-		content += '<td>'+formattedDate+'</td>';
-		content += '<td>'+item.bhit+'</td>';
-		content += '</tr>';
-	}
-	$('.general').html(content);
-}
-
-// 중요 공지
-function pageCallImportant(page) {
+// 페이지 클릭 시 호출 함수
+function pageCallList(page) {
+    var startNumber = (page - 1) * itemsPerPage + 1; // 시작 번호 계산
     $.ajax({
         type: 'GET',
-        url: 'noticeList.ajax',
+        url: 'freeBoardList.ajax',
         data: {
             'page': page,
-            'cnt': 5
+            'cnt': itemsPerPage
         },
         dataType: 'JSON',
         success: function(data) {
-        	PrintImport(data.importantNotices);
+            printList(data.freeList, startNumber); // 시작 번호 전달
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -380,24 +362,6 @@ function pageCallImportant(page) {
     });
 }
 
-// 일반 공지
-function pageCallGeneral(page) {
-    $.ajax({
-        type: 'GET',
-        url: 'noticeList.ajax',
-        data: {
-            'page': page,
-            'cnt': 5
-        },
-        dataType: 'JSON',
-        success: function(data) {
-        	PrintGeneral(data.generalNotices);
-        },
-        error: function(e) {
-            console.log("오류 발생", e);
-        }
-    });
-}
 
 // 검색
 $('.searchInp').keydown(function(event) {
@@ -428,7 +392,7 @@ $('.searchInp').keydown(function(event) {
                     if (data.importantNotices.length > 0) {
                         PrintImport(data.importantNotices);
 
-                        $('#importantPagination').twbsPagination({
+                        $('#freePagination').twbsPagination({
                             startPage: 1,
                             totalPages: data.importTotalPages,
                             visiblePages: 5,
@@ -475,7 +439,7 @@ $('.searchInp').keydown(function(event) {
 
 // 공지 작성
 $('.editbtn').on('click', function(){
-	window.location.href="noticeWrite.go";
+	window.location.href="freeWrite.go";
 });
 
 </script>
