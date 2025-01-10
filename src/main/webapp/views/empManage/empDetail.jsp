@@ -546,68 +546,6 @@ form{
             <tbody class="addTbody">
 
             </tbody>
-<%--             <c:set var="maxRows" value="6" /> <!-- 최대 행 개수 설정 -->
-			<c:set var="rowCount" value="${fn:length(detail.list)}" />
-			
-			<c:set var="prevDepart" value="${detail.depart_name}" />
-			<c:set var="prevRank" value="${detail.rank_name}" />
-			<c:set var="prevSalary" value="${detail.salary}" />
-			
-			<c:forEach items="${detail.list}" var="item">
-			  <tr>
-			    <!-- 부서 -->
-			    <td>
-			      <c:choose>
-			        <c:when test="${item.category == 'depart_idx'}">
-			          ${item.after_update}
-			          <c:set var="prevDepart" value="${item.before_update}" />
-			        </c:when>
-			        <c:otherwise>
-			          ${prevDepart}
-			        </c:otherwise>
-			      </c:choose>
-			    </td>
-			    <!-- 직급 -->
-			    <td>
-			      <c:choose>
-			        <c:when test="${item.category == 'rank_idx'}">
-			          ${item.after_update}
-			          <c:set var="prevRank" value="${item.before_update}" />
-			        </c:when>
-			        <c:otherwise>
-			          ${prevRank}
-			        </c:otherwise>
-			      </c:choose>
-			    </td>
-			    <!-- 근무 시작일과 종료일 -->
-			    <td>${detail.start_date}</td>
-			    <td>${detail.end_date}</td>
-			    <!-- 연봉 -->
-			    <td>
-			      <c:choose>
-			        <c:when test="${item.category == 'salary'}">
-			          <fmt:formatNumber value="${item.after_update}" type="number" groupingUsed="true" /> 원
-			          <c:set var="prevSalary" value="${item.before_update}" />
-			        </c:when>
-			        <c:otherwise>
-			          <fmt:formatNumber value="${prevSalary}" type="number" groupingUsed="true" /> 원
-			        </c:otherwise>
-			      </c:choose>
-			    </td>
-			  </tr>
-			</c:forEach> 
-
-			
-			<!-- 빈 행 추가 -->
-			<c:forEach begin="${rowCount}" end="${maxRows - 1}" var="i">
-			  <tr>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			  </tr>
-			</c:forEach>--%>
           </table>
         </div>
         <div class="attachment-info">
@@ -1076,8 +1014,8 @@ form{
 	    }
 	    const totalRows = filteredRows.length;
 
-	    if (totalRows < 10) {
-	        for (let i = totalRows; i < 10; i++) {
+	    if (totalRows < 7) {
+	        for (let i = totalRows; i < 7; i++) {
 	            const emptyRow = 
 	                '<tr class="empty-row">'+
 	                    '<td>*</td>'+
