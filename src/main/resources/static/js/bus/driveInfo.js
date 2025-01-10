@@ -22,8 +22,6 @@ $(document).ready(function () {
         method: 'GET',
         data: { busID: busID },
         success: function (data) {
-            console.log("받아온 데이터:", data);
-
             // 기존 Polyline 제거
             if (polyline) {
                 polyline.setMap(null);
@@ -31,8 +29,6 @@ $(document).ready(function () {
             
             // busNo 추출
         	var busNo = data.busDetails.result.busNo; // busNo 확인
-        	console.log("추출된 busNo:", busNo);
-
             // 실시간 버스 위치 및 기존 정보 렌더링 (기존 기능 유지)
             renderRouteInfo(data.busDetails.result, $clickedRoute);
             renderRealtimeBusIcons(data.realtimeRoute.result, $clickedRoute, busNo);
@@ -44,8 +40,6 @@ $(document).ready(function () {
             updateBusNumber(data.busDetails.result);
 
 			
-			console.log("Lane Data:", data.laneData);
-
             // 보간점 데이터로 Polyline 그리기
             if (data.laneData && data.laneData.result && data.laneData.result.lane) {
     		// lane 배열에서 graphPos 추출
@@ -117,8 +111,6 @@ function drawRoutePolyline(routeCoords) {
         return;
     }
 
-    console.log("Polyline 경로 좌표:", routeCoords); // 추가: 변환된 경로 확인
-
     polyline = new kakao.maps.Polyline({
         path: routeCoords, // 보간점 좌표
         strokeWeight: 5,
@@ -134,7 +126,6 @@ function drawRoutePolyline(routeCoords) {
     routeCoords.forEach(function (coord) {
         bounds.extend(coord);
     });
-    console.log("지도 경계 좌표:", bounds); // 추가: 지도 경계 확인
     map.setBounds(bounds);
 }
 
@@ -212,8 +203,6 @@ function drawRoutePolyline(routeCoords) {
             overlay.setMap(null); // CustomOverlay 숨김
         });
 
-        console.log("Marker 생성:", marker);
-        
 		// 마커 클릭 이벤트 추가
         kakao.maps.event.addListener(marker, 'click', function () {
             moveToBusIcon(bus.busPlateNo);
@@ -287,7 +276,6 @@ function moveToBusIcon(busPlateNo) {
 
 
 function renderRealtimeBusIcons(result, $clickedRoute, busNo) {
-    console.log("실시간 데이터:", result);
     $('.bus-icon').remove(); // 기존 아이콘 제거
 
     var totalBuses = 0; // 운행 중인 총 버스 대수 초기화
@@ -297,10 +285,6 @@ function renderRealtimeBusIcons(result, $clickedRoute, busNo) {
         var fromStationId = bus.fromStationId; // 이전 정류장 ID
         var toStationId = bus.toStationId;     // 다음 정류장 ID
         var busPosition = bus.busPosition;     // 버스 위치 (1: 이전 정류장 도착, 2: 중간)
-        
-        
-        console.log("버스 데이터:", bus);
-    	console.log("busNo 전달 전 확인:", busNo);
 
         // 정류장 탐색
         var $fromStation = $('.station-item[data-station-id="' + fromStationId + '"]');
@@ -324,9 +308,6 @@ function renderRealtimeBusIcons(result, $clickedRoute, busNo) {
     addBusIconClickEvents();
     addBusIconHoverEvents();
 
-    // 총 운행 중인 버스 대수 출력
-    console.log("총 운행 중인 버스 대수:", totalBuses);
-
     // UI에 표시 (예: #busCount 요소에 표시)
     $clickedRoute.find('.route-summary.total').html(
         `<p><span class="lPurple">현재 운행 버스: </span><span class="cPurple">${totalBuses}대</span></p>`
@@ -336,7 +317,6 @@ function renderRealtimeBusIcons(result, $clickedRoute, busNo) {
     
     
 function placeBusIconNextToStation($station, busPlateNo, busNo) {
-	console.log("원본 버스 번호:", busNo); // 원본 busNo 확인
 	busNo = String(busNo).trim();
 	var iconClass = '';
     	if (busNo.length <= 3) {
@@ -344,9 +324,6 @@ function placeBusIconNextToStation($station, busPlateNo, busNo) {
     	} else if (busNo.length === 4) {
         	iconClass = 'green'; // 4글자
     	}
-    	console.log("busNo:", busNo);
-console.log("iconClass:", iconClass);
-    	
     var $icon = $('<span class="bus-icon ' + iconClass + '" data-bus-plate="' + busPlateNo + '"></span>');
 
     if ($station.length) {
@@ -369,7 +346,6 @@ console.log("iconClass:", iconClass);
 }
 
 function placeBusIconBetweenStations($fromStation, $toStation, busPlateNo, busNo) {
-	console.log("원본 버스 번호:", busNo); // 원본 busNo 확인
 	busNo = String(busNo).trim();
     // 글자 수에 따라 클래스 설정
     var iconClass = '';
@@ -378,9 +354,6 @@ function placeBusIconBetweenStations($fromStation, $toStation, busPlateNo, busNo
     } else if (busNo.length === 4) {
         iconClass = 'green'; // 4글자
     }
-	
-	console.log("busNo:", busNo);
-console.log("iconClass:", iconClass);
 	
     if ($fromStation.length) {
         var $icon = $('<span class="bus-icon ' + iconClass + '" data-bus-plate="' + busPlateNo + '"></span>');

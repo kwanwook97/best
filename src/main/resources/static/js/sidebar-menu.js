@@ -290,7 +290,7 @@ $(document).ready(function () {
 
                 if (messages.length === 0) {
                     // 메시지가 없을 때 표시
-                    messageDropdown.append('<div class="dropdown-item"><div class="notification-profile">새로운 메시지가 없습니다.</div></div>');
+                    messageDropdown.append('<div class="dropdown-item"><div class="notification-profile"><i class="bi bi-chat-left-dots"></i> 새로운 메시지가 없습니다.</div></div>');
                     $("#newMessageIndicator3").css("display", "none"); // 알림 숨김
                 } else {
                     // 메시지가 있을 때 추가

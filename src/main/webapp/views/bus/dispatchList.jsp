@@ -308,7 +308,6 @@ var loginId = ${sessionScope.loginId};
 var emp_idx = parseInt(loginId);
 
 window.onload = function () {
-    console.log("Window loaded!");
 
     const loadDispatchList = function (date, selectedRouteName = "") {
         const $listTbody = $(".list-tbody");
@@ -319,7 +318,6 @@ window.onload = function () {
             method: "GET",
             data: { date: date },
             success: function (response) {
-            	console.log(response);
                 $listTbody.empty(); // tbody 초기화
                 $routeFilters.empty(); // 필터 초기화
 
@@ -350,10 +348,7 @@ window.onload = function () {
                     response.result.forEach(function (info) {
                         const routeName = info.route_name;
                         const licensePlate = info.license_plate;
-						
-                        
-                        console.log("운행상태:",info.status);
-                        
+
                         if (!groupedData[routeName]) {
                             groupedData[routeName] = {};
                         }

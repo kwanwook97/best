@@ -17,7 +17,7 @@ public interface ChatDAO {
 
 	void message(MessageDTO message);
 
-	List<Map<String, Object>> getMessagesByChatIdx(int chatIdx);
+	List<Map<String, Object>> getMessagesByChatIdx(int chatIdx, int empIdx);
 
 	String getEmployeeName(int emp_idx);
 

@@ -223,8 +223,8 @@ public class ChatService {
 	}
 
 	/* 메시지 가져오기 */
-	public List<Map<String, Object>> getMessagesByChatIdx(int chatIdx) {
-		return chatDAO.getMessagesByChatIdx(chatIdx);
+	public List<Map<String, Object>> getMessagesByChatIdx(int chatIdx, int empIdx) {
+		return chatDAO.getMessagesByChatIdx(chatIdx, empIdx);
 	}
 
 	/* 사원 이름 가져오기 */

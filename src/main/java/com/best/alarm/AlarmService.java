@@ -1,13 +1,8 @@
 package com.best.alarm;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +16,6 @@ public class AlarmService {
 	
 	private MailSendDTO storedSender;
 	private List<MailReceiveDTO> storedReceivers;
-	private final Set<String> processedEventIds = Collections.synchronizedSet(new HashSet<>());
 
 	@Autowired AlarmDAO alarmDAO;
 
@@ -125,29 +119,35 @@ public class AlarmService {
         for (Map<String, Object> event : events) {
             int empIdx = (int) event.get("employeeId");
             String subject = (String) event.get("subject");
+            String visibility = (String) event.get("visibility"); // visibility 가져오기
 
-            // 고유 이벤트 ID 생성
-            String uniqueEventId = eventType + ":" + empIdx + ":" + subject;
-
-            // 중복 체크
-            if (processedEventIds.contains(uniqueEventId)) {
-                continue; // 이미 처리된 이벤트는 건너뜀
+            // visibility에 따라 접두사 결정
+            String prefix = "";
+            if ("calendar".equals(eventType.toLowerCase())) { // calendar일 때만 prefix 추가
+                switch (visibility.toLowerCase()) {
+                    case "all":
+                        prefix = "[전체] ";
+                        break;
+                    case "private":
+                        prefix = "[개인] ";
+                        break;
+                    case "public":
+                        prefix = "[부서] ";
+                        break;
+                }
             }
 
             // 알림 생성 및 저장
-            String content;
+            String content = null;
             switch (eventType.toLowerCase()) {
                 case "reserve":
-                    content = "<i class=\"bi bi-alarm-fill\"></i> 회의실 예약 " + subject + " 10분 전입니다.";
+                    content = "<i class=\"bi bi-calendar-range\"></i> 회의실 예약 " + subject + " 10분 전입니다. <i class=\"bi bi-alarm\"></i>";
                     break;
                 case "calendar":
-                    content = "<i class=\"bi bi-calendar-event\"></i> 등록하신 캘린더 일정 " + subject + " 10분 전입니다.";
+                    content = "<i class=\"fa-regular fa-calendar-check\"></i>  "+ prefix + subject + " 10분 전입니다. <i class=\"bi bi-alarm\"></i>";
                     break;
                 case "borrow":
-                    content = "<i class=\"bi bi-box\"></i> 대여하신 " + subject + " 반납 시간 10분 지났습니다.";
-                    break;
-                default:
-                    content = "<i class=\"bi bi-alarm\"></i> " + subject + " 10분 전입니다.";
+                    content = "<i class=\"bi bi-box\"></i> 대여하신 " + subject + " 반납 시간 10분 지났습니다. <i class=\"bi bi-alarm\"></i>";
                     break;
             }
             AlarmDTO alarm = new AlarmDTO();
@@ -159,20 +159,7 @@ public class AlarmService {
 
             // WebSocket 브로드캐스트
             GlobalWebsocketHandler.broadcastNewMail(empIdx, content, eventType.toLowerCase());
-
-            // 처리된 이벤트 저장
-            processedEventIds.add(uniqueEventId);
-
-            // 일정 시간이 지나면 이벤트 제거
-            scheduleCleanup(uniqueEventId);
         }
-    }
-
-    // 10분 후 Set에서 이벤트 제거
-    private void scheduleCleanup(String uniqueEventId) {
-        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            processedEventIds.remove(uniqueEventId);
-        }, 10, TimeUnit.MINUTES);
     }
 
     

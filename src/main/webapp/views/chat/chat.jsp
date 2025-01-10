@@ -140,7 +140,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <span class="close-modal" onclick="closeModal('noticeModal');">&times;</span>
-            <h5><i class="bi bi-megaphone-fill"></i> 공지사항</h5>
+            <h5><i class="fas fa-bullhorn"></i> 공지사항</h5>
         </div>
         <div class="subject-div">
             <textarea id="noticeContent" placeholder="공지사항 내용을 입력하세요" rows="5" style="width: 100%;"></textarea>

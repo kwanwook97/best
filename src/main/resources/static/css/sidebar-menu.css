@@ -429,7 +429,7 @@ a > * {
 	text-align: center
 }
 
-.alarmHeader{
+#alarmHeader{
     margin-right: 104px !important;
     margin-bottom: 0rem !important;
     min-width: 696px;
@@ -438,6 +438,10 @@ a > * {
 #alarmHeader.show {
     display: block;
 }
-.alarmHeader > li{
+#alarmHeader > li{
 	list-style: none;
+}
+#alarmHeader i{
+	color: #E9396B;
+	-webkit-text-stroke: 1px #E9396B;
 }

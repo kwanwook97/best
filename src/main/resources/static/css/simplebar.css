@@ -181,15 +181,22 @@ translateY(
 	width: 235px;
 	height: 80px;
 	gap: 10px;
+	color: #30005A;
 }
-
+.notification-profile > i{
+	color: #E9396B;
+	-webkit-text-stroke: 0.5px #E9396B;
+}
 .notifi-profile {
 	display: flex;
 	align-items: flex-start;
 	flex-direction: column;
 	color: #30005A;
 }
-
+.notifi-profile i{
+	color: #E9396B;
+	-webkit-text-stroke: 0.5px #E9396B;
+}
 .notification-profile .custom-image {
 	width: 45px !important;
 	height: 45px !important;

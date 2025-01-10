@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-	// 1. 각 URL에 따른 접근제어 처리.
+   // 1. 각 URL에 따른 접근제어 처리.
     private final DynamicAuthorizationService dynamicAuthorizationService;
     // 2. 권한이 없는경우(403에러) 대신 alert창 처리.
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -40,20 +40,20 @@ public class SecurityConfig {
             // 현재 있는 페이지에 있는 경로정보들에 대해서만 처리.
             .authorizeRequests(authorize -> authorize
                 .antMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/resources/**").permitAll()
-                .antMatchers("/", "/login.go", "/login.do", "/adminLogin.go", "/adminLogin.do", "/*.ajax", "/resetPassword.do").permitAll()
+                .antMatchers("/", "/login.go", "/login.do", "/adminLogin.go", "/adminLogin.do", "/*.ajax", "/resetPassword.do", "/changePw.do").permitAll()
                 .antMatchers("/accessManage.go", "/rankManage.go", "/departManage.go").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/*.go", "/*.do").access("@dynamicAuthorizationService.hasAccess(request.requestURI)")
+                .antMatchers("/*.go", "/*.do").access("hasAuthority('ROLE_ADMIN') or @dynamicAuthorizationService.hasAccess(request.requestURI)")
                 .anyRequest().authenticated() // 나머지는 인증된 사용자만 허용
                 )
             .exceptionHandling()
-            	.accessDeniedHandler(accessDeniedHandler) // 커스텀 AccessDeniedHandler 등록
+               .accessDeniedHandler(accessDeniedHandler) // 커스텀 AccessDeniedHandler 등록
             .and()
             .logout()
                 .logoutUrl("/logout.do")
                 .logoutSuccessUrl("/login.go?logout=success")
                 .invalidateHttpSession(true)
                 .permitAll();
-        	
+           
 
         return http.build();
     }
@@ -66,5 +66,3 @@ public class SecurityConfig {
     
     
 }
-
-

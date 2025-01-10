@@ -143,7 +143,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="resetPasswordForm" action="resetPassword.do" method="post">
+        <form id="resetPasswordForm">
           <div class="form-group">
             <label for="resetId">ID</label>
             <input type="text" class="form-control" id="resetId" name="id" placeholder="Enter User ID" required>
@@ -152,12 +152,14 @@
             <label for="resetEmail">Email Address</label>
             <input type="email" class="form-control" id="resetEmail" name="email" placeholder="Enter Email Address" required>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
+          <button type="button" class="btn btn-primary btn-block" id="resetPasswordBtn">Reset Password</button>
         </form>
+        <div id="resetPasswordMessage" class="mt-3 text-center"></div> <!-- 메시지 표시 영역 -->
       </div>
     </div>
   </div>
 </div>
+
 
 <div class="modal fade" id="changePasswordModal" tabindex="0" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -169,7 +171,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="changePasswordForm" action="chagnePw.do" method="post">
+        <form id="changePasswordForm">
           <div class="form-group">
             <label for="resetId">ID</label>
             <input type="text" class="form-control" id="changeId" name="id" placeholder="Enter User ID" required>
@@ -183,12 +185,12 @@
             <input type="password" class="form-control" id="changePassword" name="pw" placeholder="Enter Password" required>
           </div>
           <div class="form-group">
-            <label for="changPw">Change Password</label>
-            <input type="password" class="form-control" id="changPw" name="changPw" placeholder="Enter Change Password" required>
+            <label for="changePw">Change Password</label>
+            <input type="password" class="form-control" id="changePw" name="changePw" placeholder="Enter Change Password" required>
           </div>
           <div class="form-group">
             <label for="resetEmail">Change Password Check</label>
-            <input type="password" class="form-control" id="changPwcheck" name="pwCheck" placeholder="Enter Change Password Check" required>
+            <input type="password" class="form-control" id="changePwcheck" name="pwCheck" placeholder="Enter Change Password Check" required>
           	<div id="pwCheckMessage" class="text-center mt-2"></div>
           </div>
           <button type="submit" class="btn btn-primary btn-block">Change Password</button>
@@ -202,10 +204,67 @@
     <!--End Back To Top Button-->
 
 	</div><!--wrapper-->
-
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">알림</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="messageModalBody">
+        <!-- 메시지 내용이 여기에 표시됩니다 -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
   
 </body>
 <script>
+$(document).ready(function () {
+    $('#resetPasswordBtn').on('click', function () {
+        const id = $('#resetId').val(); // ID 입력값
+        const email = $('#resetEmail').val(); // 이메일 입력값
+        const $button = $(this); // 버튼 요소 참조
+
+        // 필수 값 확인
+        if (!id || !email) {
+            $('#messageModalBody').text('ID와 Email을 모두 입력해주세요.');
+            $('#messageModal').modal('show'); // 모달 표시
+            return;
+        }
+
+        // 버튼 비활성화 및 상태 변경
+        $button.prop('disabled', true).text('임시 비밀번호 전송 중...');
+
+        // AJAX 요청
+        $.ajax({
+            url: 'resetPassword.ajax',
+            type: 'POST',
+            data: { id: id, email: email },
+            success: function (response) {
+                $('#messageModalBody').text(response.message); // 서버 응답 메시지 설정
+                $('#messageModal').modal('show'); // 모달 표시
+
+                // 요청 완료 후 버튼 초기화
+                $button.prop('disabled', false).text('Reset Password');
+            },
+            error: function () {
+                $('#messageModalBody').text('서버와의 통신에 실패했습니다. 다시 시도해주세요.');
+                $('#messageModal').modal('show'); // 모달 표시
+
+                // 요청 실패 후 버튼 초기화
+                $button.prop('disabled', false).text('Reset Password');
+            }
+        });
+    });
+});
+
+
 //문서 전체에서 클릭 이벤트 감지
 $(document).on('click', function (event) {
     // 클릭한 요소가 모달 내부(.modal-content) 또는 모달 자체가 아닌 경우만 닫기
@@ -215,39 +274,54 @@ $(document).on('click', function (event) {
         }
     }
 });
-
-
 $(document).ready(function () {
     $('#changePasswordForm').on('submit', function (event) {
-        const id = $('#changeId').val(); // 변경된 ID
-        const email = $('#changeEmail').val(); // 변경된 Email
+        event.preventDefault(); // 기본 폼 제출 방지
+
+        const id = $('#changeId').val(); // ID 입력값
+        const email = $('#changeEmail').val(); // 이메일 입력값
         const currentPw = $('#changePassword').val(); // 현재 비밀번호
-        const newPassword = $('#changPw').val(); // 새 비밀번호
-        const passwordCheck = $('#changPwcheck').val(); // 확인용 비밀번호
+        const newPassword = $('#changePw').val(); // 새 비밀번호
+        const passwordCheck = $('#changePwcheck').val(); // 새 비밀번호 확인
 
         // 비밀번호 확인
         if (newPassword !== passwordCheck) {
-            alert('Change Password와 Change Password Check가 일치하지 않습니다.');
-            event.preventDefault(); // 폼 제출 막기
+            $('#messageModalBody').text('Change Password와 Change Password Check가 일치하지 않습니다.');
+            $('#messageModal').modal('show'); // 모달 표시
             return false;
         }
 
-        // 필수 값 확인
-        if (!id || !email || !currentPw) {
-            alert('ID, Email 또는 현재 비밀번호를 입력해주세요.');
-            event.preventDefault(); // 폼 제출 막기
-            return false;
-        }
+        // AJAX 요청
+        $.ajax({
+            url: 'changePw.ajax',
+            type: 'POST',
+            data: {
+                id: id,
+                email: email,
+                pw: currentPw,
+                changePw: newPassword
+            },
+            success: function (response) {
+                $('#messageModalBody').text(response.message); // 서버 응답 메시지 설정
+                $('#messageModal').modal('show'); // 모달 표시
 
-        // 검증 통과 -> 서버로 제출
-        return true;
+                // 비밀번호 변경 성공 시 폼 초기화
+                if (response.status === 'success') {
+                    $('#changePasswordForm')[0].reset();
+                }
+            },
+            error: function () {
+                $('#messageModalBody').text('서버와의 통신에 실패했습니다. 다시 시도해주세요.');
+                $('#messageModal').modal('show'); // 모달 표시
+            }
+        });
     });
 });
 
 $(document).ready(function () {
     // 비밀번호 확인 실시간 처리
-    $('#changPwcheck').on('keyup', function () {
-        const password = $('#changPw').val(); // 변경할 비밀번호
+    $('#changePwcheck').on('keyup', function () {
+        const password = $('#changePw').val(); // 변경할 비밀번호
         const passwordCheck = $(this).val(); // 확인용 비밀번호
 
         const messageDiv = $('#pwCheckMessage'); // 메시지 표시 영역
@@ -258,6 +332,6 @@ $(document).ready(function () {
             messageDiv.text('비밀번호가 일치하지 않습니다.').css('color', '#E9396B');
         }
     });
-});
+}); 
 </script>
 </html>

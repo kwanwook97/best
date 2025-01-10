@@ -1,5 +1,6 @@
 package com.best.emp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -90,41 +91,57 @@ public class LoginController {
 	
 	
 	
-	@RequestMapping(value = "/resetPassword.do")
-	@ResponseBody
-	public String resetPassword(@RequestParam String id, @RequestParam String email) {
-	    try {
-	        return loginService.resetPassword(id, email);
-	    } catch (Exception e) {
-	        return "비밀번호 초기화에 실패했습니다.";
-	    }
-	}
+    @PostMapping(value = "/resetPassword.ajax")
+    @ResponseBody
+    public Map<String, String> resetPassword(@RequestParam String id, @RequestParam String email) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            String message = loginService.resetPassword(id, email);
+            response.put("status", "success"); // 성공 상태
+            response.put("message", message); // 성공 메시지
+        } catch (Exception e) {
+            response.put("status", "error"); // 실패 상태
+            response.put("message", "비밀번호 초기화에 실패했습니다. 관리자에게 문의하세요."); // 실패 메시지
+        }
+        return response;
+    }
+
 	
-	@PostMapping("/changePw.do")
-	@ResponseBody
-	public String changePassword(
-	        @RequestParam String id,
-	        @RequestParam String email,
-	        @RequestParam String pw,
-	        @RequestParam String changPw,
-	        RedirectAttributes redirectAttributes) {
-	    // 사용자 인증 (ID, Email, 현재 비밀번호 확인)
-	    boolean isValidUser = loginService.validateUser(id, email, pw);
-	    if (!isValidUser) {
-	        redirectAttributes.addFlashAttribute("error", "ID, Email 또는 비밀번호가 일치하지 않습니다.");
-	        return "redirect:/login"; // 변경 페이지로 리다이렉트
-	    }
+    @PostMapping(value="/changePw.ajax")
+    @ResponseBody
+    public Map<String, String> changePassword(
+            @RequestParam String id,
+            @RequestParam String email,
+            @RequestParam String pw,
+            @RequestParam String changePw) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            // 사용자 인증
+            boolean isValidUser = loginService.validateUser(id, email, pw);
+            if (!isValidUser) {
+                response.put("status", "error");
+                response.put("message", "현재 비밀번호가 일치하지 않습니다.");
+                return response;
+            }
 
-	    // 비밀번호 변경
-	    boolean isPasswordChanged = loginService.changePassword(id, changPw);
-	    if (!isPasswordChanged) {
-	        redirectAttributes.addFlashAttribute("error", "비밀번호 변경에 실패했습니다.");
-	        return "redirect:/login";
-	    }
+            // 비밀번호 변경
+            boolean isPasswordChanged = loginService.changePassword(id, changePw);
+            if (!isPasswordChanged) {
+                response.put("status", "error");
+                response.put("message", "비밀번호 변경에 실패했습니다.");
+                return response;
+            }
 
-	    // 성공 메시지와 함께 리다이렉트
-	    redirectAttributes.addFlashAttribute("success", "비밀번호가 성공적으로 변경되었습니다.");
-	    return "redirect:/login";
-	}
+            // 성공 메시지 반환
+            response.put("status", "success");
+            response.put("message", "비밀번호가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+        return response;
+    }
+
+
 
 }

@@ -4,65 +4,72 @@
 window.updateChatList = function(messageDataList) {
     const sidebar = $(".sidebar");
 
-    for (const messageData of messageDataList) {
+    // 최신순 정렬된 데이터를 DOM에 추가
+    const sortedData = messageDataList.sort((a, b) => new Date(b.latest_time) - new Date(a.latest_time));
+
+    sidebar.empty(); // 기존 DOM 초기화
+
+    sortedData.forEach(messageData => {
         const chatIdx = messageData.chat_idx;
         const chatTitle = messageData.chat_subject ? messageData.chat_subject : messageData.participants;
 
-        // chat_idx에 해당하는 대화방 항목 찾기
-        const chatItem = sidebar.find('.chat-item[data-chat-idx="' + chatIdx + '"]');
+        // 읽지 않은 메시지 카운트
+        const unreadCountText = messageData.unread_count && messageData.unread_count > 0
+            ? `<div class="unread-count-list"><span class="unread-message-count" id="unread-count-${chatIdx}">${messageData.unread_count}</span></div>`
+            : "";
 
-        if (chatItem.length > 0) {
-            // 기존 항목 업데이트
-            chatItem.find(".chat-preview").text(messageData.latest_message);
-            chatItem.find(".chat-time").text(formatTime(messageData.latest_time));
-
-            // 읽지 않은 메시지 숫자 업데이트
-            const unreadCountContainer = chatItem.find(".unread-message-count");
-            if (messageData.unread_count && messageData.unread_count > 0) {
-                if (unreadCountContainer.length > 0) {
-                    unreadCountContainer.text(messageData.unread_count); // 기존 엘리먼트가 있으면 업데이트
-                } else {
-                    const unreadCountText = '<div class="unread-count-list"><span class="unread-message-count" id="unread-count-' + chatIdx + '">' 
-                                            + messageData.unread_count + '</span></div>';
-                    chatItem.find(".chat-preview").append(unreadCountText); // 없으면 새로 추가
-                }
-            } else {
-                unreadCountContainer.remove(); // 읽지 않은 메시지가 없으면 제거
-            }
-            
-
-            // 항목을 리스트 맨 위로 이동
-            chatItem.prependTo(sidebar);
-
-            // 새로운 항목 추가
-            const newChatItem =
-                '<div class="chat-item" data-chat-idx="' + chatIdx + '">' +
-                    '<div class="chat-avatar">' +
-                        '<img src="/photo/' + messageData.photo + '" alt="Avatar">' +
-                    '</div>' +
-                    '<div class="chat-details">' +
-                        '<div class="chat-header">' +
-                            '<span class="chat-title">' + chatTitle + '</span>' +
-                            '<span class="chat-time">' + formatTime(messageData.latest_time) + '</span>' +
-                        '</div>' +
-                        '<div class="chat-preview">' + messageData.latest_message + '</div>' +
-                        unreadCountText +
-                    '</div>' +
-                '</div>';
-            sidebar.prepend(newChatItem);
-        }
-    }
+        // DOM 생성 및 추가
+        const chatItem = `
+    		<div class="chat-item" data-chat-idx="${chatIdx}" onclick="switchChatRoom(${chatIdx})">
+        		<div class="chat-avatar">
+            		<img src="/photo/${messageData.photo}" alt="프로필 사진" class="custom-image">
+        		</div>
+        		<div class="chat-details">
+            		<div class="chat-header">
+                		<span class="chat-title">${chatTitle}</span>
+                		<span class="chat-time">${formatDateTime(messageData.latest_time)}</span>
+            		</div>
+            		<div class="chat-preview">
+                		<span id="latest-message-${chatIdx}">${messageData.latest_message}</span>
+                		${unreadCountText}
+            		</div>
+        		</div>
+    		</div>`;
+		sidebar.append(chatItem);
+    });
 };
 
 
 
-// 시간 포맷팅 함수
-function formatTime(timestamp) {
-    var options = { hour: "numeric", minute: "numeric", hour12: true };
-    var formattedTime = new Date(timestamp).toLocaleTimeString("ko-KR", options);
-    return formattedTime.replace("AM", "오전").replace("PM", "오후");
-}
+// 날짜 및 시간 포맷팅 함수
+function formatDateTime(latestTime) {
+    if (!latestTime) return ""; // 유효하지 않은 값 처리
 
+    const now = new Date();
+    const messageDate = new Date(latestTime);
+
+    const isToday =
+        now.getFullYear() === messageDate.getFullYear() &&
+        now.getMonth() === messageDate.getMonth() &&
+        now.getDate() === messageDate.getDate();
+
+    const isThisYear = now.getFullYear() === messageDate.getFullYear();
+
+    if (isToday) {
+        // 오늘 날짜일 경우 시간 형식 반환
+        return messageDate.toLocaleString("ko-KR", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+        }).replace("AM", "오전").replace("PM", "오후");
+    } else if (isThisYear) {
+        // 올해 날짜일 경우 "월/일" 형식 반환
+        return (messageDate.getMonth() + 1) + "월 " + messageDate.getDate() + "일";
+    } else {
+        // 과거 연도일 경우 "YYYY.MM.DD" 형식 반환
+        return messageDate.getFullYear() + ". " + (messageDate.getMonth() + 1) + ". " + messageDate.getDate();
+    }
+}
 
 
 
@@ -70,7 +77,6 @@ window.socket = null;
 
 function switchPage(){
 	if (window.socket && window.socket.readyState === WebSocket.OPEN) {
-		 console.log("Closing old WebSocket before moving to new chat room...");
 		 window.socket.close(1000, "Switching chat room");
 		}
 	location.href = "chatList.go";
@@ -78,7 +84,6 @@ function switchPage(){
 //전역 함수
 function switchChatRoom(newChatIdx) {
 if (window.socket && window.socket.readyState === WebSocket.OPEN) {
- console.log("Closing old WebSocket before moving to new chat room...");
  window.socket.close(1000, "Switching chat room");
 }
 location.href = "chat.go?chat_idx=" + newChatIdx;
@@ -153,12 +158,9 @@ $(document).ready(function() {
 
 
     if (chatIdx) {
-        console.log("선택된 chat_idx:", chatIdx);
-
         window.socket = new WebSocket("ws://localhost:8080/BEST/chat/chat?chat_idx=" + chatIdx);
 
         socket.onopen = function() {
-            console.log("WebSocket 연결 성공 - chat_idx:", chatIdx);
             $.ajax({
                 type: "POST",
                 url: "updateConnectionTime",
@@ -181,7 +183,6 @@ $(document).ready(function() {
         socket.onmessage = function(event) {
             try {
                 var messageData = JSON.parse(event.data); // JSON 메시지 파싱
-                console.log("수신 메시지 데이터:", messageData);
                 if (messageData.chat_idx !== parseInt(chatIdx)) {
                     console.warn("다른 방 메시지 감지, 무시:", messageData.chat_idx, "내 방:", chatIdx);
                     return;
@@ -210,7 +211,6 @@ $(document).ready(function() {
         };
 
         socket.onclose = function() {
-            console.log("WebSocket 연결 종료");
             $.ajax({
                 type: "POST",
                 url: "updateConnectionTime",
@@ -376,7 +376,7 @@ $(document).ready(function() {
                             	'<img src="/photo/' + profile.photo + '" alt="프로필 사진" class="custom-image">' +
                             	'<div>' +
                             		'<span>' + empName + '</span>' +
-                            		'<span>' + (profile.state == 1 ? '<i class="fas fa-circle"></i> 근무 중' : '근무 종료') + '</span>' +
+                            		'<span>' + (profile.state == 1 ? '근무 중' : '근무 종료') + '</span>' +
                             	'</div>' +
                             '</div>' +
                             '<ul>' +
@@ -483,8 +483,6 @@ $(document).ready(function() {
                     contentType: "application/json",
                     data: JSON.stringify(messageData),
                     success: function (response) {
-                        console.log("저장된 메시지 데이터:", response);
-                        
                      	// 메시지 ID 추가
                         // 저장된 메시지 데이터 업데이트
                 		messageData.msg_idx = response.msg_idx;
@@ -519,7 +517,7 @@ $(document).ready(function() {
                     }
                 });
             } else {
-                console.log("빈 메시지는 전송되지 않습니다.");
+                alert("메시지를 작성해주세요.");
             }
         });
 
@@ -913,6 +911,3 @@ $(document).ready(function () {
         }
     });
 });
-
-
-

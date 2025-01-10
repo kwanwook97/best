@@ -5,28 +5,25 @@ window.globalSocket = new WebSocket("ws://localhost:8080/BEST/ws");
 
 // WebSocket 연결 성공 시
 globalSocket.onopen = function () {
-    console.log("Global WebSocket 연결 성공");
+    console.log("Global WebSocket 연결");
 };
 
 globalSocket.onmessage = function (event) {
     const messageData = JSON.parse(event.data);
 
-    // 읽지 않은 메시지 수 처리
+    // 읽지않은 알림
     if (messageData.type === "UPDATE_UNREAD_ALARM") {
-        // 안 읽은 알림 수 업데이트 처리
-        console.log("UPDATE_UNREAD_ALARM 메시지 수신:", messageData);
         window.updateUnreadAlarmCount(messageData.unread_alarm_count);
+        // 읽지않은 메시지 총합
     } else if (messageData.type === "UPDATE_UNREAD_TOTAL") {
-    console.log("UPDATE_UNREAD_TOTAL 메시지 수신:", messageData);
         window.updateUnreadMessageCount(messageData.unread_total);
-        console.log("읽지 않은 메시지 수", messageData.unread_total);
+        // 채팅방 리스트 브로드캐스트
     } else if (messageData.type === "CHAT_LIST_UPDATE") {
-        // 챗 리스트 업데이트
         if (Array.isArray(messageData.chatList) && messageData.emp_idx === loginId) {
             updateChatList(messageData.chatList); // UI 업데이트
         }
     } else if (messageData.msg_send_idx && messageData.msg_send_idx !== loginId) {
-        // 알림 로직: 본인이 보낸 메시지는 제외
+        // 알림 로직: 본인이 보낸 메시지는 제외한 참여자들 토스트, 드롭다운
         if (messageData.content && messageData.photo) {
             showNotification(messageData.photo, messageData.name, messageData.content, messageData.chat_idx, messageData.rank_name);
             updateMessageDropdown(messageData.photo, messageData.name, messageData.content, messageData.chat_idx, messageData.rank_name);
@@ -35,7 +32,7 @@ globalSocket.onmessage = function (event) {
         console.warn("유효하지 않은 데이터:", messageData);
     }
     
-    if (messageData.type === "mail" || messageData.type === "document" || messageData.type === "calendar" || messageData.type === "reserve") {
+    if (messageData.type === "mail" || messageData.type === "document" || messageData.type === "calendar" || messageData.type === "reserve" || messageData.type === "borrow") {
         // 알림 표시 및 드롭다운 업데이트
         showMailNotification(messageData.content, messageData.type);
         updateMailDropdown(messageData.content, messageData.type);

@@ -1,5 +1,4 @@
 window.onload = function () {
-    console.log("Window loaded!");
 
     // 노선 데이터 불러오기
     $.ajax({
@@ -213,8 +212,6 @@ $("body").on("click", ".route-filter", function () {
 
 // 페이지 로드 시 선택된 노선 복원
 window.onload = function () {
-    console.log("Window loaded!");
-
     const selectedRouteName = localStorage.getItem("selectedRouteName"); // 저장된 노선 이름 가져오기
     const currentDate = $(".current-date").text();
 
@@ -242,8 +239,6 @@ $("body").on("click", ".editable", function () {
         method: "GET",
         data: { dispatch_idx: dispatchIdx },
         success: function (response) {
-            console.log("AJAX 응답 데이터:", response);
-
             const data = response.data;
             if (!data) {
                 alert("데이터를 가져오는 데 실패했습니다.");
@@ -363,8 +358,6 @@ $(".updatebtn").on("click", function (e) {
         shift_idx: shiftIdx,
     };
 
-    console.log("업데이트 데이터:", formData); // 디버깅용 로그
-
     // AJAX 요청
     $.ajax({
         url: "dispatchUpdate.ajax",
@@ -372,7 +365,6 @@ $(".updatebtn").on("click", function (e) {
         contentType: "application/json",
         data: JSON.stringify(formData),
         success: function (response) {
-            console.log("서버 응답:", response); // 응답 로그
 
             if (response.success) {
                 alert("수정이 완료되었습니다!");

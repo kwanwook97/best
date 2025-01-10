@@ -89,9 +89,10 @@ public class ChatController {
 	/* 메시지 내용 가져오기 */
 	@PostMapping(value = "/getMessages.ajax")
 	@ResponseBody
-	public List<Map<String, Object>> getMessages(@RequestBody Map<String, Object> payload) {
+	public List<Map<String, Object>> getMessages(@RequestBody Map<String, Object> payload, HttpSession session) {
 		int chatIdx = Integer.parseInt(payload.get("chat_idx").toString());
-		return chatService.getMessagesByChatIdx(chatIdx);
+		int empIdx = Integer.parseInt((String) session.getAttribute("loginId"));
+		return chatService.getMessagesByChatIdx(chatIdx, empIdx);
 	}
 
 	/* 메시지 저장 */

@@ -368,8 +368,6 @@ input[readonly] {
 		// 클릭한 요소에서 bus_idx 값을 가져오기
 		const busIdx = $(element).closest('.content').find(
 				'input[name="bus_idx"]').val();
-		console.log('busIdx:', busIdx); // bus_idx 값을 확인
-
 		if (!busIdx) {
 			alert('bus_idx 값을 가져올 수 없습니다.');
 			return;

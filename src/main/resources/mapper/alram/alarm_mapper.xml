@@ -4,6 +4,7 @@
 >
 <mapper namespace="com.best.alarm.AlarmDAO">
 
+	<!-- 알림 리스트 / 페이지네이션 / 필터링 -->
 	<select id="alarmList" parameterType="map"
 		resultType="com.best.alarm.AlarmDTO">
 		SELECT *
@@ -13,21 +14,24 @@
 			AND type = #{type}
 		</if>
 		<if test="flag != null">
-    		AND flag = #{flag}
+			AND flag = #{flag}
 		</if>
 		ORDER BY alarm_idx DESC
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
+
+	<!-- 헤더 안읽은 알림 -->
 	<select id="unreadAlarm" resultType="map">
 		SELECT *
 		FROM alarm
-		WHERE emp_idx = #{emp_idx}
+		WHERE
+		emp_idx = #{emp_idx}
 		AND flag = 0
 		ORDER BY alarm_idx DESC
 		LIMIT 5
 	</select>
 
-
+	<!-- 읽음 / 안읽음 필터링 -->
 	<select id="getTotalAlarmCount" parameterType="map"
 		resultType="int">
 		SELECT COUNT(*)
@@ -41,6 +45,7 @@
 		</if>
 	</select>
 
+	<!-- 알림 저장 -->
 	<insert id="insertAlarm" parameterType="com.best.alarm.AlarmDTO">
 		INSERT INTO alarm
 		(emp_idx, type, content, date)
@@ -48,6 +53,7 @@
 		#{date})
 	</insert>
 
+	<!-- 결제 알림선 -->
 	<select id="getApproverDetails" resultType="map">
 		SELECT
 		d.emp_idx AS
@@ -64,6 +70,7 @@
 		WHERE d.doc_idx = #{docIdx}
 	</select>
 
+	<!-- 회의실 예약 10분 전 알림 -->
 	<select id="getUpcomingEvents" resultType="map">
 		SELECT
 		r.reserve_idx AS
@@ -72,9 +79,9 @@
 		e.emp_idx AS employeeId,
 		r.subject AS subject
 		FROM reserve r
-		JOIN employee e ON r.emp_idx = e.emp_idx
+		JOIN employee e ON r.emp_idx =
+		e.emp_idx
 		WHERE TIMESTAMPDIFF(MINUTE, NOW(), r.start_datetime) = 10
-		AND SECOND(NOW()) BETWEEN 0 AND 2
 	</select>
 
 	<!-- 10분 전 캘린더 일정 가져오기 -->
@@ -82,41 +89,45 @@
 		SELECT
 		s.schedule_idx AS scheduleId,
 		s.start_datetime AS startTime,
-		s.subject
-		AS subject,
-		s.emp_idx AS employeeId
+		s.subject AS subject,
+		s.emp_idx AS employeeId,
+		s.visibility AS visibility -- visibility 추가
 		FROM schedule s
 		WHERE TIMESTAMPDIFF(MINUTE, NOW(), s.start_datetime) = 10
-		AND SECOND(NOW()) BETWEEN 0 AND 2
 	</select>
-	
+
+	<!-- 기자재 반납 10분 후 알림 -->
+	<select id="getUpcomingBorrowEvents" resultType="map">
+		SELECT
+		b.borrow_idx AS borrowId,
+		b.end_datetime AS endTime,
+		e.emp_idx AS
+		employeeId,
+		CONCAT(m.material_name, ' ', b.quantity, '개') AS subject
+		FROM borrow b
+		JOIN employee e ON b.emp_idx = e.emp_idx
+		JOIN material m
+		ON b.material_idx = m.material_idx
+		WHERE b.flag = 0
+		AND
+		TIMESTAMPDIFF(MINUTE, NOW(), b.end_datetime) = -10
+	</select>
+
+	<!-- 알림 읽음 처리 -->
 	<update id="updateAlarmFlag">
 		UPDATE alarm
 		SET flag = #{flag}
 		WHERE alarm_idx =
 		#{alarm_idx}
 	</update>
-	
-	<select id="getUnreadAlarmCount" parameterType="int" resultType="int">
-        SELECT COUNT(*)
-        FROM alarm
-        WHERE emp_idx = #{empIdx} AND flag = 0
-    </select>
-    
-<select id="getUpcomingBorrowEvents" resultType="map">
-    SELECT 
-        b.borrow_idx AS borrowId,
-        b.end_datetime AS endTime,
-        e.emp_idx AS employeeId,
-        CONCAT(m.material_name, ' ', b.quantity, '개') AS subject
-    FROM borrow b
-    JOIN employee e ON b.emp_idx = e.emp_idx
-    JOIN material m ON b.material_idx = m.material_idx
-    WHERE b.flag = 0
-    AND TIMESTAMPDIFF(MINUTE, NOW(), b.end_datetime) = -10 
-    AND SECOND(NOW()) BETWEEN 0 AND 2 
-</select>
 
-    
+	<!-- 안읽은 알림 있을경우 브로드캐스트 -->
+	<select id="getUnreadAlarmCount" parameterType="int"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM alarm
+		WHERE emp_idx = #{empIdx} AND flag
+		= 0
+	</select>
 
 </mapper>  

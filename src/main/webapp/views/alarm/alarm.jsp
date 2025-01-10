@@ -159,6 +159,13 @@ td{
 			max-width: 100% !important;
 		}
 	}
+	.alarmContent{
+		cursor: pointer;
+	}
+	.alarmContent i{
+		color: #E9396B;
+		-webkit-text-stroke: 0.5px #E9396B;
+	}
 </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -175,6 +182,8 @@ td{
 					<div class="filter purple bold">전체</div>
 					<div class="filter purple bold">메일</div>
 					<div class="filter purple bold">캘린더</div>
+					<div class="filter purple bold">회의실</div>
+					<div class="filter purple bold">기자재</div>
 					<div class="filter purple bold">결재</div>
 				</div>
 				<div class="content-body">
@@ -241,7 +250,6 @@ $(document).ready(function () {
             type: "GET",
             data: data,
             success: function (response) {
-                console.log("응답 데이터:", response); // 디버깅용
                 renderAlarmList(response.alarms);
                 setupPagination(response.totalCount, page, type, flag);
             },
@@ -287,6 +295,8 @@ $(document).ready(function () {
                         ? "calendar.go"
                         : alarm.type === "reserve"
                         ? "myReserve.go"
+                        : alarm.type === "borrow"
+                        ? "material.go"
                         : "#";
 
 
@@ -302,9 +312,11 @@ $(document).ready(function () {
                 	                ? '<i class="fa-regular fa-calendar-check"></i>'
                 	                : alarm.type === "reserve"
                 	                ? '<i class="fa-regular fa-calendar-check"></i>'
+                	                : alarm.type === "borrow"
+                	                ? '<i class="fa-regular fa-calendar-check"></i>'
                 	                : '') +
                 	        '</td>' +
-                	        '<td style="cursor: pointer;" onclick="handleAlarmClick(\'' + alarm.alarm_idx + '\', \'' + typeAction + '\')">' + alarm.content + '</td>' +
+                	        '<td class="alarmContent" onclick="handleAlarmClick(\'' + alarm.alarm_idx + '\', \'' + typeAction + '\')">' + alarm.content + '</td>' +
                 	        '<td>' + formattedDate + '</td>' +
                 	        '<td>' + (alarm.flag === false ? '<i class="fas fa-envelope"></i>' : '<i class="fas fa-envelope-open-text"></i>') + '</td>' +
                 	    '</tr>'
@@ -350,7 +362,12 @@ $(document).ready(function () {
                     break;
                 case "캘린더":
                     currentType = "calendar";
+                    break;
+                case "회의실":
                     currentType = "reserve";
+                    break;
+                case "기자재":
+                    currentType = "borrow";
                     break;
                 case "결재":
                     currentType = "document";
@@ -374,8 +391,6 @@ $(document).ready(function () {
                     break;
             }
         }
-
-        console.log("필터 선택:", { type: currentType, flag: currentFlag }); // 디버깅용
 
         fetchAlarms(1, currentType, currentFlag); // 필터 적용 후 페이지 1부터 데이터 다시 로드
     });

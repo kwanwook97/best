@@ -181,16 +181,18 @@
 		FROM
 		message m
 		LEFT JOIN
-		employee e ON
-		m.msg_send_idx = e.emp_idx
+		employee e ON m.msg_send_idx = e.emp_idx
 		LEFT JOIN
-		rank_emp re ON e.rank_idx =
-		re.rank_idx
+		rank_emp re ON e.rank_idx = re.rank_idx
+		LEFT JOIN
+		party p ON m.chat_idx = p.chat_idx AND p.emp_idx = #{empIdx}
 		WHERE
 		m.chat_idx = #{chatIdx}
+		AND m.time >= p.enter_time
 		ORDER BY
 		m.time ASC
 	</select>
+
 
 
 	<!-- 참여중인 대화방 참여자 리스트 -->
@@ -437,17 +439,20 @@
 		SELECT c.chat_idx
 		FROM chat c
 		JOIN party p1 ON c.chat_idx = p1.chat_idx
-		JOIN party p2 ON c.chat_idx = p2.chat_idx
+		JOIN party p2 ON
+		c.chat_idx = p2.chat_idx
 		WHERE p1.emp_idx = #{emp_idx1}
-		AND p2.emp_idx = #{emp_idx2}
+		AND p2.emp_idx =
+		#{emp_idx2}
 		AND c.chat_idx NOT IN (
 		SELECT chat_idx
 		FROM party
-		GROUP BY chat_idx
+		GROUP BY
+		chat_idx
 		HAVING COUNT(emp_idx) > 2
 		)
 	</select>
-	
+
 	<!-- 대화방 참여중인 사원 제외 -->
 	<select id="chatParty" resultType="map">
 		SELECT
@@ -457,9 +462,11 @@
 		r.rank_name
 		FROM
 		employee e
-		LEFT JOIN rank_emp r ON e.rank_idx = r.rank_idx
+		LEFT JOIN
+		rank_emp r ON e.rank_idx = r.rank_idx
 		WHERE e.emp_idx NOT IN (
-		SELECT p.emp_idx
+		SELECT
+		p.emp_idx
 		FROM party p
 		WHERE p.chat_idx = #{chatIdx}
 		)

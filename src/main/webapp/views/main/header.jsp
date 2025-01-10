@@ -6,21 +6,17 @@
 <meta charset="UTF-8">
 <title>BEST</title>
 <!-- side-bar CSS -->
-<link rel="stylesheet"
-   href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="resources/css/simplebar.css" rel="stylesheet" />
 <link href="resources/css/bootstrap.min.css" rel="stylesheet" />
 <link href="resources/css/app-style.css" rel="stylesheet" />
 <link href="resources/css/sidebar-menu.css" rel="stylesheet" />
-<link
-   href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"
-   rel="stylesheet">
+<link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
 <!-- side-bar JS -->
 <script>
 var loginId = ${sessionScope.loginId};
 </script>
-<script src="https://kit.fontawesome.com/6282a8ba62.js"
-   crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 <script src="resources/js/sidebar-menu.js"></script>
 <script src="resources/js/simplebar.js"></script>
 <!-- <script src="resources/js/bootstrap.min.js"></script> -->
@@ -41,8 +37,6 @@ var loginId = ${sessionScope.loginId};
 .spanAction {
    width: 45%;
    display: none;
-<<<<<<< HEAD
-=======
 }
 /* 텍스트 선택 시 배경색과 글자색 지정 */
 ::selection {
@@ -54,7 +48,6 @@ var loginId = ${sessionScope.loginId};
 ::-webkit-selection {
   background-color: #FFEB3B; /* 노란색 배경 */
   color: #000; /* 검정색 텍스트 */
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
 }
 </style>
 
@@ -141,7 +134,7 @@ var loginId = ${sessionScope.loginId};
                </li>
                <li class="dropD-item">
                   <a href="dispatchList.go"> 
-                     <i class="fa-solid fa-user-tie"></i> 
+                     <i class="bi bi-person-badge"></i>
                      <span>배차현황</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -155,7 +148,7 @@ var loginId = ${sessionScope.loginId};
                </li>
                <li class="dropD-item">
                   <a href="busDetail.go"> 
-                     <i class="bi bi-bus-front"></i> 
+                     <i class="bi bi-bus-front"></i>
                      <span>버스관리</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -181,7 +174,7 @@ var loginId = ${sessionScope.loginId};
             <ul class="dropD-menu">
                <li class="dropD-item">
                   <a href="mailWrite.go"> 
-                     <i class="bi bi-envelope-paper-fill"></i> 
+                     <i class="bi bi-pencil-square"></i> 
                      <span>메일작성</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -321,7 +314,7 @@ var loginId = ${sessionScope.loginId};
 
          <li class="dropD">
             <a href="javaScript:void(0);"> 
-               <i class="fa-regular fa-calendar-check"></i> 
+               <i class="bi bi-building"></i>
                <span>회의실</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
@@ -329,21 +322,21 @@ var loginId = ${sessionScope.loginId};
             <ul class="dropD-menu">
                <li class="dropD-item">
                   <a href="meetingRoomCalendar.do"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
+                     <i class="bi bi-calendar-range"></i>
                      <span>회의실 예약</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
                <li class="dropD-item">
                   <a href="myReserve.go"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
+                     <i class="bi bi-calendar2-heart"></i>
                      <span>내 예약 현황</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
                <li class="dropD-item">
                   <a href="roomInfo.go"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
+                     <i class="bi bi-building-check"></i> 
                      <span>회의실 관리</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -352,36 +345,13 @@ var loginId = ${sessionScope.loginId};
          </li>
 
          <!-- 종원 기자재 -->
-<<<<<<< HEAD
-         <li>
-            <a href="material.go"> 
-=======
          <li class="dropD">
-            <a href="javaScript:void(0);"> 
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-               <i class="fa-regular fa-calendar-check"></i> 
-               <span>기자재</span> 
-               <i class="fa-solid fa-angle-right"></i>
-            </a>
-
-<<<<<<< HEAD
-<!--             <ul class="dropD-menu">
-=======
-            <ul class="dropD-menu">
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-               <li class="dropD-item">
-                  <a href="material.go"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
-                     <span>기자재 관리</span> 
-                     <i class="fa-solid fa-angle-right"></i>
-                  </a>
-               </li>
-<<<<<<< HEAD
-            </ul> -->
-=======
-            </ul>
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-         </li>
+            <a href="material.go"> 
+             	<i class="bi bi-box"></i> 
+               	<span>기자재</span> 
+               	<i class="fa-solid fa-angle-right"></i>
+         	</a>
+		</li>
 
 
          <!-- 관욱수정 2024.12.12 시작 -->
@@ -413,7 +383,7 @@ var loginId = ${sessionScope.loginId};
          <!-- 관욱수정 2024.12.12 끝 -->
          <li class="dropD">
             <a href="javaScript:void();"> 
-               <i class="bi bi-bar-chart-fill"></i> 
+               <i class="fas fa-coins"></i> 
                <span>매출현황</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
@@ -449,7 +419,7 @@ var loginId = ${sessionScope.loginId};
             <ul class="dropD-menu">
                <li class="dropD-item">
                   <a href="expenseMonthly.go"> 
-                     <i class="bi bi-bar-chart-fill"></i> 
+                     <i class="bi bi-pie-chart-fill"></i> 
                      <span>월별현황</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -457,7 +427,7 @@ var loginId = ${sessionScope.loginId};
                
                <li class="dropD-item">
                   <a href="expenseYearly.go"> 
-                     <i class="bi bi-graph-up"></i> 
+                     <i class="bi bi-bar-chart-fill"></i>  
                      <span>연별현황</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -480,18 +450,6 @@ var loginId = ${sessionScope.loginId};
             </a>
          </li>
 
-<<<<<<< HEAD
-         <!-- 관욱추가 시작 2025.01.05 -->
-         <li><a href="accessManage.go"> 
-             <i class="bi bi-shield-check"></i> 
-             <span>권한관리</span> 
-             <i class="fa-solid fa-angle-right"></i>
-         </a></li>
-         <!-- 관욱추가 끝 2025.01.05 -->
-=======
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-         
-         
          <li>
             <a href="logout.do">
                <i class="fa-solid fa-right-to-bracket"></i> 
@@ -512,11 +470,7 @@ var loginId = ${sessionScope.loginId};
                      <i class="bi bi-clock-history"></i>
                        <button class="btn-start-work" onclick="updateStartTime()">출근</button>
                      <span class="spanAction"> 
-<<<<<<< HEAD
                           <span></span>   ~ <span></span>
-=======
-                          <span>startTime </span>   ~ <span>endTime</span>
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
                      </span>
                        <button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
                    </div>
@@ -617,8 +571,6 @@ window.updateUnreadAlarmCount = function (unreadAlarmCount) {
         // 안 읽은 알림이 없으면 숨김
         alarmIndicator.style.display = "none";
     }
-
-    console.log("안 읽은 알림 수 업데이트:", unreadAlarmCount);
 };
 
 
@@ -626,13 +578,14 @@ window.updateUnreadAlarmCount = function (unreadAlarmCount) {
 function showMailNotification(content, type) {
     const notification = $("#alarmHeader");
 
+    // 새로운 알림 추가
     const notificationContent = '<li>' + content + '</li>';
-    notification.html(notificationContent);
+    notification.append(notificationContent); // 기존 내용에 추가
 
     // 알림 표시
     notification.addClass("show");
 
-    // 클릭 시 URL 이동
+    // 클릭 시 URL 이동 (마지막 알림에 대해서만 이벤트 적용)
     notification.off("click").on("click", function () {
         let redirectUrl = '';
         switch (type) {
@@ -648,6 +601,9 @@ function showMailNotification(content, type) {
             case 'reserve':
                 redirectUrl = 'myReserve.go';
                 break;
+            case 'borrow':
+                redirectUrl = 'material.go';
+                break;
             default:
                 console.warn('Unknown type:', type);
                 return;
@@ -657,9 +613,16 @@ function showMailNotification(content, type) {
 
     // 알림 자동 숨김
     setTimeout(() => {
-        notification.removeClass("show");
+        // 알림 하나 제거
+        notification.find("li").first().remove();
+
+        // 알림이 모두 사라지면 `show` 클래스 제거
+        if (notification.children().length === 0) {
+            notification.removeClass("show");
+        }
     }, 5000); // 5초 후 숨김
 }
+
 
 $(document).ready(function () {
     const mailDropdown = $(".alarmDropdown");
@@ -684,7 +647,7 @@ $(document).ready(function () {
         mailDropdown.empty(); // 기존 드롭다운 초기화
 
         if (data.length === 0) {
-            mailDropdown.append('<div class="dropdown-item"><div class="notification-profile"> 새로운 알림이 없습니다.</div></div>');
+            mailDropdown.append('<div class="dropdown-item"><div class="notification-profile"><i class="bi bi-alarm"></i> 새로운 알림이 없습니다.</div></div>');
             return;
         }
 
@@ -715,6 +678,7 @@ $(document).ready(function () {
             case 'document': redirectUrl = 'documentPending.go'; break;
             case 'calendar': redirectUrl = 'calendar.go'; break;
             case 'reserve': redirectUrl = 'myReserve.go'; break;
+            case 'borrow': redirectUrl = 'material.go'; break;
             default: return;
         }
 
@@ -724,7 +688,6 @@ $(document).ready(function () {
             type: "POST",
             data: { alarm_idx: alarmIdx, flag: 1 },
             success: function () {
-                console.log("알림 읽음 처리 완료");
                 window.location.href = redirectUrl; // 읽음 처리 후 이동
             },
             error: function (err) {

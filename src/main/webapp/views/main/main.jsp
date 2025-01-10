@@ -706,8 +706,6 @@ $(document).ready(function () {
             renderTrafficInfo(trafficData);
         },
         error: function (xhr, status, error) {
-            console.error("AJAX 호출 오류:", xhr.status, status, error);
-            console.error("응답 내용:", xhr.responseText);
             alert("API 호출 중 오류가 발생했습니다.");
         }
     });
