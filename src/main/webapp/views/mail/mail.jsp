@@ -19,7 +19,7 @@
 		
 	}
 	.dashboard-body{
-	    margin-left: 14vw;
+	    margin-left: 16%;
 	    width: 85vw;
 	    flex-wrap: wrap;
 	    height: 92%;

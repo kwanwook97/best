@@ -149,10 +149,8 @@
 
     <!-- 모든 직급 목록 -->
     <select id="getAllRanks" resultType="map">
-        SELECT r.rank_idx, r.rank_name, r.position_idx, p.position_name
+        SELECT r.rank_idx, r.rank_name
         FROM rank_emp r
-        INNER JOIN positions p
-        	ON r.position_idx = p.position_idx
         ORDER BY r.rank_idx ASC
     </select>
     

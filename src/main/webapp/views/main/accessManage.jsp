@@ -13,6 +13,7 @@
       --light-color: #F9F6F1;
     }
 
+
     body {
       font-family: 'Arial', sans-serif;
       background-color: #fff;
@@ -27,8 +28,18 @@
       margin-left: 320px;
     }
 
+	body .body {
+	    transform: scale(0.55);
+	    transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
+	    width: 150%; /* 축소에 따른 여백 보정 */
+	    overflow: hidden; /* 스크롤바 제거 */
+	    position: absolute;
+	    top: 1px;
+	    left: -37px;
+	    height: 187%;
+	  }
     .naviPath {
-      font-size: 24px;
+      font-size: 48px;
       font-weight: bold;
       margin-bottom: 20px;
       color: var(--primary-color);
@@ -52,6 +63,7 @@
       background-color: var(--light-color);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       padding: 20px;
+      overflow: hidden;
     }
 
     .tab-section {
@@ -162,6 +174,7 @@
 
     .bottom-section {
       height: 40%;
+      overflow: hidden;
       margin-top: 30px;
       padding: 20px;
       border: 2px solid var(--primary-color);
@@ -283,6 +296,10 @@ table tr.selected-page {
 .search {
   position: relative;
   flex-grow: 1; /* 검색창이 가능한 넓게 확장 */
+}
+
+#searchInput{
+	width: 100%;
 }
 
 .search input {

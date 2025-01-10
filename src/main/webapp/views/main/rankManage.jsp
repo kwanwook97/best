@@ -246,6 +246,7 @@
 </head>
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/adminHeader.jsp"/>
+  <jsp:include page="../modal/modal.jsp"></jsp:include>
   <div class="body">
     <div class="naviPath">직급 관리</div>
 
@@ -315,17 +316,17 @@ var ranks = [];
                   ranks = response.ranks; // 데이터를 ranks 배열에 저장
                   renderRanks(ranks); // 화면에 직급 표시
               } else {
-                  alert("직급 목록을 가져오는 데 실패했습니다.");
+            	  modal.showAlert("직급 목록을 가져오는 데 실패했습니다.");
               }
           },
           error: function () {
-              alert("서버 요청 중 오류가 발생했습니다.");
+        	  modal.showAlert("서버 요청 중 오류가 발생했습니다.");
           }
       });
   }
   
 
-  // 직급 데이터를 테이블에 렌더링
+//직급 데이터를 테이블에 렌더링
   function renderRanks(data) {
       var rows = "";
       for (var i = 0; i < data.length; i++) {
@@ -334,58 +335,106 @@ var ranks = [];
               "<td>" + rank.rank_idx + "</td>" +
               "<td>" + rank.rank_name + "</td>" +
               "<td><button onclick=\"updateRank(" + rank.rank_idx + ", '" + rank.rank_name + "')\">수정</button></td>" +
-              "<td><button onclick=\"deleteRank(" + rank.rank_idx + ")\">삭제</button></td>" +
-              "</tr>";
+              "<td>";
+          // rank_idx가 1~8 사이인 경우 삭제 버튼 비활성화
+          if (rank.rank_idx >= 1 && rank.rank_idx <= 8) {
+              rows += "<button disabled style=\"background-color: #ccc; cursor: not-allowed;\">삭제</button>";
+          } else {
+              rows += "<button onclick=\"deleteRank(" + rank.rank_idx + ")\">삭제</button>";
+          }
+          rows += "</td></tr>";
       }
       $("#rankTable").html(rows);
   }
 
-//직급 추가
+
+  
+	//직급 추가
   function addRank() {
-      var rankName = $("#newRankName").val();
-      if (!rankName) {
-          alert("직급 이름을 입력하세요.");
-          return;
-      }
-      $.post("addRank.ajax", { 'rankName': rankName }, function (response) {
-          if (response.success) {
-              alert("직급이 추가되었습니다.");
-              loadAllRanks();
-              closeModal('addRankModal');
-          } else {
-              alert("직급 추가 실패: " + response.message);
-          }
-      });
-  }
+	  	var rankName = $("#newRankName").val();
+	    if (!rankName) {
+	        modal.showAlert("부서 이름을 입력하세요.");
+	        return;
+	    }
+	
+	    $.ajax({
+	        url: "addRank.ajax",
+	        method: "POST",
+	        data: { 'rankName': rankName },
+	        success: function (response) {
+	            if (response.success) {
+	                modal.showAlert("직급이 추가되었습니다.");
+	                loadAllRanks();
+	                closeModal('addRankModal');
+	            } else {
+	                modal.showAlert("부서 추가 실패: " + response.message);
+	            }
+	        },
+	        error: function () {
+	            modal.showAlert("부서 추가 요청 중 오류가 발생했습니다.");
+	        }
+	    });
+	}
 
-  // 직급 수정
-  function updateRank(rankIdx, rankName) {
-      var newRankName = prompt("새로운 직급 이름을 입력하세요:", rankName);
-      if (newRankName) {
-          $.post("updateRank.ajax", { rankIdx: rankIdx, rankName: newRankName }, function (response) {
-              if (response.success) {
-                  alert("직급이 수정되었습니다.");
-                  loadAllRanks();
-              } else {
-                  alert("직급 수정 실패: " + response.message);
-              }
-          });
-      }
-  }
+  	// 직급 수정
+	function updateRank(rankIdx, currentName) {
+	    modal.showChangeModal(
+	        "직급 이름 변경",
+	        currentName,
+	        "admin",
+	        function (newName) {
+	            if (!newName || newName.trim() === "") {
+	                modal.showAlert("변경할 직급 이름을 입력하세요.");
+	                return;
+	            }
+	
+	            $.ajax({
+	                url: "updateRank.ajax",
+	                method: "POST",
+	                data: { rankIdx: rankIdx, rankName: newName }, // newName 사용
+	                success: function (response) {
+	                    if (response.success) {
+	                        modal.showAlert("직급이 수정되었습니다.");
+	                        loadAllRanks();
+	                    } else {
+	                        modal.showAlert("직급 수정 실패: " + response.message);
+	                    }
+	                },
+	                error: function () {
+	                    modal.showAlert("직급 수정 요청 중 오류가 발생했습니다.");
+	                }
+	            });
+	        }
+	    );
+	}
 
-  // 직급 삭제
-  function deleteRank(rankIdx) {
-      if (confirm("정말로 이 직급을 삭제하시겠습니까?")) {
-          $.post("deleteRank.ajax", { rankIdx: rankIdx }, function (response) {
-              if (response.success) {
-                  alert("직급이 삭제되었습니다.");
-                  loadAllRanks();
-              } else {
-                  alert("직급 삭제 실패: " + response.message);
-              }
-          });
-      }
-  }
+  
+
+      
+   // 직급 삭제
+  	function deleteRank(rankIdx) {
+  	    modal.showConfirm(
+ 	    	"정말로 이 직급을 삭제하시겠습니까?",
+  	        function () {
+  	            $.ajax({
+  	                url: "deleteRank.ajax",
+  	                method: "POST",
+  	                data: { rankIdx: rankIdx },
+  	                success: function (response) {
+  	                    if (response.success) {
+  	                        modal.showAlert("직급이 삭제되었습니다.");
+  	                        loadAllRanks();
+  	                    } else {
+  	                        modal.showAlert("직급 삭제 실패: " + response.message);
+  	                    }
+  	                },
+  	                error: function () {
+  	                    modal.showAlert("직급 삭제 요청 중 오류가 발생했습니다.");
+  	                }
+  	            });
+  	        }
+  	    );
+  	}    
 
   
 	//검색 실행 함수
@@ -427,6 +476,86 @@ var ranks = [];
       executeSearch();
     }
   });
+  
+  
+  function showChangeModal(title, currentValue, manager, callback) {
+      console.log('showChangeModal called'); // 디버깅 로그
+      var $modal = $('.change_modal');
+      if ($modal.length === 0) {
+          console.error('Change modal not found.');
+          return;
+      }
+
+      $('#modalTitle').text(title);
+      $('#current').val(currentValue);
+      $('#manager').val(manager);
+
+      $modal.css('display', 'flex'); // 모달 표시
+
+      $modal.find('.full_btn_change').off('click').on('click', function () {
+          console.log('Change button clicked'); // 디버깅 로그
+          var newValue = $('#new').val();
+          if (typeof callback === 'function') {
+              callback(newValue);
+          }
+          hideChangeModal();
+      });
+
+      $modal.find('.full_btn_cancel').off('click').on('click', function () {
+          console.log('Cancel button clicked'); // 디버깅 로그
+          hideChangeModal();
+      });
+  }
+  
+    // 모달창 변경
+    window.modal = {
+    	    showChangeModal: showChangeModal,
+    	    showAlert: function (message) {
+    	        var $alertModal = $('.modal_alert'); // 커스텀 alert 모달 선택
+    	        if ($alertModal.length === 0) {
+    	            console.error('Alert modal not found.');
+    	            return;
+    	        }
+
+    	        // 메시지 설정
+    	        $alertModal.find('.modal_body').html('<p>' + message + '</p>');
+
+    	        // 모달 표시
+    	        $alertModal.css('display', 'flex');
+
+    	        // 확인 버튼 클릭 시 모달 닫기
+    	        $alertModal.find('.btn_confirm').off('click').on('click', function () {
+    	            $alertModal.css('display', 'none'); // 모달 숨김
+    	        });
+    	    },
+    	    showConfirm: function (message, callback) {
+    	        var $confirmModal = $('.modal_confirm');
+    	        if ($confirmModal.length === 0) {
+    	            console.error('Confirm modal not found.');
+    	            return;
+    	        }
+
+    	        // 메시지 설정
+    	        $confirmModal.find('.modal_body').html('<p>' + message + '</p>');
+
+    	        // 모달 표시
+    	        $confirmModal.css('display', 'flex');
+
+    	        // 확인 버튼 클릭
+    	        $confirmModal.find('.btn_confirm').off('click').on('click', function () {
+    	            if (typeof callback === 'function') {
+    	                callback(); // 콜백 실행
+    	            }
+    	            $confirmModal.css('display', 'none'); // 모달 닫기
+    	        });
+
+    	        // 취소 버튼 클릭
+    	        $confirmModal.find('.btn_cancel').off('click').on('click', function () {
+    	            $confirmModal.css('display', 'none'); // 모달 닫기
+    	        });
+    	    },
+    	};
+
 </script>
 
 </body>
