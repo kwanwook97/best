@@ -15,6 +15,12 @@ public interface ExpenseDAO {
 	List<Map<String, Object>> categoryList(int form_idx);
 
 	// 일별 지출
-	List<ExpenseDTO> dailyList(int form_idx, String startDate, String endDate);
+	int allCount(String ex_date, int cnt, int form_idx);
+	List<Map<String, Object>>  dailyList(String ex_date, int cnt, int offset, int form_idx);
+
+	// 연별 지출 차트
+	List<Map<String, Object>> yearlyList(int year);
+
+
 
 }

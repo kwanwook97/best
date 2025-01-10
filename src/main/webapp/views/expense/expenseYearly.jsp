@@ -33,60 +33,21 @@
 		color: var(--secondary-color);
 		margin-right: 30px !important;
 	}
-	.docnav{
-	    width: 1290px;
-    	display: flex;
-    	padding: 0 0 15px 0;
-	    justify-content: flex-end;
-	}
-	.searchbox{
-		display: flex;
-		align-items: center;
-		justify-content: space-evenly;
-	}
-	.searchbox div{
-		margin: 0 5px;
-	}
-	.searchCont{
-		display: flex;
-	}
 	.drop{
 	    font-size: 14px;
 	    border: 1px solid var(--primary-color);
 	    border-radius: 4px;
 	    color: var(--primary-color);
 	}
-	select option{
-		background-color: white !important;
-		border-radius: 5px;
-	}
-	.search{
-		position: relative;
-    	display: inline-block;
-	}
-	.search input{
-		border-radius: 10px;
-		padding-left: 10px;
-		border: 1px solid var(--primary-color);
-	}
-	.search i{
-		position: absolute;
-		right: 10px;
-		top: 50%;
-		transform: translateY(-50%);
-		font-size: 18px;
-		pointer-events: none;
-		color: var(--accent-color);
-	}
 	.docbox{
-    	display: flex;
-    	justify-content: space-evenly;
-        align-items: center;
-		border: 2px solid var(--primary-color);
+   	    display: flex;
+	    align-items: center;
+	    border: 2px solid var(--primary-color);
 	    width: 1300px;
-	    height: 680px;
+	    height: 740px;
 	    border-radius: 10px;
 	    flex-direction: column;
+	    justify-content: center;
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -172,7 +133,8 @@
 	    padding: 20px;
 	}
 	table {
-	    width: 100%;
+	    transform: scale(0.9);
+	    width: 598px;
 	    border-collapse: collapse;
 	}
 	th, td {
@@ -196,7 +158,7 @@
 	/* 차트 크기 지정 */
 	#stackedChart {
 	    max-width: 500%;
-	    max-height: 800px;
+	    max-height: 600px;
 	}
 </style>
 </head>
@@ -205,21 +167,7 @@
  	<div class="dashboard-body">
 		<div class="maintext">
 			<h3 class="document">지출정산</h3>
-			<h3>>&nbsp;&nbsp;월별현황</h3>
-		</div>
-		<div class="docnav">
-			<div class="searchbox">
-				<div class="searchCont">
-				</div>
-				<select class="drop">
-				  <option value="month">월</option>
-				  <option value="category">품목</option>
-				</select>
-				<div class="search">
-					<input type="text" name="search" class="searchInp">
-					<i class="fas fa-search"></i>
-				</div>
-			</div>
+			<h3>>&nbsp;&nbsp;연별현황</h3>
 		</div>
 		<div class="docbox">
 			<div class="date-navigation">
@@ -240,10 +188,13 @@
 	                <thead>
 	                    <tr>
 	                        <th>월</th>
-	                        <th>총 지출 금액 (원)</th>
+	                        <th>일반 총 지출 금액 (원)</th>
+	                        <th>버스관리 총 지출 금액 (원)</th>
+	                        <th>급여 총 지출 금액 (원)</th>
 	                    </tr>
 	                </thead>
-	                <tbody></tbody>
+	                <tbody>
+	                </tbody>
 	            </table>
 	        </div>
 	        <!-- 오른쪽: 연별 지출 금액 막대그래프와 선그래프 -->
@@ -255,82 +206,95 @@
  	</div>
 </body>
 <script>
+$(document).ready(function () {
+    var currentDate = new Date();
+    var year = currentDate.getFullYear(); // 기본값으로 현재 년도
 
-$(document).ready(function() {
-	var currentDate = new Date();
-	var year = '';
-	// 현재 날짜를 화면에 표시하는 함수{
-	function updateDateDisplay() {
-	    const currentDateElement = document.querySelector('.current-date');
-	    year = currentDate.getFullYear();
-	    currentDateElement.textContent = year + '년';
-	}
-	
-	function incrementYear() {
-	    currentDate.setFullYear(currentDate.getFullYear() + 1);
-	    updateDateDisplay();
-	}
-	function decrementYear() {
-	    currentDate.setFullYear(currentDate.getFullYear() - 1);
-	    updateDateDisplay();
-	}
-	document.querySelector('.date-button:nth-child(1)').addEventListener('click', decrementYear);  
-	document.querySelector('.date-button:nth-child(3)').addEventListener('click', incrementYear);  
-	
-	updateDateDisplay();
-	
-    // 월별 지출 데이터를 예시로 제공 (2025년 1월 ~ 12월)
-    var monthlyExpenseData = [
-        { date: '2025-01-01', amount: 10000 },
-        { date: '2025-01-15', amount: 20000 },
-        { date: '2025-02-10', amount: 15000 },
-        { date: '2025-02-25', amount: 25000 },
-        { date: '2025-03-05', amount: 30000 },
-        { date: '2025-04-12', amount: 20000 },
-        { date: '2025-05-19', amount: 50000 },
-        { date: '2025-06-21', amount: 40000 },
-        { date: '2025-07-09', amount: 60000 },
-        { date: '2025-08-13', amount: 70000 },
-        { date: '2025-09-17', amount: 80000 },
-        { date: '2025-10-20', amount: 90000 },
-        { date: '2025-11-25', amount: 110000 },
-        { date: '2025-12-30', amount: 120000 }
-    ];
-
-    // 월별 총 지출 계산
-    var monthlyTotal = Array(12).fill(0); // 12개월을 위한 배열 초기화
-    $.each(monthlyExpenseData, function(index, item) {
-        var month = new Date(item.date).getMonth(); // 0부터 11까지
-        monthlyTotal[month] += item.amount;
-    });
-
-    // 월별 지출 금액 테이블 생성
-    var monthlyTableHtml = '';
-    for (var i = 0; i < 12; i++) {
-        monthlyTableHtml += '<tr><td>' + (i + 1) + '월</td><td>' + monthlyTotal[i].toLocaleString() + '원</td></tr>';
+    // 현재 년도 업데이트 함수
+    function updateDateDisplay() {
+        const currentDateElement = document.querySelector('.current-date');
+        currentDateElement.textContent = year + '년';
     }
-    $('#monthlyExpenseTable tbody').html(monthlyTableHtml);
 
-    // 연별 차트 데이터
-    var ctxStacked = document.getElementById('stackedChart').getContext('2d');
-    var stackedChart = new Chart(ctxStacked, {
+    function incrementYear() {
+        year++;
+        updateDateDisplay();
+        fetchData(year);
+    }
+
+    function decrementYear() {
+        year--;
+        updateDateDisplay();
+        fetchData(year);
+    }
+
+    document.querySelector('.date-button:nth-child(1)').addEventListener('click', decrementYear);
+    document.querySelector('.date-button:nth-child(3)').addEventListener('click', incrementYear);
+
+    updateDateDisplay();
+
+    // AJAX 요청으로 데이터 가져오기
+    function fetchData(year) {
+        $.ajax({
+            type: 'GET',
+            url: 'yearlyList.ajax',
+            data: { year: year },
+            dataType: 'JSON',
+            success: function (response) {
+                var categorizedData = response.data; // 이미 분류된 데이터를 사용
+                updateTable(categorizedData);
+                updateChart(categorizedData);
+            },
+            error: function (error) {
+                console.error('데이터 가져오기 실패:', error);
+            }
+        });
+    }
+
+    // 테이블 업데이트 함수
+	function updateTable(categorizedData) {
+	    var tableHtml = '';
+	    for (var i = 0; i < 12; i++) {
+	        tableHtml += '<tr>' +
+	            '<td>' + (i + 1) + '월</td>' +
+	            '<td>' + categorizedData.basic[i].toLocaleString() + '원</td>' +
+	            '<td>' + categorizedData.bus[i].toLocaleString() + '원</td>' +
+	            '<td>' + categorizedData.emp[i].toLocaleString() + '원</td>' +
+	            '</tr>';
+	    }
+	    $('#monthlyExpenseTable tbody').html(tableHtml);
+	}
+
+
+    // 차트 업데이트 함수
+    function updateChart(categorizedData) {
+    const ctxStacked = document.getElementById('stackedChart').getContext('2d');
+
+    // 기존 차트가 존재하면 삭제
+    if (window.stackedChart && typeof window.stackedChart.destroy === 'function') {
+        window.stackedChart.destroy();
+    }
+
+    // 새로운 차트 생성
+    window.stackedChart = new Chart(ctxStacked, {
         type: 'bar',
         data: {
             labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
             datasets: [
                 {
-                    label: '지출 금액 (Line)',
-                    data: monthlyTotal.map(amount => amount / 3), // 예시로 금액을 3으로 나누어 Line dataset
-                    type: 'line',
-                    fill: false,
-                    borderColor: '#E9396B',
-                    tension: 0.1
+                    label: '일반',
+                    data: categorizedData.basic,
+                    backgroundColor: '#59327A'
                 },
                 {
-                    label: '지출 금액 (A)',
-                    data: monthlyTotal, // 월별 총 지출 금액
-                    backgroundColor: '#30005A',
-                    stack: 'Stack 0'
+                    label: '버스관리',
+                    data: categorizedData.bus,
+                    backgroundColor: '#82669C'
+                },
+                {
+                    label: '급여',
+                    data: categorizedData.emp,
+                    backgroundColor: '#AC99BD'
                 }
             ]
         },
@@ -349,12 +313,15 @@ $(document).ready(function() {
                         display: true,
                         text: '금액 (원)'
                     },
-                    stacked: true, // 스택형 차트 활성화
-                    beginAtZero: true
+                    beginAtZero: true // Y축 0부터 시작
                 }
             }
         }
-    });
+   	});
+}
+
+    // 초기화
+    fetchData(year); // 기본값: 현재 년도 데이터 가져오기
 });
 
 </script>

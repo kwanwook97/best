@@ -8,6 +8,7 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,6 +18,8 @@ public class BoardService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired BoardDAO boardDao;
 	
+	
+	// 공지 게시판 ----------------------------------------------------------------------------------------------------------
 	// 중요, 일반 공지 페이징
     public Map<String, Object> noticeList(int page, int cnt) {
 
@@ -92,6 +95,70 @@ public class BoardService {
         result.put("generalTotalPages", generalTotalPages);
 		return result;
 	}
+
+
+	// 자유 게시판 ----------------------------------------------------------------------------------------------------------	
+	// 자유 게시판 리스트
+	public Map<String, Object> freeBoardList(int page, int cnt) {
+
+		int offset = (page-1) * cnt;
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		int totalPages = boardDao.freeBoardCount(cnt);	
+	
+        result.put("totalPages", totalPages);
+        result.put("freeList", boardDao.freeBoardList(cnt, offset));
+
+        return result;
+	}
+
+
+	// 자유 게시판 상세보기
+	public ModelAndView freeDetail(String idx, String page) {
+		ModelAndView mav = new ModelAndView();
+	    Map<String, Object> map = boardDao.freeDetail(idx);
+	    mav.addObject("info", map);
+	    mav.setViewName(page); 
+	    return mav;
+	}
+	
+	
+	// 자유 게시판 수정하기
+	public void freeUpdate(Map<String, String> param) {
+		boardDao.freeUpdate(param);
+	}
+
+
+	// 자유 게시판 댓글 리스트
+	public Map<String, Object> commentList(String board_idx, int page, int cnt) {
+
+		int offset = (page-1) * cnt;
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		int totalPages = boardDao.commentCount(board_idx, cnt);	
+	
+        result.put("totalPages", totalPages);
+        result.put("comment", boardDao.commentList(board_idx, cnt, offset));
+
+        return result;
+	}
+	
+	
+	// 자유 게시판 댓글 작성
+	public void addComment(Map<String, String> param) {
+		
+		CommentDTO comDTO = new CommentDTO();
+		comDTO.setBoard_idx(Integer.parseInt(param.get("board_idx")));
+		comDTO.setContent(param.get("content"));
+		comDTO.setEmp_idx(param.get("emp_idx"));
+		comDTO.setEmp_name(param.get("emp_name"));
+		
+        boardDao.addComment(comDTO);
+	}
+
+
 
 
 

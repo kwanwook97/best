@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,41 +41,15 @@ public class ExpenseController {
 	}
 	
 	// 일별 지출
-	@GetMapping(value = "/dailyList.ajax")
+	@GetMapping(value="/dailyList.ajax")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> dailyList(@RequestParam String pageName, @RequestParam String startDate, @RequestParam String endDate) {
+	public Map<String, Object> dailyList(@RequestParam String pageName, @RequestParam String ex_date, @RequestParam String page, @RequestParam String cnt) {
+		int page_ = Integer.parseInt(page);
+	    int cnt_ = Integer.parseInt(cnt);
 
-//	    LocalDate start = LocalDate.parse(startDate);
-//	    LocalDate end = LocalDate.parse(endDate);
-//
-//	    // 현재 월 검증
-//	    LocalDate now = LocalDate.now();
-//	    if (start.getMonth() != now.getMonth() || end.getMonth() != now.getMonth()) {
-//	        // 에러 응답 생성
-//	        Map<String, Object> errorResponse = new HashMap<>();
-//	        errorResponse.put("error", "이번 달에 포함되지 않은 날짜입니다.");
-//	        return ResponseEntity.badRequest().body(errorResponse);
-//	    }
-
-	    // 데이터 조회
-	    List<ExpenseDTO> dailyExpenses = expenseService.dailyList(pageName, startDate, endDate);
-
-	    // 정상 응답 생성
-	    Map<String, Object> response = new HashMap<String, Object>();
-	    response.put("dailyExpenses", dailyExpenses);
-
-	    return ResponseEntity.ok(response);
+	    return expenseService.dailyList(pageName, ex_date, page_, cnt_);
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -82,7 +58,17 @@ public class ExpenseController {
 	public String expenseYearly() {
 		return "expense/expenseYearly";
 	}
+	@GetMapping(value="/yearlyList.ajax")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> yearlyList(@RequestParam("year") int year) {
 	
-	
-	
+        Map<String, long[]> categorizedData = expenseService.yearlyList(year);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("year", year);
+        response.put("data", categorizedData);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

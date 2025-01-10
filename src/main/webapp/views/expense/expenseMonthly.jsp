@@ -138,7 +138,7 @@
       	border-radius: 8px;
       	overflow: hidden;
     }
-    .leftPanel, .rightPanel {
+    .leftPanel{
       	padding: 20px;
       	overflow-y: auto;
     }
@@ -163,39 +163,26 @@
     .rightPanel {
    		padding: 5px;	
 		width: 650px;
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		align-items: center;
     }
-	h4.chartText{
-		position: absolute;
-    	left: 995px;
-	}
     table {
-      width: 100%;
-      border-collapse: collapse;
+	    width: 100%;
+	    border-collapse: collapse;
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
+      	border: 1px solid #ddd;
+      	padding: 8px;
+      	text-align: center;
     }
     th {
-      background-color: #f4f4f4;
+      	background-color: #f4f4f4;
     }
     canvas {
-      display: block;
-      margin: 0 auto;
+      	display: block;
+      	margin: 0 auto;
     }
-    #categoryChart {
-      transform: scale(0.9);
-      max-width: 135%;
-      max-height: 330px;
-    }
-    #dailyChart {
-      max-width: 200%;
-      max-height: 300px;
+	#categoryChart {
+      	max-width: 270%;
+      	max-height: 660px;
     }
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -227,6 +214,10 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}
+	@media (min-width: 1200px) {
+    .container {
+        max-width: 1230px !important;
+    }
 </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -297,21 +288,16 @@
 							<tbody id="dailyList">
 							</tbody>
 						</table>
-						<div class="dailyContainer" id="dailyListCont">
-					        <nav aria-label="Page navigation">
-					            <ul class="pagination">
-					                <li class="page-item" id="prevWeek"><a class="page-link" href="#">← 이전 주</a></li>
-					                <li class="page-item"><span class="page-link" id="weekRange"></span></li>
-					                <li class="page-item" id="nextWeek"><a class="page-link" href="#">다음 주 →</a></li>
-					            </ul>
-					        </nav>
-					    </div>
+						<div class="container" id="dailyCont">
+						    <nav aria-label="Page navigation">
+						        <ul class="pagination" id="dailyPagination"></ul>
+						    </nav>
+						</div>
 					</div>
 				</div>
 				<div class="rightPanel">
 					<h4 class="chartText">지출 차트</h4>
 					<canvas id="categoryChart"></canvas>
-					<canvas id="dailyChart" style="width: 574px;"></canvas>
 				</div>
 			</div>
 		</div>
@@ -321,18 +307,24 @@
 	
 $(document).ready(function() {
 	
+	var pageName = '일반';
+	var categoryChart;
+	var dailyExpenseChart;
+	
 	var currentDate = new Date();
 	var year = '';
-	
+	var ex_date = "";
 	function updateDateDisplay() {
 	    var currentDateElement = document.querySelector('.current-date');
 	    var year = currentDate.getFullYear();
-	    var month = currentDate.getMonth() + 1; // 0부터 시작하므로 +1
+	    var month = currentDate.getMonth() + 1;
 	    currentDateElement.textContent = year + '년 ' + month + '월';
 	    
-	    // 변수로 연도와 월 저장
-	    window.currentYear = year; // 연도 변수
-	    window.currentMonth = month; // 월 변수
+	 	// 변수로 연도와 월 저장
+	    window.currentYear = year;
+	    window.currentMonth = month;
+	    ex_date = year + '-' + String(month).padStart(2, '0') + '-%';
+	    pageCall(1, ex_date, pageName);
 	    console.log("현재 연도:", currentYear);
 	    console.log("현재 월:", currentMonth);
 	}
@@ -359,8 +351,9 @@ $(document).ready(function() {
 	
 	window.changeList = function (name) {
 	    pageName = name;
-	    categoryList(name);
-	    fetchWeeklyData(pageName);
+	    categoryList(name)
+	    console.log("ex_date" + ex_date);
+	    pageCall(1, ex_date, pageName);
 	    console.log("tq" + pageName);
 	};
 	
@@ -370,12 +363,7 @@ $(document).ready(function() {
 	
 	document.addEventListener('DOMContentLoaded', function () {
 	    console.log("Page loaded. Fetching initial data...");
-	    fetchWeeklyData(pageName); // 페이지 로드 시 초기 실행
 	});
-	
-	var pageName = '일반';
-	var categoryChart;
-	var dailyExpenseChart;
 	
     categoryList(pageName);
     
@@ -384,6 +372,7 @@ $(document).ready(function() {
 			type: 'GET',
 			url: 'categoryList.ajax',
 			data: {pageName: pageName},
+			dataType: 'JSON',
 			success: function(data) {
 				var categoryData = [];
 				data.forEach(function (item) {
@@ -432,146 +421,72 @@ $(document).ready(function() {
 			}
 		});
 	}
-
-	var currentWeekStart = new Date(); // 현재 날짜
-	currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // 주의 첫날(일요일)
-
-	function formatDate(date) {
-	    return date.toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 변환
-	}
-
-	function updateWeekRange() {
-	    const weekEnd = new Date(currentWeekStart);
-	    weekEnd.setDate(currentWeekStart.getDate() + 6); // 주의 마지막 날(토요일)
-	    $('#weekRange').text(formatDate(currentWeekStart) + " ~ " + formatDate(weekEnd));
-	}
 	
-	function fetchWeeklyData(pageName) {
-	    const startDate = formatDate(currentWeekStart);
-	    const endDate = formatDate(new Date(currentWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000)); // 6일 후
-
-	    console.log("Received pageName in fetchWeeklyData:", pageName);
-
+	function pageCall(page, ex_date, pageName){
 	    $.ajax({
 	        type: 'GET',
 	        url: 'dailyList.ajax',
 	        data: {
-	            pageName: pageName,
-	            startDate: startDate,
-	            endDate: endDate
+	        	pageName: pageName,
+	        	ex_date: ex_date,
+	            page: page,
+	            cnt: 6
 	        },
 	        dataType: 'JSON',
-	        success: function (data) {
-	            console.log(data);
-
-	            // 테이블 업데이트
-	            var dailyExpenseTable = '';
-	            $.each(data.dailyExpenses, function (index, item) {
-	                dailyExpenseTable += '<tr>' +
-	                    '<td>' + item.ex_date + '</td>' +
-	                    '<td>' + item.ex_item + '</td>' +
-	                    '<td>' + item.description + '</td>' +
-	                    '<td>' + item.ex_amount.toLocaleString() + '원</td>' +
-	                    '<td>' + item.remark + '</td>' +
-	                    '</tr>';
+	        success: function(data) {
+	            console.log("값 ",data);
+	            dailyList(data.dailyList);
+	            
+	            $('#dailyPagination').twbsPagination({
+	                startPage: 1,
+	                totalPages: data.totalPages,
+	                visiblePages: 5,
+	                onPageClick: function(evt, page){
+	                    console.log("evt", evt);
+	                    console.log("page", page);
+	                    pageCallList(page, ex_date, pageName);
+	                }
 	            });
-	            $('#dailyList').html(dailyExpenseTable);
-
-	            // 데이터 그룹화
-	            function groupBy(array, key) {
-	                return array.reduce((result, currentValue) => {
-	                    (result[currentValue[key]] = result[currentValue[key]] || []).push(currentValue);
-	                    return result;
-	                }, {});
-	            }
-
-	            var groupedData = groupBy(data.dailyExpenses, 'ex_item'); // 종류별 데이터 그룹화
-	            var colorPalette = ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD'];
-
-	            var datasets = Object.keys(groupedData).map(function (item, index) {
-	                return {
-	                    label: item, // 종류 이름
-	                    data: groupedData[item].map(function (entry) { return entry.ex_amount; }),
-	                    borderColor: colorPalette[index % colorPalette.length], // 고정된 색상 배열에서 순환
-	                    borderWidth: 2,
-	                    tension: 0.4
-	                };
-	            });
-
-
-	            // 차트 관리: 기존 차트가 있으면 업데이트, 없으면 새로 생성
-	            var ctxDaily = document.getElementById('dailyChart').getContext('2d');
-	            if (dailyExpenseChart) {
-	                // 기존 차트 데이터 갱신
-	                dailyExpenseChart.data.labels = data.dailyExpenses.map(function (item) { return item.ex_date; });
-	                dailyExpenseChart.data.datasets = datasets;
-	                dailyExpenseChart.update();
-	            } else {
-	                // 새 차트 생성
-	                dailyExpenseChart = new Chart(ctxDaily, {
-	                    type: 'line',
-	                    data: {
-	                        labels: data.dailyExpenses.map(function (item) { return item.ex_date; }),
-	                        datasets: datasets
-	                    },
-	                    options: {
-	                        responsive: true,
-	                        maintainAspectRatio: false,
-	                        scales: {
-	                            x: {
-	                                title: {
-	                                    display: true,
-	                                    text: '날짜'
-	                                }
-	                            },
-	                            y: {
-	                                title: {
-	                                    display: true,
-	                                    text: '지출 금액 (원)'
-	                                },
-	                                ticks: {
-	                                    callback: function (value) {
-	                                        return value.toLocaleString() + '원'; // 금액을 원 단위로 표시
-	                                    }
-	                                }
-	                            }
-	                        }
-	                    }
-	                });
-	            }
 	        },
-	        error: function (e) {
-	            console.error("오류 발생:", e);
+	        error: function(e) {
+	            console.log("오류 발생", e);
 	        }
 	    });
 	}
 
-	// 이전 주로 이동
-	$('#prevWeek').on('click', function (e) {
-	    e.preventDefault();
-	    currentWeekStart.setDate(currentWeekStart.getDate() - 7); // 이전 주로 이동
-	    updateWeekRange();
-	    fetchWeeklyData(pageName);
-	    console.log("전"+pageName);
-	    console.log("After moving to previous week:", currentWeekStart);
-	});
-
-	// 다음 주로 이동
-	$('#nextWeek').on('click', function (e) {
-	    e.preventDefault();
-	    currentWeekStart.setDate(currentWeekStart.getDate() + 7); // 다음 주로 이동
-	    updateWeekRange();
-	    fetchWeeklyData(pageName);
-	    console.log("g후"+pageName);
-	});
-
-	// 초기화
-	$(document).ready(function () {
-	    updateWeekRange();
-	    fetchWeeklyData(pageName);
-	});
-
-
+	function dailyList(list){
+		var content = '';
+		for(var item of list){
+			content += '<tr>' +
+            '<td>' + item.ex_date + '</td>' +
+            '<td>' + item.ex_item + '</td>' +
+            '<td>' + item.description + '</td>' +
+            '<td>' + item.ex_amount.toLocaleString() + '원</td>' +
+            '<td>' + item.remark + '</td>' +
+            '</tr>';
+		}
+		$('#dailyList').html(content);
+	}
+	
+	function pageCallList(page){
+		 $.ajax({
+	        type: 'GET',
+	        url: 'dailyList.ajax',
+	        data: {
+	        	pageName: pageName,
+	        	ex_date: ex_date,
+	            page: page,
+	            cnt: 6
+	        },
+	        dataType: 'JSON',
+	        success: function(data) {
+	        	dailyList(data.dailyList);
+	        },
+	        error: function(e) {
+	            console.log("오류 발생", e);
+	        }
+	    });
+	}
 });
 </script>
 </html>
