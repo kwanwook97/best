@@ -336,7 +336,7 @@ function roomCard() {
         data: {},
         dataType: 'JSON',
         success: function(data) {
-            console.log('AJAX 데이터:', data);
+            //console.log('AJAX 데이터:', data);
             if (data && data.length) {
             	drawRoomCard(data);
 
@@ -345,7 +345,7 @@ function roomCard() {
             }
         },
         error: function(e) {
-            console.log(e);
+            //console.log(e);
         }
     });
 }
@@ -383,7 +383,7 @@ function drawRoomCard(roomList) {
     container.innerHTML = ''; // 기존 내용 초기화
 
     roomList.forEach(function(room) {
-    	console.log("테스트 룸: " , room.room_idx);
+    	//console.log("테스트 룸: " , room.room_idx);
         const encodedImageUrl = encodeURI(room.photo); // URL 인코딩
 
         container.innerHTML += 
@@ -451,7 +451,7 @@ function saveRoomInfo() {
 
 function deleteRoom(roomIdx) {
 	modal.showConfirm('삭제 하시겠습니까?', function () {
-		console.log("roomIdx: " + roomIdx);
+		//console.log("roomIdx: " + roomIdx);
 	    $.ajax({
 	        type: 'POST',
 	        url: 'delRoomInfo.ajax', 

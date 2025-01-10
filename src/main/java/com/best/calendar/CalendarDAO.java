@@ -69,6 +69,8 @@ public interface CalendarDAO {
 
 	List<LocalDate> getHolidayCalculate();
 
+	String getDepartmentNmae(Map<String, Object> params);
+
 
 
 

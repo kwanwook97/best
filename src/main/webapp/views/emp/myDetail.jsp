@@ -714,7 +714,7 @@ form{
 	$('.normalBtn').on('click', function() {
 	    // 클릭한 버튼의 컬럼 값 가져오기
 	    col = $(this).attr('id');
-	    console.log('col:값'+col);
+	    //console.log('col:값'+col);
 	    // 변경할 항목 이름 가져오기
 	    var changeName = $(this).closest('td').prev('th').text();
 	    // 현재 값 (버튼태그 값 제거)
@@ -1052,9 +1052,9 @@ function checkSign(){
         },
         dataType:'json',
         success: function(response) {
-        		console.log("response.sign 사인값 확인용:"+response.sign);
-        		console.log("response.msg 사인값 확인용:"+response.msg);
-        		console.log("response 사인값 확인용:"+response);
+        		//console.log("response.sign 사인값 확인용:"+response.sign);
+        		//console.log("response.msg 사인값 확인용:"+response.msg);
+        		//console.log("response 사인값 확인용:"+response);
         	if (response.msg === '성공') {
         		  $('#signatureContainer').empty();
         		  const row = 
@@ -1108,8 +1108,8 @@ function infoHistoryCheck(){
         },
         dataType:'json',
         success: function(response) {
-        		console.log("테스트:"+JSON.stringify(response, null, 2));
-        		//console.log("테스트:"+response.list.length);
+        		//console.log("테스트:"+JSON.stringify(response, null, 2));
+        		////console.log("테스트:"+response.list.length);
         		  $('.addTbody').empty();
         	if (response.msg === '성공') {
                 let fixedList = Array.from({ length: 10 }, (_, i) => response.list[i] || {
@@ -1188,7 +1188,7 @@ function infoHistoryCheck(){
 
 $('.infoTitle').on('change', function () {
     const selectedCategory = $(this).val(); 
-    console.log("Selected Category:", selectedCategory);
+    //console.log("Selected Category:", selectedCategory);
     $('.addTbody .empty-row').remove();
     $('.addTbody tr').hide();
     let filteredRows = [];

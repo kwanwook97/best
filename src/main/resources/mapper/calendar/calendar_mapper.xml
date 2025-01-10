@@ -301,6 +301,12 @@
 		select holiday_date from holiday
 	</select>
 	
+	<!-- 부서 이름 가져오기 -->
+	<select id="getDepartmentNmae" parameterType="map" resultType="String">
+		SELECT d.depart_name as departName FROM employee e
+		JOIN department d ON e.depart_idx = d.depart_idx WHERE e.emp_idx = #{loginId}
+	</select>
+	
 </mapper>  
 
 

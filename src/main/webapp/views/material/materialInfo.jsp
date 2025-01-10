@@ -65,6 +65,7 @@
 		width: 30%;
 		height: 100%;
 		background-color: #efbfbf00;
+		overflow-y: auto;
     }
 	/* 테이블 기본 스타일 */
 	.materialInfo-table {
@@ -275,11 +276,12 @@ input[type="number"] {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	overflow-y: auto;
 }
 
 	/* 테이블 기본 스타일 */
 	.borrow-table {
-	    width: 100%; /* 테이블 전체 너비 */
+	    width: 96%; /* 테이블 전체 너비 */
 	    border-collapse: collapse; /* 셀 경계선 겹침 */
 	    margin: 0 0; /* 위아래 여백 */
 	    font-size: 12px; /* 글씨 크기 */
@@ -561,7 +563,7 @@ function pageCall(page) {
         },
         dataType: 'JSON',
         success: function(data) {
-            console.log('AJAX 데이터:', data);
+            //console.log('AJAX 데이터:', data);
 
             if (data.list && data.list.length) {
                 drawList(data.list);
@@ -582,7 +584,7 @@ function pageCall(page) {
             }
         },
         error: function(e) {
-            console.log(e);
+            //console.log(e);
         }
     });
 }
@@ -743,14 +745,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.getElementById("returnStatusFilter").addEventListener("change", (event) => {
     const returnStatus = event.target.value; 
-    console.log(returnStatus);
+    //console.log(returnStatus);
     
     currentPage = 1;
     loadBorrowList({ returnStatus, page: currentPage, size: pageSize });
 });
 
 function loadBorrowList(filters) {
-    console.log("요청 필터:", filters);
+    //console.log("요청 필터:", filters);
     $.ajax({
         type: 'POST',
         url: 'borrowList.ajax',
@@ -759,7 +761,7 @@ function loadBorrowList(filters) {
         dataType: 'json',
         success: function(response) {
             if (response.data && response.data.length > 0) {
-                console.log("서버 응답 데이터:", response.data);
+                //console.log("서버 응답 데이터:", response.data);
                 renderBorrowList(response.data);
                 if (!paginationInitialized || filters.returnStatus !== previousFilters?.returnStatus) {
                     initializePagination(response.totalPages, response.currentPage, filters);
@@ -819,8 +821,8 @@ function renderBorrowList(data) {
         // 시작 날짜와 종료 시간 포맷팅
         const formattedStart = formatDate(item.start_datetime);
         const endTime = new Date(item.end_datetime).getHours().toString().padStart(2, '0') + ':00';
-        console.log(formattedStart);
-        console.log(endTime);
+        //console.log(formattedStart);
+        //console.log(endTime);
 
         // 버튼 동적 생성
         let buttonContent = '';
@@ -859,7 +861,7 @@ function noListData(){
 function confirmReturn(borrowIdx){
 	
 	modal.showConfirm('반납 처리 하시겠습니까?', function () {
-		console.log("borrowIdx:"+borrowIdx);
+		//console.log("borrowIdx:"+borrowIdx);
 		const returnStatus = document.getElementById("returnStatusFilter").value;
 
 	    $.ajax({
@@ -872,7 +874,7 @@ function confirmReturn(borrowIdx){
 	        dataType: 'json',
 	        success: function(data) {
 	        	if (data.length != 0) {
-		        	console.log("서버 응답 데이터:", data);
+		        	//console.log("서버 응답 데이터:", data);
 		        	loadBorrowList({ returnStatus });
 		        	alert(data.msg);
 				}else {

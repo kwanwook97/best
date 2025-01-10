@@ -6,21 +6,17 @@
 <meta charset="UTF-8">
 <title>BEST</title>
 <!-- side-bar CSS -->
-<link rel="stylesheet"
-   href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="resources/css/simplebar.css" rel="stylesheet" />
 <link href="resources/css/bootstrap.min.css" rel="stylesheet" />
 <link href="resources/css/app-style.css" rel="stylesheet" />
 <link href="resources/css/sidebar-menu.css" rel="stylesheet" />
-<link
-   href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"
-   rel="stylesheet">
+<link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
 <!-- side-bar JS -->
 <script>
 var loginId = ${sessionScope.loginId};
 </script>
-<script src="https://kit.fontawesome.com/6282a8ba62.js"
-   crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 <script src="resources/js/sidebar-menu.js"></script>
 <script src="resources/js/simplebar.js"></script>
 <!-- <script src="resources/js/bootstrap.min.js"></script> -->
@@ -41,8 +37,6 @@ var loginId = ${sessionScope.loginId};
 .spanAction {
    width: 45%;
    display: none;
-<<<<<<< HEAD
-=======
 }
 /* 텍스트 선택 시 배경색과 글자색 지정 */
 ::selection {
@@ -54,7 +48,6 @@ var loginId = ${sessionScope.loginId};
 ::-webkit-selection {
   background-color: #FFEB3B; /* 노란색 배경 */
   color: #000; /* 검정색 텍스트 */
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
 }
 </style>
 
@@ -92,13 +85,13 @@ var loginId = ${sessionScope.loginId};
          </li>
 
          <li class="dropD">
-            <a href="javaScript:void(0);"> 
+            <a href="attendance.go"> 
                <i class="bi bi-clock-fill"></i> 
                <span>근태관리</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
 
-            <ul class="dropD-menu">
+<!--             <ul class="dropD-menu">
                <li class="dropD-item">
                   <a href="attendance.go"> 
                      <i class="bi bi-clock-fill"></i> 
@@ -113,7 +106,7 @@ var loginId = ${sessionScope.loginId};
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
-            </ul>
+            </ul> -->
          </li>
 
          <li class="dropD">
@@ -311,17 +304,17 @@ var loginId = ${sessionScope.loginId};
             </ul>
          </li>
 
-			<li>
-				<a href="orgChart.go"> 
-					<i class="bi bi-diagram-3-fill"></i>
-					<span>조직도</span> 
-					<i class="fa-solid fa-angle-right"></i>
-				</a>
-			</li>
+         <li>
+            <a href="orgChart.go"> 
+               <i class="bi bi-diagram-3-fill"></i>
+               <span>조직도</span> 
+               <i class="fa-solid fa-angle-right"></i>
+            </a>
+         </li>
 
          <li class="dropD">
             <a href="javaScript:void(0);"> 
-               <i class="fa-regular fa-calendar-check"></i> 
+               <i class="bi bi-journals"></i> 
                <span>회의실</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
@@ -329,21 +322,21 @@ var loginId = ${sessionScope.loginId};
             <ul class="dropD-menu">
                <li class="dropD-item">
                   <a href="meetingRoomCalendar.do"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
+                     <i class="bi bi-journal"></i> 
                      <span>회의실 예약</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
                <li class="dropD-item">
                   <a href="myReserve.go"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
+                     <i class="bi bi-journal-check"></i> 
                      <span>내 예약 현황</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
                </li>
                <li class="dropD-item">
                   <a href="roomInfo.go"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
+                     <i class="bi bi-journal-plus"></i> 
                      <span>회의실 관리</span> 
                      <i class="fa-solid fa-angle-right"></i>
                   </a>
@@ -352,36 +345,13 @@ var loginId = ${sessionScope.loginId};
          </li>
 
          <!-- 종원 기자재 -->
-<<<<<<< HEAD
-         <li>
-            <a href="material.go"> 
-=======
          <li class="dropD">
-            <a href="javaScript:void(0);"> 
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-               <i class="fa-regular fa-calendar-check"></i> 
-               <span>기자재</span> 
-               <i class="fa-solid fa-angle-right"></i>
+            <a href="material.go"> 
+                <i class="bi bi-layout-text-window-reverse"></i> 
+                  <span>기자재</span> 
+                  <i class="fa-solid fa-angle-right"></i>
             </a>
-
-<<<<<<< HEAD
-<!--             <ul class="dropD-menu">
-=======
-            <ul class="dropD-menu">
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-               <li class="dropD-item">
-                  <a href="material.go"> 
-                     <i class="fa-regular fa-calendar-check"></i> 
-                     <span>기자재 관리</span> 
-                     <i class="fa-solid fa-angle-right"></i>
-                  </a>
-               </li>
-<<<<<<< HEAD
-            </ul> -->
-=======
-            </ul>
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-         </li>
+      </li>
 
 
          <!-- 관욱수정 2024.12.12 시작 -->
@@ -480,18 +450,6 @@ var loginId = ${sessionScope.loginId};
             </a>
          </li>
 
-<<<<<<< HEAD
-         <!-- 관욱추가 시작 2025.01.05 -->
-         <li><a href="accessManage.go"> 
-             <i class="bi bi-shield-check"></i> 
-             <span>권한관리</span> 
-             <i class="fa-solid fa-angle-right"></i>
-         </a></li>
-         <!-- 관욱추가 끝 2025.01.05 -->
-=======
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
-         
-         
          <li>
             <a href="logout.do">
                <i class="fa-solid fa-right-to-bracket"></i> 
@@ -512,11 +470,7 @@ var loginId = ${sessionScope.loginId};
                      <i class="bi bi-clock-history"></i>
                        <button class="btn-start-work" onclick="updateStartTime()">출근</button>
                      <span class="spanAction"> 
-<<<<<<< HEAD
                           <span></span>   ~ <span></span>
-=======
-                          <span>startTime </span>   ~ <span>endTime</span>
->>>>>>> a21816b2b01061fa2d611df992bbb7cc65f973a8
                      </span>
                        <button class="btn-finish-work" onclick="updateEndTime()">퇴근</button>
                    </div>
@@ -799,7 +753,7 @@ function checkButton(){
         const spans = document.querySelectorAll('.spanAction span');
         const spanAction = document.querySelector('.spanAction');
        if (data.startTime) {
-    	   StartTimeCheck = data.startTime;
+          StartTimeCheck = data.startTime;
             button.style.display = 'none';
             finish.style.display = 'block';
             spans[0].textContent = data.startTime;
@@ -812,8 +766,8 @@ function checkButton(){
          spans[1].textContent = data.endTime;
       }
        if (data.ipMsg == '불일치') {
-    	   ipMsg = '불일치'; 
-		}
+          ipMsg = '불일치'; 
+      }
     })
     .catch(error => {
         console.error('출근 처리 오류:', error);
@@ -825,10 +779,10 @@ function checkButton(){
 
 
 function updateStartTime(){
-	if (ipMsg == '불일치') {
-		alert('ip정보가 불일치 합니다.')
-	}
-	
+   if (ipMsg == '불일치') {
+      alert('ip정보가 불일치 합니다.')
+   }
+   
     const data = {
             loginId: loginId
         };

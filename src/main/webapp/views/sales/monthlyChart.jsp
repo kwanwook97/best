@@ -766,12 +766,12 @@ function fetchData(searchField = '없음', searchInput = '없음', page = 1, sel
         },
         dataType: 'json',
         success: function(data) {
-            //console.log('AJAX 데이터:', data);
+            console.log('AJAX 데이터:', data);
             if (data.msg == '성공') {
                 renderTable(data.list);
                     $('#pagination').twbsPagination('destroy');
                     $('#pagination').twbsPagination({
-                        startPage: data.currentPage,
+                        startPage: Math.min(data.currentPage, data.totalPages),
                         totalPages: data.totalPages,
                         visiblePages: 5,
                         onPageClick: function(evt, clickedPage) {

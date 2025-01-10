@@ -443,7 +443,12 @@
   background-color: #30005A;
   color: white;
 }
-
+.h10.bold.leave {
+	display: flex;
+}
+.h10.bold.leave div {
+	margin: 0 0 0 10px;
+}
 
 
   </style>
@@ -459,7 +464,7 @@
 		     	<span class="cPurple">출퇴근 기록</span>
 		    </c:if>
 		    <c:if test="${not empty empIdx}">
-		      <span class="lPurple">근태관리</span>
+		      <span class="lPurple">사원관리</span>
 		      <i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
 		      <span class="cPurple" style="color:#8B6AA7;">사원목록</span>
 		      <i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
@@ -624,12 +629,14 @@
  		<div class="contentBottom purple p1 f24">
  			<div class="h10 bold leave">
 				<span><i class="bi bi-clock-history"></i>&nbsp;&nbsp;연차 기록</span>
+				<div>
 			    <c:if test="${not empty empIdx}">
 			    	<button class="addbtn" onclick="leaveHistoryLogList()">수정내역</button>
 			    </c:if>
 			    <c:if test="${not empty empIdx}">
 			    	<button class="addbtn" onclick="leaveHistoryEditMode()">수정하기</button>
 			    </c:if>
+			    </div>
 			</div>
 			<!-- 출퇴근 기록 -->
 			<div class="bgColor h90">
@@ -756,7 +763,7 @@ if (key) {
 }
 let attendanceData = [];
 let leaveHistoryLogData = [];
-console.log("empIdx: "+empIdx);
+//console.log("empIdx: "+empIdx);
 
 setInterval(updateClock, 1000)
 updateClock()
@@ -781,13 +788,13 @@ function updateClock() {
         const diffHours = Math.floor(diffMinutes / 60).toString().padStart(2, "0");
         const remainingMinutes = (diffMinutes % 60).toString().padStart(2, "0");
         const currentWorkTime = diffHours + ":" + remainingMinutes;
-        console.log("테테종:"+currentWorkTime);
+        ////console.log("테테종:"+currentWorkTime);
     	$('#clock').text(currentWorkTime)
 	}else{
 	    $('#clock').text(timeString)
 	}
     
-    console.log("테테종:"+StartTimeCheck);
+    //console.log("테테종:"+StartTimeCheck);
 
 
     $('#day').text(dateString)
@@ -803,8 +810,8 @@ function updateTime(){
         data: { loginId:empIdx}, 
         dataType: "json", 
         success: function (response) {
-        	console.log('response:'+response.startTime);
-        	console.log('response:'+response.endTime);
+        	//console.log('response:'+response.startTime);
+        	//console.log('response:'+response.endTime);
             if (response.startTime != null) {
                 $(".start-time").next("span").text(response.startTime.split(" ")[1]);
             } else {
@@ -890,13 +897,13 @@ function updateTime(){
 			}
            	
             if (response.attendanceHistory) {
-				/* console.log("수정내역 확인 데이터 "+JSON.stringify(response.attendanceHistory));   */          	
+				/* //console.log("수정내역 확인 데이터 "+JSON.stringify(response.attendanceHistory));   */          	
               	attendanceData = response.attendanceHistory;
                 renderTable(attendanceData);
 			}
             
             if (response.leaveHistoryLog) {
-				console.log("수정내역 확인 데이터 "+JSON.stringify(response.leaveHistoryLog));          	
+				//console.log("수정내역 확인 데이터 "+JSON.stringify(response.leaveHistoryLog));          	
               	leaveHistoryLogData = response.leaveHistoryLog;
               	renderLeaveHistoryLogTable(leaveHistoryLogData);
 			}
@@ -979,7 +986,7 @@ function saveEditedData() {
     hideReasonModal()
     $("#saveChanges").remove();
 
-    console.log("Updated List:", updatedList);
+    //console.log("Updated List:", updatedList);
 
      // 수정된 데이터를 서버로 전송
      $.ajax({
@@ -988,7 +995,7 @@ function saveEditedData() {
         contentType: "application/json",
         data: JSON.stringify({ updatedList: updatedList }),
         success: function (response) {
-            console.log("response:", response);
+            //console.log("response:", response);
             if (response.msg == "성공") {
                 updateTime();
 	            
@@ -1344,7 +1351,7 @@ function saveLeaveHistoryEditedData() {
     hideLeaveHistoryReasonModal();
     $("#saveLeave").remove();
 
-    console.log("Updated List:", updatedList);
+    //console.log("Updated List:", updatedList);
 
      // 수정된 데이터를 서버로 전송
      $.ajax({
@@ -1353,7 +1360,7 @@ function saveLeaveHistoryEditedData() {
         contentType: "application/json",
         data: JSON.stringify({ updatedList: updatedList }),
         success: function (response) {
-            console.log("response:", response);
+            //console.log("response:", response);
             if (response.msg == "성공") {
                 updateTime();
 			}else{
@@ -1372,5 +1379,18 @@ function hideLeaveHistoryReasonModal() {
     $("#reasonInputLeaveHistory").val("");
 }
 
+var employee = {
+        empIdx: "${employee.emp_idx}",
+        name: "${employee.name}",
+        departIdx: "${employee.depart_idx}",
+        rankIdx: "${employee.rank_idx}"
+    };
+    //console.log("employee", employee);
+
+    if (employee.rankIdx > 3  ) {
+	    $('.h10.bold.leave div').empty();
+	}
+    
+    
 </script>
 </html>

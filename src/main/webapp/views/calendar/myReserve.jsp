@@ -383,7 +383,7 @@ function pageCall(page) {
         },
         dataType: 'JSON',
         success: function(data) {
-            console.log('AJAX 데이터:', data);
+            ////console.log('AJAX 데이터:', data);
 
             if (data.list && data.list.length) {
                 drawList(data.list);
@@ -404,7 +404,7 @@ function pageCall(page) {
             }
         },
         error: function(e) {
-            console.log(e);
+            //console.log(e);
         }
     });
 }
@@ -427,8 +427,8 @@ function drawList(list) {
         // 시작 날짜와 종료 시간 포맷팅
         const formattedStart = formatDate(item.start_datetime);
         const endTime = new Date(item.end_datetime).getHours().toString().padStart(2, '0') + ':00';
-		console.log(formattedStart);
-		console.log(endTime);
+		//console.log(formattedStart);
+		//console.log(endTime);
     	
         const row = 
             '<tr>' +
@@ -502,9 +502,9 @@ function closeModal() {
     document.querySelector('.meetingmodal').style.display = 'none';
 }
 const startValue = $('#start-time').val();
-console.log(startValue);
+//console.log(startValue);
 const endValue = $('#end-time').val();
-console.log(endValue);
+//console.log(endValue);
 
 $(document).ready(function () {
 	  const $startTimeSelect = $("#start-time");
@@ -597,7 +597,7 @@ $(document).ready(function () {
             }
         }
         
-	    console.log(formData);
+	    //console.log(formData);
 	    // 서버에 데이터 저장
 	    $.ajax({
 	      url: "myReserveUpdate.ajax", // 서버의 엔드포인트 URL
@@ -652,7 +652,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 한국 시간으로 조정 (UTC + 9시간)
   now.setHours(now.getHours());
-  console.log("now: ", now);
+  //console.log("now: ", now);
 
   // 'YYYY-MM-DD' 형식으로 변환된 오늘 날짜
   const today = now
@@ -663,7 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .replace(/\. /g, "-")
     .replace(/\./g, "");
-  console.log("today", today);
+  //console.log("today", today);
 
   // 날짜 입력 필드에 최소 날짜 설정
   dateInput.setAttribute("min", today);
@@ -675,7 +675,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 현재 시간 객체 생성 및 KST로 조정
     const currentTime = new Date();
     currentTime.setHours(currentTime.getHours());
-    console.log("currentTime: ", currentTime);
+    //console.log("currentTime: ", currentTime);
 
     // 오늘 날짜인 경우만 필터링
     if (selectedDate === today) {
