@@ -332,7 +332,7 @@ select option {
         		</a>
  			</li>
  			<li>
- 				<a href="#">
+ 				<a href="mail.go">
           			<i class="bi bi-envelope-fill"></i><span>새로운 메일</span>
           			<i class="fa-solid fa-angle-right"></i>
         		</a>

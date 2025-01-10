@@ -482,7 +482,9 @@
 </div>
 
 
-
+<div id="searchResults" style="display: none; position: absolute; z-index: 10; background: white; border: 1px solid #ccc; border-radius: 5px; max-width: 300px;">
+    <!-- 검색 결과 리스트가 동적으로 추가됩니다 -->
+</div>
 
 		
 	
@@ -1250,22 +1252,23 @@ function addRankAndEmployeeNodes(rows, groupedByRank, parentId) {
     
 
     /* 모달 열기 함수 */
-    function openModal(employee) {
-        $("#modalPhoto").attr("src", "/photo/" + employee.photo || "default_photo.jpg"); // 사진이 없으면 기본 이미지
-        $("#modalName").text(employee.name);
-        $("#modalRank").text(employee.rank);
-        $("#modalDepartment").text(employee.department);
-        $("#modalEmail").text(employee.email);
-        $("#modalPhone").text(employee.phone);
-        $("#modalMobile").text(employee.mobile);
+	function openModal(employee) {
+	    $("#modalPhoto").attr("src", "/photo/" + (employee.photo || "default_photo.jpg")); // 사진이 없으면 기본 이미지
+	    $("#modalName").text(employee.name);
+	    $("#modalRank").text(employee.rank);
+	    $("#modalDepartment").text(employee.department);
+	    $("#modalEmail").text(employee.email);
+	    $("#modalPhone").text(employee.phone);
+	    $("#modalMobile").text(employee.mobile);
+	
+	    $("#employeeModal").fadeIn(); // 모달 창 표시
+	}
+	
+	// 모달 닫기 이벤트
+	$(document).on("click", "#employeeModal", function () {
+	    $("#employeeModal").fadeOut(); // 모달 창 닫기
+	});
 
-        $("#employeeModal").fadeIn(); // 모달 창 표시
-    }
-
-    /* 모달 닫기 이벤트 */
-    $(document).on("click", "#employeeModal", function () {
-        $("#employeeModal").fadeOut(); // 모달 창 닫기
-    });
     
     
 
@@ -1311,29 +1314,96 @@ $('.search-bar').on('keyup', function (e) {
 });
 
 	
-function executeSearch(){
-	// 사원명을 사용하여 사원 검색
-	var employee = employees.find(emp => emp.name == searchKeyword);
-	
-	if (employee) {
-        
-        // 값 초기화
+function executeSearch() {
+    // 검색어로 사원 목록 필터링 후 emp_idx 중복 제거
+    const uniqueEmployees = Array.from(new Map(
+        employees.filter(emp => emp.name.includes(searchKeyword))
+                .map(emp => [emp.id, emp]) // emp.id를 기준으로 중복 제거
+    ).values());
+
+    // 검색 결과 리스트 컨테이너 선택
+    const searchResultsContainer = $('#searchResults');
+    searchResultsContainer.empty(); // 이전 검색 결과 초기화
+
+    if (uniqueEmployees.length === 0) {
+        modal.showAlert(searchKeyword + " 사원을 찾을 수 없습니다.");
+        searchResultsContainer.hide();
+        return;
+    }
+
+    if (uniqueEmployees.length === 1) {
+        // 검색 결과가 한 명일 경우 바로 해당 노드로 이동
+        const employee = uniqueEmployees[0];
         departIdx = employee.departmentId;
         routeName = employee.route_name || '';
 
         // 데이터 로드 및 차트 생성
         isteamEmpLoaded = false; // 초기화
-        
         loadTeamEmp(function () {
-            var employeeNodeId = 'emp-' + employee.id; // 사원의 노드 ID 생성
+            const employeeNodeId = 'emp-' + employee.id; // 사원의 노드 ID 생성
             highlightNode(employeeNodeId); // 로드 완료 후 강조
         });
-     	
 
+        searchResultsContainer.hide(); // 결과 리스트 숨김
     } else {
-        modal.showAlert(searchKeyword + " 사원을 찾을 수 없습니다.")
+        // 검색 결과가 여러 명인 경우 모달창을 검색창 아래에 표시
+        openSearchModal(uniqueEmployees); // 검색 결과 모달 열기
     }
 }
+
+// 검색 결과가 여러개일 때 모달창 형태로 검색창 아래에 표시
+function openSearchModal(employees) {
+    const searchBar = $('.search-bar');
+    const searchResultsContainer = $('#searchResults');
+
+    searchResultsContainer.empty(); // 이전 결과 초기화
+
+    employees.forEach(emp => {
+        const listItem = $('<div>')
+            .text(emp.name)
+            .css({ 
+                padding: '10px', 
+                cursor: 'pointer', 
+                borderBottom: '1px solid #ddd' 
+            })
+            .hover(
+                function () { $(this).css('background', '#f1f1f1'); },
+                function () { $(this).css('background', 'white'); }
+            )
+            .on('click', function () {
+                // 선택한 사원으로 이동
+                searchResultsContainer.hide(); // 결과 리스트 숨김
+                departIdx = emp.departmentId;
+                routeName = emp.route_name || '';
+
+                // 데이터 로드 및 차트 생성
+                isteamEmpLoaded = false; // 초기화
+                loadTeamEmp(function () {
+                    const employeeNodeId = 'emp-' + emp.id; // 사원의 노드 ID 생성
+                    highlightNode(employeeNodeId); // 로드 완료 후 강조
+                });
+            });
+
+        searchResultsContainer.append(listItem);
+    });
+
+    // 모달 스타일 검색창 아래로 설정 및 스크롤바 추가
+    searchResultsContainer.css({
+        position: 'absolute',
+        display: 'block',
+        top: searchBar.offset().top + searchBar.outerHeight() + 10 + 'px', // 검색창 아래로 10px
+        left: searchBar.offset().left + 'px',
+        width: searchBar.outerWidth() + 'px',
+        maxHeight: '200px', // 최대 높이 설정
+        overflowY: 'auto', // 세로 스크롤바 활성화
+        background: 'white',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        zIndex: 1000,
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    }).fadeIn();
+}
+
 
 
 

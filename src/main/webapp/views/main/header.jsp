@@ -304,13 +304,13 @@ var loginId = ${sessionScope.loginId};
             </ul>
          </li>
 
-			<li>
-				<a href="orgChart.go"> 
-					<i class="bi bi-diagram-3-fill"></i>
-					<span>조직도</span> 
-					<i class="fa-solid fa-angle-right"></i>
-				</a>
-			</li>
+         <li>
+            <a href="orgChart.go"> 
+               <i class="bi bi-diagram-3-fill"></i>
+               <span>조직도</span> 
+               <i class="fa-solid fa-angle-right"></i>
+            </a>
+         </li>
 
          <li class="dropD">
             <a href="javaScript:void(0);"> 
@@ -352,6 +352,7 @@ var loginId = ${sessionScope.loginId};
                	<i class="fa-solid fa-angle-right"></i>
          	</a>
 		</li>
+
 
 
          <!-- 관욱수정 2024.12.12 시작 -->
@@ -762,7 +763,7 @@ function checkButton(){
         const spans = document.querySelectorAll('.spanAction span');
         const spanAction = document.querySelector('.spanAction');
        if (data.startTime) {
-    	   StartTimeCheck = data.startTime;
+          StartTimeCheck = data.startTime;
             button.style.display = 'none';
             finish.style.display = 'block';
             spans[0].textContent = data.startTime;
@@ -775,8 +776,8 @@ function checkButton(){
          spans[1].textContent = data.endTime;
       }
        if (data.ipMsg == '불일치') {
-    	   ipMsg = '불일치'; 
-		}
+          ipMsg = '불일치'; 
+      }
     })
     .catch(error => {
         console.error('출근 처리 오류:', error);
@@ -788,10 +789,10 @@ function checkButton(){
 
 
 function updateStartTime(){
-	if (ipMsg == '불일치') {
-		alert('ip정보가 불일치 합니다.')
-	}
-	
+   if (ipMsg == '불일치') {
+      alert('ip정보가 불일치 합니다.')
+   }
+   
     const data = {
             loginId: loginId
         };

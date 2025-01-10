@@ -93,6 +93,7 @@ public class EmployeeService {
 
 	
 	// 사원 상세보기
+	@Transactional
 	public Map<String, Object> empDetail(String emp_idx_) {
 		
 		int emp_idx = Integer.parseInt(emp_idx_); 
@@ -110,15 +111,10 @@ public class EmployeeService {
 		Map<String, Object> empLeave = empDAO.empLeave(emp_idx);
 		if(empLeave != null) 
 			empDetail.putAll(empLeave);
-		// 4. 변경내역
-		List<Map<String, Object>> empHistory = empDAO.empHistory(emp_idx);
-		if(empHistory != null) 
-			empDetail.put("list", empHistory);
-		// 5. 첨부파일
+		// 4. 첨부파일
 		List<Map<String, Object>> empAttach = empDAO.empAttach(emp_idx);
 		if(empAttach != null) 
 			empDetail.put("fileList", empAttach);
-		
 		
 		
 		return empDetail;

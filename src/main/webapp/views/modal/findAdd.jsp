@@ -306,6 +306,9 @@
            사원검색
            <button id="closeUserBoxModal" class="modalD-button" style="float: right;">닫기</button> <!-- 닫기 버튼 추가 -->
         </div>
+        <div id="searchResults" style="display: none; position: absolute; z-index: 10; background: white; border: 1px solid #ccc; border-radius: 5px; max-width: 400px;">
+		    <!-- 검색 결과 리스트가 동적으로 추가됩니다 -->
+		</div>
         <div style="position: relative;">
           <input type="text" id="searchInput" class="search-bar" placeholder="사원명을 검색하세요.">
           <i class="fas fa-search search-icon"></i>
@@ -511,13 +514,67 @@ $(document).ready(function () {
             alert('검색어를 입력해주세요.');
             return;
         }
-        var employee = employees.find(emp => emp.name.includes(searchKeyword));
-        if (employee) {
-            showEmployeeModal(employee); // 검색된 사원 정보 표시
-        } else {
+
+        // 검색어로 사원 목록 필터링
+        var filteredEmployees = employees.filter(emp => emp.name.includes(searchKeyword));
+
+        if (filteredEmployees.length === 0) {
             alert('검색된 사원이 없습니다.');
+            return;
+        }
+
+        if (filteredEmployees.length === 1) {
+            // 검색 결과가 한 명이면 상세 모달 표시
+            showEmployeeModal(filteredEmployees[0]);
+        } else {
+            // 검색 결과가 여러 명이면 리스트 표시
+            showSearchResults(filteredEmployees);
         }
     }
+    
+ // 검색 결과 리스트 표시
+    function showSearchResults(employees) {
+        var searchInput = $('#searchInput');
+        var searchResults = $('#searchResults');
+        searchResults.empty(); // 이전 결과 초기화
+
+        employees.forEach(function (employee) {
+            var listItem = $('<div>')
+                .text(employee.name)
+                .css({
+                    padding: '10px',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid #ddd',
+                })
+                .hover(
+                    function () {
+                        $(this).css('background', '#f1f1f1');
+                    },
+                    function () {
+                        $(this).css('background', 'white');
+                    }
+                )
+                .on('click', function () {
+                    searchResults.hide(); // 리스트 숨김
+                    showEmployeeModal(employee); // 선택한 사원의 상세 정보 표시
+                });
+
+            searchResults.append(listItem);
+        });
+
+        // 검색 결과 리스트 위치와 스타일 설정
+        searchResults.css({
+            position: 'absolute',
+            top: searchInput.offset().top + searchInput.outerHeight() + 5 + 'px',
+            left: searchInput.offset().left + 'px',
+            width: searchInput.outerWidth() + 'px',
+            maxHeight: '200px', // 최대 높이 설정
+            overflowY: 'auto', // 스크롤바 활성화
+            display: 'block', // 결과 표시
+        }).fadeIn();
+    }
+    
+    
 
     // 사원 상세 정보 모달 표시
     function showEmployeeModal(employee) {

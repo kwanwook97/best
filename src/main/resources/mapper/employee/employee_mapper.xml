@@ -102,20 +102,6 @@
 
 
 
-	<!-- 사원정보 상세보기 : 최근 6건의 변경내역 -->
-	<select id="empHistory" resultType="map" parameterType="int">
-		SELECT 
-            emp_idx,
-            category,
-            before_update,
-            after_update,
-            date,
-            emp_manage_idx
-        FROM
-            emp_history
-        WHERE emp_idx = #{emp_idx}
-        ORDER BY date DESC LIMIT 6
-	</select>
 
 	<!-- 사원정보 상세보기 : 이번 달 근태정보 -->
 	<select id="empAttend" resultType="map" parameterType="int">
@@ -285,20 +271,6 @@
 			#{password}	
 		)
 	</insert>
-	
-	<!-- 상급자 가져오기 -->
-	<select id="getParent" parameterType="int">
-        SELECT position_idx, position_name
-        FROM positions
-        ORDER BY position_idx ASC
-	</select>
-	
-	<!-- 내 직급순위 가져오기 -->
-	<select id="getMyPosition">
-		SELECT position_idx
-		FROM rank_emp
-		WHERE rank_idx = #{rank_idx}
-	</select>
 	
 	<!-- 상급자 존재여부 체크 -->
 	<select id="parentCheck" parameterType="map">
