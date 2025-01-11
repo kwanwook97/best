@@ -1,6 +1,5 @@
 package com.best.board;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,17 +132,19 @@ public class BoardService {
 
 	// 자유 게시판 댓글 리스트
 	public Map<String, Object> commentList(String board_idx, int page, int cnt) {
-		int offset = (page - 1) * cnt;
 
-	    List<CommentDTO> rawComments = boardDao.commentList(board_idx, cnt, offset);
+		int offset = (page-1) * cnt;
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		int totalPages = boardDao.commentCount(board_idx, cnt);	
+	
+        result.put("totalPages", totalPages);
+        result.put("comment", boardDao.commentList(board_idx, cnt, offset));
 
-	    Map<String, Object> result = new HashMap<>();
-	    result.put("comments", rawComments);
-	    result.put("totalPages", boardDao.commentCount(board_idx, cnt)); 
-
-	    return result;
+        return result;
 	}
-
+	
 	
 	// 자유 게시판 댓글 작성
 	public void addComment(Map<String, String> param) {
@@ -155,45 +156,10 @@ public class BoardService {
 		comDTO.setEmp_name(param.get("emp_name"));
 		
         boardDao.addComment(comDTO);
-        
-        if(param.get("emp_idx").equals(param.get("boardAuthor"))) {
-        	logger.info("내글 임 알림 ㄴㄴ");
-        	logger.info("댓글쓴애 idx : "+ param.get("emp_idx"));
-        	logger.info("게시글 주인 idx : "+ param.get("boardAuthor"));
-        	
-        }else {
-        	logger.info("내글 아님 알림 ㄱ");
-        	logger.info("댓글쓴애 idx : "+ param.get("emp_idx"));
-        	logger.info("게시글 주인 idx : "+ param.get("boardAuthor"));
-
-        }
 	}
 
-	
-	// 자유 게시판 대댓글 작성
-	public void addReply(Map<String, String> param) {
-		
-		CommentDTO comDTO = new CommentDTO();
-		comDTO.setBoard_idx(Integer.parseInt(param.get("board_idx")));
-		comDTO.setContent(param.get("content"));
-		comDTO.setEmp_idx(param.get("emp_idx"));
-		comDTO.setEmp_name(param.get("emp_name"));
-		comDTO.setParent_idx(Integer.parseInt(param.get("parent_idx")));
-		
-        boardDao.addReply(comDTO);
-        
-        if(param.get("emp_idx").equals(param.get("taggedEmpIdx"))) {
-        	logger.info("내댓글 임 알림 ㄴㄴ");
-        	logger.info("대댓글쓴애 idx : "+ param.get("emp_idx"));
-        	logger.info("댓글 주인 idx : "+ param.get("taggedEmpIdx"));
-        	
-        }else {
-        	logger.info("내댓글 아님 알림 ㄱ");
-        	logger.info("대댓글쓴애 id222 : "+ param.get("emp_idx"));
-        	logger.info("댓글 주인 idx : "+ param.get("taggedEmpIdx"));
-        }
-        
-	}
+
+
 
 
 

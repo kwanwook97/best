@@ -311,9 +311,9 @@ $(document).ready(function () {
                 	                : alarm.type === "calendar"
                 	                ? '<i class="fa-regular fa-calendar-check"></i>'
                 	                : alarm.type === "reserve"
-                	                ? '<i class="fa-regular fa-calendar-check"></i>'
+                	                ? '<i class="bi bi-journal-check"></i>'
                 	                : alarm.type === "borrow"
-                	                ? '<i class="fa-regular fa-calendar-check"></i>'
+                	                ? '<i class="bi bi-box"></i>'
                 	                : '') +
                 	        '</td>' +
                 	        '<td class="alarmContent" onclick="handleAlarmClick(\'' + alarm.alarm_idx + '\', \'' + typeAction + '\')">' + alarm.content + '</td>' +

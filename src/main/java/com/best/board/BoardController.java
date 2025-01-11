@@ -118,13 +118,13 @@ public class BoardController {
 	
 	
 	// 자유 게시판 댓글 리스트
-	@GetMapping(value = "/commentList.ajax")
+	@GetMapping(value="/commentList.ajax")
 	@ResponseBody
-	public Map<String, Object> commentList(@RequestParam String board_idx, @RequestParam(required = false, defaultValue = "1") String page, @RequestParam(required = false, defaultValue = "10") String cnt) {
-	    int page_ = Integer.parseInt(page);
-	    int cnt_ = Integer.parseInt(cnt);
-
-	    return boardService.commentList(board_idx, page_, cnt_);
+	public Map<String, Object> commentList(String board_idx, String page, String cnt) {
+		int page_ = Integer.parseInt(page);
+		int cnt_ = Integer.parseInt(cnt);
+		
+		return boardService.commentList(board_idx, page_, cnt_);
 	}
 	
 	
@@ -133,19 +133,8 @@ public class BoardController {
 	@ResponseBody
 	public ResponseEntity<String> addComment(@RequestParam Map<String, String> param) {
 		boardService.addComment(param);
-		
         return ResponseEntity.ok("댓글이 작성되었습니다.");
     }
-	
-	
-	// 자유 게시판 대댓글 작성
-	@PostMapping(value="/addReply.ajax")
-	@ResponseBody
-	public ResponseEntity<String> addReply(@RequestParam Map<String, String> param) {
-		boardService.addReply(param);
-		
-		return ResponseEntity.ok("댓글이 작성되었습니다.");
-	}
 	
 	
 	

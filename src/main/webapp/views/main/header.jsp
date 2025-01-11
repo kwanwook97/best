@@ -347,11 +347,11 @@ var loginId = ${sessionScope.loginId};
          <!-- 종원 기자재 -->
          <li class="dropD">
             <a href="material.go"> 
-                <i class="bi bi-layout-text-window-reverse"></i> 
-                  <span>기자재</span> 
-                  <i class="fa-solid fa-angle-right"></i>
-            </a>
-      </li>
+             	<i class="bi bi-box"></i> 
+               	<span>기자재</span> 
+               	<i class="fa-solid fa-angle-right"></i>
+         	</a>
+		</li>
 
 
          <!-- 관욱수정 2024.12.12 시작 -->

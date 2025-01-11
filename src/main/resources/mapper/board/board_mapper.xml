@@ -91,30 +91,16 @@
 	
 	<!-- 자유 게시판 댓글 토탈 페이지 -->
 	<select id="commentCount" resultType="int">
-	    SELECT CEIL(COUNT(*) / #{cnt}) AS pages 
-	    FROM comment
-	    WHERE board_idx = #{board_idx}
+		SELECT CEIL(COUNT(comment_idx) / #{cnt}) AS pages 
+		FROM comment
+		WHERE board_idx = #{board_idx} AND parent_idx IS NULL
 	</select>
 	<!-- 자유 게시판 댓글 리스트 -->
-	<select id="commentList" resultType="com.best.board.CommentDTO">
-	    SELECT 
-	        comment_idx, 
-	        board_idx, 
-	        content, 
-	        emp_idx,
-	        emp_name, 
-	        com_date, 
-	        parent_idx
-	    FROM 
-	        comment
-	    WHERE 
-	        board_idx = #{board_idx}
-	    ORDER BY 
-	        CASE 
-	            WHEN parent_idx IS NULL THEN comment_idx
-	            ELSE parent_idx
-	        END ASC,
-	        comment_idx ASC
+	<select id="commentList" resultType="map">
+	    SELECT comment_idx, content, emp_idx, emp_name, com_date
+		FROM comment
+		WHERE board_idx = #{board_idx} AND parent_idx IS NULL
+		ORDER BY com_date DESC
 	    LIMIT #{cnt} OFFSET #{offset}
 	</select>
 	
@@ -123,12 +109,6 @@
 	<insert id="addComment" parameterType="com.best.board.CommentDTO">
 	    INSERT INTO comment (board_idx, content, emp_idx, emp_name)
 	    VALUES(#{board_idx}, #{content}, #{emp_idx}, #{emp_name})
-	</insert>
-	
-	<!-- 자유 게시판 대댓글 작성 -->
-	<insert id="addReply" parameterType="com.best.board.CommentDTO">
-	    INSERT INTO comment (board_idx, content, emp_idx, emp_name, parent_idx)
-	    VALUES(#{board_idx}, #{content}, #{emp_idx}, #{emp_name}, #{parent_idx})
 	</insert>
 	
 </mapper>  
