@@ -133,53 +133,17 @@ public class BoardService {
 
 	// 자유 게시판 댓글 리스트
 	public Map<String, Object> commentList(String board_idx, int page, int cnt) {
-	    int offset = (page - 1) * cnt;
+		int offset = (page - 1) * cnt;
 
-	    // 쿼리 결과를 List<Map<String, Object>>로 받음
 	    List<CommentDTO> rawComments = boardDao.commentList(board_idx, cnt, offset);
-	    
-	    List<CommentDTO> comments = new ArrayList<CommentDTO>();
-	    Map<Integer, CommentDTO> commentMap = new HashMap<>();
 
-	    // 댓글과 대댓글을 분리하여 계층 구조 생성
-	    for (Map<String, Object> row : rawComments) {
-	        Integer commentIdx = (Integer) row.get("comment_idx");
-	        Integer parentIdx = (Integer) row.get("parent_idx");
-
-	        if (parentIdx == null) {
-	            // 댓글 추가
-	            CommentDTO comment = new CommentDTO();
-	            comment.setComment_idx(commentIdx);
-	            comment.setContent((String) row.get("content"));
-	            comment.setEmp_name((String) row.get("emp_name"));
-	            comment.setCom_date((String) row.get("com_date"));
-	            comment.setChildren(new ArrayList<>()); // 대댓글 리스트 초기화
-	            comments.add(comment);
-	            commentMap.put(commentIdx, comment);
-	        } else {
-	            // 대댓글 추가
-	            CommentDTO reply = new CommentDTO();
-	            reply.setComment_idx(commentIdx);
-	            reply.setContent((String) row.get("content"));
-	            reply.setEmp_name((String) row.get("emp_name"));
-	            reply.setCom_date((String) row.get("com_date"));
-
-	            // 부모 댓글의 children 리스트에 추가
-	            if (commentMap.containsKey(parentIdx)) {
-	                commentMap.get(parentIdx).getChildren().add(reply);
-	            }
-	        }
-	    }
-
-	    // 결과 반환
 	    Map<String, Object> result = new HashMap<>();
-	    result.put("comments", comments);
-	    result.put("totalPages", boardDao.commentCount(board_idx, cnt));
+	    result.put("comments", rawComments);
+	    result.put("totalPages", boardDao.commentCount(board_idx, cnt)); 
 
 	    return result;
 	}
 
-	
 	
 	// 자유 게시판 댓글 작성
 	public void addComment(Map<String, String> param) {
@@ -191,10 +155,45 @@ public class BoardService {
 		comDTO.setEmp_name(param.get("emp_name"));
 		
         boardDao.addComment(comDTO);
+        
+        if(param.get("emp_idx").equals(param.get("boardAuthor"))) {
+        	logger.info("내글 임 알림 ㄴㄴ");
+        	logger.info("댓글쓴애 idx : "+ param.get("emp_idx"));
+        	logger.info("게시글 주인 idx : "+ param.get("boardAuthor"));
+        	
+        }else {
+        	logger.info("내글 아님 알림 ㄱ");
+        	logger.info("댓글쓴애 idx : "+ param.get("emp_idx"));
+        	logger.info("게시글 주인 idx : "+ param.get("boardAuthor"));
+
+        }
 	}
 
-
-
+	
+	// 자유 게시판 대댓글 작성
+	public void addReply(Map<String, String> param) {
+		
+		CommentDTO comDTO = new CommentDTO();
+		comDTO.setBoard_idx(Integer.parseInt(param.get("board_idx")));
+		comDTO.setContent(param.get("content"));
+		comDTO.setEmp_idx(param.get("emp_idx"));
+		comDTO.setEmp_name(param.get("emp_name"));
+		comDTO.setParent_idx(Integer.parseInt(param.get("parent_idx")));
+		
+        boardDao.addReply(comDTO);
+        
+        if(param.get("emp_idx").equals(param.get("taggedEmpIdx"))) {
+        	logger.info("내댓글 임 알림 ㄴㄴ");
+        	logger.info("대댓글쓴애 idx : "+ param.get("emp_idx"));
+        	logger.info("댓글 주인 idx : "+ param.get("taggedEmpIdx"));
+        	
+        }else {
+        	logger.info("내댓글 아님 알림 ㄱ");
+        	logger.info("대댓글쓴애 id222 : "+ param.get("emp_idx"));
+        	logger.info("댓글 주인 idx : "+ param.get("taggedEmpIdx"));
+        }
+        
+	}
 
 
 
