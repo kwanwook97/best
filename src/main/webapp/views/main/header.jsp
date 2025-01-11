@@ -347,7 +347,7 @@ var loginId = ${sessionScope.loginId};
          <!-- 종원 기자재 -->
          <li class="dropD">
             <a href="material.go"> 
-                <i class="bi bi-layout-text-window-reverse"></i> 
+                <i class="bi bi-box"></i> 
                   <span>기자재</span> 
                   <i class="fa-solid fa-angle-right"></i>
             </a>

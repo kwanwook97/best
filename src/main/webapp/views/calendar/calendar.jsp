@@ -753,7 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dayNumberElement = info.el.querySelector('.fc-daygrid-day-frame');
                 if (dayNumberElement) {
                     const label = document.createElement('span');
-                    label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
+                    //label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
                     label.style.color = '#D32F2F'; // 텍스트 색상
                     label.style.fontSize = '0.8em'; // 텍스트 크기
                     dayNumberElement.appendChild(label);
