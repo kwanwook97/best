@@ -435,12 +435,13 @@ var loginId = ${sessionScope.loginId};
             </ul>
 
          <li class="sidebar-header"></li>
-         <li>
+         <li style="position: relative;">
             <a href="alarm.go">  
                <i class="fa-regular fa-bell"></i> 
                <span>알림</span> 
                <i class="fa-solid fa-angle-right"></i>
             </a>
+            <div id="newAlarmIndicator" class="newAlarmIndicator"></div>
          </li>
          <li>
             <a href="myDetail.go?emp_idx=${sessionScope.loginId}"> 
@@ -536,6 +537,8 @@ var loginId = ${sessionScope.loginId};
       </nav>
    </header>
    <script>
+   
+ // 안읽은 메시지 갯수 헤더, 사이드바 브로드캐스트
 window.updateUnreadMessageCount = function (unreadTotal) {
     const unreadCountContainer = $(".newMessageIndicator .unread-count-list .unread-message-count");
 
@@ -561,20 +564,70 @@ window.updateUnreadMessageCount = function (unreadTotal) {
     console.log("읽지 않은 메시지 총 수 업데이트:", unreadTotal);
 };
 
+// 안읽은 알림 갯수 헤더, 사이드바 브로드캐스트
 window.updateUnreadAlarmCount = function (unreadAlarmCount) {
-    const alarmIndicator = document.querySelector("#alarmIndicator");
+    const sidebarAlarmIndicator = $("#newAlarmIndicator .unread-count-list .unread-alarm-count");
+    const headerAlarmIndicator = $("#alarmIndicator");
 
     if (unreadAlarmCount > 0) {
-        // 안 읽은 알림이 있으면 표시
-        alarmIndicator.style.display = "block";
+        // Sidebar - 읽지 않은 알림 표시
+        if (sidebarAlarmIndicator.length > 0) {
+            sidebarAlarmIndicator.text(unreadAlarmCount).closest("#newAlarmIndicator").css("display", "block");
+        } else {
+            const unreadHTML = 
+                '<div class="unread-count-list">' +
+                    '<span class="unread-alarm-count">' + unreadAlarmCount + '</span>' +
+                '</div>';
+            $("#newAlarmIndicator").append(unreadHTML).css("display", "block");
+        }
+
+        // Header - 알림 아이콘 활성화
+        headerAlarmIndicator.css("display", "block");
     } else {
-        // 안 읽은 알림이 없으면 숨김
-        alarmIndicator.style.display = "none";
+        // 읽지 않은 알림이 없으면 숨김
+        $("#newAlarmIndicator").css("display", "none");
+        headerAlarmIndicator.css("display", "none");
     }
 };
 
+// 안읽은 알림 갯수 ajax
+$(document).ready(function () {
+	loginId = parseInt(loginId);
+    // 페이지 로드 시 호출
+    $.ajax({
+        type: 'GET',
+        url: 'unreadAlarmCount.ajax',
+        data: { emp_idx: loginId },
+        success: function (data) {
+        	updateUnreadAlarmCount(data.unreadAlarmCount);
+            const alarmIndicator = $("#newAlarmIndicator");
+
+            // 기존 내용 초기화
+            alarmIndicator.empty();
+
+            if (data.unreadAlarmCount > 0) {
+                // 읽지 않은 알림이 있으면 표시
+                alarmIndicator.append(
+                    '<div class="unread-count-list">' +
+                        '<span class="unread-alarm-count">' + data.unreadAlarmCount + '</span>' +
+                    '</div>'
+                ).css("display", "block");
+                
+                $("#alarmIndicator").css("display", "block");
+            } else {
+                // 읽지 않은 알림이 없으면 숨김
+                alarmIndicator.css("display", "none");
+                $("#alarmIndicator").css("display", "none");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX 요청 실패: ", error);
+        }
+    });
+});
 
 
+// 헤더 알림 메시지 표시
 function showMailNotification(content, type) {
     const notification = $("#alarmHeader");
 
@@ -623,7 +676,7 @@ function showMailNotification(content, type) {
     }, 5000); // 5초 후 숨김
 }
 
-
+// 드롭다운 알림 메시지
 $(document).ready(function () {
     const mailDropdown = $(".alarmDropdown");
 
@@ -720,20 +773,6 @@ function updateMailDropdown(content, type) {
 }
 
 
-$(document).ready(function () {
-    // 초기 알림 상태 가져오기
-    $.ajax({
-        type: 'GET',
-        url: 'unreadAlarmCount.ajax',
-        data: { emp_idx: loginId },
-        success: function (data) {
-            updateUnreadAlarmCount(data.unreadAlarmCount);
-        },
-        error: function (err) {
-            console.error("알림 데이터를 가져오는 중 오류 발생", err);
-        }
-    });
-});
 
 checkButton()
 var ipMsg = '';

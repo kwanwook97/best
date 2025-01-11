@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class AlarmController {
 	@Autowired AlarmService alarmService;
-
+	
+	/* 알림 리스트 가기 */
 	@RequestMapping(value="alarm.go")
 	public String alarmGo() {
 		return "alarm/alarm";
 	}
 	
+	/* 알림 리스트 */
 	@GetMapping(value="/alarmList.ajax")
 	@ResponseBody
 	public Map<String, Object> alarmList(
@@ -43,6 +45,7 @@ public class AlarmController {
 	    return response;
 	}
 	
+	/* 헤더 안읽음 알림 5개 */
 	@GetMapping(value = "/unreadAlarm.ajax")
 	@ResponseBody
 	public Map<String, Object> unreadAlarm(@RequestParam int emp_idx) {
@@ -52,9 +55,7 @@ public class AlarmController {
 	    return response;
 	}
 
-	
-	
-	
+	/* 알림 읽음 처리 */
 	@PostMapping("/updateAlarmFlag.ajax")
 	@ResponseBody
 	public String updateAlarmFlag(@RequestParam int alarm_idx, @RequestParam int flag) {
@@ -68,6 +69,7 @@ public class AlarmController {
 	    }
 	}
 	
+	/* 안읽은 알림 총 갯수 */
 	@GetMapping("/unreadAlarmCount.ajax")
 	@ResponseBody
 	public Map<String, Object> getUnreadAlarmCount(@RequestParam("emp_idx") int empIdx) {

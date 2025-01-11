@@ -49,6 +49,11 @@ public interface BoardDAO {
 	
 	// 자유 게시판 댓글 작성
 	int addComment(CommentDTO comDTO);
+	
+	// 자유 게시판 대댓글 작성
+	int addReply(CommentDTO comDTO);
+	
+	int getParentEmp(int parent_idx);
 
 	
 	

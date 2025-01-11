@@ -230,7 +230,7 @@ translateY(
 	white-space: nowrap;
 }
 
-.newMessageIndicator {
+.newMessageIndicator, .newAlarmIndicator {
 	background-color: #E9396B;
 	border-radius: 50%;
 	width: 20px;
@@ -241,7 +241,7 @@ translateY(
 	left: 111px;
 }
 
-.unread-message-count {
+.unread-message-count, .unread-alarm-count {
 	color: #FFF5E2;
 }
 

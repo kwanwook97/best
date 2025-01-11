@@ -126,8 +126,7 @@
 		resultType="int">
 		SELECT COUNT(*)
 		FROM alarm
-		WHERE emp_idx = #{empIdx} AND flag
-		= 0
+		WHERE emp_idx = #{empIdx} AND flag = 0
 	</select>
 
 </mapper>  

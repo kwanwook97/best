@@ -1,8 +1,12 @@
 package com.best.board;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -12,11 +16,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.best.alarm.AlarmDTO;
+import com.best.alarm.AlarmService;
+
+
 @Service
 public class BoardService {
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired BoardDAO boardDao;
+	@Autowired AlarmService alarmService;
 	
 	
 	// 공지 게시판 ----------------------------------------------------------------------------------------------------------
@@ -132,19 +141,17 @@ public class BoardService {
 
 	// 자유 게시판 댓글 리스트
 	public Map<String, Object> commentList(String board_idx, int page, int cnt) {
+		int offset = (page - 1) * cnt;
 
-		int offset = (page-1) * cnt;
-		
-		Map<String, Object> result = new HashMap<>();
-		
-		int totalPages = boardDao.commentCount(board_idx, cnt);	
-	
-        result.put("totalPages", totalPages);
-        result.put("comment", boardDao.commentList(board_idx, cnt, offset));
+	    List<CommentDTO> rawComments = boardDao.commentList(board_idx, cnt, offset);
 
-        return result;
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("comments", rawComments);
+	    result.put("totalPages", boardDao.commentCount(board_idx, cnt)); 
+
+	    return result;
 	}
-	
+
 	
 	// 자유 게시판 댓글 작성
 	public void addComment(Map<String, String> param) {
@@ -156,14 +163,48 @@ public class BoardService {
 		comDTO.setEmp_name(param.get("emp_name"));
 		
         boardDao.addComment(comDTO);
+
+        int boardAuthor = Integer.parseInt(param.get("boardAuthor"));
+        int commenterIdx = Integer.parseInt(param.get("emp_idx"));
+
+        // 게시글 작성자에게 알림
+        if (boardAuthor != commenterIdx) {
+            alarmService.sendCommentNotification(boardAuthor, "게시글", comDTO.getContent(), commenterIdx, comDTO.getEmp_name(), comDTO.getBoard_idx());
+        }
 	}
 
-
-
-
-
-
 	
+	// 자유 게시판 대댓글 작성
+	public void addReply(Map<String, String> param) {
+		
+		CommentDTO comDTO = new CommentDTO();
+		comDTO.setBoard_idx(Integer.parseInt(param.get("board_idx")));
+		comDTO.setContent(param.get("content"));
+		comDTO.setEmp_idx(param.get("emp_idx"));
+		comDTO.setEmp_name(param.get("emp_name"));
+		comDTO.setParent_idx(Integer.parseInt(param.get("parent_idx")));
+		
+        boardDao.addReply(comDTO);
+
+        
+        int replyAuthorIdx = Integer.parseInt(param.get("emp_idx")); // 대댓글 작성자
+        int parent_idx = Integer.parseInt(param.get("parent_idx")); // 부모 댓글 ID
+        int taggedEmpIdx = Integer.parseInt(param.get("taggedEmpIdx")); // 언급된 사용자
+        
+        // 원댓글 작성자
+        int parent_emp = boardDao.getParentEmp(parent_idx);
+
+        if (parent_emp != taggedEmpIdx) {
+            if (taggedEmpIdx != replyAuthorIdx) {
+                alarmService.sendMentionNotification(taggedEmpIdx, comDTO.getContent(), replyAuthorIdx, comDTO.getEmp_name(), comDTO.getBoard_idx());
+            }
+        } else {
+            if (parent_emp != replyAuthorIdx) { 
+                alarmService.sendCommentNotification(parent_emp, "댓글", comDTO.getContent(), replyAuthorIdx, comDTO.getEmp_name(), comDTO.getBoard_idx());
+            }
+        }
+        
+	}
 
 
 }

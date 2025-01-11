@@ -32,7 +32,7 @@ globalSocket.onmessage = function (event) {
         console.warn("유효하지 않은 데이터:", messageData);
     }
     
-    if (messageData.type === "mail" || messageData.type === "document" || messageData.type === "calendar" || messageData.type === "reserve" || messageData.type === "borrow") {
+    if (messageData.type === "mail" || messageData.type === "document" || messageData.type === "calendar" || messageData.type === "reserve" || messageData.type === "borrow" || messageData.type === "comment") {
         // 알림 표시 및 드롭다운 업데이트
         showMailNotification(messageData.content, messageData.type);
         updateMailDropdown(messageData.content, messageData.type);

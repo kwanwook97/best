@@ -185,6 +185,7 @@ td{
 					<div class="filter purple bold">회의실</div>
 					<div class="filter purple bold">기자재</div>
 					<div class="filter purple bold">결재</div>
+					<div class="filter purple bold">게시판</div>
 				</div>
 				<div class="content-body">
 					<div class="body header">
@@ -314,6 +315,8 @@ $(document).ready(function () {
                 	                ? '<i class="bi bi-journal-check"></i>'
                 	                : alarm.type === "borrow"
                 	                ? '<i class="bi bi-box"></i>'
+                	                : alarm.type === "comment"
+                	                ? '<i class="fa-regular fa-comments"></i>'
                 	                : '') +
                 	        '</td>' +
                 	        '<td class="alarmContent" onclick="handleAlarmClick(\'' + alarm.alarm_idx + '\', \'' + typeAction + '\')">' + alarm.content + '</td>' +
@@ -371,6 +374,9 @@ $(document).ready(function () {
                     break;
                 case "결재":
                     currentType = "document";
+                    break;
+                case "게시판":
+                    currentType = "comment";
                     break;
             }
         } else if (parentClass.includes("body header")) {

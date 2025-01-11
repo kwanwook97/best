@@ -19,15 +19,16 @@ public class AlarmService {
 
 	@Autowired AlarmDAO alarmDAO;
 
+	/* 알림 리스트 */
 	public List<AlarmDTO> alarmList(int emp_idx, String type, Boolean flag, int offset, int limit) {
 	    return alarmDAO.alarmList(emp_idx, type, flag, offset, limit);
 	}
-
+	/* 총 안읽은 알림 갯수 */
 	public int getTotalAlarmCount(int emp_idx, String type, Boolean flag) {
 	    return alarmDAO.getTotalAlarmCount(emp_idx, type, flag);
 	}
 
-	// 발신자 데이터를 저장
+	/* 발신자 데이터 */
 	public void processSenderData(MailSendDTO sender) {
 	    if (sender == null) {
 	        throw new IllegalArgumentException("발신자 데이터가 유효하지 않습니다.");
@@ -36,7 +37,7 @@ public class AlarmService {
 	    checkAndBroadcast();
 	}
 
-	// 수신자 데이터를 저장
+	/* 수신자 데이터 */
 	public void processReceiverData(List<MailReceiveDTO> receivers) {
 	    if (receivers == null || receivers.isEmpty()) {
 	        throw new IllegalArgumentException("수신자 데이터가 유효하지 않습니다.");
@@ -59,7 +60,7 @@ public class AlarmService {
 	    this.storedReceivers = null;
 	}
 
-
+	/* 메일 알림 브로드캐스트 */
 	private void insertAlarmAndBroadcast(MailSendDTO sender, List<MailReceiveDTO> receivers) {
 	    for (MailReceiveDTO receiver : receivers) {
 	        AlarmDTO alarm = new AlarmDTO();
@@ -81,7 +82,7 @@ public class AlarmService {
 	}
 
     
-    
+    /* 결재건 alarmDTO 저장 */
     public void sendAlarms(List<AlarmDTO> alarms) {
         for (AlarmDTO alarm : alarms) {
             // 알림 저장
@@ -96,6 +97,7 @@ public class AlarmService {
         }
     }
     
+    /* 회의실, 캘린더, 기자재 데이터 가져오기 */
     public void sendUpcomingEventAlarms() {
         // 회의실 예약 일정 가져오기
         List<Map<String, Object>> upcomingRoomEvents = alarmDAO.getUpcomingEvents();
@@ -114,7 +116,7 @@ public class AlarmService {
         sendEventAlarms(upcomingBorrowEvents, "borrow");
     }
 
-
+    /* 회의실, 캘린더, 기자재 알림 브로드캐스트 */
     private void sendEventAlarms(List<Map<String, Object>> events, String eventType) {
         for (Map<String, Object> event : events) {
             int empIdx = (int) event.get("employeeId");
@@ -162,23 +164,54 @@ public class AlarmService {
         }
     }
 
-    
+    /* 알림 읽음 처리 */
     public void updateAlarmFlag(int alarm_idx, int flag) {
         alarmDAO.updateAlarmFlag(alarm_idx, flag);
     }
-
+    /* 헤더 안읽음 알림 5개 */
 	public List<Map<String, Object>> unreadAlarm(int emp_idx) {
 		return alarmDAO.unreadAlarm(emp_idx);
 	}
-
+	
+	/* 안읽은 알림 브로드캐스트 */
 	public int getUnreadAlarmCount(int empIdx) {
         int unreadCount = alarmDAO.getUnreadAlarmCount(empIdx);
-
-        // WebSocket 브로드캐스트 호출
         GlobalWebsocketHandler.broadcastUnreadAlarm(empIdx, unreadCount);
-
         return unreadCount;
     }
+	
+	/* 게시글 작성자 / 원댓글 작성자 알림 */
+	public void sendCommentNotification(int empIdx, String targetType, String content, int senderIdx, String senderName, int boardIdx) {
+	    String message = String.format(
+	        "<a href='freeDetail.go?idx=%d'><i class=\"bi bi-chat\"></i> %s님이 회원님의 %s에 댓글을 작성했습니다: \"%s\"</a>",
+	        boardIdx, senderName, targetType, content.length() > 20 ? content.substring(0, 20) + "..." : content
+	    );
+
+	    sendNotification(empIdx, message, "comment");
+	}
+	
+	/* @태그 알림 */
+	public void sendMentionNotification(int empIdx, String content, int senderIdx, String senderName, int boardIdx) {
+	    String message = String.format(
+	        "<a href='freeDetail.go?idx=%d'><i class=\"bi bi-at\"></i> %s님이 댓글에서 회원님을 언급했습니다: \"%s\"</a>",
+	        boardIdx, senderName, content.length() > 20 ? content.substring(0, 20) + "..." : content
+	    );
+
+	    sendNotification(empIdx, message, "comment");
+	}
+
+	/* 게시글 알림 브로드캐스트 */
+	public void sendNotification(int empIdx, String content, String type) {
+	    AlarmDTO alarm = new AlarmDTO();
+	    alarm.setEmp_idx(empIdx);
+	    alarm.setType(type);
+	    alarm.setContent(content);
+	    alarm.setDate(new Date());
+
+	    alarmDAO.insertAlarm(alarm); // 알림 저장
+	    GlobalWebsocketHandler.broadcastNewMail(empIdx, content, type); // WebSocket 브로드캐스트
+	}
+
 	
 	
 

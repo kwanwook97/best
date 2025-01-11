@@ -89,9 +89,15 @@
 		border-radius: 10px;
 		padding: 5px;
 	}
-	.comment-list {
+	.comment-list{
+	    width: 100%;
+		display: flex;
+	    justify-content: center;
+		border: 1px solid var(--primary-color);
+	}
+	.commentBox {
+	    width: 822px;
 		border-top: 1px solid var(--primary-color);
-		padding-top: 10px;
 	}
 	.comment-item {
 		border: 1px solid var(--primary-color);
@@ -108,7 +114,15 @@
 		margin: 5px 0;
 		font-size: 0.9em;
 	}
-	
+	.lastBox{
+		display: flex;
+	}
+	.replyBtn{
+		cursor: pointer;
+	}
+	.reply-list{
+		margin-left: 50px;
+	}
 	table{
 		width: 45vw;
 		height: 36rem;
@@ -152,6 +166,24 @@
 	input[type="button"]:hover{
 		background-color: var(--accent-color);
 	}
+	.autocomplete {
+	    position: absolute;
+	    background: white;
+	    border: 1px solid #ccc;
+	    max-height: 200px;
+	    overflow-y: auto;
+	    z-index: 1000;
+	}
+	
+	.autocomplete-item {
+	    padding: 5px;
+	    cursor: pointer;
+	}
+	
+	.autocomplete-item:hover {
+	    background-color: #f0f0f0;
+	}
+	
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -177,6 +209,8 @@
 					<h4>댓글</h4>
 					<!-- 댓글 목록 -->
 					<div class="comment-list">
+						<div class="commentBox">
+						</div>
 					</div>
 					<div class="container" id="commentCont">
 					    <nav aria-label="Page navigation">
@@ -205,78 +239,232 @@
 <script>
 
 	var board_idx = ${info.board_idx};
+	var boardAuthor = ${info.emp_idx};
 	var emp_idx = "${sessionScope.loginId}";
 	var emp_name = "${sessionScope.loginName}";
 	
 	var showPage = 1;
 
-	loadComments(showPage);
+	loadComments(board_idx, showPage);
 
-	var cnt = 5;
-
-	// 댓글 목록 로드 및 페이지네이션 초기화
-	function loadComments(boardIdx, page, itemsPerPage) {
+	function loadComments(board_idx, page) {
 	    $.ajax({
 	        type: 'GET',
 	        url: 'commentList.ajax',
 	        data: {
 	            board_idx: board_idx,
 	            page: page,
-	            cnt: itemsPerPage
+	            cnt: 10
 	        },
 	        dataType: 'JSON',
 	        success: function(response) {
-	            var commentList = $('.comment-list');
-	            commentList.empty();
-	
-	            // 댓글과 대댓글 렌더링
-	            for (var i = 0; i < response.comments.length; i++) {
-	                var comment = response.comments[i];
-	
-	                // 원 댓글
-	                var commentHtml = 
-	                    '<div class="comment-item">' +
-	                        '<strong>' + comment.emp_name + '</strong>' +
-	                        '<div class="comment-content">' + comment.content + '</div>' +
-	                        '<div class="comment-date">' + comment.date + '</div>' +
-	                        '<div class="reply-list" id="replies-' + comment.comment_idx + '"></div>' +
-	                    '</div>';
-	                commentList.append(commentHtml);
-	
-	                // 대댓글 출력
-	                if (comment.children && comment.children.length > 0) {
-	                    var replyList = $('#replies-' + comment.comment_idx);
-	                    for (var j = 0; j < comment.children.length; j++) {
-	                        var reply = comment.children[j];
-	                        var replyHtml = 
-	                            '<div class="reply-item">' +
-	                                '<strong>' + reply.emp_name + '</strong>' +
-	                                '<div class="comment-content">' + reply.content + '</div>' +
-	                                '<div class="comment-date">' + reply.date + '</div>' +
-	                            '</div>';
-	                        replyList.append(replyHtml);
-	                    }
-	                }
-	            }
-	
-	            // 페이지네이션 처리
+	        	console.log("뭔데: ", response.comments);
+	            printComment(response.comments);
+	            
 	            $('#commentPagination').twbsPagination('destroy');
-	            $('#commentPagination').twbsPagination({
-	                startPage: page,
-	                totalPages: response.totalPages,
-	                visiblePages: 5,
-	                onPageClick: function(evt, page) {
-	                    loadComments(boardIdx, page, itemsPerPage);
-	                }
-	            });
+	            if (response.totalPages > 0) {
+	                $('#commentPagination').twbsPagination({
+	                    startPage: page,
+	                    totalPages: response.totalPages,
+	                    visiblePages: 5,
+	                    onPageClick: function(evt, page) {
+	                    	pageCallLoad(board_idx, page);
+	                    }
+	                });
+	            }
 	        },
 	        error: function(e) {
 	            alert('댓글 로드 중 오류가 발생했습니다.');
-	            console.log(e);
+	            console.error(e);
 	        }
 	    });
 	}
 
+	function printComment(comments) {
+	    var commentHtml = '';
+
+	    // 원 댓글 렌더링
+	    for (var item of comments) {
+	        if (item.parent_idx < 1) {
+	            commentHtml += 
+	                '<div class="comment-item" id="comment-' + item.comment_idx + '">' +
+	                    '<strong>' + item.emp_name + '</strong>' +
+	                    '<input type="hidden" value="'+item.emp_idx+'">'+
+	                    '<div class="comment-content">' + item.content + '</div>' +
+	                    '<div class="lastBox">' +
+	                        '<div class="comment-date">' + formatDate(item.com_date) + '</div>' +
+	                        '<div class="replyBtn" onclick="toggleReplyBox(' + item.comment_idx + ')">💬 댓글 쓰기</div>' +
+	                    '</div>' +
+	                '</div>' +
+	                '<div class="reply-list" id="replies-' + item.comment_idx + '"></div>';
+	        }
+	    }
+
+	    // 원 댓글 HTML 추가
+	    $('.commentBox').html(commentHtml);
+
+	    // 대댓글 렌더링
+	    for (var item of comments) {
+	        if (item.parent_idx > 0) {
+	            var replyHtml = 
+	                '<div class="reply-item" id="reply-' + item.comment_idx + '">' +
+	                    '<strong>' + item.emp_name + '</strong>' +
+	                    '<input type="hidden" id="taggedEmpIdx" value="'+item.emp_idx+'">'+
+	                    '<div class="comment-content">' + item.content + '</div>' +
+	                    '<div class="comment-date">' + formatDate(item.com_date) + '</div>' +
+	                '</div>';
+	            
+	            // 부모 댓글의 대댓글 리스트에 추가
+	            $('#replies-' + item.parent_idx).append(replyHtml);
+	        }
+	    }
+	}
+
+	// 댓글 쓰기 박스 토글 함수
+	function toggleReplyBox(commentIdx) {
+	    var replyBoxId = "#replyBox-" + commentIdx;
+	    var existingReplyBox = $(replyBoxId);
+	
+	    if (existingReplyBox.length > 0) {
+	        // 이미 존재하는 경우 삭제 (댓글 쓰기 박스 닫기)
+	        existingReplyBox.remove();
+	    } else {
+	        // 다른 댓글에 열린 박스가 있으면 닫기
+	        $('.replyBox').remove();
+	
+	        // 새로운 박스 생성
+	        var replyBoxHtml = 
+	            '<div class="replyBox" id="replyBox-' + commentIdx + '">' +
+	                '<textarea id="replyInput-' + commentIdx + '" placeholder="댓글을 입력하세요. 300자 이내" maxlength="300"></textarea>' +
+	                '<p class="replycharCount" id="replycharCount-' + commentIdx + '">0 / 300</p>' +
+	                '<div class="autocomplete" id="autocomplete-' + commentIdx + '"></div>'+
+	                '<button onclick="addReply(' + commentIdx + ')">댓글 작성</button>' +
+	                '<button onclick="toggleReplyBox(' + commentIdx + ')">취소</button>' +
+	            '</div>';
+	        
+	        // 해당 댓글 바로 아래 추가
+	        $('#comment-' + commentIdx).after(replyBoxHtml);
+	
+	     	// @ 입력 시 대댓글 작성자 목록 표시
+	        $('#replyInput-' + commentIdx).on('input', function(e) {
+	            var value = $(this).val();
+	            if (value.endsWith('@')) {
+	                // 대댓글 작성자 목록 가져오기
+	                var replyAuthors = getReplyAuthors(commentIdx);
+	                if (replyAuthors.length > 0) {
+	                    var autocompleteList = replyAuthors.map(function(author) {
+	                        return '<div class="autocomplete-item" onclick="selectUser(' + commentIdx + ', \'' + author.name + '\', \'' + author.empIdx + '\')">' + author.name + '</div>';
+	                    }).join('');
+	                    $('#autocomplete-' + commentIdx).html(autocompleteList).show();
+	                } else {
+	                    $('#autocomplete-' + commentIdx).hide(); // 대댓글 작성자가 없으면 숨기기
+	                }
+	            } else {
+	                $('#autocomplete-' + commentIdx).hide();
+	            }
+	        });
+
+	    }
+	}
+
+	// 특정 댓글의 대댓글 작성자 목록 추출
+	function getReplyAuthors(commentIdx) {
+	    var authors = [];
+	    var loggedInEmpIdx = emp_idx; // 현재 로그인한 사용자의 emp_idx
+
+	    $('#replies-' + commentIdx + ' .reply-item').each(function() {
+	        var replyAuthor = $(this).find('strong').text(); // 대댓글 작성자의 이름
+	        var replyEmpIdx = $(this).find('input[type="hidden"]').val(); // 대댓글 작성자의 emp_idx
+
+	        // 자신을 제외하고 중복되지 않는 작성자만 추가
+	        if (replyEmpIdx !== loggedInEmpIdx && !authors.some(a => a.empIdx === replyEmpIdx)) {
+	            authors.push({ name: replyAuthor, empIdx: replyEmpIdx });
+	        }
+	    });
+
+	    return authors;
+	}
+
+
+	// 사용자 선택 시 텍스트 입력란에 추가
+	function selectUser(commentIdx, user, empIdx) {
+	    var input = $('#replyInput-' + commentIdx);
+	    var value = input.val();
+
+	    // 현재 입력 값에 선택된 사용자 이름 추가
+	    input.val(value.slice(0, -1) + '@' + user + ' '); // '@' 포함하여 추가
+	    input.data('tagged-emp-idx', empIdx); // 태그된 사용자 emp_idx 저장
+	    $('#autocomplete-' + commentIdx).hide();
+	}
+
+
+
+
+	// 대댓글 작성 함수
+	function addReply(parent_idx) {
+	    var content = $('#replyInput-' + parent_idx).val().trim();
+	    var taggedEmpIdx = $('#replyInput-' + parent_idx).data('tagged-emp-idx'); // 태그된 사용자의 empIdx
+	    if (content === '') {
+	        alert('댓글 내용을 입력하세요!');
+	        return;
+	    }
+	
+	    if (!taggedEmpIdx) {
+	        // 태그된 사용자가 없으면 원댓글 작성자의 empIdx 가져오기
+	        taggedEmpIdx = $('#comment-' + parent_idx).find('input[type="hidden"]').val();
+	    }
+	
+	    $.ajax({
+	        type: 'POST',
+	        url: 'addReply.ajax',
+	        data: {
+	            parent_idx: parent_idx,
+	            content: content,
+	            board_idx: board_idx,
+	            emp_idx: emp_idx,
+	            emp_name: emp_name,
+	            taggedEmpIdx: taggedEmpIdx
+	        },
+	        success: function(response) {
+	            alert('댓글이 작성되었습니다!');
+	            toggleReplyBox(parent_idx);
+	            loadComments(board_idx, 1); // 댓글 새로고침
+	        },
+	        error: function(error) {
+	            alert('댓글 작성 중 오류가 발생했습니다.');
+	            console.error(error);
+	        }
+	    });
+	}
+
+	// 날짜 포맷 함수
+	function formatDate(dateString) {
+	    var date = new Date(dateString);
+	    return date.toISOString().split('T')[0];
+	}
+
+
+	function pageCallLoad(board_idx, page){
+	    $.ajax({
+	        type: 'GET',
+	        url: 'commentList.ajax',
+	        data: {
+	            board_idx: board_idx,
+	            page: page,
+	            cnt: 10
+	        },
+	        dataType: 'JSON',
+	        success: function(response) {
+	            printComment(response.comments);	            
+	        },
+	        error: function(e) {
+	            alert('댓글 로드 중 오류가 발생했습니다.');
+	            console.error(e);
+	        }
+	    });
+
+	}
+	
 	// 댓글 작성
 	function addComment() {
 	    var content = $('#commentInput').val().trim();
@@ -284,38 +472,38 @@
 	        alert('댓글 내용을 입력해주세요!');
 	        return;
 	    }
-
+	    
 	    $.ajax({
 	        type: 'POST',
 	        url: 'addComment.ajax',
 	        data: {
-	            board_idx: 101, // 게시판 ID
+	            board_idx: board_idx,
 	            content: content,
-	            emp_idx: 1, // 로그인된 사용자 ID
-	            emp_name: '에이스' // 로그인된 사용자 이름
+	            emp_idx: emp_idx,
+	            emp_name: emp_name,
+	            boardAuthor: boardAuthor
 	        },
 	        success: function(response) {
 	            alert('댓글이 작성되었습니다.');
-	            $('#commentInput').val(''); // 입력 필드 초기화
-	            loadComments(1); // 첫 페이지로 댓글 목록 새로고침
+	            $('#commentInput').val('');
+	            loadComments(board_idx, 1); 
 	        },
 	        error: function(e) {
 	            alert('댓글 작성 중 오류가 발생했습니다.');
-	            console.log(e);
+	            console.error(e);
 	        }
 	    });
 	}
+
 
 	// 댓글 입력 시 글자 수 표시
 	$('#commentInput').on('input', function() {
 	    var charCount = $(this).val().length;
 	    $('#charCount').text(charCount + ' / 300');
 	});
+	
+	
 
-	// 페이지 로드 시 첫 페이지 댓글 로드
-	$(document).ready(function() {
-	    loadComments(1); // 첫 번째 페이지 댓글 로드
-	});
 
 </script>
 </html>
