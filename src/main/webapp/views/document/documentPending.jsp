@@ -237,7 +237,6 @@
 		<div class="maintext">
 			<h3 class="document">결재문서</h3>
 			<h3 class="text">>&nbsp;&nbsp;대기</h3>
-			<a href="sign.go">서명</a>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
@@ -308,6 +307,7 @@ console.log("시발"+text);
 var readStatus = "all";
 pageCall(showPage, readStatus);
 var receivedData = []; 
+var cnt = 6;
 
 function pageCall(page, readStatus){
     console.log('pageCall');
@@ -322,10 +322,11 @@ function pageCall(page, readStatus){
         },
         dataType: 'JSON',
         success: function(data) {
+        	var startNumber = (page - 1) * cnt + 1;
             console.log(data);
             if(data.receivedList.length>0){
             	receivedData = data.receivedList;
-                received(data.receivedList);
+                received(data.receivedList,startNumber);
                 
 	            $('#receivedPage').twbsPagination({
 	                startPage: 1,
@@ -355,7 +356,7 @@ function pageCall(page, readStatus){
             }                         
             if(data.sentList.length>0){
 	            // 보낸 문서
-	            sent(data.sentList);
+	            sent(data.sentList,startNumber);
 	            // 보낸 문서 페이징
 	            $('#sentPage').twbsPagination({
 	                startPage: 1,
@@ -382,10 +383,9 @@ function pageCall(page, readStatus){
 }
 
 // 받은 문서 리스트
-function received(document) {
-	
+function received(document,startNumber) {
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
@@ -412,10 +412,10 @@ function received(document) {
 }
 
 // 보낸 문서 리스트
-function sent(document) {
+function sent(document,startNumber) {
 	
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
@@ -437,6 +437,7 @@ function sent(document) {
 
 // 받은 문서
 function receivedPageCall(page, readStatus) {
+	var startNumber = (page - 1) * cnt + 1;
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
@@ -448,7 +449,7 @@ function receivedPageCall(page, readStatus) {
         },
         dataType: 'JSON',
         success: function(data) {
-        	received(data.receivedList);
+        	received(data.receivedList,startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -457,6 +458,7 @@ function receivedPageCall(page, readStatus) {
 }
 // 보낸 문서
 function sentPageCall(page) {
+	var startNumber = (page - 1) * cnt + 1;
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
@@ -468,7 +470,7 @@ function sentPageCall(page) {
         },
         dataType: 'JSON',
         success: function(data) {
-        	sent(data.sentList);
+        	sent(data.sentList,startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);

@@ -236,6 +236,7 @@
 				</div>
 				<select class="drop">
 				  <option value="subject">제목</option>
+				  <option value="name">작성자</option>
 				</select>
 				<div class="search">
 					<input type="text" name="search" class="searchInp">
@@ -278,10 +279,10 @@
 </body>
 <script>
 
-var showPage = 1;
+var page = 1;
 var itemsPerPage = 15;
 
-pageCall(showPage);
+pageCall(page);
 
 //페이지 호출 함수
 function pageCall(page) {
@@ -297,15 +298,17 @@ function pageCall(page) {
         },
         dataType: 'JSON',
         success: function(data) {
-            var startNumber = (page - 1) * itemsPerPage + 1; // 시작 번호 계산
-            printList(data.freeList, startNumber); // 시작 번호 전달
-            $('#freePagination').twbsPagination('destroy'); // 기존 페이지네이션 제거
+            var startNumber = (page - 1) * itemsPerPage + 1;
+            printList(data.freeList, startNumber);
+            
+            $('#freePagination').twbsPagination('destroy');
+            
             $('#freePagination').twbsPagination({
-                startPage: page,
+                startPage: 1,
                 totalPages: data.totalPages,
                 visiblePages: 5,
                 onPageClick: function(evt, page) {
-                    pageCallList(page); // 클릭 시 페이지 호출
+                    pageCallList(page);
                 }
             });
         },
@@ -318,20 +321,20 @@ function pageCall(page) {
 // 항목 개수 변경 이벤트
 $('.cntSelector').on('change', function() {
     itemsPerPage = parseInt($(this).val()); // 사용자가 선택한 개수
-    showPage = 1; // 첫 페이지로 초기화
-    pageCall(showPage); // 첫 페이지 데이터 로드
+    page = 1; // 첫 페이지로 초기화
+    pageCall(page); // 첫 페이지 데이터 로드
 });
 
 // 리스트 출력 함수
 function printList(list, startNumber) {
+	console.log("뿌리기", list);
     var content = '';
     var i = startNumber; // 시작 번호 설정
     for (var item of list) {
         content += '<tr onclick="window.location.href=\'freeDetail.go?idx=' + item.board_idx + '\'">';
-        content += '<td>' + i++ + '</td>'; // 번호 증가
+        content += '<td>' + i++ + '</td>';
         content += '<td>' + item.subject + '</td>';
-        content += '<td>' + item.name + '</td>';
-
+        content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
         var date = new Date(item.date);
         var formattedDate = date.toISOString().split('T')[0];
 
@@ -344,7 +347,7 @@ function printList(list, startNumber) {
 
 // 페이지 클릭 시 호출 함수
 function pageCallList(page) {
-    var startNumber = (page - 1) * itemsPerPage + 1; // 시작 번호 계산
+    var startNumber = (page - 1) * itemsPerPage + 1;
     $.ajax({
         type: 'GET',
         url: 'freeBoardList.ajax',
@@ -354,7 +357,7 @@ function pageCallList(page) {
         },
         dataType: 'JSON',
         success: function(data) {
-            printList(data.freeList, startNumber); // 시작 번호 전달
+            printList(data.freeList, startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -368,74 +371,98 @@ $('.searchInp').keydown(function(event) {
     if (event.key === 'Enter') {
        	var searchText = $(this).val();
         var searchOption = $('.drop').val();
-        $('.Msg').remove();
         
         if (searchText.trim() !== '') {
         	$.ajax({
                 type: 'GET',
-                url: 'noticeSearch.ajax',
+                url: 'freeSearch.ajax',
                 data: {
-                    'searchText': searchText,
-                    'searchOption': searchOption,
-                    'page': 1,
-                    'cnt': 5 
+                    searchText: searchText,
+                    searchOption: searchOption,
+                    page: 1,
+                    cnt: itemsPerPage 
                 },
                 dataType: 'JSON',
                 success: function(data) {
-                    console.log(data);
-                    if (data.importantNotices.length === 0) {
-                        $('.searchCont').append('<div class="Msg">중요 공지 없음</div>');
-                    }
-                    if (data.generalNotices.length === 0) {
-                        $('.searchCont').append('<div class="Msg">일반 공지 없음</div>');
-                    }
-                    if (data.importantNotices.length > 0) {
-                        PrintImport(data.importantNotices);
-
-                        $('#freePagination').twbsPagination({
-                            startPage: 1,
-                            totalPages: data.importTotalPages,
-                            visiblePages: 5,
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            prev: '<i class="fas fa-angle-left"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            onPageClick: function(evt, page) {
-                                console.log("evt", evt);  // 클릭 이벤트
-                                console.log("page", page);  // 클릭한 페이지 번호
-                                pageCallImportant(page);  // 중요 게시판 페이지 정보 받아서 수행
-                            }
-                        });
-                    }
-                    if (data.generalNotices.length > 0) {
-                        PrintGeneral(data.generalNotices);
-
-                        $('#generalPagination').twbsPagination({
-                            startPage: 1,
-                            totalPages: data.generalTotalPages,
-                            visiblePages: 5,
-                            first: '<i class="fas fa-angle-double-left"></i>',
-                            prev: '<i class="fas fa-angle-left"></i>',
-                            next: '<i class="fas fa-angle-right"></i>',
-                            last: '<i class="fas fa-angle-double-right"></i>',
-                            onPageClick: function(evt, page) {
-                                console.log("evt", evt);  // 클릭 이벤트
-                                console.log("page", page);  // 클릭한 페이지 번호
-                                pageCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
-                            }
-                        });
-                    }
-                },
-                error: function(e) {
-                    console.log("검색 오류 발생", e);
-                }
-            });
-        } else {
-            alert('검색어를 입력해주세요!');
-        }
+                	console.log("tq",data.freeList);
+                	var startNumber = (page - 1) * itemsPerPage + 1;
+                	if(data.freeList.length>0){
+	                	printSearchList(data.freeList, startNumber);
+	                	
+	                    $('#freePagination').twbsPagination({
+	                        startPage: 1,
+	                        totalPages: data.totalPages,
+	                        visiblePages: 5,
+	                        onPageClick: function(evt, page) {
+	                            console.log("evt", evt);
+	                            console.log("page", page);
+	                            pageCallSearchList(page,searchText,searchOption);
+	                        }
+	                    });
+                	}else{
+                		var content = '<tr>';
+    	        		content += '<td colspan="5"> 검색결과가 없습니다. </td>';
+    	        		content += '</tr>';
+    	        		$('.freeBoard').html(content);
+    	        		$('#freePagination').twbsPagination('destroy');
+                	}
+                
+	            },
+	            error: function(e) {
+	                console.log("검색 오류 발생", e);
+	            }
+	       	});
+		} else {
+		    alert('검색어를 입력해주세요!');
+		}
     }
 });
 
+$('input[name="search"]').on('input', function() {
+    var query = $(this).val().trim();
+
+    if (query === "") {
+        pageCall(1);
+    }
+});
+
+function printSearchList(list, startNumber){
+	var content = '';
+    var i = startNumber;
+    for (var item of list) {
+        content += '<tr onclick="window.location.href=\'freeDetail.go?idx=' + item.board_idx + '\'">';
+        content += '<td>' + i++ + '</td>';
+        content += '<td>' + item.subject + '</td>';
+        content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
+        var date = new Date(item.date);
+        var formattedDate = date.toISOString().split('T')[0];
+
+        content += '<td>' + formattedDate + '</td>';
+        content += '<td>' + item.bhit + '</td>';
+        content += '</tr>';
+    }
+    $('.freeBoard').html(content);
+}
+function pageCallSearchList(page,searchText,searchOption) {
+    var startNumber = (page - 1) * itemsPerPage + 1;
+    $.ajax({
+    	type: 'GET',
+        url: 'freeSearch.ajax',
+        data: {
+            searchText: searchText,
+            searchOption: searchOption,
+            page: 1,
+            cnt: itemsPerPage 
+        },
+        dataType: 'JSON',
+        success: function(data) {
+            printList(data.freeList, startNumber);
+        },
+        error: function(e) {
+            console.log("오류 발생", e);
+        }
+    });
+}
 
 // 공지 작성
 $('.editbtn').on('click', function(){
