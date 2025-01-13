@@ -25,14 +25,14 @@
 
 	<!-- 페이지에 등록된 권한 모두삭제 -->
 	<delete id="deletePageRole" parameterType="int">
-		DELETE FROM role_test WHERE page_idx = #{pageIdx}
+		DELETE FROM role WHERE page_idx = #{pageIdx}
 	</delete>
 	
 
     <!-- 부서별 권한 조회 -->
     <select id="filterDepartmentRoles" resultType="com.best.role.PageDTO">
         SELECT a.page_name, a.url
-        FROM role_test r
+        FROM role r
         JOIN access a ON r.page_idx = a.page_idx
         WHERE r.idx_name = 'depart_idx' AND r.idx_num = #{departmentId}
     </select>
@@ -40,7 +40,7 @@
     <!-- 직급별 권한 조회 -->
     <select id="filterRankRoles" resultType="com.best.role.PageDTO">
         SELECT a.page_name, a.url
-        FROM role_test r
+        FROM role r
         JOIN access a ON r.page_idx = a.page_idx
         WHERE r.idx_name = 'rank_idx' AND r.idx_num = #{rankId}
     </select>
@@ -58,7 +58,7 @@
 	            WHEN r.idx_name = 'depart_idx' THEN d.depart_name
 	            WHEN r.idx_name = 'rank_idx' THEN re.rank_name
 	        END AS related_name
-	    FROM role_test r
+	    FROM role r
 	    JOIN access a ON r.page_idx = a.page_idx
 	    LEFT JOIN department d ON r.idx_name = 'depart_idx' AND r.idx_num = d.depart_idx
 	    LEFT JOIN rank_emp re ON r.idx_name = 'rank_idx' AND r.idx_num = re.rank_idx
@@ -98,7 +98,7 @@
 	    SELECT d.depart_idx, d.depart_name
 	    FROM department d
 	    WHERE NOT EXISTS (
-	        SELECT 1 FROM role_test r 
+	        SELECT 1 FROM role r 
 	        WHERE r.page_idx = #{pageIdx} 
 	        AND r.idx_name = 'depart_idx' 
 	        AND r.idx_num = d.depart_idx
@@ -112,7 +112,7 @@
 	    SELECT r.rank_idx, r.rank_name
 	    FROM rank_emp r
 	    WHERE NOT EXISTS (
-	        SELECT 1 FROM role_test rt 
+	        SELECT 1 FROM role rt 
 	        WHERE rt.page_idx = #{pageIdx} 
 	        AND rt.idx_name = 'rank_idx' 
 	        AND rt.idx_num = r.rank_idx
@@ -123,20 +123,20 @@
 
     <!-- 부서 또는 직급 권한 삭제 -->
     <delete id="deleteRole">
-        DELETE FROM role_test
+        DELETE FROM role
         WHERE role_idx = #{roleIdx}
     </delete>
     
     
     <!-- 부서 권한 추가 -->
     <insert id="assignDepartmentRole">
-        INSERT INTO role_test (page_idx, idx_name, idx_num)
+        INSERT INTO role (page_idx, idx_name, idx_num)
         VALUES (#{pageIdx}, 'depart_idx', #{departIdx})
     </insert>
 
     <!-- 직급 권한 추가 -->
     <insert id="assignRankRole">
-        INSERT INTO role_test (page_idx, idx_name, idx_num)
+        INSERT INTO role (page_idx, idx_name, idx_num)
         VALUES (#{pageIdx}, 'rank_idx', #{rankIdx})
     </insert>
 	

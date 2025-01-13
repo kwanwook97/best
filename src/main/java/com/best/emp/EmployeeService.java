@@ -377,8 +377,10 @@ public class EmployeeService {
 		
 		// 프로필사진 파일명 가져오기
 		String photoName = photo.getOriginalFilename();
-		if (photoName == null || photoName.isEmpty()) {
-			logger.info("유효하지 않은 파일 이름입니다.");
+		
+		// 프로필사진이 등록되지 않은경우 기본 프로필로 대체
+		if (photoName == null || photoName.isEmpty()) { 
+			photoName = "기본.png";
 	    }
 		empDTO.setPhoto(photoName);
 		
@@ -390,7 +392,7 @@ public class EmployeeService {
 			// emp_idx값 가져오기
 			String emp_idx = Integer.toString(idx);
 			
-			// 2. 프로필사진 저장.
+			// 2. 프로필사진 서버에 저장.
 			if(photo != null && !photo.isEmpty() && photo.getSize() > 0) {
 			    try {
 			        /* 파일저장 */
@@ -400,7 +402,7 @@ public class EmployeeService {
 			    } catch (IOException e) {
 			        e.printStackTrace();
 			    }
-			} else {
+			} else { 
 			    logger.info("유효한 프로필 사진이 없습니다.");
 			}
 			

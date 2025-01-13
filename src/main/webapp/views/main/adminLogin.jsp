@@ -15,12 +15,12 @@
   <!-- Custom Style-->
   <link href="resources/css/app-style.css" rel="stylesheet"/>
   <style>
-  .bg-th111{
-    		background-image: url('img/loginBus5.jpg');
-    		background-size: cover; /* 이미지가 화면 전체를 덮도록 설정 */
-   	 		background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
-    		background-position: center; 
-    	}
+  	.bg-th111{
+   		background-image: url('img/loginBus5.jpg');
+   		background-size: cover; /* 이미지가 화면 전체를 덮도록 설정 */
+  	 		background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+   		background-position: center; 
+   	}
     .modal-content{
     	background-color: #30005A;
     	left: 126px;

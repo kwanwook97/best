@@ -8,348 +8,8 @@
   <meta charset="utf-8"/>
   <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link href="resources/css/empManage/empDetail.css" rel="stylesheet"/>
   <style>
-.body {
-  width: 83%;
-  margin-top: 110px;
-  margin-left: 320px;
-}
- body .body {
-    transform: scale(0.55); /* 67%로 축소 */
-    transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
-    width: 150%; /* 축소에 따른 여백 보정 */
-    overflow-x: hidden; /* 가로 스크롤 제거 */
-    position: absolute;
-    top: 1px;
-    left: -37px;
-    height: 187%;
-  }
-
-.naviPath {
-  font-size: 48px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.lPurple {
-  color: #8B6AA7;
-}
-
-.cPurple {
-  color: #30005A;
-}
-
-.normalBtn, .deleteFileBtn, saveFileBtn {
-  background-color: #30005A;
-  color: #fff;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px !important;
-}
-
-.normalBtn:hover {
-  background-color: #8B6AA7;
-}
-
-.notbtn {
-  width: 100%;
-  background-color: #E9396B;
-  color: #fff;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px !important;
-}
-
-
-.content {
-  height: 78%;
-  position: relative;
-  border: 2px solid #30005A;
-  border-radius: 10px;
-  padding: 20px;
-  display: grid;
-  grid-template-rows: 5fr 5fr;
-  gap: 20px;
-}
-
-.top-section {
-  display: grid;
-  grid-template-columns: 22% 77%;
-  gap: 1%;
-}
-
-.personal-info {
-  border: 2px solid #8B6AA7;
-  border-radius: 10px;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.personal-info h2 {
-  background-color: #30005A;
-  color: #fff;
-  padding: 10px;
-  margin: 0;
-  flex-shrink: 0;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.personal-info table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0;
-  table-layout: fixed;
-  flex-grow: 1;
-  overflow: auto;
-  border-radius: 8px;
-  display: table;
-}
-
-.personal-info tr {
-  display: table-row;
-  height: calc(100% / 8);
-}
-
-.personal-info colgroup col:nth-child(1),
-.personal-info colgroup col:nth-child(3) {
-  width: 30%;
-}
-
-.personal-info colgroup col:nth-child(2),
-.personal-info colgroup col:nth-child(4) {
-  width: 70%;
-}
-
-.personal-info th,
-.personal-info td {
-  border: 1px solid #8B6AA7;
-  padding: 8px;
-  text-align: left;
-  vertical-align: middle;
-}
-
-.personal-info th {
-  background-color: #8B6AA7;
-  color: #30005A;
-  font-weight: bold;
-}
-
-.bottom-section {
-  display: grid;
-  grid-template-columns: 30% 41% 23%;
-  gap: 3%;
-  height: 100%;
-}
-
-.status-info,
-.history-info,
-.attachment-info {
-  border: 2px solid #8B6AA7;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.status-info h2,
-.history-info h2,
-.attachment-info h2 {
-  background-color: #30005A;
-  color: #fff;
-  padding: 10px;
-  margin: 0;
-  flex-shrink: 0;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.status-info table,
-.history-info table,
-.attachment-info table {
-  width: 100%;
-  border-collapse: collapse;
-  flex-grow: 1;
-  overflow: auto;
-  border-radius: 0 0 8px 8px;
-  display: table;
-  height: 100%;
-}
-
-.status-info tr,
-.history-info tr,
-.attachment-info tr {
-  display: table-row;
-  height: calc(100% / 8);
-}
-
-.status-info table colgroup col:nth-child(1) {
-  width: 40%;
-}
-
-.status-info table colgroup col:nth-child(2) {
-  width: 60%;
-}
-
-
-.history-info th,
-.attachment-info th {
-  border: 2px solid #8B6AA7;
-  background-color: #8B6AA7;
-  color: #30005A;
-  font-weight: bold;
-  padding: 8px;
-  text-align: center;
-}
-
-.status-info th{
-  border: 2px solid #8B6AA7;
-  background-color: #8B6AA7;
-  color: #30005A;
-  font-weight: bold;
-  padding: 8px;
-  text-align: left;
-}
-
-
-.history-info td,
-.attachment-info td {
-  border: 2px solid #8B6AA7;
-  padding: 8px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.status-info td{
-	border: 2px solid #8B6AA7;
-  padding: 8px;
-  text-align: left;
-  vertical-align: middle;
-}
-
-th, td {
-  font-size: 20px;
-}
-
-.btn_area {
-	float: right;
-}
-
-.photo-container {
-  display: flex;
-  flex-direction: column; /* 세로 배치 */
-  align-items: center; /* 가운데 정렬 */
-  justify-content: flex-start; /* 위쪽부터 배치 */
-}
-
-.photo {
-  border: 2px solid #30005A;
-  border-radius: 10px;
-  background-color: #E0E0E0;
-  overflow: hidden;
-  aspect-ratio: 1 / 1; /* 정사각형 비율 */
-  height: 80%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.photo-bottom {
-  font-size: 24px;
-  display: flex;
-  flex-direction: column; /* 세로로 정렬 */
-  align-items: center; /* 가운데 정렬 */
-  justify-content: center;
-  margin-top: 5%;
-  gap: 10px; /* 내부 요소 간의 간격 */
-}
-
-.photo-bottom .state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.photo-bottom .enable {
-  display: inline-block;
-  margin-right: 10px; /* 텍스트 사이 여백 */
-  font-weight: bold;
-}
-
-/* 드롭다운 관련 CSS */
-select {
-    color: #30005A; /* 글자색: 진한 보라색 */
-    border: 1px solid #8B6AA7; /* 테두리색: 연한 보라색 */
-    padding: 5px;
-    font-size: 18px;
-}
-
-/* 옵션 스타일 */
-select option {
-    background-color: #FFFFFF !important; /* 옵션 배경색: 흰색 */
-    color: #8B6AA7; /* 글자색: 연한 보라색 */
-    font-weight: bold; /* 굵은 글자 */
-}
-
-/* Hover된 옵션 스타일 */
-select option:hover {
-    background-color: #F5F5F5; /* Hover 시 배경색: 연한 회색 */
-    color: #30005A; /* Hover 시 글자색: 진한 보라색 */
-}
-
-form{
-	margin: 0;
-}
-
-.driver_area{
-	width: 100%;
-}
-
-.infoTitle {
-  background-color: transparent;
-  color: #30005A;
-  font-size: 24px !important;
-  font-weight: 700 !important;
-  padding: 0;
-  margin: 0;
-}
-
-.infoTitle-th {
-  width: 17%;
-  height: 100%;
-}
-
-.infoTbody-tr {
-  height: 50px; /* 원하는 높이로 설정 */
-  line-height: 50px; /* 텍스트의 세로 정렬을 맞추기 위해 line-height 추가 */
-}
-
-.infoTbody-tr td {
-  padding: 10px; /* 내부 여백 추가로 높이 조정 */
-}
-
-.history-info::-webkit-scrollbar {
-  display: none; /* 스크롤바 숨기기 */
-}
-
-.empty-row td {
-  color: #939393; /* 빈 행의 텍스트 색상 */
-}
-
-
-
 
   </style>
 </head>
@@ -489,7 +149,14 @@ form{
             <tr>
               <th>IP주소</th>
               <td>${detail.ip}<div class="btn_area"><button class="normalBtn" id="ip">변경하기</button></div></td>
-              <td colspan="2"><div class="driver_area"><button class="notbtn" id="driver_manage">기사정보 관리하기</button></div></td>
+              <c:choose>
+	              <c:when test="${detail.depart_idx != 4}">
+				  	<!-- 기사 부서가 아닐 경우, 버튼 숨기기 -->
+				  </c:when>
+	              <c:otherwise>
+	              	<td colspan="2"><div class="driver_area"><button class="notbtn" id="driver_manage">기사정보 관리하기</button></div></td>
+	              </c:otherwise>
+              </c:choose>
             </tr>
           </table>
         </div>
@@ -558,12 +225,20 @@ form{
 			<c:set var="maxRows" value="5" />
 			
 			<c:forEach items="${detail.fileList}" var="file">
-		        <tr>
-		            <td><a href="fileDownload.do?file_name=${fn:escapeXml(file.file_name)}">${file.file_name}</a></td>
-		            <td>${file.date}</td>
-		            <td><button onclick="delFile(this)" class="deleteFileBtn"><i class="bi bi-trash-fill"></i></button></td>
-		        </tr>
-		        <c:set var="index" value="${index + 1}" />
+			    <tr>
+			        <td>
+			            <a href="fileDownload.do?file_name=${fn:escapeXml(file.file_name)}">
+			                <i class="fas fa-download" style="color: #8B6AA7;"></i>
+			                ${file.file_name}
+			            </a>
+			        </td>
+			        <td>${file.date}</td>
+			        <td>
+			            <button onclick="delFile(this)" class="deleteFileBtn">
+			                <i class="bi bi-trash-fill"></i>
+			            </button>
+			        </td>
+			    </tr>
 			</c:forEach>
 			
 			<!-- 부족한 행만큼 빈 행 추가 -->
@@ -876,27 +551,65 @@ form{
 	    var file = this.files[0]; // 선택된 파일
 
 	    if (file) {
-	        var reader = new FileReader();
+	        // 확인 모달 띄우기
+	        modal.showConfirm("정말 변경하시겠습니까?", function () {
+	            var reader = new FileReader();
 
-	        reader.onload = function (e) {
-	            // 미리보기 이미지 설정
-	            $("#photoSection img").attr("src", e.target.result);
-	        };
+	            reader.onload = function (e) {
+	                // 미리보기 이미지 설정
+	                $("#photoSection img").attr("src", e.target.result);
+	            };
 
-	        reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
+	            reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
 
-	        // 서버로 파일 전송
-	        uploadProfilePhoto(file);
+	            // 서버로 파일 전송
+	            uploadProfilePhoto(file);
 
-	        // 플래그 초기화
-	        $(this).data("triggered", false);
+	            // 플래그 초기화
+	            $("#profileUpload").data("triggered", false);
+	        });
 	    }
 	});
 
 	
+	// 클릭 이벤트 등록
+	$("#photoSection").on("click", function () {
+	    // 직접 클릭 이벤트 발생시키기 (중복 호출 방지)
+	    if (!$("#profileUpload").data("triggered")) {
+	        $("#profileUpload").data("triggered", true); // 상태 플래그 설정
+	        $("#profileUpload").click();
+	    }
+	});
+
+	// 파일 선택 이벤트 처리
+	$("#profileUpload").on("change", function () {
+	    var file = this.files[0]; // 선택된 파일
+
+	    if (file) {
+	        // 확인 모달 띄우기
+	        modal.showConfirm("정말 변경하시겠습니까?", function () {
+	            var reader = new FileReader();
+
+	            reader.onload = function (e) {
+	                // 미리보기 이미지 설정
+	                $("#photoSection img").attr("src", e.target.result);
+	            };
+
+	            reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
+
+	            // 서버로 파일 전송
+	            uploadProfilePhoto(file);
+
+	            // 플래그 초기화
+	            $("#profileUpload").data("triggered", false);
+	        });
+	    }
+	});
+
+	// 프로필 사진 업로드 함수
 	function uploadProfilePhoto(file) {
 	    if (!file) {
-	        alert("파일이 선택되지 않았습니다.");
+	        modal.showAlert("파일이 선택되지 않았습니다.");
 	        return;
 	    }
 
@@ -912,16 +625,17 @@ form{
 	        processData: false,
 	        success: function (response) {
 	            if (response.success === "성공") {
-	                alert("프로필 사진이 성공적으로 변경되었습니다.");
+	                modal.showAlert("프로필 사진이 성공적으로 변경되었습니다.");
 	            } else {
-	                alert("사진 변경에 실패했습니다. 다시 시도해주세요.");
+	                modal.showAlert("사진 변경에 실패했습니다. 다시 시도해주세요.");
 	            }
 	        },
 	        error: function () {
-	            alert("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+	            modal.showAlert("오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
 	        },
 	    });
 	}
+
 
 	
 	
