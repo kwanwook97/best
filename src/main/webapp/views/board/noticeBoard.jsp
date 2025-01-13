@@ -281,6 +281,9 @@
 /* 공지 게시판 중요 */
 var showPage = 1; // 기본으로 보여줄 페이지
 var emp_idx = "${sessionScope.loginId}";
+var depart_idx = "${sessionScope.employee.depart_idx}";
+
+console.log("시발련아"+depart_idx);
 
 pageCall(showPage);
 
