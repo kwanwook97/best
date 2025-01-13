@@ -75,7 +75,7 @@
 		border-bottom: 1px solid var(--primary-color);
 		height: 35px;
 	}
-	.saveList tr td:hover:nth-child(4) {
+	.sentList tr td:hover:nth-child(4) {
 	    color: var(--accent-color);
 	    cursor: pointer;
 	}
@@ -89,26 +89,26 @@
 	table.myTable thead tr th:last-child{
 		border-top-right-radius: 10px;
 	}
-	table.myTable td:nth-child(1) {
-        width: 3%;
+	table.myTable th:nth-child(1) {
+        width: 5.11%;
     }
-    table.myTable td:nth-child(2) {
-        width: 3%;
+    table.myTable th:nth-child(2) {
+        width: 11.11%;
     }
-    table.myTable td:nth-child(3) {
-        width: 5%;
+    table.myTable th:nth-child(3) {
+        width: 13.51%;
     }
-    table.myTable td:nth-child(4) {
-        width: 15%;
+    table.myTable th:nth-child(4) {
+        width: 40.54%;
     }
-    table.myTable td:nth-child(5) {
-        width: 5%;
+    table.myTable th:nth-child(5) {
+        width: 13.51%;
     }
-    table.myTable td:nth-child(6) {
-        width: 3%;
+    table.myTable th:nth-child(6) {
+        width: 8.11%;
     }
-    table.myTable td:nth-child(7) {
-        width: 3%;
+    table.myTable th:nth-child(7) {
+        width: 8.11%;
     }
 	.fa-arrow-alt-circle-left{
 		font-size: 20px;
@@ -177,10 +177,10 @@
 						<th>문서 제목</th>
 						<th>기안일</th>
 						<th>결재 상태</th>
-						<th ></th>
+						<th><i class="fas fa-trash-alt delete-icon"></i></th>
 					</tr>
 				</thead>
-				<tbody class="saveList">
+				<tbody class="sentList">
 				</tbody>
 			</table>
 			<div class="container" id="cont">
@@ -194,6 +194,7 @@
 <script>
 var showPage = 1; // 기본으로 보여줄 페이지
 var text = "임시저장";
+var cnt = 15;
 pageCall(showPage);
 
 function pageCall(page){
@@ -209,13 +210,14 @@ function pageCall(page){
         },
         dataType: 'JSON',
         success: function(data) {
+        	var startNumber = (page - 1) * cnt + 1;
             console.log(data);
-            if(data.saveList.length>0){
-            	Print(data.saveList);
+            if(data.sentList.length>0){
+            	Print(data.sentList,startNumber);
 	            // 페이징
 	            $('#Pagination').twbsPagination({
 	                startPage: 1,
-	                totalPages: data.totalPages,
+	                totalPages: data.sentTotalPages,
 	                visiblePages: 5,
 	                onPageClick: function(evt, page){
 	                    console.log("evt", evt);  // 클릭 이벤트
@@ -227,7 +229,7 @@ function pageCall(page){
             	var content = '<tr>';
         		content += '<td colspan="7"> 임시저장 문서가 없습니다. </td>'
         		content += '</tr>';
-        		$('.saveList').html(content);
+        		$('.sentList').html(content);
             }
         },
         error: function(e) {
@@ -237,17 +239,21 @@ function pageCall(page){
 }
 
 // 임시저장 리스트
-function Print(document) {
+function Print(document,startNumber) {
 	
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
 		content += '<td>' + item.form_subject + '</td>';
-		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		if (item.doc_subject && String(item.doc_subject).trim().length > 0) {
+		    content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+		} else {
+		    content += '<td onclick="draftDetail(' + item.doc_idx + ')">제목 없음</td>';
+		}
 
 		var date = new Date(item.doc_date);
 		var formattedDate = date.toISOString().split('T')[0];
@@ -258,7 +264,7 @@ function Print(document) {
 		content += '<td><a href="javascript:void(0);" class="delete" data-doc-idx="'+item.doc_idx+'"><i class="fas fa-trash-alt delete-icon"></i></a></td>';
 		content += '</tr>';
 	}
-	$('.saveList').html(content);
+	$('.sentList').html(content);
 	
 	$('.delete').click(function() {
         var doc_idx = $(this).data('doc-idx');

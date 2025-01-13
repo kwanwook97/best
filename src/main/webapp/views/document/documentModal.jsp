@@ -8,8 +8,8 @@
 <title>Insert title here</title>
 <link rel="stylesheet" href="resources/css/root.css" />
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script src="resources/js/read-unread.js" type="text/javascript"></script>
-<script src="resources/js/documentDetail.js" type="text/javascript"></script>
+<script src="resources/js/document/read-unread.js" type="text/javascript"></script>
+<script src="resources/js/document/documentDetail.js" type="text/javascript"></script>
 <style>
 input, textarea, #approvalModal, button, select, option{
 	pointer-events: auto;  /* input과 textarea는 마우스 이벤트 허용 */
@@ -224,6 +224,7 @@ select option{
 		<div class="opt">
 			<div>
 				<a href="documentPending.go">대기</a>
+				<span class="total"></span>
 			</div>
 			<div>
 				<a href="documentBoard.go">진행중</a>
@@ -247,8 +248,9 @@ select option{
 	            <option class="listOpt" value="sent">보낸문서</option>
 	        </select>
 			<select class="searchSelect">
-	          <option class="searchOpt" value="subject">제목</option>
 	          <option class="searchOpt" value="docNum">문서번호</option>
+	          <option class="searchOpt" value="type">분류</option>
+	          <option class="searchOpt" value="subject">제목</option>
 	          <option class="searchOpt" value="emp">기안자</option>
 	        </select>
 			<div class="search">
@@ -282,10 +284,17 @@ select option{
 $(document).ready(function() {
     const currentPage = window.location.pathname; // 현재 페이지의 URL 경로를 가져옵니다.
 
-    if (currentPage.includes('documentReference.go') || currentPage.includes('documentDraft.go')) {
-        $('.listSelect').hide();
+    if (currentPage.includes('documentReference.go')) {
+        $('.listSelect').show(); // listSelect를 보이게 설정
+        $('.listSelect').empty(); // 기존 옵션 제거
+        $('.listSelect').append('<option class="listOpt" value="received">받은문서</option>'); // 받은문서 옵션만 추가
+    } else if (currentPage.includes('documentDraft.go')) {
+        $('.listSelect').hide(); // listSelect를 숨김
+        $('.listSelect').empty(); // 기존 옵션 제거
+        $('.listSelect').append('<option class="listOpt" value="save">받은문서</option>');
         $('.searchbox').css("width", "32%");
     }
+
     
 	// 작성 버튼 클릭 시 모달 열기
 	$(".editbtn").click(function() {
@@ -336,14 +345,37 @@ $(document).ready(function() {
        }
    });
    
-   // 검색 옵션
+   
+   // 페이지 로드 시 초기화 (기본값 설정)
+   $('.listSelect').trigger('change');
+
+// 임시저장일 때 searchSelect 설정
+   function setSearchOptionsForTempSave() {
+       $('.searchSelect').empty(); // 기존 옵션 제거
+
+       // 임시저장에 대한 고정 옵션
+       const tempSaveOptions = [
+           { value: 'subject', text: '제목' },
+           { value: 'docNum', text: '문서번호' },
+           { value: 'type', text: '분류' } // 기안자(emp) 제외
+       ];
+
+       // 옵션 추가
+       tempSaveOptions.forEach(optionData => {
+           $('.searchSelect').append(
+               $('<option>', { value: optionData.value, text: optionData.text })
+           );
+       });
+   }
+
+   // 일반적인 listSelect 변경 이벤트 처리
    $('.listSelect').on('change', function () {
        const selectedValue = $(this).val();
 
        // searchSelect의 기존 옵션 제거
        $('.searchSelect').empty();
 
-       // 새로운 옵션 추가
+       // listSelect에 따른 옵션 추가
        if (optionsMap[selectedValue]) {
            optionsMap[selectedValue].forEach(optionData => {
                $('.searchSelect').append(
@@ -353,9 +385,33 @@ $(document).ready(function() {
        }
    });
 
-   // 페이지 로드 시 초기화 (기본값 설정)
-   $('.listSelect').trigger('change');
+   // 페이지 로드 시 초기화
+   $(document).ready(function () {
+       if (text === '임시저장') {
+           console.log("임시저장 상태: searchSelect 옵션을 임시저장에 맞게 설정합니다.");
+           setSearchOptionsForTempSave(); // 임시저장 전용 옵션 설정
+       } else {
+           console.log("일반 상태: listSelect와 연동하여 searchSelect 옵션 설정.");
+           $('.listSelect').trigger('change'); // listSelect 변경 이벤트 트리거
+       }
+   });
 
+   // 각 listSelect 값에 따른 searchSelect의 옵션 정의
+   const optionsMap = {
+       received: [
+           { value: 'docNum', text: '문서번호' },
+           { value: 'type', text: '분류' },
+           { value: 'subject', text: '제목' },
+           { value: 'emp', text: '기안자' }
+       ],
+       sent: [
+           { value: 'docNum', text: '문서번호' },
+           { value: 'type', text: '분류' },
+           { value: 'subject', text: '제목' }
+       ]
+   };
+
+   
 });
 
 
@@ -567,7 +623,7 @@ function btnAction(actionType) {
 			        updatedHtml = updatedHtml.replace(
 			            /<input([^>]*name=["']start_date["'][^>]*)>/,
 			            '<input$1 value="' + start_date + '">'
-			        );
+ 			        );
 		
 			        // end_date 값 삽입
 			        updatedHtml = updatedHtml.replace(
@@ -803,39 +859,30 @@ function searchForm(query) {
 // 원래 리스트를 보여주는 함수
 function resetList() {
     var modalList = $(".modal-list");
-    modalList.empty(); // 기존 리스트 초기화
+    modalList.empty();
 
-    var defaultData = [
-        { form_subject: "연차신청서" },
-        { form_subject: "시말서" },
-        { form_subject: "구매요청서" }
-    ];
+    $.ajax({
+        url: 'formList.ajax',
+        type: 'GET',
+        success: function(data) {
+            var ul = $('.modal-list');
+            ul.empty();
 
-    $.each(defaultData, function (index, item) {
-        var li = $("<li></li>")
-            .addClass("modal-item")
-            .text(item.form_subject)
-            .attr("onclick", "documentForm('" + item.form_idx + "')");
-        modalList.append(li);
+            data.forEach(function(form) {
+                var li = $('<li class="modal-item" onclick="documentForm('+form.form_idx+')"></li>');
+                li.text(form.form_subject);
+
+                ul.append(li);
+            });
+        },
+        error: function(error) {
+            console.log(error);
+        }
     });
 }
 
 
 
-// 각 listSelect 값에 따른 searchSelect의 옵션 정의
-const optionsMap = {
-    received: [
-        { value: 'subject', text: '제목' },
-        { value: 'docNum', text: '문서번호' },
-        { value: 'emp', text: '기안자' },
-        { value: 'type', text: '분류' }
-    ],
-    sent: [
-        { value: 'subject', text: '제목' },
-        { value: 'docNum', text: '문서번호' },
-        { value: 'type', text: '분류' }
-    ]
-};
 //리스트 검색
 function searchList() {
 	var page = 1;
@@ -847,10 +894,13 @@ function searchList() {
         alert("검색어를 입력하세요.");
         return;
     }
-    var cnt = 6;
-	if(text=='참조' || text=='임시저장'){
-		cnt = 15;
+    if(text=='참조' || text=='임시저장'){
+		var cnt = 15;
+	}else{
+		var cnt = 6;
 	}
+    
+    console.log("eㅜㅇ"+listType);
 	$.ajax({
         type: 'POST',
         url: 'searchList.ajax',
@@ -864,11 +914,13 @@ function searchList() {
         },
         dataType: 'json',
         success: function(data) {
+        	var startNumber = (page - 1) * cnt + 1;
         	if(listType=='received'){
 	        	if(data.receivedList.length>0){
 	            	// 받은 문서
-	                searchReceived(data.receivedList);
+	                searchReceived(data.receivedList,startNumber);
 		            // 받은 문서 페이징
+		            $('#receivedPage').twbsPagination('destroy');
 		            $('#receivedPage').twbsPagination({
 		                startPage: 1,
 		                totalPages: data.receivedTotalPages,
@@ -876,7 +928,7 @@ function searchList() {
 		                onPageClick: function(evt, page){
 		                    console.log("evt", evt);  // 클릭 이벤트
 		                    console.log("page", page);  // 클릭한 페이지 번호
-		                    searchReceivedPageCall(page);
+		                    searchReceivedPageCall(page, query, searchType, listType);
 		                }
 		            });
 	            }else{
@@ -884,11 +936,13 @@ function searchList() {
 	        		content += '<td colspan="8"> 검색결과가 없습니다. </td>';
 	        		content += '</tr>';
 	        		$('.receivedList').html(content);
+	        		$('#receivedPage').twbsPagination('destroy');
 	            }                         
         	}else if(listType=='sent'){
 	       		if(data.sentList.length>0){
 		            // 보낸 문서
-		            searchSent(data.sentList);
+		            searchSent(data.sentList,startNumber);
+		            $('#sentPage').twbsPagination('destroy');
 		            // 보낸 문서 페이징
 		            $('#sentPage').twbsPagination({
 		                startPage: 1,
@@ -897,7 +951,7 @@ function searchList() {
 		                onPageClick: function(evt, page){
 		                    console.log("evt", evt);  // 클릭 이벤트
 		                    console.log("page", page);  // 클릭한 페이지 번호
-		                    searchSentPageCall(page);
+		                    searchSentPageCall(page, query, searchType, listType);
 		                }
 		            });
 	            }else{
@@ -905,6 +959,51 @@ function searchList() {
 	        		content += '<td colspan="6"> 검색결과가 없습니다. </td>'
 	        		content += '</tr>';
 	        		$('.sentList').html(content);
+	        		$('#sentPage').twbsPagination('destroy');
+	            }
+        	}else{
+        		if(data.sentList.length>0){
+		            // 보낸 문서
+		            searchSent(data.sentList,startNumber);
+		            $('#sentPage').twbsPagination('destroy');
+		            // 보낸 문서 페이징
+		            $('#sentPage').twbsPagination({
+		                startPage: 1,
+		                totalPages: data.sentTotalPages,
+		                visiblePages: 5,
+		                onPageClick: function(evt, page){
+		                    console.log("evt", evt);  // 클릭 이벤트
+		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    searchDraftPageCall(page, query, searchType, listType);
+		                }
+		            });
+	            }else if(!data.sentList.length>0 && data.sentList.length==0){
+	            	var content = '<tr>';
+	        		content += '<td colspan="7"> 검색결과가 없습니다. </td>'
+	        		content += '</tr>';
+	        		$('.sentList').html(content);
+	        		$('#sentPage').twbsPagination('destroy');
+	            }else if(data.receivedList.length>0){
+	            	// 받은 문서
+	                searchReceived(data.receivedList,startNumber);
+		            // 받은 문서 페이징
+		            $('#receivedPage').twbsPagination('destroy');
+		            $('#receivedPage').twbsPagination({
+		                startPage: 1,
+		                totalPages: data.receivedTotalPages,
+		                visiblePages: 5,
+		                onPageClick: function(evt, page){
+		                    console.log("evt", evt);  // 클릭 이벤트
+		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    searchReceivedPageCall(page, query, searchType, listType);
+		                }
+		            });
+	            }else if(data.receivedList.length==0){
+	            	var content = '<tr>';
+	        		content += '<td colspan="8"> 검색결과가 없습니다. </td>';
+	        		content += '</tr>';
+	        		$('.receivedList').html(content);
+	        		$('#receivedPage').twbsPagination('destroy');
 	            }
         	}
         },
@@ -913,10 +1012,10 @@ function searchList() {
         }
     });
 }
-function searchReceived(document) {
+function searchReceived(document,startNumber) {
 	
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
@@ -941,10 +1040,10 @@ function searchReceived(document) {
 	}
 	$('.receivedList').html(content);
 }
-function searchSent(document) {
+function searchSent(document,startNumber) {
 	
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
@@ -962,22 +1061,77 @@ function searchSent(document) {
 	}
 	$('.sentList').html(content);
 }
+
+// 임시저장
+function searchDraft(document,startNumber){
+	 var content = '';
+		var i = startNumber;
+		for(var item of document){
+			console.log(item.form_subject)
+			content += '<tr>';
+			content += '<td>' + i++ + '</td>';
+			content += '<td>' + item.doc_number + '</td>';
+			content += '<td>' + item.form_subject + '</td>';
+			if (item.doc_subject && String(item.doc_subject).trim().length > 0) {
+			    content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+			} else {
+			    content += '<td onclick="draftDetail(' + item.doc_idx + ')">제목 없음</td>';
+			}
+
+			var date = new Date(item.doc_date);
+			var formattedDate = date.toISOString().split('T')[0];
+
+			content += '<td>' + formattedDate + '</td>';
+			content += '<td>' + item.status + '</td>';
+			
+			content += '<td><a href="javascript:void(0);" class="delete" data-doc-idx="'+item.doc_idx+'"><i class="fas fa-trash-alt delete-icon"></i></a></td>';
+			content += '</tr>';
+		}
+		$('.sentList').html(content);
+		
+		$('.delete').click(function() {
+	        var doc_idx = $(this).data('doc-idx');
+	        console.log(doc_idx);
+	        $.ajax({
+	            type: 'POST',
+	            url: 'documentDelete.ajax',
+	            data: { doc_idx: doc_idx },
+	            success: function(response) {
+	                if (response.success) {
+	                    console.log('삭제');
+	                    pageCall(showPage);
+	                } else {
+	                	console.log('삭제 실패');
+	                }
+	            },
+	            error: function(e) {
+	                console.log(e);
+	            }
+	        });
+	    });
+}
 //받은 문서
-function searchReceivedPageCall(page) {
+function searchReceivedPageCall(age, query, searchType, listType) {
 	if(text=='참조' || text=='임시저장'){
 		var cnt = 15;
+	}else{
+		var cnt = 6;
 	}
     $.ajax({
-        type: 'GET',
+        type: 'POST',
         url: 'searchList.ajax',
         data: {
-        	'text': text,
-            'page': page,
-            'cnt': cnt
+        	text: text,
+            page: page,
+            cnt: cnt,
+            query: query,
+            searchType: searchType,
+            listType: listType 
         },
         dataType: 'JSON',
         success: function(data) {
-        	searchReceived(data.receivedList);
+        	var startNumber = (page - 1) * cnt + 1;
+        	searchReceived(data.receivedList,startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -985,22 +1139,28 @@ function searchReceivedPageCall(page) {
     });
 }
 // 보낸 문서
-function searchSentPageCall(page) {
-    var listType = $('.listOpt').val();
+function searchSentPageCall(page, query, searchType, listType) {
+    
 	if(text=='참조' || text=='임시저장'){
 		var cnt = 15;
+	}else{
+		var cnt = 6;
 	}
     $.ajax({
-        type: 'GET',
+        type: 'POST',
         url: 'searchList.ajax',
         data: {
-        	'text': text,
-            'page': page,
-            'cnt': cnt
+        	text: text,
+            page: page,
+            cnt: cnt,
+            query: query,
+            searchType: searchType,
+            listType: listType
         },
         dataType: 'JSON',
         success: function(data) {
-        	searchSent(data.sentList);
+        	var startNumber = (page - 1) * cnt + 1;
+        	searchSent(data.sentList,startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -1008,6 +1168,43 @@ function searchSentPageCall(page) {
     });
 }
 
+// 임시저장
+function searchDraftPageCall(page, query, searchType, listType){
+	if(text=='참조' || text=='임시저장'){
+		var cnt = 15;
+	}else{
+		var cnt = 6;
+	}
+    $.ajax({
+        type: 'POST',
+        url: 'searchList.ajax',
+        data: {
+        	text: text,
+            page: page,
+            cnt: cnt,
+            query: query,
+            searchType: searchType,
+            listType: listType 
+        },
+        dataType: 'JSON',
+        success: function(data) {
+        	var startNumber = (page - 1) * cnt + 1;
+        	searchDraft(data.sentList,startNumber);
+        },
+        error: function(e) {
+            console.log("오류 발생", e);
+        }
+    });
+}
+//검색창 실시간 감지
+$('input[name="query"]').on('input', function() {
+    var query = $(this).val().trim();
+
+    if (query === "") {
+        pageCall(1, "all");
+    }
+});
+    
 // 읽음 읽지 않음 필터링
 function filterReceivedList() {
     var status = $('#status').val(); // 선택된 값 가져오기
@@ -1019,8 +1216,8 @@ function filterReceivedList() {
         url: 'documentList.ajax',
         data: {
             status: status, // 필터 조건
-            page: 1,        // 첫 페이지로 초기화
-            cnt: 6          // 페이지당 게시물 수
+            page: '1',        // 첫 페이지로 초기화
+            cnt: '6'          // 페이지당 게시물 수
         },
         dataType: 'JSON',
         success: function(data) {

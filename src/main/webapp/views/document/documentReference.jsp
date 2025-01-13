@@ -95,10 +95,10 @@
 	    width: 4%;
 	}
 	table.receivedTable th:nth-child(2) {
-	    width: 12%;
+	    width: 10%;
 	}
 	table.receivedTable th:nth-child(3) {
-	    width: 10%;
+	    width: 12%;
 	}
 	table.receivedTable th:nth-child(4) {
 	    width: 30%;
@@ -107,10 +107,10 @@
 	    width: 8%;
 	}
 	table.receivedTable th:nth-child(6) {
-	    width: 10%;
+	    width: 8%;
 	}
 	table.receivedTable th:nth-child(7) {
-	    width: 10%;
+	    width: 7%;
 	}
 	table.receivedTable th:nth-child(8) {
 	    width: 7%;
@@ -235,6 +235,8 @@ var showPage = 1;
 var text = "참조";
 console.log("시발"+text);
 var readStatus = "all";
+var cnt = 15;
+
 pageCall(showPage, readStatus);
 
 function pageCall(page, readStatus){
@@ -250,9 +252,10 @@ function pageCall(page, readStatus){
         },
         dataType: 'JSON',
         success: function(data) {
+        	var startNumber = (page - 1) * cnt + 1;
             console.log(data);
             if(data.receivedList.length>0){
-                received(data.receivedList);
+                received(data.receivedList,startNumber);
                 
 	            $('#receivedPage').twbsPagination({
 	                startPage: 1,
@@ -288,10 +291,10 @@ function pageCall(page, readStatus){
 }
 
 // 받은 문서 리스트
-function received(document) {
+function received(document,startNumber) {
 	
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
@@ -319,6 +322,7 @@ function received(document) {
 
 // 받은 문서
 function receivedPageCall(page, readStatus) {
+	var startNumber = (page - 1) * cnt + 1;
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
@@ -330,7 +334,7 @@ function receivedPageCall(page, readStatus) {
         },
         dataType: 'JSON',
         success: function(data) {
-        	received(data.receivedList);
+        	received(data.receivedList,startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);

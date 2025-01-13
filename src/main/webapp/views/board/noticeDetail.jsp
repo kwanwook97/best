@@ -9,7 +9,6 @@
 	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
-	<script src="resources/js/jquery.twbsPagination.js" type="text/javascript"></script>
   
   <style>
 	.dashboard-body{
@@ -96,7 +95,8 @@
 						<td>제목 : ${info.subject}</td>
 					</tr>
 					<tr>
-						<td>작성자 : ${info.name}</td>
+						<td>작성자 : ${info.name} (${info.depart_name}/${info.rank_name})</td>
+						<input type="hidden" value="${info.emp_idx}"/>
 					</tr>
 					<tr>
 						<td>${info.content}</td>
@@ -105,12 +105,14 @@
 			</table>
 			<div class="gobtn">
 				<input type="button" value="리스트" onclick="location.href='noticeBoard.go'"/>
-				<input type="button" value="수정하기" onclick="location.href='noticeUpdate.go?idx=${info.board_idx}'"/>
+				<c:if test="${info.name == sessionScope.loginName}">
+					<input type="button" value="수정하기" onclick="location.href='noticeUpdate.go?idx=${info.board_idx}'"/>
+					<input type="button" value="삭제하기" onclick="location.href='noticeDelete.do?idx=${info.board_idx}'"/>
+				</c:if> 
 			</div>
 		</div>
  	</div>
 </body>
 <script>
-
 </script>
 </html>
