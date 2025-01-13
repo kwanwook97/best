@@ -144,7 +144,7 @@
   display: grid;
   grid-template-columns: 30% 41% 23%;
   gap: 3%;
-  height: 627px;
+  height: 89%;
 }
 
 .status-info,
@@ -378,14 +378,12 @@ form{
 
 
 
-.infoTbody-tr {
-    height: 50px; /* 원하는 높이로 설정 */
-    line-height: 50px; /* 텍스트의 세로 정렬을 맞추기 위해 line-height 추가 */
-}
 
 /* .infoTbody-tr td {
-    padding: 10px; /* 내부 여백 추가로 높이 조정 */
-} */
+    padding: 10px; 
+}
+*/
+
 
   </style>
 </head>
@@ -480,7 +478,7 @@ form{
 		        </div>
 		    </div>
 		    <div class="sign-margin">
-		    	<button class="addbtn" onclick="showSignatureModal()">사인관리</button>
+		    	<button class="addbtn" onclick="showSignatureModal()">서명관리</button>
 		    </div>
 		</div>
         <div class="personal-info">

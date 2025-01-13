@@ -16,12 +16,13 @@ $(document).ready(function () {
     var $clickedRoute = $(this);
     
     $('.cPurple').removeClass('cPurple').addClass('lPurple');
-    
+            	console.log("테스트212:");
     $.ajax({
         url: 'bus.ajax',
         method: 'GET',
         data: { busID: busID },
         success: function (data) {
+        	console.log("테스트:"+data);
             // 기존 Polyline 제거
             if (polyline) {
                 polyline.setMap(null);

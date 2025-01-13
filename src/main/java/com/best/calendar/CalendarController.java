@@ -179,11 +179,11 @@ public class CalendarController {
 	@PostMapping(value="/saveRoomInfo.ajax")
 	@ResponseBody
     public Map<String, Object> saveRoomInfo(
-            @RequestParam("roomName") String roomName,
-            @RequestParam("photo") MultipartFile photo,
-            @RequestParam("maxCapacity") int maxCapacity,
-            @RequestParam("materialIdx") List<Integer> materialIdxList,
-            @RequestParam("quantity") List<Integer> quantityList) {
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "photo", required = false) MultipartFile photo,
+            @RequestParam(value = "maxCapacity", required = false, defaultValue = "0") int maxCapacity,
+            @RequestParam(value = "materialIdx", required = false) List<Integer> materialIdxList,
+            @RequestParam(value = "quantity", required = false) List<Integer> quantityList) {
 		
 		logger.info("roomName : " + roomName);
 		logger.info("photo : " + photo);
@@ -192,6 +192,29 @@ public class CalendarController {
 		logger.info("quantityList : " + quantityList);
 		
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if (roomName.equals("") || roomName == null) {
+			map.put("response", "회의실 이름을 입력해 주세요");
+			return map;
+		}
+		if (photo == null || photo.isEmpty()) {
+			map.put("response", "사진을 등록해 주세요");
+			return map;
+		}
+		if (maxCapacity == 0) {
+			map.put("response", "회의실 수용 인원을 입력해 주세요");
+			return map;
+		}
+		if (materialIdxList == null || materialIdxList.isEmpty()) {
+			map.put("response", "회의실 기본기자재를 입력해 주세요");
+			return map;
+		}
+		if (quantityList == null || quantityList.isEmpty()) {
+			map.put("response", "기자재 수량을 입력해 주세요");
+			return map;
+		}
+		
+		
 		if (!roomName.isEmpty()) {
 			map= calendarService.saveRoomInfo(roomName,photo,maxCapacity,materialIdxList,quantityList);
 		}else {

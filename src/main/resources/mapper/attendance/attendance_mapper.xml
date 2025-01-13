@@ -34,10 +34,19 @@
 	</select>
 	<!-- 출근버튼 -->
 	<update id="updateStartTime" parameterType="map">
-		update attendance 
-		SET start_time = NOW(), content = '본인'
-    	WHERE date = CURDATE() and emp_idx = #{loginId}
-    	AND start_time IS NULL;
+		UPDATE attendance
+		SET 
+		    start_time = NOW(),
+		    content = '본인',
+		    status = CASE 
+		                WHEN NOW() > '09:00:00' THEN '지각'
+		                ELSE '정상'
+		             END
+		WHERE 
+		    date = CURDATE() 
+		    AND emp_idx = #{loginId}
+		    AND start_time IS NULL
+		    AND status IS NULL
 	</update>
 	<!-- 출퇴근 시간 가져오기 -->
 	<select id="getWorkTime" parameterType="map" resultType="map">
@@ -83,7 +92,7 @@
 		                 WHEN TIME(start_time) &lt;= '09:00:00' AND TIME(NOW()) >= '18:00:00' THEN '정상'
 		                 WHEN TIME(start_time) > '09:00:00' AND TIME(NOW()) >= '18:00:00' THEN '지각'
 		                 WHEN TIME(start_time) > '09:00:00' AND TIME(NOW()) &lt; '18:00:00' THEN '비정상'
-		                 WHEN TIME(start_time) &lt;= '09:00:00' AND TIME(NOW()) &lt; '18:00:00' THEN '조퇴'
+		                 WHEN TIME(NOW()) &lt; '18:00:00' THEN '조퇴'
 		             END
 		WHERE 
 		    date = CURDATE() 

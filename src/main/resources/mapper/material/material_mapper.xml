@@ -22,7 +22,9 @@
 	    UPDATE material
 	    SET 
 	        remain_quantity = remain_quantity + (#{updateTotalQuantity} - quantity)
-	    WHERE material_idx = #{materialIdx}
+	    WHERE 
+	        material_idx = #{materialIdx}
+	        AND remain_quantity + (#{updateTotalQuantity} - quantity) >= 0
 	</update>
 
 	<update id="updateTotalQuantity" parameterType="map">

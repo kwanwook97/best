@@ -772,15 +772,6 @@ var specialDays = ${specialDaysJson};
             }
         },
         initialDate: new Date(),
-        eventDidMount: function(info) {
-            const resizer = info.el.querySelector('.fc-event-resizer');
-            if (resizer) {
-                resizer.style.width = '10px';
-                resizer.style.height = '10px';
-                resizer.style.backgroundColor = '#007bff';
-                resizer.style.cursor = 'se-resize';
-            }
-        },
             events: function(fetchInfo, successCallback, failureCallback) {
             const filter = document.getElementById('visibilityFilter').value;
 
@@ -806,8 +797,6 @@ var specialDays = ${specialDaysJson};
                         }
                         return false;
                     });
-                    //console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
-                   // console.log("filteredEvents테스트:"+filteredEvents);
                     successCallback(filteredEvents);
                     updateTodoList(new Date());
                 })
@@ -824,7 +813,7 @@ var specialDays = ${specialDaysJson};
                 const dayNumberElement = info.el.querySelector('.fc-daygrid-day-frame');
                 if (dayNumberElement) {
                     const label = document.createElement('span');
-                    label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
+                    //label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
                     label.style.color = '#D32F2F'; // 텍스트 색상
                     label.style.fontSize = '0.8em'; // 텍스트 크기
                     dayNumberElement.appendChild(label);
@@ -864,6 +853,7 @@ var specialDays = ${specialDaysJson};
     calendar.render();
     const todayDate = new Date(); 
     updateTodoList(todayDate);
+    console.log("투데이:"+todayDate);
     function updateTodoList(date){
         const clickedDate = date.toISOString().split('T')[0];
 
@@ -877,9 +867,11 @@ var specialDays = ${specialDaysJson};
         const eventsForDate = allEvents.filter(function(event) {
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 
-            const isInDateRange = clickedDate == eventStartDate && clickedDate <= eventEndDate;
+            let isInDateRange = clickedDate >= eventStartDate && clickedDate <= eventEndDate;
+        	if (event.allDay == true &&  clickedDate == eventEndDate) {
+        		isInDateRange = false;
+			}
             return isInDateRange;
-
         });
 
         // 3. `todolist`에 들어갈 데이터 업데이트
