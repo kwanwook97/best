@@ -80,7 +80,7 @@ public class LoginController {
         if (isAuthenticated) {
             return "redirect:/accessManage.go";
         } else {
-            return "redirect:/adminLogin.go?error=invalid";
+        	return "redirect:/adminLogin.go?error=invalid";
         }
     }
     

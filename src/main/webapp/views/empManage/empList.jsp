@@ -16,330 +16,11 @@
   <!-- 탭기능 -->
   <!-- https://jqueryui.com/tabs/ -->
   <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+  <link href="resources/css/empManage/empList.css" rel="stylesheet"/>
   
-  <style>
-  	body{
-  		height: auto;
-  	}
-  
-    .body {
-      width: 83%;
-      margin-top: 110px;
-      margin-left: 320px;
-    }
-    
-    body .body {
-	    transform: scale(0.55);
-	    transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
-	    width: 150%; /* 축소에 따른 여백 보정 */
-	    overflow: hidden; /* 스크롤바 제거 */
-	    position: absolute;
-	    top: 1px;
-	    left: -37px;
-	    height: 187%;
-	  }
+<style>
 
-    /* 페이지 제목 */
-    .naviPath {
-      font-size: 48px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .naviPath .lPurple {
-      color: #8B6AA7; /* 연보라색 */
-    }
-
-    .naviPath .cPurple {
-      color: #30005A; /* 진보라색 */
-    }
-
-    /* 검색 및 필터 */
-    .search-container {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .search-filter-container {
-      position: relative;
-    }
-
-    .search-filter {
-      font-size: 16px;
-      padding: 8px;
-      border: 2px solid #30005A;
-      border-radius: 10px;
-      color: #30005A;
-      background-color: #fff;
-      cursor: pointer;
-      appearance: none; /* 기본 화살표 제거 */
-      position: relative;
-      width: auto; /* 폭을 내용에 맞게 조정 */
-      min-width: 100px; /* 최소 너비 */
-    }
-
-    .search-filter option {
-      background-color: #F9F6F1; /* 베이지색 배경 */
-      color: #30005A; /* 텍스트 색상 */
-      padding: 8px;
-    }
-
-    .search-filter-container::after {
-      content: '\f078'; /* FontAwesome 다운 화살표 */
-      font-family: 'Font Awesome 5 Free';
-      font-weight: 900;
-      position: absolute;
-      top: 50%;
-      right: 15px;
-      transform: translateY(-50%);
-      color: #30005A;
-      pointer-events: none;
-    }
-
-    .search-bar {
-      border: 2px solid #30005A;
-      border-radius: 10px;
-      padding: 10px 40px 10px 10px;
-      width: 300px;
-    }
-
-    .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #E9396B; /* 돋보기 색 */
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    /* 콘텐츠 박스 */
-    .content {
-      border: 2px solid #30005A;
-      border-radius: 10px;
-      padding: 5px;
-      height: 75%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-  /* 사원 리스트 */
-  .employee-list {
-    display: flex; /* 플렉스 레이아웃 사용 */
-    flex-wrap: wrap; /* 줄바꿈 허용 */
-    gap: 20px; /* 카드 간격 조정 */
-    margin-top: 30px;
-    height: 80%;
-    width: 100%; /* 전체 너비 사용 */
-    overflow: auto;
-    justify-content: flex-start; /* 왼쪽 정렬 */
-    align-content: flex-start; /* 위쪽 정렬 */
-    padding-left: 20px; /* 왼쪽 시작 지점에 gap 추가 */
-  }
-	
-  /* 사원 카드 */
-  .employee-card {
-    border: 2px solid #30005A;
-    border-radius: 10px;
-    display: flex;
-    align-items: flex-start;
-    padding: 5%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    height: 100%;
-    flex-grow: 1; /* 카드가 부모 컨테이너에서 남는 공간을 채움 */
-    overflow: hidden; /* 카드의 내용이 영역을 벗어나지 않도록 설정 */
-  }
-
-  /* 프로필 사진 */
-  .profile-pic {
-    width: 120px;
-    height: 120px;
-    background-color: #E0E0E0;
-    border-radius: 10px;
-    border: 2px solid #30005A;
-    flex-shrink: 0;
-    overflow: hidden;
-    aspect-ratio: 1 / 1; /* 정사각형 비율 */
-  }
-  
-  .photo img {
-	  width: 100%;
-	  height: 100%;
-	  object-fit: cover;
-	}
-
-  /* 사원 정보 */
-  .employee-details {
-    margin-left: 20px;
-    font-size: 18px;
-    color: #30005A;
-    flex: 1; /* 가변 너비 */
-    height: 100%;
-  }
-
-  .employee-details .name-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
-    overflow: hidden; /* 넘치는 텍스트를 숨김 */
-    text-overflow: ellipsis; /* 숨겨진 텍스트에 "..." 추가 */
-  }
-
-  .employee-details p {
-    color: #8B6AA7;
-    margin: 5px 0;
-    display: flex;
-    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
-    overflow: hidden; /* 넘치는 텍스트를 숨김 */
-    text-overflow: ellipsis; /* 숨겨진 텍스트에 "..." 추가 */
-  }
-
-  .employee-details p strong {
-    flex-shrink: 0;
-    color: #30005A;
-    width: 120px;
-    text-align: left;
-  }
-
-  .employee-details p span {
-    flex-grow: 1;
-    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
-    overflow: hidden; /* 넘치는 텍스트를 숨김 */
-    text-overflow: ellipsis; /* 숨겨진 텍스트에 "..." 추가 */
-  }
-
-	.bold{
-    	font-weight: bold;
-    }
-
-    
-    /* 탭 CSS */
-    #tabs {
-      height: 100%;
-      width: 100%;
-      background-color: #FFFBF2; /* 베이지색 */
-    }
-
-    #tabs ul {
-      list-style: none;
-      padding-left: 20px;
-      margin-top: 10px;
-      display: flex;
-      background-color: #FFFBF2; /* 탭 영역 배경색 */
-      border: none; /* 테두리 제거 */
-      box-shadow: none; /* 그림자 제거 */
-    }
-
-    [role="tablist"] {
-      background-color: #FFFBF2; /* 베이지색 배경 */
-      height: 5%;
-    }
-    
-	#tabs ul li a{
-	  color: #30005A;	
-	  font-size: 24px;
-	}
-		
-    #tabs ul li {
-      margin: 0;
-      padding: 10px 20px;
-      font-size: 18px;
-      font-weight: bold;
-      color: #30005A;
-      cursor: pointer;
-      border: none; /* 테두리 제거 */
-      background: none; /* 배경 제거 */
-    }
-
-    #tabs ul li.ui-tabs-active {
-      border-bottom: 3px solid #E9396B; /* 핑크색 밑줄 */
-    }
-
-    #tabs ul li:hover {
-      background-color: transparent; /* 호버 효과 제거 */
-    }
-    
-    #tabs ul li a:hover {
-	  color: inherit; /* 글씨색 변경 효과 제거 */
-	  text-decoration: none; /* 밑줄 제거 */
-	}
-	
-	
-	.pagination {
-	    display: inline-flex; /* inline-flex를 사용해 공백 제거 */
-	    justify-content: center; /* 요소를 가운데 정렬 */
-	    padding: 0; /* 기본 padding 제거 */
-	    margin: 0; /* 기본 margin 제거 */
-	    list-style: none; /* 기본 불릿 스타일 제거 */
-	}
-	
-	.pagination li {
-	    margin: 0 5px; /* 좌우 여백 조정 */
-	    padding: 0; /* padding 제거 */
-	}
-	
-	.pagination a {
-	    text-decoration: none; /* 링크 밑줄 제거 */
-	    padding: 8px 12px; /* 클릭 영역 조정 */
-	    border: 1px solid #30005A; /* 테두리 추가 */
-	    border-radius: 5px; /* 둥근 모서리 */
-	    color: #30005A; /* 텍스트 색상 */
-	    background-color: #fff; /* 배경색 */
-	}
-	
-	.pagination a:hover {
-	    background-color: #30005A; /* 호버 시 배경색 */
-	    color: #fff; /* 호버 시 텍스트 색상 */
-	}
-	
-	
-	
-	.employee-card-container {
-	    display: inline-block; /* 기존 <a> 태그처럼 인라인 블록으로 동작 */
-	    width: 24%; /* 기존 <a> 태그와 동일한 너비 */
-	    height: 23%; /* 기존 <a> 태그와 동일한 높이 */
-	    text-decoration: none; /* 텍스트 장식 제거 (기존 <a> 태그 스타일 반영) */
-	    color: inherit; /* 텍스트 색상 상속 */
-	}
-
-	.employee-details .action-buttons {
-	    display: flex; /* 버튼들을 가로로 배치 */
-	    gap: 10px; /* 버튼 간격 */
-	    justify-content: flex-end; /* 버튼들을 오른쪽 정렬 */
-	}
-
-	.employee-details .action-buttons .btn1{
-	    padding: 8px 16px; /* 버튼 크기 */
-	    border: 2px solid #30005A; /* 버튼 테두리 */
-	    border-radius: 5px; /* 둥근 모서리 */
-	    background-color: #30005A; 
-	    color: #fff; 
-	    font-size: 18px; /* 글씨 크기 */
-	    cursor: pointer; /* 클릭 커서 */
-	    font-weight: bold;
-	}
-	
-	.employee-details .action-buttons .btn2{
-	    padding: 8px 16px; /* 버튼 크기 */
-	    border: 2px solid #30005A; /* 버튼 테두리 */
-	    border-radius: 5px; /* 둥근 모서리 */
-	    background-color: #8B6AA7; /* 배경색 */
-	    color: #fff;
-	    font-size: 18px; /* 글씨 크기 */
-	    cursor: pointer; /* 클릭 커서 */
-	    font-weight: bold;
-	}
-	
-	
-		
-		
-  </style>
+</style>
   
 </head>
 <body class="bg-theme bg-theme1">
@@ -495,35 +176,46 @@
     pageCall(showPage, tabNum);
     
 	
- // 탭 이벤트 발생시
-    $(function () {
-        // 페이지 로드 시 sessionStorage에서 tabNum 읽기
-        var tabNum = sessionStorage.getItem('tabNum') ? parseInt(sessionStorage.getItem('tabNum')) : 1;
+ 	// 탭 이벤트 발생시
+	$(function () {
+	    // 페이지 로드 시 sessionStorage에서 tabNum 읽기
+	    var tabNum = sessionStorage.getItem('tabNum') ? parseInt(sessionStorage.getItem('tabNum')) : 1;
+	
+	    $("#tabs").tabs({
+	        active: tabNum === 1 ? 0 : 1, // tabNum에 따라 활성화 탭 설정 (활성 사원이 1번 탭, 비활성 사원이 2번 탭)
+	        activate: function (event, ui) {
+	            // 현재 활성화된 탭의 ID를 확인
+	            var activeTab = ui.newPanel.attr("id");
+	
+	            if (activeTab === "activ_emp") {
+	                // 활성 사원 탭일 때
+	                tabNum = 1;
+	            } else if (activeTab === "inactiv_emp") {
+	                // 비활성 사원 탭일 때
+	                tabNum = 0;
+	            }
+	
+	            // 페이지 번호를 초기화
+	            showPage = 1;
+	
+	            // 페이지네이션 초기화
+	            var pagination = tabNum === 1 ? '.pagination.activ' : '.pagination.inactiv';
+	            if ($(pagination).data("twbs-pagination")) {
+	                $(pagination).twbsPagination('destroy');
+	            }
+	
+	            // 데이터 호출
+	            pageCall(showPage, tabNum);
+	
+	            // 현재 탭 상태를 sessionStorage에 저장
+	            sessionStorage.setItem('tabNum', tabNum);
+	        },
+	    });
+	
+	    // 초기 데이터 로드
+	    pageCall(showPage, tabNum);
+	});
 
-        $("#tabs").tabs({
-            active: tabNum === 1 ? 0 : 1, // tabNum에 따라 활성화 탭 설정 (활성 사원이 1번 탭, 비활성 사원이 2번 탭)
-            activate: function (event, ui) {
-                // 현재 활성화된 탭의 ID를 확인
-                var activeTab = ui.newPanel.attr("id");
-
-                if (activeTab === "activ_emp") {
-                    // 활성 사원 탭일 때
-                    tabNum = 1;
-                    pageCall(showPage, tabNum); // 초기 페이지는 1로 호출
-                } else if (activeTab === "inactiv_emp") {
-                    // 비활성 사원 탭일 때
-                    tabNum = 0;
-                    pageCall(showPage, tabNum);
-                }
-
-                // 현재 탭 상태를 sessionStorage에 저장
-                sessionStorage.setItem('tabNum', tabNum);
-            },
-        });
-
-        // 초기 데이터 로드
-        pageCall(showPage, tabNum);
-    });
 
 	
 	

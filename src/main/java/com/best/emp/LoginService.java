@@ -71,20 +71,24 @@ public class LoginService {
 
     
     // 관리자 로그인
-	public boolean authenticateAdmin(String id, String password) {
+    public boolean authenticateAdmin(String id, String password) {
+        // ID로 관리자 정보 조회
         AdminDTO admin = loginDAO.getAdminById(id);
-        
-        // 로그인 성공시
-        if(passwordEncoder.matches(password, admin.getPassword())) {
-        	// 권한 부여
+        if (admin == null) {
+            return false; // 관리자 정보가 없으면 로그인 실패
+        }
+
+        // 비밀번호 확인 및 로그인 처리
+        if (passwordEncoder.matches(password, admin.getPassword())) {
+            // 권한 부여
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
             Authentication auth = new UsernamePasswordAuthenticationToken(admin, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
-            return true;
+            return true; // 로그인 성공
         }
-        
-        return false;
-	}
+
+        return false; // 비밀번호 불일치로 로그인 실패
+    }
 
 
     

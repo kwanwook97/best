@@ -1,0 +1,321 @@
+@charset "UTF-8";
+
+:root { 
+	--primary-color: #30005A; 
+	--secondary-color: #8B6AA7; 
+	--accent-color: #E9396B;
+}
+
+.dashboard-body {
+	margin-left: 15%;
+	width: 83vw;
+	flex-wrap: wrap;
+	height: 92%;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+.maintext {
+	display: flex;
+	margin-left: 10px;
+	font-size: 32px;
+	font-weight: bold;
+	gap: 20px;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.lPurple {
+	color: #8B6AA7;
+}
+
+.mail {
+	color: var(--secondary-color);
+	margin-right: 30px;
+	margin-bottom: 40px;
+}
+
+.mailbox {
+	border: 2px solid var(--primary-color);
+	width: -webkit-fill-available;
+	height: 75%;
+	border: 2px solid var(--primary-color);
+	border-radius: 10px;
+}
+
+.mailnav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 0 48px;
+	padding: 0 5px;
+}
+
+.opt {
+	width: 42%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: var(--secondary-color);
+}
+
+.opt div {
+	align-content: center;
+}
+
+.opt div:first-child {
+	color: var(--primary-color);
+	font-weight: bold;
+	border-bottom: 3px solid var(--accent-color);
+}
+
+.opt div:not(:last-child) {
+	font-size: 20px;
+	font-weight: bold;
+	height: 60px;
+}
+
+.opt div:hover {
+	cursor: pointer;
+	color: var(--primary-color);
+	font-weight: bold;
+	border-bottom: 3px solid var(--accent-color);
+}
+
+.opt div:last-child:hover {
+	border-bottom: none;
+}
+
+.drop {
+	height: 28px;
+	font-size: 14px;
+	border: 1px solid var(--primary-color);
+	border-radius: 4px;
+	color: var(--primary-color);
+	cursor: pointer;
+}
+
+.drop option {
+	background-color: white !important;
+}
+
+.drop option:hover {
+	cursor: pointer;
+	background-color: var(--secondary-color);
+}
+/* 검색창과 필터 컨테이너 */
+.searchbox {
+	display: flex;
+	align-items: center; /* 높이 기준으로 중앙 정렬 */
+	gap: 10px; /* 검색창과 필터 사이 간격 */
+}
+
+.search {
+	position: relative;
+	display: inline-block;
+}
+/* 검색창 스타일 */
+.search input {
+	border-radius: 10px;
+	padding: 0 10px; /* 좌우 패딩 */
+	border: 2px solid var(--primary-color);
+	height: 42px; /* 필터와 동일한 높이 */
+	font-size: 16px;
+	font-weight: bold;
+	line-height: 42px; /* 높이와 텍스트 정렬 */
+	box-sizing: border-box; /* 내부 패딩 포함 */
+}
+
+/* 검색 아이콘 위치 조정 */
+.search i {
+	position: absolute;
+	right: 15px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 18px;
+	pointer-events: none;
+	color: var(--accent-color);
+}
+
+/* 기본 select 스타일 */
+select {
+	font-size: 16px;
+	font-weight: bold;
+	padding: 0 10px; /* 좌우 패딩 */
+	border: 2px solid var(--primary-color);
+	border-radius: 10px;
+	color: var(--primary-color);
+	background-color: #fff;
+	height: 42px; /* 검색창과 동일한 높이 */
+	line-height: 42px; /* 높이와 텍스트 정렬 */
+	cursor: pointer;
+	-webkit-appearance: menulist; /* 기본 화살표 유지 */
+	-moz-appearance: menulist;
+	appearance: menulist;
+}
+
+/* 드롭다운 옵션 스타일 */
+select option {
+	background-color: #fff !important; /* 옵션 배경 흰색 */
+	color: var(--primary-color); /* 텍스트 색상 */
+}
+
+/* 드롭다운 옵션 호버 */
+select option:hover {
+	background-color: #fff; /* 호버 시 배경색 */
+	color: var(--primary-color); /* 호버 시 텍스트 색상 */
+}
+
+/* 드롭다운 선택 시 */
+select option:checked {
+	background-color: #F9F6F1; /* 선택된 옵션 배경 */
+	color: var(--secondary-color);
+}
+
+.editbtn {
+	height: 42px; /* 검색창과 필터와 동일한 높이 */
+	color: white;
+	background-color: var(--accent-color);
+	border-radius: 10px;
+	width: 70px;
+}
+
+.fa-trash-alt:hover {
+	color: var(--accent-color);
+	cursor: pointer;
+}
+
+table.my-table {
+	border-collapse: separate !important;
+	border-spacing: 0;
+	margin-top: 2%;
+}
+
+table {
+	width: 95%;
+	border: 1px solid var(--primary-color);
+	border-radius: 10px;
+	margin: 0 48px;
+}
+
+table.my-table tr:not(:last-child) td, table.my-table th {
+	border-bottom: 1px solid var(--primary-color) !important;
+}
+
+table.my-table tr {
+	height: 36px;
+	text-align: center; /* 텍스트 중앙 정렬 */
+	vertical-align: middle; /* 세로 중앙 정렬 */
+	box-sizing: border-box; /* 패딩 포함하여 크기 계산 */
+}
+
+th, td {
+	padding-left: 15px;
+	height: 36px;
+	text-align: center; /* 텍스트 중앙 정렬 */
+	vertical-align: middle; /* 세로 중앙 정렬 */
+	box-sizing: border-box; /* 패딩 포함하여 크기 계산 */
+	white-space: nowrap; /* 줄바꿈 방지 */
+	overflow: hidden; /* 넘치는 내용 숨기기 */
+	text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+}
+
+td:nth-child(5), /* 제목 열 */ th:nth-child(5) {
+	max-width: 150px; /* 최대 너비 150px 제한 */
+	white-space: nowrap; /* 줄바꿈 방지 */
+	overflow: hidden; /* 넘치는 내용 숨기기 */
+	text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+}
+
+td:nth-child(6), /* 제목 열 */ th:nth-child(6) {
+	max-width: 150px; /* 최대 너비 150px 제한 */
+	white-space: nowrap; /* 줄바꿈 방지 */
+	overflow: hidden; /* 넘치는 내용 숨기기 */
+	text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+}
+
+td:nth-child(7), /* 내용 열 */ th:nth-child(7) {
+	max-width: 200px; /* 최대 너비 200px 제한 */
+	white-space: nowrap; /* 줄바꿈 방지 */
+	overflow: hidden; /* 넘치는 내용 숨기기 */
+	text-overflow: ellipsis; /* 넘치는 내용은 ...으로 표시 */
+}
+
+/* thead의 첫 번째 th (왼쪽 상단) */
+thead tr:first-child th:first-child {
+	border-top-left-radius: 10px; /* 둥근 모서리 */
+}
+
+/* thead의 마지막 th (오른쪽 상단) */
+thead tr:first-child th:last-child {
+	border-top-right-radius: 10px; /* 둥근 모서리 */
+}
+
+.read-column {
+	display: table-cell; /* 숨기거나 보이더라도 높이 유지 */
+	text-align: center;
+	vertical-align: middle;
+}
+
+/* 페이지네이션 컨테이너 */
+.container {
+	display: flex;
+	justify-content: center; /* 가운데 정렬 */
+	align-items: center; /* 세로축 중앙 정렬 */
+	margin-top: 20px; /* 상단 여백 */
+}
+
+/* 페이지네이션 */
+.pagination {
+	display: flex;
+	list-style: none;
+	padding: 0;
+}
+
+.pagination li {
+	margin: 0 5px;
+}
+
+.pagination li a {
+	text-decoration: none;
+	color: var(--primary-color);
+	font-weight: bold;
+	border: 1px solid var(--primary-color);
+	border-radius: 5px;
+	padding: 5px 10px;
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination li a:hover {
+	background-color: var(--primary-color);
+	color: white;
+}
+
+.pagination .active a {
+	background-color: var(--accent-color);
+	color: white;
+}
+
+/* a태그 링크 스타일 */
+table.my-table a {
+	text-decoration: underline; /* 밑줄 추가 */
+	color: var(--primary-color); /* 링크 색상 */
+}
+
+table.my-table a:hover {
+	color: var(--accent-color); /* 호버 시 링크 색상 변경 */
+	text-decoration: underline; /* 호버 시에도 밑줄 유지 */
+}
+
+.bi-star, .bi-star-fill {
+	color: var(--accent-color); /* 별 아이콘에 색상 적용 */
+	transition: color 0.3s ease; /* 색상 변경 애니메이션 */
+}
+
+thead {
+	background-color: var(--primary-color);
+	color: #FFF5E2;
+}
