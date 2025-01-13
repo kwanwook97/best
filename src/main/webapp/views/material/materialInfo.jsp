@@ -255,9 +255,9 @@ input[type="number"] {
 	border-radius: 10px;
 }
 .differentColor {
-	background-color: #E9396B;
+	background-color: #E9396B !important;
 	color: #FFF5E2;
-	border: 1px solid #E9396B;
+	border: 1px solid #E9396B !important;
 	margin: 0 0 0 10px;
 
 }
@@ -505,7 +505,7 @@ input[type="number"] {
             </tr>
         </table>
         <div class="button-area">
-            <button class="btn-submit" onclick="saveMaterialInfo()">저장</button>
+            <button class="btn-submit" onclick="saveMaterialInfo()">등록</button>
         </div>
     </div>
 </div>
@@ -525,7 +525,7 @@ input[type="number"] {
             </tr>
         </table>
         <div class="button-area">
-            <button class="btn-submit" onclick="saveUpdateMaterialInfo()">저장</button>
+            <button class="btn-submit" onclick="saveUpdateMaterialInfo()">수정</button>
         </div>
     </div>
 </div>
@@ -600,7 +600,7 @@ function drawList(list) {
     	        '<td>' + item.quantity + '</td>' +
     	        '<td>' + item.remain_quantity + '</td>' +
     	        '<td>' +
-    	       		'<button class="btn-normal btn-update" onclick="openUpdateModal(' + item.material_idx + ', \'' + item.material_name + '\')">수정</button>' +
+               		'<button class="btn-normal btn-update" onclick="openUpdateModal(' + item.material_idx + ', \'' + item.material_name + '\', ' + item.quantity + ', ' + item.remain_quantity + ')">수정</button>' +
     	            '<button class="btn-normal btn-del" onclick="openDelAlertModal(' + item.material_idx + ')">삭제</button>' +
     	        '</td>' +
     	    '</tr>';
@@ -622,17 +622,27 @@ function openModal() {
 
 function closeModal() {
     document.getElementById("material-modal").style.display = "none";
-    document.getElementById("material-name").innerHTML= "";
-    document.getElementById("material-input").innerHTML= "";
+    document.getElementById("material-name").value= "";
+    document.getElementById("material-input").value= "";
     
 }
 
 function saveMaterialInfo() {
     const materialName = document.getElementById("material-name").value;
     const materialQuantity = document.getElementById("material-input").value;
+    if (materialName== null ||  materialName.trim() === '') {
+		return modal.showAlert("기자재 이름을 작성해 주세요!");
+	}
+    if (materialQuantity == null || materialQuantity.trim() === '') {
+		return modal.showAlert("기자재 수량을 작성해 주세요!");
+	}
+    
     const formData = new FormData();
     formData.append("materialName", materialName);
     formData.append("materialQuantity", materialQuantity);
+    
+    
+    
     $.ajax({
         type: 'POST',
         url: 'saveMaterialInfo.ajax', 
@@ -640,9 +650,11 @@ function saveMaterialInfo() {
         processData: false, 
         contentType: false, 
         success: function(data) {
-            alert(data.msg);
-            closeModal();
-        	pageCall(1);
+        	if (data.msg == '저장 성공') {
+	            modal.showAlert("기자재가 등록되었습니다!");
+	            closeModal();
+	        	pageCall(1);
+			}
         },
         error: function(error) {
             console.error('저장 실패:', error);
@@ -653,10 +665,13 @@ function saveMaterialInfo() {
 }
 
 	/* 기자재 수정 버튼 함수 */
-function openUpdateModal(materialIdx,materialName){
+function openUpdateModal(materialIdx,materialName,quantity,remainQuantity){
 	document.getElementById("update-modal").style.display = "block";
 	document.querySelector(".updateModalMaterialName").innerHTML=materialName;
 	document.querySelector(".hidden-materialIdx").value=materialIdx;
+	document.getElementById("updateTotalQuantity").value=quantity;
+    document.getElementById("updateTotalQuantity").setAttribute("min", quantity-remainQuantity);
+
 }
  
 function closeUpdateModal() {
@@ -670,6 +685,10 @@ function closeUpdateModal() {
 function saveUpdateMaterialInfo(){
     const materialIdx = document.querySelector(".hidden-materialIdx").value;
     const updateTotalQuantity = document.getElementById("updateTotalQuantity").value;
+    const readyQuantity = document.getElementById("updateTotalQuantity").getAttribute("min")
+    if (updateTotalQuantity < readyQuantity) {
+		return modal.showAlert("남은 잔여수량보다 적은수량을 입력하셨습니다! 다시확인해 주세요!");
+	}
     const formData = new FormData();
     formData.append("materialIdx", materialIdx);
     formData.append("updateTotalQuantity", updateTotalQuantity);
@@ -681,7 +700,7 @@ function saveUpdateMaterialInfo(){
         processData: false, 
         contentType: false, 
         success: function(data) {
-            alert(data.msg);
+            modal.showAlert(data.msg);
             closeUpdateModal();
         	pageCall(1);
         },
@@ -717,9 +736,10 @@ function delMaterial(){
         processData: false, 
         contentType: false, 
         success: function(data) {
-            alert(data.msg);
-            closeDelAlertModal();
-        	pageCall(1);
+        	if (data.msg == '삭제 성공') {
+	            closeDelAlertModal();
+	        	pageCall(1);
+			}
         },
         error: function(error) {
             console.error('저장 실패:', error);
@@ -861,7 +881,6 @@ function noListData(){
 function confirmReturn(borrowIdx){
 	
 	modal.showConfirm('반납 처리 하시겠습니까?', function () {
-		//console.log("borrowIdx:"+borrowIdx);
 		const returnStatus = document.getElementById("returnStatusFilter").value;
 
 	    $.ajax({
@@ -874,9 +893,9 @@ function confirmReturn(borrowIdx){
 	        dataType: 'json',
 	        success: function(data) {
 	        	if (data.length != 0) {
-		        	//console.log("서버 응답 데이터:", data);
-		        	loadBorrowList({ returnStatus });
-		        	alert(data.msg);
+	        		if (data.msg == '반납 성공') {
+			        	loadBorrowList({ returnStatus });
+					}
 				}else {
 					noListData();
 				}

@@ -172,7 +172,7 @@
 
 /* 캘린더 리사이즈 css */
 /* 이벤트 리사이즈 핸들 활성화 */
-.fc-event-resizer {
+/* .fc-event-resizer {
     width: 100% !important; 
     height: 10px !important; 
     background-color: #00000000 !important; 
@@ -181,7 +181,7 @@
     right: 0 !important;
     z-index: 9999 !important; 
     cursor: se-resize !important; 
-}
+} */
 .fc-event {
 	margin: 0 0 0 0 !important;
 	padding: 0 0 0 0 !important;
@@ -297,7 +297,26 @@ select option {
 .fc-event.fc-event-draggable.fc-event-resizable.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygrid-dot-event .fc-event-time {
 	color: #30005A !important;
 }
-
+.fc-event-resizer {
+    display: block !important;
+    width: 100px !important;   
+    height: 10px !important;
+    background-color: rgb(0 123 255 / 0%) !important;
+    position: absolute !important;
+    bottom: 0 !important;     
+    right: 0 !important;
+    z-index: 9999 !important;  
+}
+/* .fc-event {
+    pointer-events: auto !important;
+} */
+.fc-event-resizer {
+    pointer-events: auto !important;
+}
+.fc-event.fc-event-draggable.fc-event-resizable.fc-event-start.fc-event-end.fc-event-future.fc-daygrid-event.fc-daygrid-block-event.fc-h-event .fc-event-resizer.fc-event-resizer-end {
+	width: 10px !important;
+	height: 23px !important;
+}
     
     
   </style>
@@ -363,7 +382,7 @@ select option {
 <script>
 var userDepartment = ${employee.depart_idx};
 var userRank = ${employee.rank_idx};
-//console.log("userDepartment종원테스트:"+userDepartment );
+// ("userDepartment종원테스트:"+userDepartment );
 var specialDays = ${specialDaysJson};
 
 $('#closeModal').on('click', function () {
@@ -433,42 +452,47 @@ document.addEventListener('DOMContentLoaded', function() {
         selectable: true,
         selectMirror: true,
         editable: true, // 드래그 및 수정 가능
-        eventResizableFromStart: true,
-        
         navLinkDayClick: function(date, jsEvent) {
         	updateTodoList(date);
-        	//console.log("날짜오류1 이종원:"+date);
         },
-
-
-
-
-
-        
-        eventDidMount: function(info) {
-            const resizer = info.el.querySelector('.fc-event-resizer');
-            if (resizer) {
-                resizer.style.width = '10px';
-                resizer.style.height = '10px';
-                resizer.style.backgroundColor = '#007bff';
-                resizer.style.cursor = 'se-resize';
-            }
-        },
-        
         // 이벤트 드래그 후 업데이트
         eventDrop: function(info) {
-/*         	console.log("info:{}",info.event.extendedProps)
-        	console.log("info.event.id:{}",info.event.id)
+            //console.log("eventDrop Triggered", info); // 이 로그가 출력되는지 확인
+            //console.log("Event ID:", info.event.id);
+            //console.log("Start:", info.event.start.toISOString());
+            //console.log("End:", info.event.end ? info.event.end.toISOString() : null);
+            /*console.log("info:{}",info.event.extendedProps)
+         	console.log("info.event.id:{}",info.event.id)
         	console.log("info.event.title:{}",info.event.title)
         	console.log("info.event.start.toISOString():{}",info.event.start.toISOString())
         	console.log("info.event.end ? info.event.end.toISOString() : null:{}",info.event.end ? info.event.end.toISOString() : null)
         	console.log("info.event.allDay:{}",info.event.allDay) */
-            if (info.event.extendedProps.employeeIdx !== loginId) {
-                modal.showAlert('수정 권한이 없습니다.');
-                info.revert(); // 원래 위치로 되돌림
-                return;
-            }
             const visibility = document.getElementById('visibilityFilter').value;
+         	if (visibility === 'all') {
+                if (userRank <= 2 || userDepartment == 2 || userDepartment == 3) {
+                    
+                }else{
+                    modal.showAlert('수정 권한이 없습니다.');
+                    info.revert();
+                    return;
+                }
+            }else if (visibility == 'public') {
+                if (info.event.extendedProps.department == userDepartment) {
+					
+                }else{
+                    modal.showAlert('수정 권한이 없습니다.');
+                    info.revert();
+                    return;               
+                  	}
+            }else {
+                if (info.event.extendedProps.employeeIdx !== loginId) {
+                    modal.showAlert('수정 권한이 없습니다.');
+                    info.revert();
+                    return;
+                }else{
+
+                }
+            } 
             const updatedEvent = {
             	    id: info.event.id,
             	    title: info.event.title,
@@ -515,28 +539,45 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         // 이벤트 리사이즈 후 업데이트
-        eventResize: function(info) {
-        	//console.log("info:{}",info)
-            if (info.event.extendedProps.employeeIdx !== loginId) {
-                modal.showAlert('수정 권한이 없습니다.');
-                info.revert(); // 원래 위치로 되돌림
-                return;
-            }
+         eventResize: function(info) {
             const visibility = document.getElementById('visibilityFilter').value;
+            if (visibility === 'all') {
+                if (userRank <= 2 || userDepartment == 2 || userDepartment == 3) {
+                    
+                }else{
+                    modal.showAlert('수정 권한이 없습니다.');
+                    info.revert();
+                    return;
+                }
+            }else if (visibility == 'public') {
+                if (info.event.extendedProps.department == userDepartment) {
+					
+                }else{
+                    modal.showAlert('수정 권한이 없습니다.');
+                    info.revert();
+                    return;               
+                  	}
+            }else {
+                if (info.event.extendedProps.employeeIdx !== loginId) {
+                    modal.showAlert('수정 권한이 없습니다.');
+                    info.revert();
+                    return;
+                }else{
+
+                }
+            }
             const updatedEvent = {
             	    id: info.event.id,
             	    title: info.event.title,
             	    start: info.event.start.toISOString(),
             	    end: info.event.end ? info.event.end.toISOString() : (() => {
-            	        const endDate = new Date(info.event.start); // info.event.start를 Date 객체로 변환
+            	        const endDate = new Date(info.event.start); 
             	        if (info.event.allDay) {
-            	            // allDay인 경우, 하루 끝으로 설정 (옵션: 시작 + 1일로 설정 가능)
             	            endDate.setDate(endDate.getDate() + 1); 
             	        } else {
-            	            // allDay가 아니면 기본적으로 몇 시간 추가
-            	            endDate.setHours(endDate.getHours() + 2);
+            	            endDate.setHours(endDate.getHours() + 1);
             	        }
-            	        return endDate.toISOString(); // ISO 문자열로 변환
+            	        return endDate.toISOString(); 
             	    })(),
             	    allDay: info.event.allDay,
             	    visibility: visibility
@@ -564,7 +605,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.showAlert('이벤트 업데이트 중 오류 발생');
                 info.revert(); // 오류 시 원래 상태로 되돌림
             });
-        },
+
+        }, 
         select: function (arg) {
         	const filterValue = document.getElementById("visibilityFilter").value;
         	if (filterValue === "all") {
@@ -577,7 +619,6 @@ document.addEventListener('DOMContentLoaded', function() {
         	}else{
                 $("#todoModal").css("display", "flex").hide().fadeIn();
         	}
-            //console.log("userDepartment ,userRank" + userDepartment  +" **"+userRank );
             $('#saveTodo').off('click').on('click', function () {
                 const inputValue = $('#todoInput').val();
                 if (inputValue.trim() === "") {
@@ -589,14 +630,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         },
         eventClick: function(arg) {
-        	//console.log("테스트종:"+JSON.stringify(arg))
             const filter = document.getElementById('visibilityFilter').value;
         	if (filter === 'all') {
 				if (userRank <= 2 || userDepartment == 2 || userDepartment == 3) {
 			   		 modal.showConfirm('삭제 하시겠습니까?', function () {
-				            /* console.log("이벤트 id:", arg.event.id); 
-				            console.log("테스트 arg:", arg); */        
-				                // 서버로 이벤트 삭제 요청 보내기
 				                $.ajax({
 				                    url: 'delEvent.ajax',
 				                    type: 'POST',
@@ -667,35 +704,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
         	
         	
-/*         	if (arg.event.extendedProps.employeeIdx !== loginId) {
-				return modal.showAlert('삭제 권한이 없습니다.');
-			} */
-        	
-        		
-    	    
-/* 	   		 modal.showConfirm('삭제 하시겠습니까?', function () {
-
-	                $.ajax({
-	                    url: 'delEvent.ajax',
-	                    type: 'POST',
-	                    data: JSON.stringify({ id: arg.event.id }),
-	                    contentType: 'application/json',
-	                    success: function(response) {
-	                        if (response.success) {
-	                            arg.event.remove();
-	                            //modal.showAlert('이벤트가 삭제되었습니다.');
-	                        } else {
-	                        	modal.showAlert(response.msg);
-	                        }
-	                    },
-	                    error: function() {
-	                        modal.showAlert('오류');
-	                    }
-	                });
-	    		}); */
-            /* console.log("이벤트 id:", arg.event.id); 
-            console.log("테스트 arg:", arg); */        
-                // 서버로 이벤트 삭제 요청 보내기
         },
         events: function(fetchInfo, successCallback, failureCallback) {
             const filter = document.getElementById('visibilityFilter').value;
@@ -722,8 +730,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         return false;
                     });
-                    //console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
-                   // console.log("filteredEvents테스트:"+filteredEvents);
                     successCallback(filteredEvents);
                     updateTodoList(new Date());
                 })
@@ -735,18 +741,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const viewType = info.view.type;
             const day = info.date.getDay();
             const formattedDate = info.date.toISOString().split('T')[0];
-
-/*             const specialDays = {
-                    '2024-01-01': '신정',
-                    '2024-02-10': '설날',
-                    '2024-02-11': '설날 연휴',
-                    '2024-02-12': '설날 연휴',
-                    '2024-03-01': '삼일절',
-                    '2024-05-05': '어린이날',
-                    '2024-05-15': '스승의 날',
-                    '2024-12-25': '크리스마스'
-                }; */
-            
             // 특별한 날이 있는 경우
             if (specialDays[formattedDate]) {
                 // 날짜 셀에 텍스트 추가
@@ -802,31 +796,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const visibilityFilter = document.getElementById('visibilityFilter').value; 
         const allEvents = calendar.getEvents();
-        	//console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
         const eventsForDate = allEvents.filter(function(event) {
-        	//console.log("테스트종:"+JSON.stringify(event, null, 2));
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 
-        	/* console.log("테스트종:"+JSON.stringify(eventStartDate, null, 2));
-        	console.log("테스트종clickedDate:"+JSON.stringify(clickedDate, null, 2)); */
-
             let isInDateRange = clickedDate >= eventStartDate && clickedDate <= eventEndDate;
         	if (event.allDay == true &&  clickedDate == eventEndDate) {
         		isInDateRange = false;
 			}
-/*         	console.log("isInDateRange 이종원:"+isInDateRange);
-        	console.log("clickedDate 이종원:"+clickedDate);
-        	console.log("eventStartDate 이종원:"+JSON.stringify(eventStartDate, null, 2));
-        	console.log("eventEndDate 이종원:"+JSON.stringify(eventEndDate, null, 2)); */
             return isInDateRange;
-
-/*                 if (visibilityFilter === 'public') {
-                return isInDateRange && event.extendedProps.department === userDepartment && event.extendedProps.visibility === 'public';;
-            } else if (visibilityFilter === 'private') {
-                return isInDateRange && event.extendedProps.employeeIdx === loginId && event.extendedProps.visibility === 'private';
-            } else {
-                return isInDateRange;
-            } */
         });
 
         // 3. `todolist`에 들어갈 데이터 업데이트

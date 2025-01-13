@@ -233,6 +233,7 @@
 	}
 	.editable {
 		width: 205px;
+		height: 27px !important;
 	}
 	
 /* 모달 css	 */
@@ -254,6 +255,10 @@
     border-radius: 8px;
     width: 400px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
 }
 
 .modal-buttons-attendance {
@@ -288,6 +293,9 @@
     border-radius: 8px;
     width: 400px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .modal-buttons-leaveHistory {
@@ -448,6 +456,10 @@
 }
 .h10.bold.leave div {
 	margin: 0 0 0 10px;
+}
+.addbtn.ready {
+	background-color: #6C0F6C;
+	margin-right: 10px;
 }
 
 
@@ -663,8 +675,8 @@
         <h3>변경 사유 입력</h3>
         <textarea id="reasonInput" placeholder="변경 사유를 입력하세요..." rows="4" maxlength="200"></textarea>
         <div class="modal-buttons-attendance">
-            <button id="confirmReason" onclick="saveEditedData()">확인</button>
-            <button id="cancelReason" onclick="hideReasonModal()">취소</button>
+            <button class="addbtn ready" id="confirmReason" onclick="saveEditedData()">확인</button>
+            <button class="addbtn" id="cancelReason" onclick="hideReasonModal()">취소</button>
         </div>
     </div>
 </div>
@@ -675,8 +687,8 @@
         <h3>변경 사유 입력</h3>
         <textarea id="reasonInputLeaveHistory" placeholder="변경 사유를 입력하세요..." rows="4" maxlength="200"></textarea>
         <div class="modal-buttons-leaveHistory">
-            <button id="confirmLeaveHistoryReason" onclick="saveLeaveHistoryEditedData()">확인</button>
-            <button id="cancelLeaveHistoryReason" onclick="hideLeaveHistoryReasonModal()">취소</button>
+            <button class="addbtn ready" id="confirmLeaveHistoryReason" onclick="saveLeaveHistoryEditedData()">확인</button>
+            <button class="addbtn" id="cancelLeaveHistoryReason" onclick="hideLeaveHistoryReasonModal()">취소</button>
         </div>
     </div>
 </div>
@@ -930,19 +942,10 @@ function enableEditMode() {
                 const value = $(this).text().trim();
                 $(this).attr("data-original", value);
                 $(this).html('<input type="time" value="' + (value ==="*" ?  "00:00": value ) + '" class="editable" />');
-            }/*  else if (index === 3) {
-            	const value = $(this).text().trim();
-            	$(this).attr("data-original", value);
-
-            	const options = ['정상', '지각', '결근', '연차'];
-            	let selectHTML = '<select class="editable">';
-            	options.forEach(option => {
-            	    selectHTML += '<option value="' + option + '" ' + (value == option ? 'selected' : '') + '>' + option + '</option>';
-            	});
-            	selectHTML += '</select>';
-
-            	$(this).html(selectHTML);
-            } */
+            } else if (index === 3 || index === 4|| index === 5) {
+                const value = $(this).text().trim();
+                $(this).attr("data-original", value);
+            }
         });
     });
 
@@ -1016,7 +1019,7 @@ function cancle(){
 	    $(this).find("td").each(function (index) {
 	        if (index === 0) {
 	            $(this).find(".rowCheckbox").remove();
-	        } else if (index === 1 || index === 2 || index === 3) {
+	        } else if (index === 1 || index === 2 || index === 3|| index === 4|| index === 5) {
                 // 원래 값 복원
                 const originalValue = $(this).attr("data-original") || "*";
                 $(this).text(originalValue);
@@ -1260,7 +1263,7 @@ function leaveHistoryEditMode() {
 
     // 수정 완료 버튼 표시 (수정 모드에서만 나타남)
     if ($("#saveLeave").length === 0) {
-        $(".h10.leave").append('<button class="addbtn" id="saveLeave" onclick="showReasonLeaveModal()">저장하기</button>');
+        $(".h10.leave div").append('<button class="addbtn" id="saveLeave" onclick="showReasonLeaveModal()">저장하기</button>');
     }
 }
 
@@ -1386,10 +1389,17 @@ var employee = {
         rankIdx: "${employee.rank_idx}"
     };
     //console.log("employee", employee);
-
-    if (employee.rankIdx > 3  ) {
+	
+    if (employee.depart_idx == 3 || employee.depart_idx == 2 ) {
+		
+	}else if (employee.rankIdx >= 3 ) {
+	    $('.h10.bold.leave div').empty();
+	}else if (employee.rankIdx <3) {
+		
+	}else{
 	    $('.h10.bold.leave div').empty();
 	}
+
     
     
 </script>

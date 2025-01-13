@@ -188,17 +188,24 @@ public class CalendarService {
 
         int row =0;
         if (!photo.isEmpty()) {
-			params.put("response", "사진이 없습니다.");
 			row = calendarDAO.insertRoomInfo(params);
+		}else {
+			params.put("response", "사진이 없습니다.");
 		}
 		if (row > 0) {
 	        int roomIdx = ((BigInteger) params.get("roomIdx")).intValue();
-	        saveRoomMaterials(roomIdx,materialIdxList,quantityList);
-			params.put("response", "회의실이 등록되었습니다.");
+	        String text = saveRoomMaterials(roomIdx,materialIdxList,quantityList);
+	        if (text.equals("문제없음")) {
+	        	params.put("response", "회의실이 등록되었습니다.");
+	        }else {
+				params.put("response", text);
+			}
+	        
 		}
 		
 		return params;
 	}
+
 
 
 	private String savePhoto(MultipartFile photo) {
@@ -222,7 +229,7 @@ public class CalendarService {
         return newPhoto; // 파일이 없으면 null 반환
 	}
 	
-	private void saveRoomMaterials(int roomIdx, List<Integer> materialIdxList, List<Integer> quantityList) {
+	private String saveRoomMaterials(int roomIdx, List<Integer> materialIdxList, List<Integer> quantityList) {
         for (int i = 0; i < materialIdxList.size(); i++) {
             Map<String, Object> params = new HashMap<>();
             params.put("roomIdx", roomIdx);
@@ -232,9 +239,10 @@ public class CalendarService {
             calendarDAO.insertRoomMaterial(params);
             int updatedRows = calendarDAO.updateMaterial(params);
             if (updatedRows == 0) {
-                throw new IllegalArgumentException("재고 부족: materialIdx = " + materialIdxList.get(i));
+            	return "재고 부족: materialIdx = " + materialIdxList.get(i);
             }
-        }		
+        }
+        return "문제없음";
 	}
 
     @Transactional

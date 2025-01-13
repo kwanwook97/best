@@ -255,6 +255,9 @@ label {
 .reserveBtn:hover {
 	opacity: 0.5;
 }
+.modal.modal_alert {
+	z-index: 9999 !important;
+}
 	
   </style>
   
@@ -410,26 +413,52 @@ function saveRoomInfo() {
     const formData = new FormData();
 
     const roomName = document.querySelector('.room-name').value;
+    if (roomName == null || roomName.trim() === '') {
+    	return modal.showAlert("회의실 이름이 등록되지 않았습니다 다시 확인해 주세요!");
+	}
     formData.append('roomName', roomName);
 
     const fileInput = document.querySelector('.file-size');
-    const file = fileInput.files[0]; // 첫 번째 파일만 가져오기
+    const file = fileInput.files[0]; 
     if (file) {
         formData.append('photo', file);
+    }else{
+    	return modal.showAlert('회의실 사진이 등록되지 않았습니다.');
     }
 
     const checkboxes = document.querySelectorAll('.material-checkbox:checked');
-    checkboxes.forEach(function(checkbox) {
+    if (checkboxes.length === 0) {
+        return modal.showAlert('기본기자재가 등록되지 않았습니다.');
+    }
+
+    for (const checkbox of checkboxes) {
         const materialIdx = checkbox.value;
         const quantityInput = document.querySelector('input[name="quantity_' + materialIdx + '"]');
+        
+        if (!quantityInput) {
+            return modal.showAlert('기본기자재 입력 필드가 등록되지 않았습니다.');
+        }
+
         const quantity = quantityInput.value;
+        console.log("qwe", quantity);
+        console.log("quantity value:", quantity, "type:", typeof quantity);
+
+        if (quantity === null || quantity.trim() === '' || parseInt(quantity, 10) <= 0) {
+            return modal.showAlert('기본기자재가 등록되지 않았습니다.');
+        }
 
         formData.append('materialIdx', materialIdx);
         formData.append('quantity', quantity);
-    });
+    }
+
 
     const maxCapacity = document.querySelector('.max-capacity').value;
+    if (maxCapacity == 0 || maxCapacity == null ) {
+    	return modal.showAlert('수용 가능인원이 등록되지 않았습니다.');
+	}
     formData.append('maxCapacity', maxCapacity);
+    
+    
 
     $.ajax({
         type: 'POST',

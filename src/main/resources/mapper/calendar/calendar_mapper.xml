@@ -107,11 +107,11 @@
 	      AND NOT EXISTS (
 	          SELECT 1
 	          FROM reserve
-	          WHERE room_idx = #{roomIdx}
-	            AND reserve_idx != #{reserveIdx}  <!-- 같은 예약은 제외 -->
+	          WHERE room_idx = #{room_idx}
+	            AND reserve_idx != #{reserveIdx} 
 	            AND (
 	                start_datetime &lt; #{endDateTime} AND
-	                end_datetime > #{startDateTime} <!-- 시간 겹침 조건 -->
+	                end_datetime > #{startDateTime} 
 	            )
 	      )
 	</update>

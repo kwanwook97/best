@@ -504,6 +504,30 @@ inputField.addEventListener("input", () => {
   }
 });
 
+const inputUpdateField = document.getElementById("card_company_past");
+let test = false;
+	
+function validateNumber() {
+  const value = inputUpdateField.value;
+  const filteredValue = value.replace(/[^가-힣]/g, "");
+  if (value !== filteredValue) {
+    modal.showAlert("카드사 이름은 한글로만 입력해주세요.");
+    inputUpdateField.value = filteredValue; 
+  }
+}
+inputUpdateField.addEventListener("compositionstart", () => {
+  test = true;
+});
+inputUpdateField.addEventListener("compositionend", () => {
+  test = false;
+  validateNumber();
+});
+inputUpdateField.addEventListener("input", () => {
+  if (!test) {
+    validateNumber();
+  }
+});
+
 let myChart; 
 
 function renderChart(labels,amounts){
@@ -744,6 +768,9 @@ function performSearch() {
     if (searchInputElement) {
         searchInputElement.value = '';
     }
+    if (searchInput == '') {
+        fetchData('', searchInput, page, selectDate);
+	}
 }
 document.getElementById('searchInput').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
@@ -822,6 +849,27 @@ function updateSattlement(){
 	const amount = $('#amount_past').val();
 	const month = $('#month_past').val();
 	const settlementIdx = $('#hidden_input').val();
+	
+    if (!loginId) {
+        modal.showAlert("로그인 해주세요");
+        return;
+    }
+    if (!company) {
+    	modal.showAlert("카드사를 입력해주세요.");
+        $('#card_company').focus();
+        return;
+    }
+
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+    	modal.showAlert("올바른 금액을 입력해주세요.");
+        $('#amount').focus();
+        return;
+    }
+    if (!month) {
+    	modal.showAlert("정산일을 선택해주세요.");
+        $('#month').focus();
+        return;
+    }
 	
 	$.ajax({
 		method: 'POST',

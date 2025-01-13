@@ -46,7 +46,7 @@ public class MaterialService {
 			dow = materialDAO.updateTotalQuantity(params);
 			response.put("msg", "업데이트 성공");
 		}else {
-			response.put("msg", "예외 에러");
+			response.put("msg", "남은 잔여수량보다 적은수량을 입력하셨습니다! 다시확인해 주세요!");
 		}
 		
 		return response;
