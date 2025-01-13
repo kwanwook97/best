@@ -80,7 +80,7 @@ public interface DocumentDAO {
 	// 전자결재 양식 불러오기
 	String getForm(String form_idx);
 	// 전자결재 양식 검색
-	List<Map<String, String>> searchForm(String query);
+	List<Map<String, Object>> searchForm(String query);
 	
 	// 전자결재 문서번호 만들기
 	Integer getLastSequenceForDate(String today);

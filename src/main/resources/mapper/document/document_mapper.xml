@@ -633,7 +633,7 @@
 	</select>
 	<!-- 전자결재 보낸 문서 리스트 -->
    	<select id="sentList" resultType="map">
-		 SELECT 
+		 SELECT
 		    d.doc_idx, 
 		    d.form_idx,
 		    d.doc_subject,
@@ -641,16 +641,17 @@
 		    d.status,
 		    d.doc_number,
 		    f.form_subject
-		    <if test="status != '임시저장' and status != '상신' and status != '진행중'">
-		        , a.approv_date
-		    </if>
+		    <if test="status != null and status != '임시저장' and status != '상신' and status != '진행중'">
+		        , MAX(a.approv_date) AS approv_date
+		    </if>	
 		FROM document d
-		LEFT JOIN form f ON d.form_idx = f.form_idx
+		JOIN form f ON d.form_idx = f.form_idx
 		<if test="status != '임시저장' and status != '상신' and status != '진행중'">
-		    LEFT JOIN approv a ON d.doc_idx = a.doc_idx
+		    JOIN approv a ON d.doc_idx = a.doc_idx
 		</if>
 		WHERE d.emp_idx = #{emp_idx} 
 		  AND d.status = #{status}
+		GROUP BY d.doc_idx, d.form_idx, d.doc_subject, d.doc_date, d.status, d.doc_number, f.form_subject
 		ORDER BY d.doc_date DESC
 		LIMIT #{limit} OFFSET #{offset}
    	</select>
@@ -688,9 +689,9 @@
 		        , a.approv_date
 		    </if>
 		FROM document d
-		LEFT JOIN form f ON d.form_idx = f.form_idx
+		JOIN form f ON d.form_idx = f.form_idx
 		<if test="status != '임시저장'">
-		    LEFT JOIN approv a ON d.doc_idx = a.doc_idx
+		    JOIN approv a ON d.doc_idx = a.doc_idx
 		</if>
 		WHERE d.emp_idx = #{emp_idx} AND d.status = #{status}
         <choose>

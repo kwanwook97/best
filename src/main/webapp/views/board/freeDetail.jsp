@@ -89,9 +89,15 @@
 		border-radius: 10px;
 		padding: 5px;
 	}
-	.comment-list {
+	.comment-list{
+	    width: 100%;
+		display: flex;
+	    justify-content: center;
+		border: 1px solid var(--primary-color);
+	}
+	.commentBox {
+	    width: 822px;
 		border-top: 1px solid var(--primary-color);
-		padding-top: 10px;
 	}
 	.comment-item {
 		border: 1px solid var(--primary-color);
@@ -108,7 +114,32 @@
 		margin: 5px 0;
 		font-size: 0.9em;
 	}
-	
+	.lastBox{
+		display: flex;
+	}
+	.replyBtn, .updateBtn, .deleteBtn{
+		cursor: pointer;
+	}
+	.replyBtn:hover{
+		font-weight: bold;
+	}
+	.updateBtn:hover{
+		font-weight: bold;
+	}
+	.deleteBtn:hover{
+		font-weight: bold;
+	}
+	.reply-list{
+		margin-left: 50px;
+	}
+	.reply-item{
+		border: 1px solid var(--primary-color);
+		margin-bottom: 10px;
+		border-radius: 10px;
+	}
+	.replyLastBox{
+		display: flex;
+	}
 	table{
 		width: 45vw;
 		height: 36rem;
@@ -152,6 +183,51 @@
 	input[type="button"]:hover{
 		background-color: var(--accent-color);
 	}
+	.autocomplete {
+	    position: absolute;
+	    background: white;
+	    border: 1px solid #ccc;
+	    max-height: 200px;
+	    overflow-y: auto;
+	    z-index: 1000;
+	}
+	.autocomplete-item {
+	    padding: 5px;
+	    cursor: pointer;
+	}
+	.autocomplete-item:hover {
+	    background-color: #f0f0f0;
+	}
+	.pagination .page-link {
+		color: var(--primary-color); /* 글자 색상 */
+		background-color: var(--background-color); /* 배경 색상 */
+		border: var(--background-color) !important; /* 테두리 */
+		font-family: 'Arial', sans-serif; /* 폰트 */
+		font-size: 16px; /* 글자 크기 */
+		box-shadow: none !important;
+	}
+	/* 호버 시 스타일 */
+	.pagination .page-link:hover {
+		font-weight: bold;
+		color: var(--accent-color) !important;
+		background-color: var(--background-color) !important;
+	}
+	/* 활성화된 페이지 스타일 */
+	.pagination .active .page-link {
+		font-weight: bold;
+		color: var(--accent-color) !important;
+		background-color: var(--background-color) !important;
+	}
+	/* 클릭 시 생기는 테두리 제거 */
+	.pagination .page-link:focus {
+	  outline: none;
+	  box-shadow: none; /* 부가적인 그림자 효과도 제거 */
+	}
+	/* 비활성화된 페이지 스타일 */
+	.pagination .disabled .page-link {
+		color: var(--background-color) !important;
+		background-color: var(--background-color) !important;
+	}
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -177,6 +253,8 @@
 					<h4>댓글</h4>
 					<!-- 댓글 목록 -->
 					<div class="comment-list">
+						<div class="commentBox">
+						</div>
 					</div>
 					<div class="container" id="commentCont">
 					    <nav aria-label="Page navigation">
@@ -185,7 +263,7 @@
 					</div>
 					<!-- 댓글 작성 -->
 					<div class="comment-box">
-						<textarea id="commentInput" placeholder="댓글을 입력하세요. 300자 이내" maxlength="300"></textarea>
+						<textarea id="commentInput" placeholder="댓글을 입력하세요. 300자 이내" maxlength="299"></textarea>
 						<p id="charCount">0 / 300</p>
 						<button onclick="addComment()">댓글 작성</button>
 					</div>
@@ -196,7 +274,7 @@
 			    <!-- 글 작성자와 로그인 사용자가 같을 때만 버튼 표시 -->
 			    <c:if test="${info.name == sessionScope.loginName}">
 			        <input type="button" value="수정하기" onclick="location.href='freeUpdate.go?idx=${info.board_idx}'"/>
-			        <input type="button" value="삭제하기" onclick="location.href='freeDelete.go?idx=${info.board_idx}'"/>
+			        <input type="button" value="삭제하기" onclick="location.href='freeDelete.go?board_idx=${info.board_idx}'"/>
 			    </c:if>
 			</div>
 		</div>
@@ -205,78 +283,486 @@
 <script>
 
 	var board_idx = ${info.board_idx};
+	var boardAuthor = ${info.emp_idx};
 	var emp_idx = "${sessionScope.loginId}";
 	var emp_name = "${sessionScope.loginName}";
 	
 	var showPage = 1;
 
-	loadComments(showPage);
+	loadComments(board_idx, showPage);
 
-	var cnt = 5;
-
-	// 댓글 목록 로드 및 페이지네이션 초기화
-	function loadComments(boardIdx, page, itemsPerPage) {
+	function loadComments(board_idx, page) {
 	    $.ajax({
 	        type: 'GET',
 	        url: 'commentList.ajax',
 	        data: {
 	            board_idx: board_idx,
 	            page: page,
-	            cnt: itemsPerPage
+	            cnt: 4
 	        },
 	        dataType: 'JSON',
 	        success: function(response) {
-	            var commentList = $('.comment-list');
-	            commentList.empty();
-	
-	            // 댓글과 대댓글 렌더링
-	            for (var i = 0; i < response.comments.length; i++) {
-	                var comment = response.comments[i];
-	
-	                // 원 댓글
-	                var commentHtml = 
-	                    '<div class="comment-item">' +
-	                        '<strong>' + comment.emp_name + '</strong>' +
-	                        '<div class="comment-content">' + comment.content + '</div>' +
-	                        '<div class="comment-date">' + comment.date + '</div>' +
-	                        '<div class="reply-list" id="replies-' + comment.comment_idx + '"></div>' +
-	                    '</div>';
-	                commentList.append(commentHtml);
-	
-	                // 대댓글 출력
-	                if (comment.children && comment.children.length > 0) {
-	                    var replyList = $('#replies-' + comment.comment_idx);
-	                    for (var j = 0; j < comment.children.length; j++) {
-	                        var reply = comment.children[j];
-	                        var replyHtml = 
-	                            '<div class="reply-item">' +
-	                                '<strong>' + reply.emp_name + '</strong>' +
-	                                '<div class="comment-content">' + reply.content + '</div>' +
-	                                '<div class="comment-date">' + reply.date + '</div>' +
-	                            '</div>';
-	                        replyList.append(replyHtml);
-	                    }
-	                }
-	            }
-	
-	            // 페이지네이션 처리
+	            console.log("뭐냤삘 ", response.childMap);
+//	            printComment(response);
+	            
 	            $('#commentPagination').twbsPagination('destroy');
-	            $('#commentPagination').twbsPagination({
-	                startPage: page,
-	                totalPages: response.totalPages,
-	                visiblePages: 5,
-	                onPageClick: function(evt, page) {
-	                    loadComments(boardIdx, page, itemsPerPage);
-	                }
-	            });
+	            if (response.totalPages > 0) {
+	                $('#commentPagination').twbsPagination({
+	                    startPage: page,
+	                    totalPages: response.totalPages,
+	                    visiblePages: 5,
+	                    onPageClick: function(evt, page) {
+	                    	pageCallLoad(board_idx, page);
+	                    }
+	                });
+	            }
 	        },
 	        error: function(e) {
 	            alert('댓글 로드 중 오류가 발생했습니다.');
-	            console.log(e);
+	            console.error(e);
 	        }
 	    });
 	}
 
+/* 	function printComment(comments) {
+	    var commentHtml = '';
+
+	    // 원 댓글 렌더링
+	    for (var item of comments) {
+		    if (item.parent_idx < 1) {
+		        commentHtml += 
+		            '<div class="comment-item" id="comment-' + item.comment_idx + '">' +
+		                '<strong>' + item.emp_name + '</strong>' +
+		                '<input type="hidden" value="' + item.emp_idx + '">' +
+		                '<div class="comment-content">' + item.content + '</div>' +
+		                '<div class="lastBox">' +
+		                    '<div class="comment-date">' + formatDate(item.com_date) + '</div>' +
+		                    '<div class="replyBtn" onclick="toggleReplyBox(' + item.comment_idx + ')"> 💬 댓글쓰기</div>';
+		
+		        // 수정/삭제 버튼 추가 조건
+		        if (item.emp_idx == emp_idx) {
+		            commentHtml +=
+		                '<div class="updateBtn" onclick="updateCom(' + item.comment_idx + ')">✏️ 수정하기</div>' +
+		                '<div class="deleteBtn" onclick="deleteCom(' + item.comment_idx + ')">❌ 삭제</div>';
+		        }
+		
+		        commentHtml +=
+		                '</div>' +
+		            '</div>' +
+		            '<div class="reply-list" id="replies-' + item.comment_idx + '"></div>';
+		    }
+		}
+
+	    // 원 댓글 HTML 추가
+	    $('.commentBox').html(commentHtml);
+
+	    // 대댓글 렌더링
+	    for (var item of comments) {
+	    	if (item.parent_idx > 0) {
+	    	    var replyHtml = 
+	    	        '<div class="reply-item" id="reply-' + item.comment_idx + '">' +
+	    	            '<strong>' + item.emp_name + '</strong>' +
+	    	            '<input type="hidden" id="taggedEmpIdx" value="' + item.emp_idx + '">' +
+	    	            '<div class="comment-content">' + item.content + '</div>' +
+	    	            '<div class="replyLastBox">' +
+	    	                '<div class="comment-date">' + formatDate(item.com_date) + '</div>';
+	    	    if (item.emp_idx == emp_idx) {
+	    	        replyHtml +=
+	    	                '<div class="updateBtn" onclick="updatReply(' + item.comment_idx + ')">✏️ 수정하기</div>' +
+	    	                '<div class="deleteBtn" onclick="deleteReply(' + item.comment_idx + ')">❌ 삭제</div>';
+	    	    }
+	    	    replyHtml +=
+	    	            '</div>' +
+	    	        '</div>';
+	    	}
+	    	// 부모 댓글의 대댓글 리스트에 추가
+	    	$('#replies-' + item.parent_idx).append(replyHtml);
+
+	    } */
+	    
+/* 	    function printComment(response) {
+	        var parentComments = response.parentComments; // 부모 댓글
+	        var childMap = response.childMap;             // 대댓글 매핑
+
+	        var commentHtml = '';
+
+	        // 부모 댓글 렌더링
+	        parentComments.forEach(function (parent) {
+	            commentHtml += '<div class="comment-item" id="comment-' + parent.comment_idx + '">' +
+                '<strong>' + parent.emp_name + '</strong>' +
+                '<input type="hidden" value="' + parent.emp_idx + '">' +
+                '<div class="comment-content">' + parent.content + '</div>' +
+                '<div class="lastBox">' +
+                    '<div class="comment-date">' + formatDate(parent.com_date) + '</div>' +
+                    '<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬 댓글쓰기</div>';
+		
+		        // 수정/삭제 버튼 추가 조건
+		        if (parent.emp_idx == emp_idx) {
+		            commentHtml +=
+		                '<div class="updateBtn" onclick="updateCom(' + parent.comment_idx + ')">✏️ 수정하기</div>' +
+		                '<div class="deleteBtn" onclick="deleteCom(' + parent.comment_idx + ')">❌ 삭제</div>';
+		        }
+		
+		        commentHtml +=
+		                '</div>' +
+		            '</div>' +
+		            '<div class="reply-list" id="replies-' + parent.comment_idx + '"></div>';
+
+	            // 대댓글 렌더링 (childMap에 있는 경우)
+	            if (childMap[parent.comment_idx]) {
+	                childMap[parent.comment_idx].forEach(function (reply) {
+	                    commentHtml += '<div class="reply-item" id="reply-' + reply.comment_idx + '">' +
+	    	            '<strong>' + reply.emp_name + '</strong>' +
+	    	            '<input type="hidden" id="taggedEmpIdx" value="' + reply.emp_idx + '">' +
+	    	            '<div class="comment-content">' + reply.content + '</div>' +
+	    	            '<div class="replyLastBox">' +
+	    	                '<div class="comment-date">' + formatDate(reply.com_date) + '</div>';
+			    	    if (reply.emp_idx == emp_idx) {
+			    	    	commentHtml +=
+			    	                '<div class="updateBtn" onclick="updatReply(' + reply.comment_idx + ')">✏️ 수정하기</div>' +
+			    	                '<div class="deleteBtn" onclick="deleteReply(' + reply.comment_idx + ')">❌ 삭제</div>';
+			    	    }
+			    	    commentHtml +=
+			    	            '</div>' +
+			    	        '</div>';
+		                });
+		            }
+	        });
+
+	        // HTML 업데이트
+	        $('.commentBox').html(commentHtml);
+	    } */
+
+	    function printComment(response) {
+	        var parentComments = response.parentComments || [];
+	        var childMap = response.childMap || {};
+			console.log("sdfsdf",childMap);
+	        var commentHtml = '';
+	        
+	        // 부모 댓글 렌더링
+	        parentComments.forEach(function (parent) {
+	            commentHtml += 
+	                '<div class="comment-item" id="comment-' + parent.comment_idx + '">' +
+	                	'<div>' +
+		                    '<strong>' + parent.emp_name+'</strong>' +
+	                		'<div>('+parent.depart_name+'/'+parent.rank_name+')</div>' +
+	                	'</div>' +
+	                    '<input type="hidden" value="' + parent.emp_idx + '">' +
+	                    '<div class="comment-content">' + parent.content + '</div>' +
+	                    '<div class="lastBox">' +
+	                        '<div class="comment-date">' + formatDate(parent.com_date) + '</div>' +
+	                        '<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬 댓글쓰기</div>';
+
+	            // 수정/삭제 버튼 추가
+	            if (parent.emp_idx == emp_idx) {
+	                commentHtml +=
+	                    '<div class="updateBtn" onclick="updateCom(' + parent.comment_idx + ')">✏️ 수정하기</div>' +
+	                    '<div class="deleteBtn" onclick="deleteCom(' + parent.comment_idx + ')">❌ 삭제</div>';
+	            }
+
+	            commentHtml += '</div></div>';
+
+	            // 대댓글 리스트 컨테이너 생성
+	            commentHtml += '<div class="reply-list" id="replies-' + parent.comment_idx + '"></div>';
+	        });
+
+	        // HTML 업데이트
+	        $('.commentBox').html(commentHtml);
+
+	        // 대댓글 렌더링 (부모 댓글과 별도 처리)
+	        Object.keys(childMap).forEach(function (parentIdx) {
+	            var replies = childMap[parentIdx];
+	            replies.forEach(function (reply) {
+	                var replyHtml = 
+	                    '<div class="reply-item" id="reply-' + reply.comment_idx + '">' +
+	                    	'<div>' +
+			                    '<strong>' + reply.emp_name+'</strong>' +
+		                		'<div>('+reply.depart_name+'/'+reply.rank_name+')</div>' +
+		                	'</div>' +
+	                        '<input type="hidden" id="taggedEmpIdx" value="' + reply.emp_idx + '">' +
+	                        '<div class="comment-content">' + reply.content + '</div>' +
+	                        '<div class="replyLastBox">' +
+	                            '<div class="comment-date">' + formatDate(reply.com_date) + '</div>';
+	                
+	                if (reply.emp_idx == emp_idx) {
+	                    replyHtml +=
+	                        '<div class="updateBtn" onclick="updatReply(' + reply.comment_idx + ')">✏️ 수정하기</div>' +
+	                        '<div class="deleteBtn" onclick="deleteReply(' + reply.comment_idx + ')">❌ 삭제</div>';
+	                }
+	                
+	                replyHtml += '</div></div>';
+
+	                // 대댓글을 해당 부모 댓글의 reply-list에 추가
+	                $('#replies-' + parentIdx).append(replyHtml);
+	            });
+	        });
+
+	        // 이벤트 재바인딩
+	        bindReplyInputEvents();
+	        highlightMentions();
+	    }
+
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+		 // @mention 처리: @로 시작하고 strong 태그의 텍스트와 일치하는 부분 강조
+	    /* $('.commentBox .comment-content').each(function () {
+	        var content = $(this).text();
+
+	        // 모든 strong 태그의 텍스트 가져오기
+	        var authors = $('.commentBox strong').map(function () {
+	            return $(this).text();
+	        }).get();
+
+	        // 매칭된 부분 감싸기
+	        authors.forEach(function (author) {
+	            var regex = new RegExp('@' + author + '(?=\\s|$)', 'g');
+	            content = content.replace(regex, function (match) {
+	                return '<span class="highlight">' + match + '</span>';
+	            });
+	        });
+
+	        $(this).html(content);
+	    });
+
+	    // 스타일 추가 (highlight 클래스)
+	    $('<style>')
+	        .prop('type', 'text/css')
+	        .html('.highlight { color: blue; font-weight: bold; }')
+	        .appendTo('head');
+	 */
+	 
+	 
+	 function highlightMentions() {
+		    $('.commentBox .comment-content').each(function () {
+		        var content = $(this).text();
+
+		        // 모든 strong 태그의 텍스트 가져오기
+		        var authors = $('.commentBox strong').map(function () {
+		            return $(this).text();
+		        }).get();
+
+		        // 매칭된 부분 감싸기
+		        authors.forEach(function (author) {
+		            var regex = new RegExp('@' + author + '(?=\\s|$)', 'g');
+		            content = content.replace(regex, function (match) {
+		                return '<span class="highlight">' + match + '</span>';
+		            });
+		        });
+
+		        $(this).html(content);
+		    });
+		}
+
+		// 스타일 추가
+		$('<style>')
+		    .prop('type', 'text/css')
+		    .html('.highlight { color: blue; font-weight: bold; }')
+		    .appendTo('head');
+
+	 	function bindReplyInputEvents() {
+		    // 이벤트 위임 방식으로 바인딩
+		    $('.commentBox').on('input', '.replyBox textarea', function () {
+		        var commentIdx = $(this).closest('.replyBox').attr('id').split('-')[1];
+		        var value = $(this).val();
+
+		        if (value.endsWith('@')) {
+		            // 대댓글 작성자 목록 가져오기
+		            var replyAuthors = getReplyAuthors(commentIdx);
+		            if (replyAuthors.length > 0) {
+		                var autocompleteList = replyAuthors.map(function (author) {
+		                    return '<div class="autocomplete-item" onclick="selectUser(' + commentIdx + ', \'' + author.name + '\', \'' + author.empIdx + '\')">' + author.name + '</div>';
+		                }).join('');
+		                $('#autocomplete-' + commentIdx).html(autocompleteList).show();
+		            } else {
+		                $('#autocomplete-' + commentIdx).hide();
+		            }
+		        } else {
+		            $('#autocomplete-' + commentIdx).hide();
+		        }
+		    });
+		}
+
+	 
+
+	// 대댓글 작성
+	function toggleReplyBox(commentIdx) {
+	    var replyBoxId = "#replyBox-" + commentIdx;
+	    var existingReplyBox = $(replyBoxId);
+	
+	    if (existingReplyBox.length > 0) {
+	        // 이미 존재하는 경우 삭제 (댓글 쓰기 박스 닫기)
+	        existingReplyBox.remove();
+	    } else {
+	        // 다른 댓글에 열린 박스가 있으면 닫기
+	        $('.replyBox').remove();
+	
+	        // 새로운 박스 생성
+	        var replyBoxHtml = 
+	            '<div class="replyBox" id="replyBox-' + commentIdx + '">' +
+	                '<textarea id="replyInput-' + commentIdx + '" placeholder="댓글을 입력하세요. 300자 이내" maxlength="299"></textarea>' +
+	                '<p class="replycharCount" id="replycharCount-' + commentIdx + '">0 / 300</p>' +
+	                '<div class="autocomplete" id="autocomplete-' + commentIdx + '"></div>'+
+	                '<button onclick="addReply(' + commentIdx + ')">댓글 작성</button>' +
+	                '<button onclick="toggleReplyBox(' + commentIdx + ')">취소</button>' +
+	            '</div>';
+	        
+	        // 해당 댓글 바로 아래 추가
+	        $('#comment-' + commentIdx).after(replyBoxHtml);
+		
+	    	 // @ 입력 시 대댓글 작성자 목록 표시
+	        $('#replyInput-' + commentIdx).on('input', function () {
+	            var inputValue = $(this).val(); // 변수명을 명확히 변경
+	            var length = inputValue.length; // 올바른 변수 사용
+	            $('#replycharCount-' + commentIdx).text(length + " / 300");
+/* 
+	            if (inputValue.endsWith('@')) {
+	                var replyAuthors = getReplyAuthors(commentIdx);
+	                if (replyAuthors.length > 0) {
+	                    var autocompleteList = replyAuthors.map(function (author) {
+	                        return '<div class="autocomplete-item" onclick="selectUser(' + commentIdx + ', \'' + author.name + '\', \'' + author.empIdx + '\')">' + author.name + '</div>';
+	                    }).join('');
+	                    $('#autocomplete-' + commentIdx).html(autocompleteList).show();
+	                } else {
+	                    $('#autocomplete-' + commentIdx).hide();
+	                }
+	            } else {
+	                $('#autocomplete-' + commentIdx).hide();
+	            } 
+	        });*/
+	            console.log('입력 값:', inputValue); // 디버깅: 입력 값 확인
+	            if (inputValue.endsWith('@')) {
+	                var replyAuthors = getReplyAuthors(commentIdx);
+	                console.log('대댓글 작성자 목록:'+ commentIdx); // 디버깅: 작성자 목록 확인
+	                console.log('대댓글 작성자 목록:', replyAuthors); // 디버깅: 작성자 목록 확인
+
+	                if (replyAuthors.length > 0) {
+	                    var autocompleteList = replyAuthors.map(function (author) {
+	                        return '<div class="autocomplete-item" onclick="selectUser(' + commentIdx + ', \'' + author.name + '\', \'' + author.empIdx + '\')">' + author.name + '</div>';
+	                    }).join('');
+	                    $('#autocomplete-' + commentIdx).html(autocompleteList).show();
+	                } else {
+	                    console.warn('대댓글 작성자가 없습니다.');
+	                    $('#autocomplete-' + commentIdx).hide();
+	                }
+	            } else {
+	                $('#autocomplete-' + commentIdx).hide();
+	            }
+	        });
+
+	    }
+	}
+	
+	// 특정 댓글의 대댓글 작성자 목록 추출
+	function getReplyAuthors(commentIdx) {
+	    var authors = [];
+	    var loggedInEmpIdx = emp_idx;
+	
+	    console.log('현재 로그인한 사용자 ID:', loggedInEmpIdx); // 디버깅: 로그인 사용자 확인
+	
+	    // 대댓글 리스트 확인
+	    var replyItems = $('#replies-' + commentIdx + ' .reply-item');
+	    console.log('대댓글 리스트 (reply-items):', replyItems);
+	
+	    replyItems.each(function () {
+	        var replyAuthor = $(this).find('strong').text(); // 대댓글 작성자 이름
+	        var replyEmpIdx = $(this).find('input[type="hidden"]').val(); // 대댓글 작성자 ID
+	
+	        // 디버깅: 각 대댓글 작성자 정보 확인
+	        console.log('대댓글 작성자:', replyAuthor, 'ID:', replyEmpIdx);
+	
+	        if (replyEmpIdx !== loggedInEmpIdx && !authors.some(a => a.empIdx === replyEmpIdx)) {
+	            authors.push({ name: replyAuthor, empIdx: replyEmpIdx });
+	        }
+	    });
+	
+	    console.log("Authors for comment " + commentIdx + ":", authors); // 최종 작성자 목록 확인
+	    return authors;
+	}
+
+
+
+
+
+	// 사용자 선택 시 텍스트 입력란에 추가
+	function selectUser(commentIdx, user, empIdx) {
+	    var input = $('#replyInput-' + commentIdx);
+	    var value = input.val();
+
+	    // 현재 입력 값에 선택된 사용자 이름 추가
+	    input.val(value.slice(0, -1) + '@' + user + ' '); // '@' 포함하여 추가
+	    input.data('tagged-emp-idx', empIdx); // 태그된 사용자 emp_idx 저장
+	    $('#autocomplete-' + commentIdx).hide();
+	}
+
+	// 대댓글 작성 함수
+	function addReply(parent_idx) {
+	    var content = $('#replyInput-' + parent_idx).val().trim();
+	    var taggedEmpIdx = $('#replyInput-' + parent_idx).data('tagged-emp-idx'); // 태그된 사용자의 empIdx
+	    if (content === '') {
+	        alert('댓글 내용을 입력하세요!');
+	        return;
+	    }
+	
+	    if (!taggedEmpIdx) {
+	        // 태그된 사용자가 없으면 원댓글 작성자의 empIdx 가져오기
+	        taggedEmpIdx = $('#comment-' + parent_idx).find('input[type="hidden"]').val();
+	    }
+	
+	    $.ajax({
+	        type: 'POST',
+	        url: 'addReply.ajax',
+	        data: {
+	            parent_idx: parent_idx,
+	            content: content,
+	            board_idx: board_idx,
+	            emp_idx: emp_idx,
+	            emp_name: emp_name,
+	            taggedEmpIdx: taggedEmpIdx
+	        },
+	        success: function(response) {
+	            alert('댓글이 작성되었습니다!');
+	            toggleReplyBox(parent_idx);
+	            loadComments(board_idx, 1); // 댓글 새로고침
+	        },
+	        error: function(error) {
+	            alert('댓글 작성 중 오류가 발생했습니다.');
+	            console.error(error);
+	        }
+	    });
+	}
+
+	// 날짜 포맷 함수
+	function formatDate(dateString) {
+	    var date = new Date(dateString);
+	    return date.toISOString().split('T')[0];
+	}
+
+	function pageCallLoad(board_idx, page){
+	    $.ajax({
+	        type: 'GET',
+	        url: 'commentList.ajax',
+	        data: {
+	            board_idx: board_idx,
+	            page: page,
+	            cnt: 4
+	        },
+	        dataType: 'JSON',
+	        success: function(response) {
+	            printComment(response);	            
+	        },
+	        error: function(e) {
+	            alert('댓글 로드 중 오류가 발생했습니다.');
+	            console.error(e);
+	        }
+	    });
+	}
+	
+	
 	// 댓글 작성
 	function addComment() {
 	    var content = $('#commentInput').val().trim();
@@ -284,38 +770,190 @@
 	        alert('댓글 내용을 입력해주세요!');
 	        return;
 	    }
-
+	    
 	    $.ajax({
 	        type: 'POST',
 	        url: 'addComment.ajax',
 	        data: {
-	            board_idx: 101, // 게시판 ID
+	            board_idx: board_idx,
 	            content: content,
-	            emp_idx: 1, // 로그인된 사용자 ID
-	            emp_name: '에이스' // 로그인된 사용자 이름
+	            emp_idx: emp_idx,
+	            emp_name: emp_name,
+	            boardAuthor: boardAuthor
 	        },
 	        success: function(response) {
-	            alert('댓글이 작성되었습니다.');
-	            $('#commentInput').val(''); // 입력 필드 초기화
-	            loadComments(1); // 첫 페이지로 댓글 목록 새로고침
+	            alert(response);
+	            $('#commentInput').val('');
+	            $('#charCount').text('0 / 300');
+	            loadComments(board_idx, 1); 
 	        },
 	        error: function(e) {
 	            alert('댓글 작성 중 오류가 발생했습니다.');
-	            console.log(e);
+	            console.error(e);
 	        }
 	    });
 	}
+
 
 	// 댓글 입력 시 글자 수 표시
 	$('#commentInput').on('input', function() {
 	    var charCount = $(this).val().length;
 	    $('#charCount').text(charCount + ' / 300');
 	});
+	
+	
+	// 댓글 삭제
+	function deleteCom(comment_idx) {
+	    if (!confirm("댓글을 삭제하시겠습니까?")) {
+	        return;
+	    }
+	
+	    $.ajax({
+	        type: 'POST',
+	        url: 'deleteComment.ajax',
+	        data: {
+	            comment_idx: comment_idx
+	        },
+	        success: function(response) {
+	        	 loadComments(board_idx, 1);
+	        	 alert(response);
+	        },
+	        error: function(e) {
+	            alert('댓글 삭제 중 오류가 발생했습니다.');
+	            console.error(e);
+	        }
+	    });
+	}
 
-	// 페이지 로드 시 첫 페이지 댓글 로드
-	$(document).ready(function() {
-	    loadComments(1); // 첫 번째 페이지 댓글 로드
-	});
+	
+	// 대댓글 삭제
+	function deleteReply(comment_idx) {
+	    if (!confirm("댓글을 삭제하시겠습니까?")) {
+	        return;
+	    }
+	
+	    $.ajax({
+	        type: 'POST',
+	        url: 'deleteReply.ajax',
+	        data: {
+	            comment_idx: comment_idx
+	        },
+	        success: function(response) {
+	                alert(response);
+	                loadComments(board_idx, 1);
+	        },
+	        error: function(e) {
+	            alert('댓글 삭제 중 오류가 발생했습니다.');
+	            console.error(e);
+	        }
+	    });
+	}
+	
+	
+	// 댓글 수정
+	function updateCom(comment_idx) {
+	    var contentDiv = $('#comment-' + comment_idx).find('.comment-content');
+	    var originalContent = contentDiv.text().trim(); // 기존 댓글 내용 가져오기
+
+	    // 수정 중인 상태인지 확인
+	    if (contentDiv.find('textarea').length > 0) {
+	        alert('이미 수정 중입니다.');
+	        return;
+	    }
+
+	    var editHtml = 
+	        '<textarea class="edit-textarea">' + originalContent + '</textarea>' +
+	        '<button class="save-btn" onclick="saveCom(' + comment_idx + ')">저장</button>' +
+	        '<button class="cancel-btn" onclick="cancelEdit(' + comment_idx + ', \'' + originalContent + '\')">취소</button>';
+
+	    contentDiv.html(editHtml);
+	}
+	function saveCom(comment_idx) {
+	    var textarea = $('#comment-' + comment_idx).find('.edit-textarea');
+	    var content = textarea.val().trim();
+
+	    if (content === '') {
+	        alert('내용을 입력하세요!');
+	        return;
+	    }
+	   
+	    $.ajax({
+	        type: 'POST',
+	        url: 'updateComment.ajax',
+	        data: {
+	            comment_idx: comment_idx,
+	            content: content
+	        },
+	        success: function(response) {
+	            alert('댓글이 수정되었습니다.');
+	            loadComments(board_idx, 1);
+	        },
+	        error: function(error) {
+	            alert('댓글 수정 중 오류가 발생했습니다.');
+	            console.error(error);
+	        }
+	    });
+	}
+
+	// 댓글 수정 취소
+	function cancelEdit(comment_idx, originalContent) {
+	    var contentDiv = $('#comment-' + comment_idx).find('.comment-content');
+	    contentDiv.html(originalContent);
+	}
+	
+	
+	// 대댓글 수정
+	function updatReply(comment_idx) {
+	    var contentDiv = $('#reply-' + comment_idx + ' .comment-content');
+	
+	    // 이미 수정 중인 경우, 아무 동작도 하지 않습니다.
+	    if (contentDiv.find('textarea').length > 0) {
+	        return;
+	    }
+	
+	    // 기존 내용 저장
+	    var currentContent = contentDiv.text().trim();
+	
+	    // textarea로 대체
+	    var textareaHtml = 
+	        '<textarea id="updateTextarea-' + comment_idx + '" class="update-textarea">' + currentContent + '</textarea>' +
+	        '<button onclick="submitReplyUpdate(' + comment_idx + ')">저장</button>' +
+	        '<button onclick="cancelReplyUpdate(' + comment_idx + ', \'' + currentContent + '\')">취소</button>';
+	    
+	    contentDiv.html(textareaHtml);
+	}
+
+	function submitReplyUpdate(comment_idx) {
+	    var content = $('#updateTextarea-' + comment_idx).val().trim();
+
+	    if (content === '') {
+	        alert('내용을 입력해주세요!');
+	        return;
+	    }
+
+	    $.ajax({
+	        type: 'POST',
+	        url: 'updateReply.ajax',
+	        data: {
+	            comment_idx: comment_idx,
+	            content: content
+	        },
+	        success: function(response) {
+	            alert('댓글이 수정되었습니다!');
+	            $('#reply-' + comment_idx + ' .comment-content').html(content);
+	        },
+	        error: function(e) {
+	            alert('댓글 수정 중 오류가 발생했습니다.');
+	            console.error(e);
+	        }
+	    });
+	}
+	
+	function cancelReplyUpdate(commentIdx, originalContent) {
+	    $('#reply-' + commentIdx + ' .comment-content').html(originalContent);
+	}
+	
+
 
 </script>
 </html>

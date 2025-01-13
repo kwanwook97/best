@@ -124,10 +124,10 @@ public class DocumentController {
         	return documentService.searchReject(page_, cnt_, status, listType, searchType, query, emp_idx);
         case "참조":
         	status = "참조";
-        	return documentService.searchReference(page_, cnt_, status, listType, searchType, query, emp_idx);
+        	return documentService.searchReference(page_, cnt_, status, searchType, query, emp_idx);
         case "임시저장":
         	status = "임시저장";
-        	return documentService.searchDraft(page_, cnt_, status, listType, searchType, query, emp_idx);
+        	return documentService.searchDraft(page_, cnt_, status, searchType, query, emp_idx);
         default:
             logger.warn("알 수 없는 상태", text);
             return new HashMap<String, Object>();
@@ -196,7 +196,7 @@ public class DocumentController {
 	// 전재결재 양식 검색
 	@PostMapping(value="/searchForm.ajax")
 	@ResponseBody
-    public List<Map<String, String>> searchForm(String query) {
+    public List<Map<String, Object>> searchForm(String query) {
         return documentService.searchForm(query);
     }
     

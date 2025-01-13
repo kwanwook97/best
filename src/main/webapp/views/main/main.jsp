@@ -863,6 +863,7 @@ var specialDays = ${specialDaysJson};
         }
         const visibilityFilter = document.getElementById('visibilityFilter').value; 
         const allEvents = calendar.getEvents();
+           //console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
         const eventsForDate = allEvents.filter(function(event) {
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 

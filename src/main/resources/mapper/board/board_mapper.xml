@@ -12,10 +12,31 @@
 	</select>
 	<!-- 공지 리스트 -->
 	<select id="noticeList" resultType="map">
-	    SELECT board_idx, subject, name, date, bhit FROM board
-	    WHERE importance = #{importance} AND board_category = 1
-	    ORDER BY date DESC, board_idx DESC
-	    LIMIT #{limit} OFFSET #{offset}
+	    SELECT 
+		    b.board_idx, 
+		    b.subject, 
+		    b.emp_idx, 
+		    e.depart_idx, 
+		    d.depart_name, 
+		    r.rank_name,
+		    b.name, 
+		    b.date, 
+		    b.bhit
+		FROM 
+		    board b
+		JOIN 
+		    employee e ON b.emp_idx = e.emp_idx
+		JOIN 
+		    department d ON e.depart_idx = d.depart_idx
+		JOIN 
+		    rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE 
+		    b.importance = #{importance} 
+		    AND b.board_category = 1
+		ORDER BY 
+		    b.date DESC, 
+		    b.board_idx DESC
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
 	
@@ -26,14 +47,31 @@
     keyProperty="board_idx"
     parameterType="com.best.board.BoardDTO">
 	    INSERT INTO board(board_category, subject, content, emp_idx, name, importance)
-	    VALUES(1, #{subject}, #{content}, #{emp_idx}, #{name}, #{importance})
+	    VALUES(#{board_category}, #{subject}, #{content}, #{emp_idx}, #{name}, #{importance})
 	</insert>
 		
 	
 	<!-- 공지 상세보기 -->
 	<select id="noticeDetail" resultType="map">
-		SELECT * FROM board WHERE board_idx = #{param1}
+		SELECT
+			b.*,
+			e.depart_idx,
+			d.depart_name, 
+		    r.rank_name
+		FROM board b
+		JOIN 
+		    employee e ON b.emp_idx = e.emp_idx
+		JOIN 
+		    department d ON e.depart_idx = d.depart_idx
+		JOIN 
+		    rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE board_idx = #{board_idx}
 	</select>
+	<update id="noticeViewCount">
+		UPDATE board
+	    SET bhit = bhit + 1
+	    WHERE board_idx = #{board_idx}
+	</update>
 	
 	
 	<!-- 공지 수정 -->
@@ -42,25 +80,40 @@
 	    WHERE board_idx = #{board_idx}
 	</update>
 		
+		
+	<!-- 중요 공지 토글 -->
+	<update id="toggleImportant" parameterType="map">
+		UPDATE board SET importance = #{importance} WHERE board_idx =#{board_idx}
+	</update>
+		
+		
+	<!-- 공지 삭제 -->	
+	<delete id="noticeDelete">
+		DELETE FROM board WHERE board_idx = #{board_idx}
+	</delete>
 	
-	<!-- 검색 토탈 페이지 -->
+	
+	<!-- 공지 검색 토탈 페이지 -->
 	<select id="searchCount" resultType="int">
 		SELECT CEIL(COUNT(board_idx) / #{cnt}) AS pages 
 	    FROM board
-	    WHERE importance = #{importance}
+	    WHERE board_category = 1
+	    AND importance = #{importance}
 	    AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
 	</select>
-	<!-- 검색 리스트 -->
+	<!-- 공지 검색 리스트 -->
 	<select id="noticeSearch" resultType="com.best.board.BoardDTO">
 	    SELECT board_idx, subject, name, date, bhit FROM board
-	    WHERE importance = #{importance}
+	    WHERE board_category = 1
+	    AND importance = #{importance}
 	    AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
 	    ORDER BY date DESC, board_idx DESC
 	    LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
 	
-
+	
+	
 	<!-- 자유 게시판 토탈 페이지 -->
 	<select id="freeBoardCount" resultType="int">
 		SELECT CEIL(COUNT(board_idx) / #{cnt}) AS pages 
@@ -69,17 +122,64 @@
 	</select>
 	<!-- 자유 게시판 리스트 -->
 	<select id="freeBoardList" resultType="map">
-	    SELECT board_idx, subject, name, date, bhit FROM board
-	    WHERE board_category = 2
-	    ORDER BY date DESC, board_idx DESC
-	    LIMIT #{cnt} OFFSET #{offset}
+	    SELECT 
+		    b.board_idx,
+		    b.subject,
+		    b.name,
+		    b.date,
+		    b.bhit,
+		    d.depart_name,
+		    r.rank_name
+		FROM 
+		    board b
+		JOIN 
+		    employee e ON b.emp_idx = e.emp_idx
+		JOIN 
+		    department d ON e.depart_idx = d.depart_idx
+		JOIN 
+		    rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE 
+		    b.board_category = 2
+		ORDER BY 
+		    b.date DESC, b.board_idx DESC
+		LIMIT 
+		    #{cnt} OFFSET #{offset}
 	</select>
 	
 	
 	<!-- 자유 게시판 상세보기 -->
 	<select id="freeDetail" resultType="map">
-		SELECT * FROM board WHERE board_idx = #{param1}
+		SELECT 
+		    b.*,
+		    d.depart_name,
+		    r.rank_name
+		FROM 
+		    board b
+		JOIN 
+		    employee e ON b.emp_idx = e.emp_idx
+		JOIN 
+		    department d ON e.depart_idx = d.depart_idx
+	    JOIN 
+		    rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE 
+		    b.board_idx = #{board_idx}
 	</select>
+	<update id="viewCount">
+		UPDATE board
+	    SET bhit = bhit + 1
+	    WHERE board_idx = #{board_idx}
+	</update>
+	
+	
+	<!-- 자유 게시판 작성 -->
+	<insert id="freeWrite" 
+    useGeneratedKeys="true"
+    keyColumn="board_idx"
+    keyProperty="board_idx"
+    parameterType="com.best.board.BoardDTO">
+	    INSERT INTO board(board_category, subject, content, emp_idx, name, importance)
+	    VALUES(#{board_category}, #{subject}, #{content}, #{emp_idx}, #{name}, #{importance})
+	</insert>
 	
 	
 	<!-- 자유 게시판 수정하기 -->
@@ -89,20 +189,125 @@
 	</update>
 	
 	
-	<!-- 자유 게시판 댓글 토탈 페이지 -->
-	<select id="commentCount" resultType="int">
-		SELECT CEIL(COUNT(comment_idx) / #{cnt}) AS pages 
-		FROM comment
-		WHERE board_idx = #{board_idx} AND parent_idx IS NULL
+	<!-- 자유 게시판 게시글 삭제하기(상세보기) -->
+	<delete id="commentDelete">
+		DELETE FROM comment WHERE board_idx = #{board_idx}
+	</delete>
+	<delete id="freeDelete">
+		DELETE FROM board WHERE board_idx = #{board_idx}
+	</delete>
+	
+	
+	<!-- 검색 토탈 페이지 -->
+	<select id="freeSearchCount" resultType="int">
+		SELECT CEIL(COUNT(board_idx) / #{cnt}) AS pages 
+	    FROM board
+	    WHERE board_category = 2
+	    AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
 	</select>
-	<!-- 자유 게시판 댓글 리스트 -->
-	<select id="commentList" resultType="map">
-	    SELECT comment_idx, content, emp_idx, emp_name, com_date
-		FROM comment
-		WHERE board_idx = #{board_idx} AND parent_idx IS NULL
-		ORDER BY com_date DESC
+	<!-- 검색 리스트 -->
+	<select id="freeSearchList" resultType="com.best.board.BoardDTO">
+	    SELECT board_idx, subject, name, date, bhit FROM board
+	    WHERE board_category = 2
+	    AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
+	    ORDER BY date DESC, board_idx DESC
 	    LIMIT #{cnt} OFFSET #{offset}
 	</select>
+	
+	<!-- 자유 게시판 댓글 토탈 페이지 -->
+	<!-- <select id="commentCount" resultType="int">
+	    SELECT CEIL(COUNT(*) / #{cnt}) AS pages 
+	    FROM comment
+	    WHERE board_idx = #{board_idx}
+	</select> -->
+	<!-- 자유 게시판 댓글 리스트 -->
+<!-- 	<select id="commentList" resultType="com.best.board.CommentDTO">
+	    SELECT 
+	        comment_idx, 
+	        board_idx, 
+	        content, 
+	        emp_idx,
+	        emp_name, 
+	        com_date, 
+	        parent_idx
+	    FROM 
+	        comment
+	    WHERE 
+	        board_idx = #{board_idx}
+	    ORDER BY 
+	        CASE 
+	            WHEN parent_idx IS NULL THEN comment_idx
+	            ELSE parent_idx
+	        END ASC,
+	        comment_idx ASC
+	    LIMIT #{cnt} OFFSET #{offset}
+	</select> -->
+	
+	
+	<!-- 원댓글 (Parent Comments) -->
+	<select id="parentComments" resultType="map">
+	    SELECT 
+		    c.comment_idx, 
+		    c.board_idx, 
+		    c.content, 
+		    c.emp_idx, 
+		    c.emp_name, 
+		    c.com_date, 
+		    c.parent_idx,
+		    d.depart_name,
+		    r.rank_name
+		FROM 
+		    comment c
+		JOIN 
+		    employee e ON c.emp_idx = e.emp_idx
+		JOIN 
+		    department d ON e.depart_idx = d.depart_idx
+   	    JOIN 
+		    rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE 
+		    c.board_idx = #{board_idx}
+		    AND c.parent_idx IS NULL
+		ORDER BY 
+		    c.comment_idx ASC
+		LIMIT #{cnt} OFFSET #{offset}
+	</select>
+	
+	<!-- 대댓글 (Child Comments) -->
+	<select id="childComments" resultType="map">
+		SELECT 
+		    c.comment_idx, 
+		    c.board_idx, 
+		    c.content, 
+		    c.emp_idx, 
+		    c.emp_name, 
+		    c.com_date, 
+		    c.parent_idx,
+		    d.depart_name,
+		    r.rank_name
+		FROM 
+		    comment c
+		JOIN 
+		    employee e ON c.emp_idx = e.emp_idx
+		JOIN 
+		    department d ON e.depart_idx = d.depart_idx
+   	    JOIN 
+		    rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE 
+		    c.board_idx = #{board_idx}
+		    AND c.parent_idx IS NOT NULL
+		ORDER BY 
+		    c.parent_idx ASC, 
+		    c.comment_idx ASC
+	</select>
+	
+	<!-- 원댓글 개수 -->
+	<select id="countParentComments" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM comment 
+	    WHERE board_idx = #{board_idx}
+	    AND parent_idx IS NULL
+	</select>
+	
 	
 	
 	<!-- 자유 게시판 댓글 작성 -->
@@ -111,4 +316,25 @@
 	    VALUES(#{board_idx}, #{content}, #{emp_idx}, #{emp_name})
 	</insert>
 	
+	
+	<!-- 자유 게시판 대댓글 작성 -->
+	<insert id="addReply" parameterType="com.best.board.CommentDTO">
+	    INSERT INTO comment (board_idx, content, emp_idx, emp_name, parent_idx)
+	    VALUES(#{board_idx}, #{content}, #{emp_idx}, #{emp_name}, #{parent_idx})
+	</insert>
+	
+	
+	<!-- 자유 게시판 댓글 수정 -->
+	<update id="updateComment">
+		UPDATE comment SET content = #{content}, com_date = NOW() WHERE comment_idx = #{comment_idx}
+	</update>
+	
+	
+	<!-- 자유 게시판 댓글 삭제 -->
+	<delete id="deleteReplies">
+		DELETE FROM comment WHERE parent_idx = #{parent_idx}
+	</delete>
+	<delete id="deleteComment">
+		DELETE FROM comment WHERE comment_idx = #{comment_idx}
+	</delete>
 </mapper>  

@@ -301,6 +301,7 @@
 var showPage = 1;
 var text = "반려";
 var readStatus = "all";
+var cnt = 6;
 pageCall(showPage, readStatus);
 
 function pageCall(page, readStatus){
@@ -316,9 +317,10 @@ function pageCall(page, readStatus){
         },
         dataType: 'JSON',
         success: function(data) {
+        	var startNumber = (page - 1) * cnt + 1;
             console.log(data);
             if(data.receivedList.length>0){
-                received(data.receivedList);
+                received(data.receivedList,startNumber);
                 
 	            $('#receivedPage').twbsPagination({
 	                startPage: 1,
@@ -348,7 +350,7 @@ function pageCall(page, readStatus){
             }
             if(data.sentList.length>0){
 	            // 보낸 문서
-	            sent(data.sentList);
+	            sent(data.sentList,startNumber);
 	            // 보낸 문서 페이징
 	            $('#sentPage').twbsPagination({
 	                startPage: 1,
@@ -375,10 +377,10 @@ function pageCall(page, readStatus){
 }
 
 // 받은 문서 리스트
-function received(document) {
+function received(document,startNumber) {
 	
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
@@ -407,10 +409,10 @@ function received(document) {
 }
 
 // 보낸 문서 리스트
-function sent(document) {
+function sent(document,startNumber) {
 	
     var content = '';
-	var i = 1;
+	var i = startNumber;
 	for(var item of document){
 		console.log(item.form_subject)
 		content += '<tr>';
@@ -436,6 +438,7 @@ function sent(document) {
 
 // 받은 문서
 function receivedPageCall(page, readStatus) {
+	var startNumber = (page - 1) * cnt + 1;
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
@@ -447,7 +450,7 @@ function receivedPageCall(page, readStatus) {
         },
         dataType: 'JSON',
         success: function(data) {
-        	received(data.receivedList);
+        	received(data.receivedList,startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);
@@ -456,7 +459,8 @@ function receivedPageCall(page, readStatus) {
 }
 // 보낸 문서
 function sentPageCall(page) {
-    $.ajax({
+	var startNumber = (page - 1) * cnt + 1;
+	$.ajax({
         type: 'GET',
         url: 'documentList.ajax',
         data: {
@@ -466,7 +470,7 @@ function sentPageCall(page) {
         },
         dataType: 'JSON',
         success: function(data) {
-        	sent(data.sentList);
+        	sent(data.sentList,startNumber);
         },
         error: function(e) {
             console.log("오류 발생", e);
