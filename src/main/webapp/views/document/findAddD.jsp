@@ -54,7 +54,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     padding: 20px;
-    width: 40%;
+    width: 540px;
     height: 50%;
     max-height: 50%; /* 높이를 화면의 80%로 제한 */
     overflow-y: auto; /* 높이를 초과할 경우 스크롤 생성 */

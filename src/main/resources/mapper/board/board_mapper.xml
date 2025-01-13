@@ -57,7 +57,7 @@
          b.*,
          e.depart_idx,
          d.depart_name, 
-          r.rank_name
+         r.rank_name
       FROM board b
       JOIN 
           employee e ON b.emp_idx = e.emp_idx
@@ -102,13 +102,29 @@
        AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
    </select>
    <!-- 공지 검색 리스트 -->
-   <select id="noticeSearch" resultType="com.best.board.BoardDTO">
-       SELECT board_idx, subject, name, date, bhit FROM board
-       WHERE board_category = 1
-       AND importance = #{importance}
-       AND ${searchOption} LIKE CONCAT('%', #{searchText}, '%')
-       ORDER BY date DESC, board_idx DESC
-       LIMIT #{limit} OFFSET #{offset}
+   <select id="noticeSearch" resultType="map">
+		SELECT 
+			b.board_idx, 
+			b.subject, 
+			b.emp_idx, 
+			e.depart_idx, 
+			d.depart_name, 
+			r.rank_name,
+			b.name, 
+			b.date, 
+			b.bhit
+		FROM board b
+		JOIN 
+		    employee e ON b.emp_idx = e.emp_idx
+		JOIN 
+		    department d ON e.depart_idx = d.depart_idx
+		JOIN 
+          	rank_emp r ON e.rank_idx = r.rank_idx
+		WHERE b.board_category = 1
+		AND b.importance = #{importance}
+		AND b.${searchOption} LIKE CONCAT('%', #{searchText}, '%')
+		ORDER BY b.date DESC, b.board_idx DESC
+		LIMIT #{limit} OFFSET #{offset}
    </select>
    
    

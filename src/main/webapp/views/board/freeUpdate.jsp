@@ -112,7 +112,7 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="maintext">
-			<h3 class="document">게시판</h3>
+			<h3 class="document">자유 게시판</h3>
 			<h3>>&nbsp;&nbsp;게시글 수정</h3>
 		</div>
 		<div class="formBorder">
@@ -132,11 +132,16 @@
 									${info.content}
 								</div>
 								<input type="hidden" name="content"/>
+								<p id="charCount">0 / 500</p>
 							</td>
 						</tr>
 						<tr>
 							<td class="buttonBox">
 								<input type="button" value="글 수정하기" onclick="save()"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="buttonBox">
 								<input type="button" value="취소" onclick="location.href='freeDetail.go?idx=${info.board_idx}'"/>
 							</td>
 						</tr>
@@ -150,7 +155,6 @@
 var config = {}
 config.editorResizeMode = "none";
 //config.toolbar = "basic";
-
 //data:imgae - 이미지를 base64 형태로 문자열화 한것이다.
 //장점 : 별도의 파일처리 없이 파일을 다룰 수 있다. 사용이 간단하다.
 //단점 : 용량제어가 안되며, 기존파일보다 용량이 커진다. 
@@ -164,11 +168,64 @@ config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로
 }
 
 var editor = new RichTextEditor("#div_editor", config);
+var maxLength = 500; // 최대 글자 수
+
+// 에디터 내용 변경 감지 함수
+function updateCharCount() {
+    var content = editor.getHTMLCode(); // HTML 포함 내용 가져오기
+    var textOnly = $('<div>').html(content).text(); // HTML 태그 제외한 순수 텍스트 추출
+
+    // 글자 수 업데이트
+    $('#charCount').text(textOnly.length + ' / ' + maxLength);
+
+    // 글자 수 초과 처리
+    if (textOnly.length > maxLength) {
+        alert("내용이 500자를 초과할 수 없습니다.");
+
+        // 초과된 글자를 잘라내기
+        var truncatedText = textOnly.substring(0, maxLength);
+        editor.setHTMLCode(truncatedText); // 잘린 텍스트로 업데이트
+
+        // 글자 수 다시 업데이트
+        $('#charCount').text(maxLength + ' / ' + maxLength);
+    }
+}
+
+// MutationObserver 설정
+function observeEditorChanges() {
+    var targetNode = document.querySelector('#div_editor iframe').contentDocument.body; // RichTextEditor 내부 콘텐츠
+    var observer = new MutationObserver(function () {
+        updateCharCount(); // DOM 변화 시 글자 수 업데이트
+    });
+
+    // MutationObserver 옵션
+    observer.observe(targetNode, {
+        characterData: true, // 텍스트 변화 감지
+        subtree: true,       // 하위 노드 포함 감지
+        childList: true,     // 자식 노드 추가/삭제 감지
+    });
+
+    // 초기 글자 수 업데이트
+    updateCharCount();
+}
+
+// 페이지 로드 시 MutationObserver 초기화
+observeEditorChanges();
+
+
+
 
 function save() {
-    var content = editor.getHTMLCode();
+    var content = editor.getHTMLCode(); // 에디터 내용 가져오기
     console.log(content);
     console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
+
+    // 제목 입력 확인
+    var subject = $('input[name="subject"]').val().trim(); // 제목 필드 값 가져오기
+    if (!subject) {
+        alert("제목을 입력해주세요.");
+        return;
+    }
 
     // 체크박스 상태에 따라 importance 값 설정
     if ($('#check').prop('checked')) {
@@ -177,20 +234,21 @@ function save() {
         $('input[name="importance"]').val('0');
     }
 
+    // 100MB 초과 확인
     if (content.length > 100 * 1024 * 1024) {
         alert("100MB이상 크기는 전송이 불가능 합니다.");
-    } else {
-        $('input[name="content"]').val(content);
-        $('form').submit();
+        return; // 폼 제출 중단
     }
+
+    // 폼 데이터 설정 및 제출
+    $('input[name="content"]').val(content);
+    $('form').submit();
 }
-// 500자 제한
-$(document).on('input', '#div_editor', function() {
-    var maxLength = 500;
-    var text = $(this).text();
-    if (text.length > maxLength) {
-        $(this).text(text.substring(0, maxLength));
-    }
-});
+
+
+
+
+
+
 </script>
 </html>

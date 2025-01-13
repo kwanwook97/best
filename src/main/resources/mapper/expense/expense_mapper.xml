@@ -32,7 +32,7 @@
 	    SELECT ex_date, ex_item, description, ex_amount, remark
 	    FROM expense
 	    WHERE ex_date LIKE #{ex_date} AND form_idx = #{form_idx}
-	    ORDER BY ex_idx DESC 
+	    ORDER BY ex_date
 	    LIMIT #{cnt} OFFSET #{offset}
 	</select>
 	

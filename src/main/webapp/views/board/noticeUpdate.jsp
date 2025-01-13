@@ -42,7 +42,7 @@
 	    align-items: center;
 	    justify-content: center;
     	width: 950px;
-    	height: 660px;	
+    	height: 728px;	
 	    border: 2px solid var(--primary-color);
 	    border-radius: 10px;
 	}
@@ -139,10 +139,17 @@
 								${info.content}
 							</div>
 							<input type="hidden" name="content"/>
+							<p id="charCount">0 / 5000</p>
 						</td>
 					</tr>
 					<tr>
-						<th><input type="button" value="공지 수정하기" onclick="save()"/></th>
+						<td><input type="button" value="공지 수정하기" onclick="save()"/></td>
+						
+					</tr>
+					<tr>
+						<td>
+							<input type="button" value="취소" onclick="location.href='noticeDetail.go?idx=${info.board_idx}'"/>
+						</td>
 					</tr>
 				</table>
 			</form>
@@ -167,12 +174,64 @@ config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로
 }
 
 var editor = new RichTextEditor("#div_editor", config);
+var maxLength = 5000; // 최대 글자 수
+
+// 에디터 내용 변경 감지 함수
+function updateCharCount() {
+    var content = editor.getHTMLCode(); // HTML 포함 내용 가져오기
+    var textOnly = $('<div>').html(content).text(); // HTML 태그 제외한 순수 텍스트 추출
+
+    // 글자 수 업데이트
+    $('#charCount').text(textOnly.length + ' / ' + maxLength);
+
+    // 글자 수 초과 처리
+    if (textOnly.length > maxLength) {
+        alert("내용이 5000자를 초과할 수 없습니다.");
+
+        // 초과된 글자를 잘라내기
+        var truncatedText = textOnly.substring(0, maxLength);
+        editor.setHTMLCode(truncatedText); // 잘린 텍스트로 업데이트
+
+        // 글자 수 다시 업데이트
+        $('#charCount').text(maxLength + ' / ' + maxLength);
+    }
+}
+
+// MutationObserver 설정
+function observeEditorChanges() {
+    var targetNode = document.querySelector('#div_editor iframe').contentDocument.body; // RichTextEditor 내부 콘텐츠
+    var observer = new MutationObserver(function () {
+        updateCharCount(); // DOM 변화 시 글자 수 업데이트
+    });
+
+    // MutationObserver 옵션
+    observer.observe(targetNode, {
+        characterData: true, // 텍스트 변화 감지
+        subtree: true,       // 하위 노드 포함 감지
+        childList: true,     // 자식 노드 추가/삭제 감지
+    });
+
+    // 초기 글자 수 업데이트
+    updateCharCount();
+}
+
+// 페이지 로드 시 MutationObserver 초기화
+observeEditorChanges();
+
 
 function save() {
     var content = editor.getHTMLCode();
     console.log(content);
     console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
 
+    // 제목 입력 확인
+    var subject = $('input[name="subject"]').val().trim(); // 제목 필드 값 가져오기
+    if (!subject) {
+        alert("제목을 입력해주세요.");
+        return;
+    }
+
+ 	
     // 체크박스 상태에 따라 importance 값 설정
     if ($('#check').prop('checked')) {
         $('input[name="importance"]').val('1');
@@ -187,13 +246,5 @@ function save() {
         $('form').submit();
     }
 }
-// 500자 제한
-$(document).on('input', '#div_editor', function() {
-    var maxLength = 500;
-    var text = $(this).text();
-    if (text.length > maxLength) {
-        $(this).text(text.substring(0, maxLength));
-    }
-});
 </script>
 </html>

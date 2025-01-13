@@ -37,7 +37,9 @@
 	        d.form_idx,
 	        d.doc_date,
 	        f.form_subject,
-	        e.name
+	        e.name,
+	        p.depart_name,
+	        r.rank_name
 	    FROM approv a
 	    JOIN 
 	    	document d ON d.doc_idx = a.doc_idx
@@ -45,6 +47,10 @@
 	    	form f ON d.form_idx = f.form_idx
 	    JOIN 
 	    	employee e ON e.emp_idx = d.emp_idx 
+	    JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 
 	    WHERE a.emp_idx = #{emp_idx}
 	    AND a.status = '상신'
 	    AND (
@@ -115,7 +121,9 @@
 	        d.form_idx,
 	        d.doc_date,
 	        f.form_subject,
-	        e.name
+	        e.name,
+	        p.depart_name,
+	        r.rank_name
 	    FROM approv a
 	    JOIN 
 	    	document d ON d.doc_idx = a.doc_idx
@@ -123,6 +131,10 @@
 	    	form f ON d.form_idx = f.form_idx
 	    JOIN 
 	    	employee e ON e.emp_idx = d.emp_idx 
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 	   
 	    WHERE a.emp_idx = #{emp_idx}
 	    AND a.status = '상신'
 	    AND (
@@ -185,7 +197,9 @@
 		    e.name, 
 		    f.form_subject,
 		    a1.approv_num,
-		    a1.doc_read
+		    a1.doc_read,
+		    p.depart_name,
+	        r.rank_name
 		FROM document d
 		JOIN (
 		    SELECT doc_idx, approv_date, approv_num, doc_read
@@ -198,6 +212,10 @@
 			employee e ON d.emp_idx = e.emp_idx
 		JOIN 
 			form f ON d.form_idx = f.form_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 
 		WHERE d.status = '진행중'
   	  	<if test="readStatus != 'all'">
 		    AND a1.doc_read = #{readStatus}
@@ -248,7 +266,9 @@
 		    e.name, 
 		    f.form_subject,
 		    a1.approv_num,
-   		    a1.doc_read
+   		    a1.doc_read,
+   		    p.depart_name,
+	        r.rank_name
 		FROM document d
 		JOIN (
 		    SELECT doc_idx, approv_date, approv_num, doc_read
@@ -257,8 +277,14 @@
 		      AND approv_order = 1
 		      AND status = '승인'
 		) a1 ON d.doc_idx = a1.doc_idx
-		JOIN employee e ON d.emp_idx = e.emp_idx
-		JOIN form f ON d.form_idx = f.form_idx
+		JOIN 
+			employee e ON d.emp_idx = e.emp_idx
+		JOIN 
+			form f ON d.form_idx = f.form_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 
 		WHERE d.status = '진행중'
         <choose>
             <when test="searchType == 'subject'">
@@ -307,11 +333,20 @@
 		    f.form_subject,
 		    a.approv_date,
 		    a.approv_num,
-		    a.doc_read
+		    a.doc_read,
+		    p.depart_name,
+	        r.rank_name
 		FROM document d
-		JOIN employee e ON d.emp_idx = e.emp_idx
-		JOIN form f ON d.form_idx = f.form_idx
-		JOIN approv a ON d.doc_idx = a.doc_idx
+		JOIN 
+			employee e ON d.emp_idx = e.emp_idx
+		JOIN 
+			form f ON d.form_idx = f.form_idx
+		JOIN 
+			approv a ON d.doc_idx = a.doc_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 
 		WHERE a.emp_idx = #{emp_idx}
 		AND a.status = '승인'
 	  	AND d.status = '승인'
@@ -327,7 +362,7 @@
    		SELECT CEIL(COUNT(d.doc_idx) / #{cnt}) AS pages
 		FROM document d
 		JOIN employee e ON d.emp_idx = e.emp_idx
-		JOIN form r ON d.form_idx = f.form_idx
+		JOIN form f ON d.form_idx = f.form_idx
 		WHERE d.doc_idx IN (
 		    SELECT a.doc_idx
 		    FROM approv a
@@ -362,11 +397,20 @@
 		    f.form_subject,
 		    a.approv_date,
 		    a.approv_num,
-		    a.doc_read
+		    a.doc_read,
+		    p.depart_name,
+	        r.rank_name
 		FROM document d
-		JOIN employee e ON d.emp_idx = e.emp_idx
-		JOIN form f ON d.form_idx = f.form_idx
-		JOIN approv a ON d.doc_idx = a.doc_idx
+		JOIN 
+			employee e ON d.emp_idx = e.emp_idx
+		JOIN 
+			form f ON d.form_idx = f.form_idx
+		JOIN 
+			approv a ON d.doc_idx = a.doc_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 
 		WHERE a.emp_idx = #{emp_idx}
 		AND a.status = '승인'
 	   	AND d.status = '승인'
@@ -417,7 +461,9 @@
 		    d.doc_subject,
 		    d.doc_date,
 		    f.form_subject,
-		    e.name
+		    e.name,
+			p.depart_name,
+	        r.rank_name
 		FROM 
 		    approv a
 		JOIN 
@@ -426,6 +472,10 @@
 		    form f ON d.form_idx = f.form_idx
 		JOIN 
 		    employee e ON d.emp_idx = e.emp_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 
 		WHERE 
 		    a.doc_idx IN (
 		        SELECT doc_idx
@@ -489,7 +539,9 @@
 		    d.doc_subject,
 		    d.doc_date,
 		    f.form_subject,
-		    e.name
+		    e.name,
+		    p.depart_name,
+	        r.rank_name
 		FROM 
 		    approv a
 		JOIN 
@@ -498,6 +550,10 @@
 		    form f ON d.form_idx = f.form_idx
 		JOIN 
 		    employee e ON d.emp_idx = e.emp_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp r ON e.rank_idx = r.rank_idx 
 		WHERE 
 		    a.doc_idx IN (
 		        SELECT doc_idx
@@ -549,11 +605,20 @@
 		    e.name, 
 		    f.form_subject,
 		    r.doc_read,
-		    r.ref_idx AS approv_num
+		    r.ref_idx AS approv_num,
+		    p.depart_name,
+	        k.rank_name
 		FROM document d
-		JOIN employee e ON d.emp_idx = e.emp_idx
-		JOIN form f ON d.form_idx = f.form_idx
-		JOIN reference r ON d.doc_idx = r.doc_idx
+		JOIN 
+			employee e ON d.emp_idx = e.emp_idx
+		JOIN 
+			form f ON d.form_idx = f.form_idx
+		JOIN 
+			reference r ON d.doc_idx = r.doc_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp k ON e.rank_idx = k.rank_idx 
 		WHERE r.emp_idx = #{emp_idx}
 		<if test="readStatus != 'all'">
 	    	AND r.doc_read = #{readStatus}
@@ -599,11 +664,20 @@
 		    e.name, 
 		    f.form_subject,
 		    r.doc_read,
-		    r.ref_idx AS approv_num
+		    r.ref_idx AS approv_num,
+		    p.depart_name,
+	        k.rank_name
 		FROM document d
-		JOIN employee e ON d.emp_idx = e.emp_idx
-		JOIN form f ON d.form_idx = f.form_idx
-		JOIN reference r ON d.doc_idx = r.doc_idx
+		JOIN 
+			employee e ON d.emp_idx = e.emp_idx
+		JOIN 
+			form f ON d.form_idx = f.form_idx
+		JOIN 
+			reference r ON d.doc_idx = r.doc_idx
+		JOIN 
+	    	department p ON e.depart_idx = p.depart_idx 
+	    JOIN 
+	    	rank_emp k ON e.rank_idx = k.rank_idx 
 		WHERE r.emp_idx = #{emp_idx}
         <choose>
             <when test="searchType == 'subject'">

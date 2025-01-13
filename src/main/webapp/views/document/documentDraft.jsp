@@ -175,8 +175,8 @@
 						<th>문서번호</th>
 						<th>분류</th>
 						<th>문서 제목</th>
-						<th>기안일</th>
-						<th>결재 상태</th>
+						<th>작성일</th>
+						<th>상태</th>
 						<th><i class="fas fa-trash-alt delete-icon"></i></th>
 					</tr>
 				</thead>

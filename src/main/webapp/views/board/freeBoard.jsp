@@ -16,10 +16,9 @@
 	    margin-left: 15vw;
 	    width: 85vw;
 	    margin-top: 7vh;
-	    flex-wrap: wrap;
+	    flex-wrap: nowrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
-	    height: 83%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -27,8 +26,20 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: -34vw;
+        width: 22%;
+	    display: flex;
+	    margin-left: -66vw;
+	    margin-bottom: -12px;
+	    justify-content: space-between;
+	    align-items: baseline;	
+	}
+	.maintext i,
+	.maintext span{
+		font-size: 36px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
+		color: var(--secondary-color);
 	}
 	.document{
 		color: var(--secondary-color);
@@ -39,7 +50,7 @@
 	    justify-content: center;
 	    border: 2px solid var(--primary-color);
 	    width: 1000px;
-	    height: 640px;
+        height: 711px;
 	    border-radius: 10px;
 	    flex-direction: column;
 	    align-items: center;
@@ -53,7 +64,7 @@
 	.docnav{
 	    width: 55vw;
 	    display: flex;
-	    padding: 0 55px 5px 0;
+	    margin: 0 55px 10px 0;
 	    justify-content: flex-end;
 	}
 	.searchbox{
@@ -102,10 +113,17 @@
 		width: 70px;
 	}
 	table.my-table{
+		position: fixed;
+	    width: 935px;
+        top: 155px;
 		border-collapse: separate !important;
         border-spacing: 0;
 		border-radius: 10px;
-		margin: 10px 48px 55px 48px;
+    	margin: 22px 48px 6px 48px;
+		border: 2px solid var(--primary-color);
+	}
+	table.my-table i{
+	    color: var(--accent-color);
 	}
 	table.my-table tr:not(:last-child) td, table.my-table th {
         border-bottom: 1px solid var(--primary-color) !important;
@@ -154,15 +172,13 @@
     table.my-table td:nth-child(5) {
         width: 2%;
     }
+    .container{
+    	position: absolute;
+    	bottom: 46px;
+    }
 	.container nav{
 		display:flex;
 		justify-content: center;
-	}
-	table.my-table{
-		border: 2px solid var(--primary-color);
-	}
-	table.my-table i{
-	    color: var(--accent-color);
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -227,8 +243,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">게시판</h3>
-			<h3>>&nbsp;&nbsp;자유 게시판</h3>
+			<span class="document">게시판</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span>자유 게시판</span>
 		</div>
 		<div class="docnav">
 			<div class="searchbox">
@@ -246,7 +263,7 @@
 			</div>
 		</div>
 		<div class="docbox">
-			<div class="dropBox">
+<!-- 			<div class="dropBox">
 				<div class="drop">
 				    <select class="drop cntSelector">
 				        <option value="5">5개씩 보기</option>
@@ -255,7 +272,7 @@
 				        <option value="20">20개씩 보기</option>
 				    </select>
 				</div>
-			</div>
+			</div> -->
 			<table class="my-table">
 				<thead>
 					<tr>
@@ -280,7 +297,7 @@
 <script>
 
 var page = 1;
-var itemsPerPage = 15;
+var itemsPerPage = 20;
 
 pageCall(page);
 
@@ -319,11 +336,11 @@ function pageCall(page) {
 }
 
 // 항목 개수 변경 이벤트
-$('.cntSelector').on('change', function() {
+/* $('.cntSelector').on('change', function() {
     itemsPerPage = parseInt($(this).val()); // 사용자가 선택한 개수
     page = 1; // 첫 페이지로 초기화
     pageCall(page); // 첫 페이지 데이터 로드
-});
+}); */
 
 // 리스트 출력 함수
 function printList(list, startNumber) {
@@ -468,6 +485,67 @@ function pageCallSearchList(page,searchText,searchOption) {
 $('.editbtn').on('click', function(){
 	window.location.href="freeWrite.go";
 });
+
+
+var config = {}
+config.editorResizeMode = "none";
+//config.toolbar = "basic";
+
+//data:imgae - 이미지를 base64 형태로 문자열화 한것이다.
+//장점 : 별도의 파일처리 없이 파일을 다룰 수 있다. 사용이 간단하다.
+//단점 : 용량제어가 안되며, 기존파일보다 용량이 커진다. 
+config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로변경 함수, 자바스크립트는 함수를 매개변수로 넘길수있음
+	console.log(file);
+
+	if(file.size>(1*1024*1024)){
+		alert('2MB이상의 파일은 올릴 수 없습니다.');
+		pathReplace('/img/noimage.png');
+	}
+}
+
+var editor = new RichTextEditor("#div_editor", config);
+
+function save() {
+	var content = editor.getHTMLCode(); // 에디터의 HTML 포함 내용 가져오기
+    var textOnly = $('<div>').html(content).text(); // HTML 태그 제거하고 순수 
+    
+    console.log("sdf"+content);
+    console.log("qudㄴ병신"+textOnly);
+    
+    var content = editor.getHTMLCode(); // 에디터 내용 가져오기
+    console.log(content);
+    console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
+
+    // 제목 입력 확인
+    var subject = $('input[name="subject"]').val().trim(); // 제목 필드 값 가져오기
+    if (!subject) {
+        alert("제목을 입력해주세요.");
+        return;
+    }
+
+    // 500자 제한 확인
+    if (content.length > 500) {
+        alert("내용이 500자를 초과할 수 없습니다.");
+        return;
+    }
+
+    // 체크박스 상태에 따라 importance 값 설정
+    if ($('#check').prop('checked')) {
+        $('input[name="importance"]').val('1');
+    } else {
+        $('input[name="importance"]').val('0');
+    }
+
+    // 100MB 초과 확인
+    if (content.length > 100 * 1024 * 1024) {
+        alert("100MB이상 크기는 전송이 불가능 합니다.");
+        return; // 폼 제출 중단
+    }
+
+    // 폼 데이터 설정 및 제출
+    $('input[name="content"]').val(content);
+    $('form').submit();
+}
 
 </script>
 </html>

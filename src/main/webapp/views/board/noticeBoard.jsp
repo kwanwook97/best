@@ -249,7 +249,9 @@
 					<input type="text" name="search" class="searchInp">
 					<i class="fas fa-search"></i>
 				</div>
-				<button class="editbtn"><i class="far fa-edit"></i>작성</button>
+				<c:if test="${sessionScope.employee.depart_idx == 2 || sessionScope.employee.depart_idx == 3}">
+				    <button class="editbtn"><i class="far fa-edit"></i>작성</button>
+				</c:if>
 			</div>
 		</div>
 		<div class="docbox">
@@ -515,7 +517,7 @@ $('.searchInp').keydown(function(event) {
                         $('.searchCont').append('<div class="Msg">일반 공지 없음</div>');
                     }
                     if (data.importantNotices.length > 0) {
-                        PrintImport(data.importantNotices);
+                        searchImport(data.importantNotices);
 
                         $('#importantPagination').twbsPagination({
                             startPage: 1,
@@ -526,14 +528,14 @@ $('.searchInp').keydown(function(event) {
                             next: '<i class="fas fa-angle-right"></i>',
                             last: '<i class="fas fa-angle-double-right"></i>',
                             onPageClick: function(evt, page) {
-                                console.log("evt", evt);  // 클릭 이벤트
-                                console.log("page", page);  // 클릭한 페이지 번호
-                                pageCallImportant(page);  // 중요 게시판 페이지 정보 받아서 수행
+                                console.log("evt", evt);
+                                console.log("page", page);
+                                searchCallImportant(page);
                             }
                         });
                     }
                     if (data.generalNotices.length > 0) {
-                        PrintGeneral(data.generalNotices);
+                    	searchGeneral(data.generalNotices);
 
                         $('#generalPagination').twbsPagination({
                             startPage: 1,
@@ -546,7 +548,7 @@ $('.searchInp').keydown(function(event) {
                             onPageClick: function(evt, page) {
                                 console.log("evt", evt);  // 클릭 이벤트
                                 console.log("page", page);  // 클릭한 페이지 번호
-                                pageCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
+                                searchCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
                             }
                         });
                     }
@@ -561,7 +563,123 @@ $('.searchInp').keydown(function(event) {
     }
 });
 
+//검색창 실시간 감지
+$('input[name="search"]').on('input', function() {
+    var query = $(this).val().trim();
 
+    if (query === "") {
+        pageCall(1);
+    }
+});
+    
+function searchCallImportant(page){
+	$.ajax({
+        type: 'GET',
+        url: 'noticeSearch.ajax',
+        data: {
+            searchText: searchText,
+            searchOption: searchOption,
+            page: 1,
+            cnt: 5 
+        },
+        dataType: 'JSON',
+        success: function(data) {
+            console.log(data);
+            searchImport(data.importantNotices);
+        },
+        error: function(e) {
+            console.log("검색 오류 발생", e);
+        }
+    });
+}
+
+function  searchImport(notices){
+	 var content = '';
+		console.log("발시 이름 어디갔냐고",notices);
+	    for (var item of notices) {
+	        content += '<tr>';
+	        if (item.emp_idx == emp_idx) {
+	            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+	            content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',1)"></i></td>';
+	        } else {
+	            // 일반 아이콘
+	            content += '<td><i class="bi bi-megaphone-fill"></i></td>';
+	        }
+	        content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
+	        content += '<td><input type="hidden" value="' + item.emp_idx + '"></td>';
+	        content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
+	        
+	        var date = new Date(item.date);
+	        var formattedDate = date.toISOString().split('T')[0];
+	        
+	        content += '<td>' + formattedDate + '</td>';
+	        content += '<td>' + item.bhit + '</td>';
+	        content += '</tr>';
+	    }
+	    $('.import').html(content);
+
+	    // 클릭 핸들러 함수
+	    function handleIconClick(boardIdx) {
+	        alert('아이콘 클릭! 게시글 ID: ' + boardIdx);
+	        // 필요한 로직 추가 (예: 페이지 이동, 팝업 등)
+	    }
+
+}
+        
+function searchCallGeneral(page){
+	$.ajax({
+        type: 'GET',
+        url: 'noticeSearch.ajax',
+        data: {
+            searchText: searchText,
+            searchOption: searchOption,
+            page: 1,
+            cnt: 5 
+        },
+        dataType: 'JSON',
+        success: function(data) {
+            console.log(data);
+            searchGeneral(data.generalNotices);
+        },
+        error: function(e) {
+            console.log("검색 오류 발생", e);
+        }
+    });
+}
+        
+function searchGeneral(notices){
+	
+    var content = '';
+	
+    for (var item of notices) {
+        content += '<tr>';
+        if (item.emp_idx == emp_idx) {
+            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+            content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',0)"></i></td>';
+        } else {
+            // 일반 아이콘
+            content += '<td><i class="bi bi-megaphone-fill"></i></td>';
+        }
+        content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
+        content += '<td><input type="hidden" value="' + item.emp_idx + '"></td>';
+        content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
+        
+        var date = new Date(item.date);
+        var formattedDate = date.toISOString().split('T')[0];
+        
+        content += '<td>' + formattedDate + '</td>';
+        content += '<td>' + item.bhit + '</td>';
+        content += '</tr>';
+    }
+    $('.general').html(content);
+
+    // 클릭 핸들러 함수
+    function handleIconClick(boardIdx) {
+        alert('아이콘 클릭! 게시글 ID2: ' + boardIdx);
+        // 필요한 로직 추가 (예: 페이지 이동, 팝업 등)
+    }
+}
+        
 function handleIconClick(board_idx, status) {
     
 	var importance = status === 1 ? 0 : 1;

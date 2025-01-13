@@ -113,10 +113,13 @@ public class BoardService {
 		
 		Map<String, Object> result = new HashMap<>();
 		
-		result.put("importantNotices", boardDao.noticeSearch(1, importLimit, importoffset, searchText, searchOption));	
+		List<?> importantNotices = boardDao.noticeSearch(1, importLimit, importoffset, searchText, searchOption);
+		result.put("importantNotices", importantNotices);	
 		result.put("generalNotices", boardDao.noticeSearch(0, generalLimit, generaloffset, searchText, searchOption));
         result.put("importTotalPages", importTotalPages);
         result.put("generalTotalPages", generalTotalPages);
+        
+        logger.info("dk ㄴㅇㅁ시럼 쳐 나와라: {}", importantNotices);
 		return result;
 	}
 

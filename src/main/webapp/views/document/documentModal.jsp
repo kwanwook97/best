@@ -11,6 +11,9 @@
 <script src="resources/js/document/read-unread.js" type="text/javascript"></script>
 <script src="resources/js/document/documentDetail.js" type="text/javascript"></script>
 <style>
+#plus1{
+	cursor: pointer;
+}
 input, textarea, #approvalModal, button, select, option{
 	pointer-events: auto;  /* input과 textarea는 마우스 이벤트 허용 */
 }
@@ -107,8 +110,9 @@ a.button{
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: 100%;
-	height: 100%;
+    left: -255px;
+    width: 1844px;
+    height: 954px;
 	background: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
 	z-index: 1000;
 }
@@ -464,7 +468,7 @@ function openModal(content, form_idx) {
     });
     
     var script = document.createElement('script');
-    script.src = 'resources/js/document-call.js';
+    script.src = 'resources/js/document/document-call.js';
     script.type = 'text/javascript';
     document.body.appendChild(script);
 	// 오늘 날짜를 yyyy-mm-dd 형식으로 가져오기
@@ -1023,7 +1027,7 @@ function searchReceived(document,startNumber) {
 		content += '<td>' + item.doc_number + '</td>';
 		content += '<td>' + item.form_subject + '</td>';
 		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
-		content += '<td>' + item.name + '</td>';
+		content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
 		
 		var doc_date = new Date(item.doc_date);
 		var docDate = doc_date.toISOString().split('T')[0];

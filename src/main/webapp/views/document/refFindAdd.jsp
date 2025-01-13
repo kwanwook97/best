@@ -17,14 +17,14 @@
 /* 모달 스타일 */
 .modalD {
     display: none;
-    position: fixed; /* 뷰포트를 기준으로 중앙 정렬 */
-    top: 50%; /* 화면의 세로 중앙 */
-    left: 50%; /* 화면의 가로 중앙 */
-    transform: translate(-50%, -50%); /* 정확히 가운데 위치하도록 이동 */
-    background: rgba(0, 0, 0, 0.4); /* 배경 어둡게 처리 */
-    z-index: 999; /* 모달창 위로 보이게 */
-    width: 100%;
-    height: 100%;
+	position: fixed;
+    top: 470px;
+    left: 651px;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    width: 1875px;
+    height: 967px;
     justify-content: center;
     align-items: center;
 }
@@ -54,7 +54,7 @@
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     padding: 20px;
-    width: 40%;
+    width: 540px;
     height: 50%;
     max-height: 50%; /* 높이를 화면의 80%로 제한 */
     overflow-y: auto; /* 높이를 초과할 경우 스크롤 생성 */
@@ -93,8 +93,8 @@
 #employeeModal2 {
     display: none;
     position: fixed; /* 뷰포트를 기준으로 중앙 정렬 */
-    top: 50%; /* 화면의 세로 중앙 */
-    left: 50%; /* 화면의 가로 중앙 */
+    top: 450px;
+    left: 650px;
     transform: translate(-50%, -50%); /* 정확히 중앙으로 이동 */
     z-index: 1000; /* 최상위 레이어 */
 }
@@ -644,10 +644,8 @@ $(document).ready(function () {
          
             	 /*  $(".modal").css("display", "flex"); */
            } else {
-               console.log("이미 추가된 사원입니다:", selectedEmployee.name);
+        	   alert("이미 추가된 사원입니다");
            }
-
-           /* $(".modalD").fadeOut(); */
            
        } else {
            console.error("선택된 사원 정보가 없습니다.");

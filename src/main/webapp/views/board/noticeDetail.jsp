@@ -105,7 +105,7 @@
 			</table>
 			<div class="gobtn">
 				<input type="button" value="리스트" onclick="location.href='noticeBoard.go'"/>
-				<c:if test="${info.name == sessionScope.loginName}">
+				<c:if test="${sessionScope.employee.depart_idx == 2 || sessionScope.employee.depart_idx == 3}">
 					<input type="button" value="수정하기" onclick="location.href='noticeUpdate.go?idx=${info.board_idx}'"/>
 					<input type="button" value="삭제하기" onclick="location.href='noticeDelete.do?idx=${info.board_idx}'"/>
 				</c:if> 

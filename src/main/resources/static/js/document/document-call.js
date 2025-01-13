@@ -24,7 +24,7 @@ $(document).ready(function() {
             // <p> 태그 안의 숫자 업데이트
             newRow.find('.rowNumber').text(rowCount);  // 새로운 행의 숫자를 업데이트
 
-            // 테이블에 새로운 행 추가
+            // 테이블에 새로운 행 추가 
             $('#dynamic_table1').append(newRow);
         } else {
             alert("최대 5개 행만 추가 가능합니다.");

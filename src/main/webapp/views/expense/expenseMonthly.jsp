@@ -5,8 +5,9 @@
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="resources/css/root.css" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.x.x/css/all.min.css" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
@@ -233,18 +234,6 @@
 				<div class="busOpt" onclick="changeList('버스관리')">버스관리</div>
 				<div class="salaryOpt" onclick="changeList('급여')">급여</div>
 			</div>	
-			<div class="searchbox">
-				<div class="searchCont">
-				</div>
-				<select class="drop">
-				  <option value="month">월</option>
-				  <option value="category">품목</option>
-				</select>
-				<div class="search">
-					<input type="text" name="search" class="searchInp">
-					<i class="fas fa-search"></i>
-				</div>
-			</div>
 		</div>
 		<div class="docbox">
 			<div class="date-navigation">
@@ -462,7 +451,7 @@ $(document).ready(function() {
             '<td>' + item.ex_item + '</td>' +
             '<td>' + item.description + '</td>' +
             '<td>' + item.ex_amount.toLocaleString() + '원</td>' +
-            '<td>' + item.remark + '</td>' +
+            '<td>' + (item.remark !== undefined ? item.remark : '') + '</td>' +
             '</tr>';
 		}
 		$('#dailyList').html(content);

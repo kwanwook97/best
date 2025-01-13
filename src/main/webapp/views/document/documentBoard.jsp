@@ -117,7 +117,7 @@
 	    width: 30%;
 	}
 	table.receivedTable th:nth-child(5) {
-	    width: 8%;
+	    width: 14%;
 	}
 	table.receivedTable th:nth-child(6) {
 	    width: 10%;
@@ -387,7 +387,7 @@ function received(document,startNumber) {
 		content += '<td>' + item.doc_number + '</td>';
 		content += '<td>' + item.form_subject + '</td>';
 		content += '<td onclick="receivedDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
-		content += '<td>' + item.name + '</td>';
+		content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
 		
 		var doc_date = new Date(item.doc_date);
 		var docDate = doc_date.toISOString().split('T')[0];

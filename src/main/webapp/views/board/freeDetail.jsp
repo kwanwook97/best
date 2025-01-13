@@ -251,7 +251,7 @@
 				<!-- 게시글 헤더 -->
 				<div class="doc-header">
 					<h3>${info.subject}</h3>
-					<p>작성자: ${info.name} | 작성일: ${info.date} | 조회수: ${info.bhit}</p>
+					<p>작성자: ${info.name}(${info.depart_name}/${info.rank_name}) | 작성일: ${info.date} | 조회수: ${info.bhit}</p>
 				</div>
 				<!-- 게시글 내용 -->
 				<div class="doc-content">
