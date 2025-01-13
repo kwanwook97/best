@@ -110,7 +110,7 @@
 	table.my-table tr{
 		height: 30px;
 	}
-	table.my-table tr:hover{
+	table.my-table tr td:nth-child(2):hover{
 		cursor: pointer;
 		color: var(--accent-color);
 	}
@@ -122,15 +122,18 @@
         width: 5%;
     }
     td:nth-child(2) {
-        width: 15%;
+        width: 10%;
     }
     td:nth-child(3) {
-        width: 5%;
+        width: 0%;
     }
     td:nth-child(4) {
         width: 5%;
     }
     td:nth-child(5) {
+        width: 2%;
+    }
+    td:nth-child(6) {
         width: 2%;
     }
 	.container nav{
@@ -277,6 +280,7 @@
 
 /* 공지 게시판 중요 */
 var showPage = 1; // 기본으로 보여줄 페이지
+var emp_idx = "${sessionScope.loginId}";
 
 pageCall(showPage);
 
@@ -330,14 +334,15 @@ function pageCall(page){
 }
 
 // 중요 게시판 글 출력 함수
-function PrintImport(notices) {
+/* function PrintImport(notices) {
 	
     var content = '';
 	
 	for(var item of notices){
-		content += '<tr onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">';
+		content += '<tr>';
 		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td>'+item.subject+'</td>';
+		content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">'+item.subject+'</td>';
+		content += '<input type="hidden" value="'+ item.emp_idx +'">;
 		content += '<td>'+item.name+'</td>';
 		
 		var date = new Date(item.date);
@@ -349,17 +354,50 @@ function PrintImport(notices) {
 	}
 	$('.import').html(content);
     
+} */
+function PrintImport(notices) {
+	
+    var content = '';
+	
+    for (var item of notices) {
+        content += '<tr>';
+        if (item.emp_idx == emp_idx) {
+            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+            content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',1)"></i></td>';
+        } else {
+            // 일반 아이콘
+            content += '<td><i class="bi bi-megaphone-fill"></i></td>';
+        }
+        content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
+        content += '<td><input type="hidden" value="' + item.emp_idx + '"></td>';
+        content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
+        
+        var date = new Date(item.date);
+        var formattedDate = date.toISOString().split('T')[0];
+        
+        content += '<td>' + formattedDate + '</td>';
+        content += '<td>' + item.bhit + '</td>';
+        content += '</tr>';
+    }
+    $('.import').html(content);
+
+    // 클릭 핸들러 함수
+    function handleIconClick(boardIdx) {
+        alert('아이콘 클릭! 게시글 ID: ' + boardIdx);
+        // 필요한 로직 추가 (예: 페이지 이동, 팝업 등)
+    }
+
 }
 
 // 일반 게시판 글 출력 함수
-function PrintGeneral(notices) {
+/* function PrintGeneral(notices) {
     
 	var content = '';
 	
 	for(var item of notices){
-		content += '<tr onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">';
+		content += '<tr>';
 		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td>'+item.subject+'</td>';
+		content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">'+item.subject+'</td>';
 		content += '<td>'+item.name+'</td>';
 		
 		var date = new Date(item.date);
@@ -370,7 +408,44 @@ function PrintGeneral(notices) {
 		content += '</tr>';
 	}
 	$('.general').html(content);
+} */
+
+function PrintGeneral(notices) {
+	
+    var content = '';
+	
+    for (var item of notices) {
+        content += '<tr>';
+        if (item.emp_idx == emp_idx) {
+            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+            content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',0)"></i></td>';
+        } else {
+            // 일반 아이콘
+            content += '<td><i class="bi bi-megaphone-fill"></i></td>';
+        }
+        content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
+        content += '<td><input type="hidden" value="' + item.emp_idx + '"></td>';
+        content += '<td>' + item.name +'('+item.depart_name+'/'+item.rank_name+')</td>';
+        
+        var date = new Date(item.date);
+        var formattedDate = date.toISOString().split('T')[0];
+        
+        content += '<td>' + formattedDate + '</td>';
+        content += '<td>' + item.bhit + '</td>';
+        content += '</tr>';
+    }
+    $('.general').html(content);
+
+    // 클릭 핸들러 함수
+    function handleIconClick(boardIdx) {
+        alert('아이콘 클릭! 게시글 ID2: ' + boardIdx);
+        // 필요한 로직 추가 (예: 페이지 이동, 팝업 등)
+    }
+
 }
+
+
+
 
 // 중요 공지
 function pageCallImportant(page) {
@@ -422,10 +497,10 @@ $('.searchInp').keydown(function(event) {
                 type: 'GET',
                 url: 'noticeSearch.ajax',
                 data: {
-                    'searchText': searchText,
-                    'searchOption': searchOption,
-                    'page': 1,
-                    'cnt': 5 
+                    searchText: searchText,
+                    searchOption: searchOption,
+                    page: 1,
+                    cnt: 5 
                 },
                 dataType: 'JSON',
                 success: function(data) {
@@ -484,10 +559,34 @@ $('.searchInp').keydown(function(event) {
 });
 
 
+function handleIconClick(board_idx, status) {
+    
+	var importance = status === 1 ? 0 : 1;
+	
+	 $.ajax({
+        type: 'POST',
+        url: 'toggleImportant.ajax',
+        data: {
+        	board_idx: board_idx,
+        	importance: importance
+        },
+        dataType: 'JSON',
+        success: function(response) {
+        	 pageCall(1);
+        },
+        error: function(xhr, status, error) {
+            console.error('오류 발생:', error);
+        }
+    });
+}
+
+
 // 공지 작성
 $('.editbtn').on('click', function(){
 	window.location.href="noticeWrite.go";
 });
+
+
 
 </script>
 </html>

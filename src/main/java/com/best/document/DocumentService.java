@@ -370,8 +370,8 @@ public class DocumentService {
 		return result;
 	}
 	// 전자결재 참조 리스트 검색
-	public Map<String, Object> searchReference(int page, int cnt, String status, String listType, String searchType,
-			String query, String emp_idx) {
+	public Map<String, Object> searchReference(int page, int cnt, String status, String searchType, String query,
+			String emp_idx) {
 		int limit = cnt;
 		int offset = (page-1) * cnt;
 		
@@ -393,27 +393,27 @@ public class DocumentService {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
-		int totalPages = documentDao.sentCount(emp_idx, cnt, status);
-		List<Map<String, Object>> saveList = documentDao.sentList(emp_idx, limit, offset, status);
+		int sentTotalPages = documentDao.sentCount(emp_idx, cnt, status);
+		List<Map<String, Object>> sentList = documentDao.sentList(emp_idx, limit, offset, status);
 		
-		result.put("totalPages", totalPages);
-	    result.put("saveList", saveList);
+		result.put("sentTotalPages", sentTotalPages);
+	    result.put("sentList", sentList);
 		
 		return result;
 	}
 	// 임시저장 리스트 검색
-	public Map<String, Object> searchDraft(int page, int cnt, String status, String listType, String searchType,
-			String query, String emp_idx) {
+	public Map<String, Object> searchDraft(int page, int cnt, String status, String searchType, String query,
+			String emp_idx) {
 		int limit = cnt;
 		int offset = (page-1) * cnt;
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 
-		int totalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
-		List<Map<String, Object>> saveList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
+		int sentTotalPages = documentDao.searchCount(emp_idx, cnt, status, searchType, query);
+		List<Map<String, Object>> sentList = documentDao.searchList(emp_idx, limit, offset, status, searchType, query);
 		
-		result.put("totalPages", totalPages);
-	    result.put("saveList", saveList);
+		result.put("sentTotalPages", sentTotalPages);
+	    result.put("sentList", sentList);
 		
 		return result;
 	}
@@ -499,7 +499,7 @@ public class DocumentService {
     }
 
     // 전자결재 양식 검색
-	public List<Map<String, String>> searchForm(String query) {
+	public List<Map<String, Object>> searchForm(String query) {
         return documentDao.searchForm(query);
 	}
 
