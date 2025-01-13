@@ -170,7 +170,32 @@ $(document).ready(function () {
             // 사원 목록 렌더링
             if (response.employeeList && response.employeeList.length > 0) {
                 memberListWrapper.empty();
+
+                // 로그인한 사용자의 프로필을 리스트에서 분리
+                var myProfile = null;
+                var otherEmployees = [];
+
                 response.employeeList.forEach(function (employee) {
+                    if (Number(employee.emp_idx) === Number(loginId)) {
+                        myProfile = employee;
+                    } else {
+                        otherEmployees.push(employee);
+                    }
+                });
+
+                // 로그인한 사용자 프로필을 상단에 추가
+                if (myProfile) {
+                    var myProfileItem =
+                        '<div class="image-label-wrapper my-profile member-item" data-emp-idx="' + myProfile.emp_idx + '">' +
+                        '<img src="/photo/' + myProfile.photo + '" alt="프로필 사진" class="custom-image">' +
+                        '<span class="custom-label">' + myProfile.name + ' / </span>' +
+                        '<div class="mySelf"><span>나</span></div>' + 
+                        '</div>';
+                    memberListWrapper.append(myProfileItem);
+                }
+
+                // 나머지 사원 추가
+                otherEmployees.forEach(function (employee) {
                     var memberItem =
                         '<div class="image-label-wrapper member-item" data-emp-idx="' + employee.emp_idx + '">' +
                         '<img src="/photo/' + employee.photo + '" alt="프로필 사진" class="custom-image">' +
@@ -302,23 +327,11 @@ function openModal(modalId, contentUpdater) {
     }
 
     // 모달 열기
-    $("#" + modalId).fadeIn(200, function () {
-        centerModal(modalId); // 중앙 정렬
-    });
+    $("#" + modalId).fadeIn(200); // 단순히 fadeIn으로 모달 표시
 }
 
 function closeModal(modalId) {
-    $("#" + modalId).fadeOut();
-}
-
-function centerModal(modalId) {
-    var modal = $("#" + modalId + " .modal-content");
-    var top = Math.max(($(window).height() - modal.outerHeight()) / 2, 0);
-    var left = Math.max(($(window).width() - modal.outerWidth()) / 2, 0);
-    modal.css({
-        top: top + "px",
-        left: left + "px",
-    });
+    $("#" + modalId).fadeOut(); // fadeOut으로 모달 숨김
 }
 
 $(document).on("click", function (e) {
@@ -329,12 +342,6 @@ $(document).on("click", function (e) {
     });
 });
 
-// 화면 크기 변경 시 모든 모달 중앙 정렬
-$(window).on("resize", function () {
-    $(".modal:visible").each(function () {
-        centerModal($(this).attr("id"));
-    });
-});
 
 
 function openMemberModal() {
@@ -369,6 +376,12 @@ function loadMemberList(keyword) {
 
             if (members && members.length > 0) {
                 members.forEach(function (member) {
+                    // 로그인한 사용자는 리스트에서 제외
+                    if (Number(member.emp_idx) === Number(loginId)) {
+                        return; // 해당 항목을 건너뜀
+                    }
+
+                    // 다른 멤버 정보 생성
                     var memberItem = 
                         '<div class="radio-container">' +
                             '<label>' +
@@ -392,6 +405,9 @@ function loadMemberList(keyword) {
         }
     });
 }
+
+
+
 $(document).ready(function () {
     // 체크박스 상태 변경 이벤트
     $(document).on("change", "input[name='member']", function () {

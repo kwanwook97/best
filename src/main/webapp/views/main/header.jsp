@@ -513,10 +513,14 @@ var loginId = ${sessionScope.loginId};
                   
             <li class="nav-item dropdown-lg" style="position: relative;">
                <div class="dropdown">
-                  <a class="nav-link headerDropdownToggle" href="javascript:void();"> 
+                  <a class="nav-link headerDropdownToggle" href="javascript:void(0);"> 
                      <i class="bi bi-person-circle"></i>
                   </a>
                   <div class="dropdown-menu-custom myPageDropdown dropdownMenu">
+                     <div class="dropdown-item" onclick="openChatPopup();">
+                                <i class="bi bi-chat-left-text-fill" style="color:#FFFBF2;"></i>&nbsp;&nbsp;
+                                <span>메신져</span>
+                         </div>
                      <div class="dropdown-item">
                              <a href="myDetail.go?emp_idx=${sessionScope.loginId}">
                                 <i class="bi bi-person-fill-gear" style="color:#FFFBF2;"></i>&nbsp;&nbsp;
@@ -531,13 +535,28 @@ var loginId = ${sessionScope.loginId};
                          </div>
                   </div>
                </div>
-            </li>
-            
+            </li>	
          </ul>
       </nav>
    </header>
+   
    <script>
    
+   function openChatPopup() {
+       const popupWidth = 500; // 팝업 창 너비
+       const popupHeight = 600; // 팝업 창 높이
+       const left = (screen.width - popupWidth) / 2; // 화면 가운데 정렬
+       const top = (screen.height - popupHeight) / 2; // 화면 가운데 정렬
+
+       // 새 창 열기
+       window.open(
+    		    'messenger.go',
+    		    'chatPopup',
+    		    'width=' + popupWidth + ',height=' + popupHeight + ',left=' + left + ',top=' + top + ',resizable=yes,scrollbars=yes'
+    		);
+   }
+
+
  // 안읽은 메시지 갯수 헤더, 사이드바 브로드캐스트
 window.updateUnreadMessageCount = function (unreadTotal) {
     const unreadCountContainer = $(".newMessageIndicator .unread-count-list .unread-message-count");

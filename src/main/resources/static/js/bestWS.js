@@ -28,8 +28,6 @@ globalSocket.onmessage = function (event) {
             showNotification(messageData.photo, messageData.name, messageData.content, messageData.chat_idx, messageData.rank_name);
             updateMessageDropdown(messageData.photo, messageData.name, messageData.content, messageData.chat_idx, messageData.rank_name);
         }
-    } else {
-        console.warn("유효하지 않은 데이터:", messageData);
     }
     
     if (messageData.type === "mail" || messageData.type === "document" || messageData.type === "calendar" || messageData.type === "reserve" || messageData.type === "borrow" || messageData.type === "comment") {

@@ -1,4 +1,4 @@
-    loginId = parseInt(loginId);
+loginId = parseInt(loginId);
 
 
 window.updateChatList = function(messageDataList) {
@@ -15,8 +15,9 @@ window.updateChatList = function(messageDataList) {
 
         // 읽지 않은 메시지 카운트
         const unreadCountText = messageData.unread_count && messageData.unread_count > 0
-            ? `<div class="unread-count-list"><span class="unread-message-count" id="unread-count-${chatIdx}">${messageData.unread_count}</span></div>`
-            : "";
+    	? `<div class="unread-count-list"><span class="unread-message-count" id="unread-count-${chatIdx}">${messageData.unread_count}</span></div>`
+    	: "";
+
 
         // DOM 생성 및 추가
         const chatItem = `
@@ -34,7 +35,7 @@ window.updateChatList = function(messageDataList) {
                 		${unreadCountText}
             		</div>
         		</div>
-    		</div>`;
+    		</div> `
 		sidebar.append(chatItem);
     });
 };
@@ -312,7 +313,7 @@ $(document).ready(function() {
                                        unreadCountText +
                                     '</div>' +
                                   '</div>' +
-                                '</div>';
+                                '</div>'
                             sidebar.append(chatItem);
                         });
                     } else {
@@ -325,43 +326,70 @@ $(document).ready(function() {
             });
 
 
-        if (chatIdx) {
-            // 참여자 리스트 가져오기
-            $.ajax({
-                type: "GET",
-                url: "chatParticipants.ajax",
-                data: { chat_idx: chatIdx },
-                success: function(participants) {
-                    var memberListContainer = $(".member-list");
-                    memberListContainer.empty(); // 기존 리스트 초기화
+       if (chatIdx) {
+    // 참여자 리스트 가져오기
+    $.ajax({
+        type: "GET",
+        url: "chatParticipants.ajax",
+        data: { chat_idx: chatIdx },
+        success: function(participants) {
+            var memberListContainer = $(".member-list");
+            memberListContainer.empty(); // 기존 리스트 초기화
 
-                    if (participants && participants.length > 0) {
-                        participants.forEach(function(participant) {
-                            var participantElement =
-                                '<div class="image-label-wrapper member-item" data-emp-idx="' + participant.emp_idx + '">' +
-                                '<img src="/photo/' + participant.photo + '" alt="프로필 사진" class="custom-image">' +
-                                '<span class="custom-label">' + participant.name + ' / ' + participant.rank_name + '</span>' +
-                                '</div>';
-                            memberListContainer.append(participantElement);
-                        });
-                        $(".member-item").on("click", function () {
-                            var empIdx = $(this).data("emp-idx");
-                            var empName = $(this).find(".custom-label").text();
+            if (participants && participants.length > 0) {
+                // 로그인한 사용자 분리
+                var myProfile = null;
+                var otherParticipants = [];
 
-                            // 프로필 모달 열기
-                            openProfileModal(empIdx, empName);
-                        });
+                participants.forEach(function(participant) {
+                    if (Number(participant.emp_idx) === Number(loginId)) {
+                        myProfile = participant; // 로그인한 사용자
                     } else {
-                        memberListContainer.html("<p>참여자가 없습니다.</p>");
+                        otherParticipants.push(participant); // 다른 사용자
                     }
-                },
-                error: function() {
-                    alert("참여자 리스트를 불러오는 데 실패했습니다.");
+                });
+
+                // 로그인한 사용자를 상단에 추가
+                if (myProfile) {
+                    var myProfileElement =
+                        '<div class="image-label-wrapper my-profile member-item" data-emp-idx="' + myProfile.emp_idx + '">' +
+                        '<img src="/photo/' + myProfile.photo + '" alt="프로필 사진" class="custom-image">' +
+                        '<span class="custom-label">' + myProfile.name + ' / </span>' +
+                        '<div class="mySelf"><span>나</span></div>' + 
+                        '</div>';
+                    memberListContainer.append(myProfileElement);
                 }
-            });
-        } else {
-            console.error("chat_idx가 URL에 없습니다.");
+
+                // 다른 참가자를 추가
+                otherParticipants.forEach(function(participant) {
+                    var participantElement =
+                        '<div class="image-label-wrapper member-item" data-emp-idx="' + participant.emp_idx + '">' +
+                        '<img src="/photo/' + participant.photo + '" alt="프로필 사진" class="custom-image">' +
+                        '<span class="custom-label">' + participant.name + ' / ' + participant.rank_name + '</span>' +
+                        '</div>';
+                    memberListContainer.append(participantElement);
+                });
+
+                // 클릭 이벤트 추가
+                $(".member-item").on("click", function () {
+                    var empIdx = $(this).data("emp-idx");
+                    var empName = $(this).find(".custom-label").text();
+
+                    // 프로필 모달 열기
+                    openProfileModal(empIdx, empName);
+                });
+            } else {
+                memberListContainer.html("<p>참여자가 없습니다.</p>");
+            }
+        },
+        error: function() {
+            alert("참여자 리스트를 불러오는 데 실패했습니다.");
         }
+    });
+} else {
+    console.error("chat_idx가 URL에 없습니다.");
+}
+
         
         function openProfileModal(empIdx, empName) {
             openModal("profileModal", function () {
@@ -594,23 +622,11 @@ function openModal(modalId, contentUpdater) {
     }
 
     // 모달 열기
-    $("#" + modalId).fadeIn(200, function () {
-        centerModal(modalId); // 중앙 정렬
-    });
+    $("#" + modalId).fadeIn(200); // 단순히 fadeIn으로 모달 표시
 }
 
 function closeModal(modalId) {
-    $("#" + modalId).fadeOut();
-}
-
-function centerModal(modalId) {
-    var modal = $("#" + modalId + " .modal-content");
-    var top = Math.max(($(window).height() - modal.outerHeight()) / 2, 0);
-    var left = Math.max(($(window).width() - modal.outerWidth()) / 2, 0);
-    modal.css({
-        top: top + "px",
-        left: left + "px",
-    });
+    $("#" + modalId).fadeOut(); // fadeOut으로 모달 숨김
 }
 
 $(document).on("click", function (e) {
@@ -621,11 +637,6 @@ $(document).on("click", function (e) {
     });
 });
 
-$(window).on("resize", function () {
-    $(".modal:visible").each(function () {
-        centerModal($(this).attr("id"));
-    });
-});
 
 // 기존 코드에서 openModal 및 closeModal 사용
 $(document).ready(function () {

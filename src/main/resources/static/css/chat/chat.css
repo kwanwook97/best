@@ -461,6 +461,10 @@
 	text-align: center;
 	height: 500px;
 	overflow-y: auto;
+	top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }
 
 .modal-content::-webkit-scrollbar {
@@ -778,4 +782,20 @@ search {
 }
 .fa-circle{
 	color: #1DD20C;
+}
+.my-profile{
+    position: relative;
+}
+.mySelf{
+	position: absolute;
+	border-radius: 50%;
+	background-color: #30005A;
+	width: 20px;
+    left: 120px;
+    height: 20px;
+    text-align: center;
+}
+.mySelf > span{
+	color: #FFF5E2;
+	font-weight: bold;
 }
