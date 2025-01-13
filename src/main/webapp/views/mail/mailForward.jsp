@@ -18,362 +18,360 @@
   
   
   <style>
-	:root{
-		--primary-color: #30005A;
-		--secondary-color: #8B6AA7;
-		--accent-color: #E9396B;
-	}
-	.dashboard-body{
-	    margin-left: 16%;
-	    width: 85vw;
-	    margin-top: 7vh;
-	    flex-wrap: wrap;
-	    padding: 2vh;
-	    height: 100%;
-	    display: flex;
-	    flex-direction: column;
-	    align-content: center;
-	    align-items: flex-start;
-	}
-	.maintext{
-		display: flex;
-		margin-left: 10px;
-	}
-	.mail{
-		color: var(--secondary-color);
-		margin-right: 30px;
-	    margin-bottom: 40px;
-	}
-	.mailbox{
-		border: 2px solid var(--primary-color);
-	    width: -webkit-fill-available;
-		height: 85%;
-	    border: 2px solid var(--primary-color);
-	    border-radius: 10px;
-	    padding: 10px; 
-	}
-		
-	.mailnav{
-		display: flex;
-    	justify-content: space-between;
-		align-items: center;
-		margin: 0 48px;
-		padding: 0 5px;
-	}
-	.opt{
-		width: 42%;
-		display: flex;
-		justify-content: space-between;
-	    align-items: center;
-	    color: var(--secondary-color);
-	}
-	.opt div{
-		align-content: center;
-	}
-	.opt div:first-child{
-		color: var(--primary-color);
-		font-weight: bold;
-		border-bottom: 3px solid var(--accent-color);
-	}
-	.opt div:not(:last-child){
-		font-size: 20px;
-		font-weight: bold;
-		height: 60px;
-	}
-	.opt div:hover{
-		cursor: pointer;
-		color: var(--primary-color);
-		font-weight: bold;
-		border-bottom: 3px solid var(--accent-color);
-	}
-	.opt div:last-child:hover {
-	    border-bottom: none;
-	}
-	.drop{
-	    height: 28px;
-	    font-size: 14px;
-	    border: 1px solid var(--primary-color);
-	    border-radius: 4px;
-	    color: var(--primary-color);
-	    cursor: pointer;
-	}
-	.drop option{
-		background-color: white !important;
-	}
-	.drop option:hover{
-		cursor: pointer;
-		background-color:var(--secondary-color);
-	}
-	.searchbox{
-		width: 20%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	.search{
-		position: relative;
-    	display: inline-block;
-	}
-	.search input{
-		border-radius: 10px;
-		padding-left: 10px;
-		border: 1px solid var(--primary-color);
-	}
-	.search i{
-		position: absolute;
-		right: 10px;
-		top: 50%;
-		transform: translateY(-50%);
-		font-size: 18px;
-		pointer-events: none;
-		color: var(--accent-color);
-	}
-	.editbtn{
-		color: white;
-		background-color: var(--accent-color);
-		border-radius: 10px;
-		width: 70px;
-	}
-	.fa-trash-alt:hover{
-		color: var(--accent-color);
-		cursor: pointer;
-	}
-	
-	.mailForm{
-		border-collapse: collapse; /* 테이블 셀 간 간격 제거 */
-		margin-bottom: 0 !important;
-	}
-	
-	table, tr, td{
-		color: var(--primary-color);
-	}
-	
-	tr input[type='text']{
-		width: 70%;
-		background-color: #FFFBF2;
-		border: none;
-	}
-	
-	
-	
-	
-	table {
-    border-collapse: collapse; /* 셀 간격 제거 */
-    width: 100%; /* 테이블 전체 너비 */
-    height: 100% !important;
-	}
+:root { 
+	--primary-color: #30005A; 
+	--secondary-color: #8B6AA7; 
+	--accent-color: #E9396B;
+}
 
-td {
-    padding: 5px 10px; /* 상하 padding 조정 */
-    vertical-align: middle; /* 내용 수직 정렬 */
-    line-height: 1.2; /* 텍스트 줄 간격 조정 */
+.dashboard-body {
+	margin-left: 15%;
+	width: 83vw;
+	margin-top: 7vh;
+	flex-wrap: wrap;
+	padding: 2vh;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: flex-start;
+}
+
+.maintext {
+	display: flex;
+	margin-left: 10px;
+}
+
+.mail {
+	color: var(--secondary-color);
+	margin-right: 30px;
+	margin-bottom: 40px;
+}
+
+.mailbox {
+	border: 2px solid var(--primary-color);
+	width: -webkit-fill-available;
+	height: 85%;
+	border: 2px solid var(--primary-color);
+	border-radius: 10px;
+	padding: 10px;
+}
+
+.mailnav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 0 48px;
+	padding: 0 5px;
+}
+
+.opt {
+	width: 42%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: var(--secondary-color);
+}
+
+.opt div {
+	align-content: center;
+}
+
+.opt div:first-child {
+	color: var(--primary-color);
+	font-weight: bold;
+	border-bottom: 3px solid var(--accent-color);
+}
+
+.opt div:not(:last-child) {
+	font-size: 20px;
+	font-weight: bold;
+	height: 60px;
+}
+
+.opt div:hover {
+	cursor: pointer;
+	color: var(--primary-color);
+	font-weight: bold;
+	border-bottom: 3px solid var(--accent-color);
+}
+
+.opt div:last-child:hover {
+	border-bottom: none;
+}
+
+.drop {
+	height: 28px;
+	font-size: 14px;
+	border: 1px solid var(--primary-color);
+	border-radius: 4px;
+	color: var(--primary-color);
+	cursor: pointer;
+}
+
+.drop option {
+	background-color: white !important;
+}
+
+.drop option:hover {
+	cursor: pointer;
+	background-color: var(--secondary-color);
+}
+
+.searchbox {
+	width: 20%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.search {
+	position: relative;
+	display: inline-block;
+}
+
+.search input {
+	border-radius: 10px;
+	padding-left: 10px;
+	border: 1px solid var(--primary-color);
+}
+
+.search i {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 18px;
+	pointer-events: none;
+	color: var(--accent-color);
+}
+
+.editbtn {
+	color: white;
+	background-color: var(--accent-color);
+	border-radius: 10px;
+	width: 70px;
+}
+
+.fa-trash-alt:hover {
+	color: var(--accent-color);
+	cursor: pointer;
+}
+
+.mailForm {
+	border-collapse: collapse; /* 테이블 셀 간 간격 제거 */
+	margin-bottom: 0 !important;
+}
+
+table, tr, td {
+	color: var(--primary-color);
 }
 
 tr input[type='text'] {
-    height: auto; /* 기본 높이 자동 */
-    padding: 3px; /* 입력 필드 padding 조정 */
-    font-size: 14px; /* 입력 필드 텍스트 크기 */
-    background-color: #FFFBF2;
-    border: none;
+	width: 70%;
+	background-color: #FFFBF2;
+	border: none;
 }
-	
-	
-	
-	label{
-		font-size: 18px !important;
-		color: var(--primary-color) !important;
-		width: 100%;
-		margin-bottom: 0 !important;
-	}
-	
-	.specialChk{
-		color: var(--accent-color) !important;
-	}
-	
-	  /* 버튼 크기와 폰트 크기 통일 */
-	  button[type="button"] {
-	      height: 40px; /* 버튼 높이 */
-	      min-width: 120px; /* 버튼 최소 너비 */
-	      padding: 5px 10px; /* 내부 여백 */
-	      font-size: 16px; /* 버튼 내부 폰트 크기 */
-	      font-weight: bold; /* 폰트 굵기 */
-	      background-color: #8B6AA7;
-	      border: none; /* 테두리 제거 */
-	      border-radius: 5px; /* 둥근 모서리 */
-	      color: white; /* 폰트 색상 */
-	      display: inline-flex; /* 아이콘과 텍스트 정렬 */
-	      align-items: center; /* 수직 정렬 */
-	      justify-content: center; /* 텍스트와 아이콘 중앙 정렬 */
-	  }
-	  button[type="button"]:hover {
-	      background-color: var(--primary-color); /* 호버 시 배경색 변경 */
-	      color: white; /* 폰트 색상 */
-	  }
-	  button[type="button"] i {
-	      margin-right: 5px; /* 아이콘과 텍스트 간격 */
-	      font-size: 18px; /* 아이콘 크기 */
-	  }
-	
-	.btnArea{
-		text-align: right;
-	}
-	
-  /* Placeholder 스타일 적용 */
-  input::placeholder {
-    color: #888 !important; /* 원하는 색상으로 변경 */
-    opacity: 1 !important;  /* 투명도 조정 */
-  }
 
-  textarea::placeholder {
-    color: #888 !important; /* 텍스트 영역 placeholder 색상 */
-    opacity: 1 !important;
-  }
-  
-  
-  
-  
-  
-  
-.receiver-item {
-    display: inline-block !important;
-    background-color: #d1badb !important; /* 바이올렛? 배경 */
-    padding: 5px 10px !important; /* 내부 여백 */
-    border-radius: 15px !important; /* 둥근 모서리 */
-    margin: 5px !important; /* 항목 간 여백 */
-    color: #30005A !important; /* 글자 색상 */
-    font-weight: bold !important; /* 글자 굵기 */
+table {
+	border-collapse: collapse; /* 셀 간격 제거 */
+	width: 100%; /* 테이블 전체 너비 */
+	height: 100% !important;
 }
-  
+
+td {
+	padding: 5px 10px; /* 상하 padding 조정 */
+	vertical-align: middle; /* 내용 수직 정렬 */
+	line-height: 1.2; /* 텍스트 줄 간격 조정 */
+}
+
+tr input[type='text'] {
+	height: auto; /* 기본 높이 자동 */
+	padding: 3px; /* 입력 필드 padding 조정 */
+	font-size: 14px; /* 입력 필드 텍스트 크기 */
+	background-color: #FFFBF2;
+	border: none;
+}
+
+label {
+	font-size: 18px !important;
+	color: var(--primary-color) !important;
+	width: 100%;
+	margin-bottom: 0 !important;
+}
+
+.specialChk {
+	color: var(--accent-color) !important;
+}
+
+/* 버튼 크기와 폰트 크기 통일 */
+button[type="button"] {
+	height: 40px; /* 버튼 높이 */
+	min-width: 120px; /* 버튼 최소 너비 */
+	padding: 5px 10px; /* 내부 여백 */
+	font-size: 16px; /* 버튼 내부 폰트 크기 */
+	font-weight: bold; /* 폰트 굵기 */
+	background-color: #8B6AA7;
+	border: none; /* 테두리 제거 */
+	border-radius: 5px; /* 둥근 모서리 */
+	color: white; /* 폰트 색상 */
+	display: inline-flex; /* 아이콘과 텍스트 정렬 */
+	align-items: center; /* 수직 정렬 */
+	justify-content: center; /* 텍스트와 아이콘 중앙 정렬 */
+}
+
+button[type="button"]:hover {
+	background-color: var(--primary-color); /* 호버 시 배경색 변경 */
+	color: white; /* 폰트 색상 */
+}
+
+button[type="button"] i {
+	margin-right: 5px; /* 아이콘과 텍스트 간격 */
+	font-size: 18px; /* 아이콘 크기 */
+}
+
+.btnArea {
+	text-align: right;
+}
+
+/* Placeholder 스타일 적용 */
+input::placeholder {
+	color: #888 !important; /* 원하는 색상으로 변경 */
+	opacity: 1 !important; /* 투명도 조정 */
+}
+
+textarea::placeholder {
+	color: #888 !important; /* 텍스트 영역 placeholder 색상 */
+	opacity: 1 !important;
+}
+
+.receiver-item {
+	display: inline-block !important;
+	background-color: #d1badb !important; /* 바이올렛? 배경 */
+	padding: 5px 10px !important; /* 내부 여백 */
+	border-radius: 15px !important; /* 둥근 모서리 */
+	margin: 5px !important; /* 항목 간 여백 */
+	color: #30005A !important; /* 글자 색상 */
+	font-weight: bold !important; /* 글자 굵기 */
+}
+
 .receiver-item button {
-    background: none !important; /* 배경 제거 */
-    border: none !important; /* 테두리 제거 */
-    color: #d32f2f !important; /* 빨간색 글자 */
-    font-weight: bold !important; /* 글자 굵기 */
-    cursor: pointer !important; /* 마우스 포인터 변경 */
-    margin-left: 10px !important; /* 버튼과 텍스트 간격 */
+	background: none !important; /* 배경 제거 */
+	border: none !important; /* 테두리 제거 */
+	color: #d32f2f !important; /* 빨간색 글자 */
+	font-weight: bold !important; /* 글자 굵기 */
+	cursor: pointer !important; /* 마우스 포인터 변경 */
+	margin-left: 10px !important; /* 버튼과 텍스트 간격 */
 }
 
 .receiver-item button:hover {
-    color: #b71c1c !important; /* 호버 시 더 진한 빨간색 */
-}  
-  
-
-  
-
-  
-/* #receiver-container, #refer-container{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-} */
-
-#receiver-container, #refer-container, #subject-container{
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+	color: #b71c1c !important; /* 호버 시 더 진한 빨간색 */
 }
 
+#receiver-container, #refer-container, #subject-container {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+#receiver-container, #refer-container {
+	position: relative;
+}
 
 #add-receiver-btn, #add-refer-btn {
-    min-width: fit-content !important;
-    width: fit-content !important;
+	min-width: fit-content !important;
+	width: fit-content !important;
 }
 
-
-
-.chkArea{
+.chkArea {
 	margin-right: 20px;
 }
 
-
-
-.form-group{
+.form-group {
 	margin: 0 !important;
 }
 
 .filebox {
-    display: flex;
-    align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .file-content {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px; /* 아이콘과 텍스트 사이 간격 */
+	display: inline-flex;
+	align-items: center;
+	gap: 5px; /* 아이콘과 텍스트 사이 간격 */
 }
 
 .delete-icon {
-    cursor: pointer;
-    color: #d32f2f;
+	cursor: pointer;
+	color: #d32f2f;
 }
 
 .delete-icon:hover {
-    color: #b71c1c;
+	color: #b71c1c;
 }
 
-
 .editor-td {
-    height: 100% !important; /* 원하는 높이로 설정 */
-    vertical-align: top; /* 콘텐츠를 상단에 정렬 */
+	height: 100% !important; /* 원하는 높이로 설정 */
+	vertical-align: top; /* 콘텐츠를 상단에 정렬 */
 }
 
 #div_editor {
-    width: 100%; /* 에디터의 너비 */
-    height: 100%; /* 원하는 고정 높이 */
-    overflow-y: auto; /* 세로 스크롤바 추가 */
-    overflow-x: hidden; /* 가로 스크롤바 숨김 */
-    border: 1px solid #ccc; /* 경계선 추가 */
-    border-radius: 5px; /* 경계선 둥글게 */
-    padding: 10px; /* 내부 여백 */
-    box-sizing: border-box; /* 패딩 포함 */
-    background-color: #fff; /* 배경색 */
+	width: 100%; /* 에디터의 너비 */
+	height: 100%; /* 원하는 고정 높이 */
+	overflow-y: auto; /* 세로 스크롤바 추가 */
+	overflow-x: hidden; /* 가로 스크롤바 숨김 */
+	border: 1px solid #ccc; /* 경계선 추가 */
+	border-radius: 5px; /* 경계선 둥글게 */
+	padding: 10px; /* 내부 여백 */
+	box-sizing: border-box; /* 패딩 포함 */
+	background-color: #fff; /* 배경색 */
 }
-	
-	
-	
+
 .autoComplete {
-    position: absolute;
-    z-index: 1000;
-    width: 15%;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    max-height: 200px; /* 스크롤을 위한 최대 높이 */
-    overflow-y: auto; /* 스크롤 활성화 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	position: absolute;
+	top: 90%;
+	overflow-x: none;
+	z-index: 1000;
+	width: auto;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	max-height: 200px; /* 스크롤을 위한 최대 높이 */
+	overflow-y: auto; /* 스크롤 활성화 */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 autoComplete div {
-    padding: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333;
+	padding: 10px;
+	cursor: pointer;
+	font-size: 14px;
+	color: #333;
 }
 
 autoComplete div:hover {
-    background-color: #f0f0f0; /* 항목에 마우스를 올렸을 때 */
-    color: #30005A;
-}	
+	background-color: #f0f0f0; /* 항목에 마우스를 올렸을 때 */
+	color: #30005A;
+}
 
 #sender_name {
 	width: auto !important;
 }
+
 #sender_email {
 	width: auto !important;
 }
 
-	
 .mailForm td:first-child {
-    width: 10%; /* 작성자, 제목 등 첫 번째 열 */
-    background-color: #FFFBF2;
+	width: 10%; /* 작성자, 제목 등 첫 번째 열 */
+	background-color: #FFFBF2;
 }
 
 .mailForm td:not(:first-child) {
-    width: 90%; /* 입력 필드가 들어갈 두 번째 열 */
-    background-color: #FFFBF2;
-}	
-
-  </style>
+	width: 90%; /* 입력 필드가 들어갈 두 번째 열 */
+	background-color: #FFFBF2;
+}
+</style>
 </head>
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
@@ -614,18 +612,25 @@ function findAdd(type) {
     });
 }
 
-//수신자 입력 필드에 대한 엔터 키 이벤트 핸들러
-$("#receiver-input").keypress(function (e) {
-    if (e.which === 13) { // Enter 키
-        e.preventDefault(); // 기본 동작 방지
-        addReceiverOrReferHandler("#receiver-input", "receiver-list", 0); // 수신자 추가
+$("#receiver-input").on("keyup", function (e) {
+    const inputVal = $(this).val().trim();
+    
+    // 최소 2글자 이상 입력된 경우에만 검색 수행
+    if (inputVal.length >= 2) {
+        empInfo(inputVal, 0, "receiver-list"); // 수신자 검색
+    } else {
+        $("#autocomplete-list0").hide(); // 글자수가 부족하면 자동완성 숨김
     }
 });
 
-$("#refer-input").keypress(function (e) {
-    if (e.which === 13) { // Enter 키
-        e.preventDefault(); // 기본 동작 방지
-        addReceiverOrReferHandler("#refer-input", "refer-list", 1); // 참조자 추가
+$("#refer-input").on("keyup", function (e) {
+    const inputVal = $(this).val().trim();
+    
+    // 최소 2글자 이상 입력된 경우에만 검색 수행
+    if (inputVal.length >= 2) {
+        empInfo(inputVal, 1, "refer-list"); // 참조자 검색
+    } else {
+        $("#autocomplete-list1").hide(); // 글자수가 부족하면 자동완성 숨김
     }
 });
 
@@ -794,6 +799,23 @@ function empInfo(inputVal, type, listContainerId) {
                         );
                     });
 
+                 	// 리스트 항목이 1개인 경우 자동 추가
+                    if (filteredList.length === 1) {
+                        var item = filteredList[0];
+                        var newEntry = {
+                            email: item.email,
+                            type: type,
+                            name: item.name,
+                            emp_idx: item.emp_idx,
+                        };
+
+                        receiverList.push(newEntry);
+                        addReceiverOrRefer(newEntry, listContainerId); // UI 업데이트
+                        $("#receiver-input").val(""); // 입력값 초기화
+                        $list.hide();
+                        return;
+                    }
+                    
                     filteredList.forEach(item => {
                         var $option = $("<div>")
                             .text(item.name + " <" + item.email + ">")
@@ -821,7 +843,7 @@ function empInfo(inputVal, type, listContainerId) {
                     $("#" + listContainerId + "_idx").val(item.emp_idx);
                 }
             } else {
-                alert("해당 사원을 찾을 수 없습니다.");
+                /* alert("해당 사원을 찾을 수 없습니다."); */
             }
         },
         error: function (e) {
@@ -858,7 +880,6 @@ function addFile() {
 
 /* 이메일 형식 검증 */
 function validateEmail(email) {
-    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return email.includes("@");
 }
 </script>
