@@ -18,7 +18,7 @@
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
-	    height: 92%;
+	    min-height: 90%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -26,12 +26,20 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: -34vw;
+	    width: 20%;
+	    display: flex;
+	    margin-left: -68vw;
+	    margin-bottom: 10px;
+	    justify-content: space-between;
+	    align-items: baseline;
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:last-child{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.docbox{
 	    position: relative;
@@ -234,8 +242,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">게시판</h3>
-			<h3>>&nbsp;&nbsp;자유 게시판</h3>
+			<span class="document">게시판</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span>자유 게시판</span>
 		</div>
 		<div class="docbox">
 			<div class="contentBox">

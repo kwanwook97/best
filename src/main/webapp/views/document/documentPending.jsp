@@ -26,10 +26,10 @@
 	    user-select: none;
 	}
 	.dashboard-body{
-		transform: scale(0.9);
+	    transform: scale(0.9);
 	    margin-left: 22vw;
-        width: 70vw;
-	    margin-top: 4vh;
+	    width: 70vw;
+	    margin-top: 6vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    display: flex;
@@ -39,18 +39,27 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: 10px;
+        width: 22%;
+	    display: flex;
+	    margin-left: -46vw;
+	    margin-bottom: 10px;
+	    justify-content: space-between;
+	    align-items: baseline;	
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 36px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px;
-	    margin-bottom: 40px;
 	}
 	.docbox{
-		border: 2px solid var(--primary-color);
+		position: absolute;
+	    top: 108px;
+	    border: 2px solid var(--primary-color);
 	    width: 100%;
-	    height: 745px;
+	    min-height: 765px;
 	    border-radius: 10px;
 	}
 	.opt div:nth-child(1){
@@ -158,7 +167,7 @@
 	}
 	.table2{
 	    position: fixed;
-    	top: 30.5rem;
+    	top: 32.5rem;
 		width: 100%;
 	}
     #status{
@@ -235,8 +244,9 @@
  <jsp:include page="../main/header.jsp"/>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">결재문서</h3>
-			<h3 class="text">>&nbsp;&nbsp;대기</h3>
+			<span class="document">결재문서</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span class="text">대기</span>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
