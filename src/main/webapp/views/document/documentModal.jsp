@@ -1045,7 +1045,7 @@ function searchReceived(document,startNumber) {
 	$('.receivedList').html(content);
 }
 function searchSent(document,startNumber) {
-	
+	console.log("123132",document);
     var content = '';
 	var i = startNumber;
 	for(var item of document){
@@ -1058,6 +1058,8 @@ function searchSent(document,startNumber) {
 		
 		var doc_date = new Date(item.doc_date);
 		var docDate = doc_date.toISOString().split('T')[0];
+		var approv_date = new Date(item.doc_date);
+		var approvDate = approv_date.toISOString().split('T')[0];
 
 		content += '<td>' + docDate + '</td>';
 		content += '<td>' + approvDate + '</td>';

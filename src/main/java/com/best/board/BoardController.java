@@ -219,6 +219,16 @@ public class BoardController {
 		
 		return boardService.freeSearch(page_, cnt_,searchText,searchOption);
 	}
+
+	
+	// 자유 게시판 댓글 수
+	@GetMapping(value="/commentsCount.ajax")
+	public ResponseEntity<Integer> commentsCount(@RequestParam("board_idx") int board_idx) {
+
+        int count = boardService.commentsCount(board_idx);
+        return ResponseEntity.ok(count);
+	
+	}
 	
 	
 	// 자유 게시판 댓글 리스트

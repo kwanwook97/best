@@ -412,7 +412,7 @@ $(document).ready(function() {
 	
     categoryList(ex_date,pageName);
     
-	function categoryList(ex_date, pageName){
+ /* 	function categoryList(ex_date, pageName){
 		$.ajax({
 			type: 'GET',
 			url: 'categoryList.ajax',
@@ -469,8 +469,114 @@ $(document).ready(function() {
 			    console.log("오류 발생", e);
 			}
 		});
+	}  */
+	function categoryList(ex_date, pageName) {
+	    let defaultCategories = [];
+	    
+	    if (pageName === "일반") {
+	        defaultCategories = [
+	            "기자재",
+	            "기타",
+	            "비품",
+	            "사무용품",
+	            "수리비",
+	            "식대",
+	            "출장비",
+	            "행사비"
+	        ];
+	    } else if (pageName === "버스관리") {
+	        defaultCategories = [
+	            "유류비",
+	            "보험료",
+	            "정비비",
+	            "검사비",
+	            "구매비",
+	            "등록비",
+	            "사고처리",
+	            "기타"
+	        ];
+	    } else if (pageName === "급여") {
+	        defaultCategories = [
+	            "급여",
+	            "상여금",
+	            "야간근로수당",
+	            "퇴직금",
+	            "복리후생비",
+	            "4대보험료",
+	            "세금",
+	            "기타"
+	        ];
+	    } else {
+	        console.error("알 수 없는 pageName:", pageName);
+	        return;
+	    }
+
+	    $.ajax({
+	        type: 'GET',
+	        url: 'categoryList.ajax',
+	        data: {
+	            ex_date: ex_date,
+	            pageName: pageName
+	        },
+	        dataType: 'JSON',
+	        success: function (data) {
+	            console.log("데이터 가져옴:", data);
+
+	            // 데이터 가공: 기본 카테고리와 합침
+	            const categoryData = defaultCategories.map(category => {
+	                const matchedItem = data.find(item => item.category === category);
+	                return {
+	                    category: category,
+	                    amount: matchedItem ? matchedItem.amount : 0 // 데이터가 없으면 0으로 설정
+	                };
+	            });
+
+	            // 카테고리별 지출 금액 테이블 생성
+	            let categoryTable = '';
+	            categoryData.forEach(item => {
+	                categoryTable += '<tr><td>' + item.category + '</td><td>' + item.amount.toLocaleString() + '원</td></tr>';
+	            });
+	            $('#categoryList').html(categoryTable);
+
+	            // 차트 업데이트 또는 생성
+	            if (categoryChart) {
+	                // 기존 차트 데이터 갱신
+	                categoryChart.data.labels = categoryData.map(item => item.category);
+	                categoryChart.data.datasets[0].data = categoryData.map(item => item.amount);
+	                categoryChart.update();
+	            } else {
+	                // 새 차트 생성
+	                const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+	                categoryChart = new Chart(ctxCategory, {
+	                    type: 'pie',
+	                    data: {
+	                        labels: categoryData.map(item => item.category),
+	                        datasets: [{
+	                            data: categoryData.map(item => item.amount),
+	                            backgroundColor: [
+	                                '#30005A', '#44196A', '#59327A', '#6E4C8B',
+	                                '#82669C', '#977FAC', '#AC99BD', '#C0B2CD'
+	                            ]
+	                        }]
+	                    },
+	                    options: {
+	                        responsive: true,
+	                        maintainAspectRatio: false,
+	                        plugins: {
+	                            legend: {
+	                                position: 'bottom'
+	                            }
+	                        }
+	                    }
+	                });
+	            }
+	        },
+	        error: function (e) {
+	            console.log("오류 발생", e);
+	        }
+	    });
 	}
-	
+
 	function pageCall(page, ex_date, pageName){
 	    $.ajax({
 	        type: 'GET',

@@ -126,7 +126,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td>작성자 : <input type="text" name="name" value="에이스" readonly/></td>
+					<td>작성자 : <input type="text" name="name" value="${sessionScope.loginName}" readonly/></td>
 				</tr>
 				<tr>
 					<td>

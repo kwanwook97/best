@@ -134,6 +134,9 @@ public interface DocumentDAO {
 	
 	// 결재 문서 수정하기
 	int documentUpdate(Map<String, String> param);
+	
+	// 결재 문서 삭제하기
+	int formDelete(int form_idx);
 
 
 

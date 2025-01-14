@@ -90,9 +90,9 @@
 	.formBorder{    
 		display: flex;
 	    align-items: center;
-	    justify-content: center;
+	    justify-content: space-evenly;
     	width: 950px;
-    	height: 660px;	
+    	min-height: 616px;
 	    border: 2px solid var(--primary-color);
 	    border-radius: 10px;
 	}
@@ -197,7 +197,8 @@
 	table:not([border]) td{
 		border: none;
 	}
-	.deleteBtn{
+	.deleteBtn,
+	.reBtn{
 		display: none;
 	}
    </style>
@@ -208,7 +209,7 @@
  		<div class="maintext">
 			<span class="document">결재문서</span>
 			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
-			<span class="text">결재 문서 생성</span>
+			<span class="text">결재 문서 등록</span>
 		</div>
 		<div class="docBox">
 			<div class="documentListBox">
@@ -237,6 +238,9 @@
 					<tr>
 						<td class="deleteBtn"><input type="button" value="문서 삭제하기" onclick="deleteForm()"/></td>
 					</tr>
+					<tr>
+						<td class="reBtn"><input type="button" value="수정 취소" onclick="reForm()"/></td>
+					</tr>
 				</table>
 				</form>
 			</div>
@@ -253,8 +257,8 @@ function changeButtonToUpdate() {
         // 버튼 텍스트 및 onclick 속성 변경
         $(button).val("문서 수정하기").attr("onclick", "updateForm()");
 
-        // 삭제 버튼이 포함된 <tr> 요소 표시
         $("tr .deleteBtn").css("display", "block");
+        $("tr .reBtn").css("display", "block");
     } else {
         console.error("버튼을 찾을 수 없습니다.");
     }
@@ -374,6 +378,7 @@ function documentFormUp(form_idx) {
                     value: form_idx
                 });
                 $('#div_editor').append(hiddenInput);
+                $(".maintext .text").text("결재 문서 수정");
             } else {
                 console.error('RichTextEditor 인스턴스가 없습니다.');
             }
@@ -382,6 +387,32 @@ function documentFormUp(form_idx) {
             console.error('문서 요청 실패:', error);
         }
     });
+}
+
+function deleteForm(){
+	var form_idx = $('input[name="form_idx"]').val().trim();
+	console.log("지움?"+form_idx);
+	 $.ajax({
+         type: 'POST',
+         url: 'formDelete.ajax',
+         data: { form_idx: form_idx },
+         success: function(response) {
+             if (response) {
+            	 alert(response);
+                 location.reload(true);
+             } else {
+             	console.log('삭제 실패');
+             }
+         },
+         error: function(e) {
+             console.log(e);
+         }
+     });
+}
+
+
+function reForm(){
+	location.reload(true);
 }
 </script>
 </html>

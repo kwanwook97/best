@@ -62,6 +62,8 @@ public interface BoardDAO {
 	// 자유 게시판 검색 리스트
 	List<BoardDTO> freeSearchList(int cnt, int offset, String searchText, String searchOption);
 
+	// 자유 게시판 댓글 수
+	int commentsCount(int board_idx);
 	
 	// 자유 게시판 댓글 토탈 페이지
 //	int commentCount(String board_idx, int cnt);
@@ -88,6 +90,7 @@ public interface BoardDAO {
 	// 자유 게시판 댓글 삭제
 	int deleteReplies(int parent_idx);
 	int deleteComment(int comment_idx);
+
 
 	
 	

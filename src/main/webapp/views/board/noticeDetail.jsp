@@ -57,7 +57,6 @@
 	}
 	table tr:last-child{
    		padding: 20px;
-		position: absolute;
 		height: 490px;
 	}
 	table tr:not(:last-child) td{
@@ -65,6 +64,7 @@
         border-bottom: 1px solid var(--primary-color) !important;
     }
 	table tr:nth-child(3) td{
+	    padding: 15px;
 		overflow: auto;
 		overflow-y: hidden;
 	    max-width: 45vw;

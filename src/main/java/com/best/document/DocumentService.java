@@ -719,6 +719,12 @@ public class DocumentService {
 		documentDao.documentUpdate(param);
 	}
 	
+	
+	// 결재문서 삭제하기
+	public void formDelete(int form_idx) {
+		documentDao.formDelete(form_idx);
+	}
+
 
 	
 
