@@ -21,7 +21,7 @@
 	<!-- URL이 테이블에 등록되어 있는경우 URL 접근권한 체크 -->
 	<select id="hasAccessToUrl" parameterType="map" resultType="int">
 	    SELECT COUNT(DISTINCT a.url)
-		FROM role_test rt
+		FROM role rt
 		JOIN access a ON rt.page_idx = a.page_idx
 		WHERE a.url = #{url}
 		  AND (
@@ -45,7 +45,7 @@
     <!-- 접근 가능한 URL 목록 조회 -->
     <select id="findAccessibleUrls" parameterType="map" resultType="string">
         SELECT DISTINCT a.url
-        FROM role_test rt
+        FROM role rt
         JOIN access a ON rt.page_idx = a.page_idx
         WHERE 
             (rt.idx_name = 'depart_idx' AND rt.idx_num = #{departIdx})
