@@ -18,7 +18,7 @@
 <!-- side-bar JS -->
 <script>
 </script>
-<script src="https://kit.fontawesome.com/6282a8ba62.js"
+<script src="https://kit.fontawesome.com/0e9db4cdc9.js"
 	crossorigin="anonymous"></script>
 <script src="resources/js/simplebar.js"></script>
 <!-- <script src="resources/js/bootstrap.min.js"></script> -->

@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>

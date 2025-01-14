@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <!-- 페이지네이션 -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
@@ -178,39 +178,36 @@
 	
  	// 탭 이벤트 발생시
 	$(function () {
-	    // 페이지 로드 시 sessionStorage에서 tabNum 읽기
-	    var tabNum = sessionStorage.getItem('tabNum') ? parseInt(sessionStorage.getItem('tabNum')) : 1;
-	
+		
 	    $("#tabs").tabs({
-	        active: tabNum === 1 ? 0 : 1, // tabNum에 따라 활성화 탭 설정 (활성 사원이 1번 탭, 비활성 사원이 2번 탭)
 	        activate: function (event, ui) {
-	            // 현재 활성화된 탭의 ID를 확인
 	            var activeTab = ui.newPanel.attr("id");
-	
+
 	            if (activeTab === "activ_emp") {
-	                // 활성 사원 탭일 때
-	                tabNum = 1;
+	                tabNum = 1; // 활성 사원 탭
 	            } else if (activeTab === "inactiv_emp") {
-	                // 비활성 사원 탭일 때
-	                tabNum = 0;
+	                tabNum = 0; // 비활성 사원 탭
 	            }
-	
-	            // 페이지 번호를 초기화
+
+	            // 탭 전환 시 검색 키워드 초기화
+	            searchKeyword = '';
+	            $('.search-container .search-bar').val(''); // 검색창 초기화
+
+	            // 페이지 번호 초기화
 	            showPage = 1;
-	
+
 	            // 페이지네이션 초기화
-	            var pagination = tabNum === 1 ? '.pagination.activ' : '.pagination.inactiv';
+	            pagination = tabNum === 1 ? '.pagination.activ' : '.pagination.inactiv';
 	            if ($(pagination).data("twbs-pagination")) {
 	                $(pagination).twbsPagination('destroy');
 	            }
-	
+
 	            // 데이터 호출
 	            pageCall(showPage, tabNum);
-	
-	            // 현재 탭 상태를 sessionStorage에 저장
-	            sessionStorage.setItem('tabNum', tabNum);
+	            sessionStorage.setItem('tabNum', tabNum); // 현재 탭 상태 저장
 	        },
 	    });
+
 	
 	    // 초기 데이터 로드
 	    pageCall(showPage, tabNum);
@@ -221,8 +218,6 @@
 	
 	// 페이지네이션 함수
 	function pageCall(page, tabNum){
-		// 페이지네이션 선택자 초기화
-		pagination = '';
 		
 		if(tabNum == 1){ // 활성사원
 			pagination = '.pagination.activ';	
@@ -246,7 +241,6 @@
 	        dataType: 'json', 
 	        success: function(data) {
 				console.log(data);
-				searchKeyword = '';    // 검색 값 초기화
 				
 				// 검색 결과가 없을 경우 modal 창 표시
 				if (!data.list || data.list.length === 0) {
@@ -256,7 +250,6 @@
 				
 				listPrint(data.list, tabNum);
 				
-				// 페이징 플러그인 처리
 	    		// 기존 페이지네이션 초기화 (이미 초기화된 경우에만 destroy 호출)
 	            if ($(pagination).data("twbs-pagination")) {
 	                $(pagination).twbsPagination('destroy');

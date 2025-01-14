@@ -4,7 +4,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
-<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
 <style>
 /* 폴더 영역 스타일 */
 .userboxR {

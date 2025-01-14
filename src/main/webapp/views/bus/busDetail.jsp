@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8"/>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="resources/css/app-style.css" rel="stylesheet"/>
   <script src="resources/js/bus/busDetail.js"></script>

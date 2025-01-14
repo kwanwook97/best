@@ -16,7 +16,7 @@
 <script>
 var loginId = ${sessionScope.loginId};
 </script>
-<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
 <script src="resources/js/sidebar-menu.js"></script>
 <script src="resources/js/simplebar.js"></script>
 <!-- <script src="resources/js/bootstrap.min.js"></script> -->
@@ -302,14 +302,6 @@ var loginId = ${sessionScope.loginId};
                   </a>
                </li>
             </ul>
-         </li>
-
-         <li>
-            <a href="orgChart.go"> 
-               <i class="bi bi-diagram-3-fill"></i>
-               <span>조직도</span> 
-               <i class="fa-solid fa-angle-right"></i>
-            </a>
          </li>
 
          <li class="dropD">

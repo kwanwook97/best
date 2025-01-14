@@ -5,24 +5,24 @@
   <meta charset="utf-8"/>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="resources/css/dashBoard.css" rel="stylesheet"/>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <script src="/BEST/resources/js/index.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
 #newMessageIndicator2 {
-	background-color: #E9396B;
-	border-radius: 50%;
-	width: 20px;
-	text-align: center;
-	display: none;
-	position: absolute;
-	top: 7px;
+   background-color: #E9396B;
+   border-radius: 50%;
+   width: 20px;
+   text-align: center;
+   display: none;
+   position: absolute;
+   top: 7px;
     left: 159px;
 }
 
 .unread-message-count2 {
-	color: #FFF5E2;
+   color: #FFF5E2;
 }
 
 
@@ -146,17 +146,17 @@
     border-radius: 5px;
 }
 #current-location{
-	font-size: 20px;
+   font-size: 20px;
 }
 
 /* 캘린더 css */
 .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
-	height: 68px;
+   height: 68px;
 }
 #calendar {
-	max-height: 93% !important;
-	width: 97% !important;
-	
+   max-height: 93% !important;
+   width: 97% !important;
+   
 }
 .fc-scroller.fc-scroller-liquid-absolute::-webkit-scrollbar {
     display: none !important;
@@ -165,26 +165,26 @@
     display: none !important;
 }
 .fc.fc-scrollgrid-liquid .fc-col-header {
-	width: 100% !important;
+   width: 100% !important;
 }
 .fc-col-header {
-	width: 100% !important;
+   width: 100% !important;
 }
 .fc-daygrid-body.fc-daygrid-body-balanced {
-	width: 100% !important;
+   width: 100% !important;
 }
 .fc-scrollgrid-sync-table {
-	width: 100% !important;
+   width: 100% !important;
 }
 
 
 .fc-event-main {
-	background-color: #30005A;
-	border-radius: 10px;
-	padding: 0 0 2px 5px;
+   background-color: #30005A;
+   border-radius: 10px;
+   padding: 0 0 2px 5px;
 }
 .fc-event-time {
-	color: #6C0F6C;
+   color: #6C0F6C;
     white-space: nowrap;      
     overflow: hidden;         
     text-overflow: ellipsis; 
@@ -192,47 +192,47 @@
     display: block;
 }
 .fc-event-title {
-	color: #6C0F6C;
+   color: #6C0F6C;
 }
 .fc-sticky {
-	color: white;
+   color: white;
 }
 #visibilityFilter {
-	position: relative;
-	top: 1px;
-	left: 108px;
-	border: 0px;
-	background-color: #00000000;
-	color: #30005A;
+   position: relative;
+   top: 1px;
+   left: 108px;
+   border: 0px;
+   background-color: #00000000;
+   color: #30005A;
 }
 .fc-header-toolbar button {
-	background-color : #30005a00 !important;
-	color: #30005A !important;
-	border: 0px !important;
-	border-radius: 10px !important;
+   background-color : #30005a00 !important;
+   color: #30005A !important;
+   border: 0px !important;
+   border-radius: 10px !important;
 }
 
 select option {
-	background-color: #30005A !important;
-	color: white !important;
+   background-color: #30005A !important;
+   color: white !important;
 }
 .fc-daygrid-event-dot {
-	border: calc(var(--fc-daygrid-event-dot-width) / 2) solid #30005A;
+   border: calc(var(--fc-daygrid-event-dot-width) / 2) solid #30005A;
 }
 
 /* 투두리스트 */
-	#todo-container {
-	  flex: 1;
-	  background-color: #8b6aa700;
-	  border-radius: 8px;
-	  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-	  display: flex;
-	  flex-direction: column;
-	  overflow-y: auto; /* 넘칠 경우 스크롤 표시 */
-	  height: 100%;
-	  width: 100%;
-	  margin: 14px 0 0 0;
-	}
+   #todo-container {
+     flex: 1;
+     background-color: #8b6aa700;
+     border-radius: 8px;
+     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+     display: flex;
+     flex-direction: column;
+     overflow-y: auto; /* 넘칠 경우 스크롤 표시 */
+     height: 100%;
+     width: 100%;
+     margin: 14px 0 0 0;
+   }
 
     #todo-container h2 {
       margin: 0 0 0 0;
@@ -277,7 +277,7 @@ select option {
   width: 90%;
 }
 #todolist::-webkit-scrollbar {
-	display: none;
+   display: none;
 }
 
 
@@ -288,115 +288,115 @@ select option {
       border-radius: 5px;
       margin-bottom: 10px;
     }
-	#todo-subject-box{
-	  background-color: #30005A;
-	  border-radius: 10px;
-	  display: flex; 
-	  align-items: center; 
-	  justify-content: center; 
-	  padding: 10px; 
-	}
+   #todo-subject-box{
+     background-color: #30005A;
+     border-radius: 10px;
+     display: flex; 
+     align-items: center; 
+     justify-content: center; 
+     padding: 10px; 
+   }
 
-	
-	/* 차트 css */
+   
+   /* 차트 css */
 #cardChart {
-	width: 94% !important;
-	height: 82% !important;
-	margin: 1% 0 0 0 !important;
-	
+   width: 94% !important;
+   height: 82% !important;
+   margin: 1% 0 0 0 !important;
+   
 }
 .box-wrapper {
-	display: flex;
+   display: flex;
 }
 .span-active {
-	margin: 0 0 0 1%;
+   margin: 0 0 0 1%;
 }
-	
+   
 
   </style>
 </head>
  <jsp:include page="../main/header.jsp"></jsp:include>
 <body class="bg-theme bg-theme1">
- 	<div class="dashboard-body">
- 		<div class="dash-profile">
- 		<div class="user-profile"></div>
- 		<ul class="user-Info">
- 			<li style="font-size:20px; font-weight:400;"></li>
- 			<li class="user-Info-depart" style="color: #8B6AA7;"></li>
- 		</ul>
- 		<ul class="sidebar-menu">
- 			<li>
- 				<a href="#">
-          			<i class="fa-regular fa-clipboard"></i> <span>결재 할 문서</span>
-          			<i class="fa-solid fa-angle-right"></i>
-        		</a>
- 			</li>
- 			<li>
- 				<a href="mail.go">
-          			<i class="bi bi-envelope-fill"></i><span>새로운 메일</span>
-          			<i class="fa-solid fa-angle-right"></i>
-        		</a>
- 			</li>
- 			<li style="position: relative;">
- 				<a href="chatList.go">
-          			<i class="bi bi-chat-left-text-fill"></i> <span>새로운 메시지</span>
-          			<i class="fa-solid fa-angle-right"></i>
-        		</a>
-        		<div id="newMessageIndicator2" class="newMessageIndicator">
+    <div class="dashboard-body">
+       <div class="dash-profile">
+       <div class="user-profile"></div>
+       <ul class="user-Info">
+          <li style="font-size:20px; font-weight:400;"></li>
+          <li class="user-Info-depart" style="color: #8B6AA7;"></li>
+       </ul>
+       <ul class="sidebar-menu">
+          <li>
+             <a href="documentPending.go">
+                   <i class="fa-regular fa-clipboard"></i> <span>결재 할 문서</span>
+                   <i class="fa-solid fa-angle-right"></i>
+              </a>
+          </li>
+          <li>
+             <a href="mail.go">
+                   <i class="bi bi-envelope-fill"></i><span>새로운 메일</span>
+                   <i class="fa-solid fa-angle-right"></i>
+              </a>
+          </li>
+          <li style="position: relative;">
+             <a href="chatList.go">
+                   <i class="bi bi-chat-left-text-fill"></i> <span>새로운 메시지</span>
+                   <i class="fa-solid fa-angle-right"></i>
+              </a>
+              <div id="newMessageIndicator2" class="newMessageIndicator">
         
-    			</div>
- 			</li>
- 		</ul>
- 	</div>
- 	<div class="drive-info">
- 		<div class="drive-info2"><span>현재 운행 정보</span></div>
- 		<div class="drive-info3"> 		
- 			
- 		</div>
- 	</div>
-	<div class="year-graph">
-		<div class="box-wrapper">
-			<div class="date-navigation">
-				<div class="date-content">
-					<span class="current-date"></span>
-				</div>
-			</div>
-			<span class="span-active">정산</span>
-		</div>
-		<div class="year-graph2">
-			<canvas id="cardChart"></canvas>
-		</div>
-	</div>
- 	<div class="dash-calendar">
-		<select id="visibilityFilter">
-		    <option value="all">전체</option>
-		    <option value="private">개인</option>
-		    <option class="departName" value="public">부서</option>
-		</select>
-		<div id="calendar" class="calendar-calendar"></div>
- 	</div>
- 	<div class="todoList">
-<!--  		<div><span>To Do List!</span></div>
- 		<div class="todoList2"></div> -->
-		    <div id="todo-container">
-			    <div id="todo-subject-box">
-			      <h2>Today To Do List !</h2>
-			    </div>
-		      	<div id="todolist">
+             </div>
+          </li>
+       </ul>
+    </div>
+    <div class="drive-info" onclick="location.href='driveInfo.go'">
+       <div class="drive-info2"><span>현재 운행 정보</span></div>
+       <div class="drive-info3">       
+          
+       </div>
+    </div>
+   <div class="year-graph" onclick="location.href='yearlyChart.go'">
+      <div class="box-wrapper">
+         <div class="date-navigation">
+            <div class="date-content">
+               <span class="current-date"></span>
+            </div>
+         </div>
+         <span class="span-active">정산</span>
+      </div>
+      <div class="year-graph2">
+         <canvas id="cardChart"></canvas>
+      </div>
+   </div>
+    <div class="dash-calendar" onclick="location.href='calendar.go'">
+      <select id="visibilityFilter">
+          <option value="all">전체</option>
+          <option value="private">개인</option>
+          <option class="departName" value="public">부서</option>
+      </select>
+      <div id="calendar" class="calendar-calendar"></div>
+    </div>
+    <div class="todoList" onclick="location.href='calendar.go'">
+<!--        <div><span>To Do List!</span></div>
+       <div class="todoList2"></div> -->
+          <div id="todo-container">
+             <div id="todo-subject-box">
+               <h2>Today To Do List !</h2>
+             </div>
+               <div id="todolist">
 
-		      	</div>
-		    </div>
- 	</div>
- 	<div class="road-info">
- 		<div><span>오늘의 교통 정보</span></div>
- 		<div>
- 			<ul>
- 				<li><span></span></li>
- 				<li><span></span></li>
- 			</ul>
- 		</div>
- 	</div>
- 	<div class="iPhone">
+               </div>
+          </div>
+    </div>
+    <div class="road-info">
+       <div><span>오늘의 교통 정보</span></div>
+       <div>
+          <ul>
+             <li><span></span></li>
+             <li><span></span></li>
+          </ul>
+       </div>
+    </div>
+    <div class="iPhone">
   <div class="weather-app">
     <div class="current-weather">
       <img id="current-icon" src="" alt="날씨 아이콘">
@@ -552,11 +552,11 @@ $(document).ready(function () {
         let locationName = data.location.name;
 
     // 서울을 한국어로 표시
-    	if (locationName === "Seoul") {
-        	locationName = "서울특별시";
-    	}
+       if (locationName === "Seoul") {
+           locationName = "서울특별시";
+       }
 
-    	$('#current-location').text(locationName);
+       $('#current-location').text(locationName);
         $('#current-temp').text(data.current.temp_c + '°');
         $('#current-condition').text(data.current.condition.text);
         $('#current-icon').attr('src', 'https:' + data.current.condition.icon); // 아이콘 경로 수정
@@ -791,9 +791,9 @@ var specialDays = ${specialDaysJson};
                         if (filter === 'public') {
                             return event.department === userDepartment && event.visibility === 'public';
                         } else if (filter === 'private') {
-                        	return event.employeeIdx === loginId && event.visibility === 'private';
+                           return event.employeeIdx === loginId && event.visibility === 'private';
                         } else if (filter === 'all') {
-                        	return event.visibility === 'all';
+                           return event.visibility === 'all';
                         }
                         return false;
                     });
@@ -863,14 +863,14 @@ var specialDays = ${specialDaysJson};
         }
         const visibilityFilter = document.getElementById('visibilityFilter').value; 
         const allEvents = calendar.getEvents();
-        	//console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
+           //console.log("테스트종qweqwe:"+JSON.stringify(allEvents, null, 2));
         const eventsForDate = allEvents.filter(function(event) {
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 
             let isInDateRange = clickedDate >= eventStartDate && clickedDate <= eventEndDate;
-        	if (event.allDay == true &&  clickedDate == eventEndDate) {
-        		isInDateRange = false;
-			}
+           if (event.allDay == true &&  clickedDate == eventEndDate) {
+              isInDateRange = false;
+         }
             return isInDateRange;
         });
 
@@ -956,9 +956,9 @@ var specialDays = ${specialDaysJson};
                             if (filter === 'public') {
                                 return event.department === userDepartment && event.visibility === 'public';
                             } else if (filter === 'private') {
-                            	return event.employeeIdx === loginId && event.visibility === 'private';
+                               return event.employeeIdx === loginId && event.visibility === 'private';
                             } else if (filter === 'all') {
-                            	return event.visibility === 'all';
+                               return event.visibility === 'all';
                             }
                             return false;
                         });
@@ -989,128 +989,128 @@ function updateDateDisplay() {
 updateDateDisplay();
 
 function fetchChart(date){
-	$.ajax({
-		method: 'POST',
-		url: 'fetchYearChart.ajax',
-		data: {
-			'year': date
-		},
-		dataType: 'JSON',
-		success: function(data){
+   $.ajax({
+      method: 'POST',
+      url: 'fetchYearChart.ajax',
+      data: {
+         'year': date
+      },
+      dataType: 'JSON',
+      success: function(data){
             const baseLabels = ['1월', '2월', '3월', '4월', '5월', '6월', 
                 '7월', '8월', '9월', '10월', '11월', '12월'];
-			let labels = [];
-			let amounts = [];
-			
-			if (data.list) {
-			
-				baseLabels.forEach(month => {
-				    const item = data.list.find(d => d.month === month);
-				    if (item) {
-				        labels.push(item.month);
-				        amounts.push(item.totalAmount);
-				    } else {
-				        labels.push(month);
-				        amounts.push(0); 
-				    }
-				});
-			} else {
-			labels = baseLabels;
-			amounts = Array(12).fill(0);
-			}
-	        if(data.msg == '성공'){
-	            renderChart(labels, amounts);
-        	}else{
-	            renderChart([], []);
-        	}
-		},
-		error: function(e){
-			modal.showAlert('잠시 후 다시 시도해주세요.');
-		}
-	});
-	
+         let labels = [];
+         let amounts = [];
+         
+         if (data.list) {
+         
+            baseLabels.forEach(month => {
+                const item = data.list.find(d => d.month === month);
+                if (item) {
+                    labels.push(item.month);
+                    amounts.push(item.totalAmount);
+                } else {
+                    labels.push(month);
+                    amounts.push(0); 
+                }
+            });
+         } else {
+         labels = baseLabels;
+         amounts = Array(12).fill(0);
+         }
+           if(data.msg == '성공'){
+               renderChart(labels, amounts);
+           }else{
+               renderChart([], []);
+           }
+      },
+      error: function(e){
+         modal.showAlert('잠시 후 다시 시도해주세요.');
+      }
+   });
+   
 }
 function renderChart(labels,amounts){
 
-	const maxValue = Math.max(...amounts);
-	const minValue = Math.min(...amounts);
-	
-	const barColors = amounts.map(value => {
-	  if (value === maxValue) return '#E9396B'; 
-	  /* if (value === minValue) return '#6C0F6C'; */
-	  if (value === minValue) return '#FFD700';
-	  return '#30005A'; 
-	});
-	const ctx = document.getElementById('cardChart').getContext('2d');
-	 myChart = new Chart(ctx, {
-	  type: 'bar',
-	  data: {
-	    labels: labels, 
-	    datasets: [{
-	      label: '월별 정산',
-	      data: amounts, 
-	      backgroundColor: barColors, 
-	      borderRadius: 10, 
-	      borderSkipped: false, 
-	    }]
-	  },
-	  options: {
-	    plugins: {
-	      legend: {
-	        display: false, 
-	      }
-	    },
-	    scales: {
-	      x: {
-	        ticks: {
-	          color: '#30005A', 
-	          font: {
-	              size: 14, 
-	              weight: 'bold', 
-	            }
-	        }
-	      },
-	      y: {
-	        beginAtZero: true, 
-	        ticks: {
-	          color: '#30005A', 
-	          font: {
-	              size: 14, 
-	              weight: 'bold', 
-	            }
-	        }
-	      }
-	    }
-	  }
-	});
+   const maxValue = Math.max(...amounts);
+   const minValue = Math.min(...amounts);
+   
+   const barColors = amounts.map(value => {
+     if (value === maxValue) return '#E9396B'; 
+     /* if (value === minValue) return '#6C0F6C'; */
+     if (value === minValue) return '#FFD700';
+     return '#30005A'; 
+   });
+   const ctx = document.getElementById('cardChart').getContext('2d');
+    myChart = new Chart(ctx, {
+     type: 'bar',
+     data: {
+       labels: labels, 
+       datasets: [{
+         label: '월별 정산',
+         data: amounts, 
+         backgroundColor: barColors, 
+         borderRadius: 10, 
+         borderSkipped: false, 
+       }]
+     },
+     options: {
+       plugins: {
+         legend: {
+           display: false, 
+         }
+       },
+       scales: {
+         x: {
+           ticks: {
+             color: '#30005A', 
+             font: {
+                 size: 14, 
+                 weight: 'bold', 
+               }
+           }
+         },
+         y: {
+           beginAtZero: true, 
+           ticks: {
+             color: '#30005A', 
+             font: {
+                 size: 14, 
+                 weight: 'bold', 
+               }
+           }
+         }
+       }
+     }
+   });
 };
 
 getDepartmentNmae();
 function getDepartmentNmae(){
-	$.ajax({
-	    url: "getDepartmentNmae.ajax", 
-	    type: "POST",                 
-	    data: { 
-	        loginId: loginId         
-	    },
-	    dataType: 'json',            
-	    success: function (response) {
-	        if (response && response.msg === "성공") {  
-	            $('.departName').empty();              
-	            let row = response.departmentName; 
-	            if (row == '미발령') {
-					row = '부서';
-				}
-	            $('.departName').text(row);           
-	        } else {
-	        }
-	    },
-	    error: function (xhr, status, error) {
-	        console.error("에러:", error);
-	    }
-	});
+   $.ajax({
+       url: "getDepartmentNmae.ajax", 
+       type: "POST",                 
+       data: { 
+           loginId: loginId         
+       },
+       dataType: 'json',            
+       success: function (response) {
+           if (response && response.msg === "성공") {  
+               $('.departName').empty();              
+               let row = response.departmentName; 
+               if (row == '미발령') {
+               row = '부서';
+            }
+               $('.departName').text(row);           
+           } else {
+           }
+       },
+       error: function (xhr, status, error) {
+           console.error("에러:", error);
+       }
+   });
 
-	
+   
 }
 
 /* 여기까지 차트 end */
