@@ -194,7 +194,7 @@ public class BoardController {
 	
 	// 자유 게시판 게시글 삭제하기(리스트)
 	// 자유 게시판 게시글 삭제하기(상세보기)
-	@GetMapping(value="/freeDelete.go")
+	@GetMapping(value="/freeDelete.do")
 	public String freeDelete(String board_idx, RedirectAttributes redirectAttributes) {
         try {
             boardService.freeDelete(board_idx);

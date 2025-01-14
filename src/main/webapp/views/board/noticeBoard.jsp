@@ -27,24 +27,20 @@
 	    justify-content: center;
 	}
 	.maintext{
-        width: 22%;
+        width: 20%;
 	    display: flex;
-	    margin-left: -66vw;
+	    margin-left: -68vw;
 	    margin-bottom: -12px;
 	    justify-content: space-between;
 	    align-items: baseline;	
 	}
 	.maintext i,
 	.maintext span{
-		font-size: 36px !important;
+		font-size: 32px !important;
 		font-weight: bold !important;
 	}
 	.maintext span:first-child{
 		color: var(--secondary-color);
-	}
-	.document{
-		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.docbox{
     	display: flex;
@@ -379,7 +375,7 @@ function PrintImport(notices) {
 	
     for (var item of notices) {
         content += '<tr>';
-        if (item.emp_idx == emp_idx) {
+        if (item.depart_idx == depart_idx) {
             // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',1)"></i></td>';
         } else {
@@ -429,12 +425,11 @@ function PrintImport(notices) {
 } */
 
 function PrintGeneral(notices) {
-	
     var content = '';
 	
     for (var item of notices) {
         content += '<tr>';
-        if (item.emp_idx == emp_idx) {
+        if (item.depart_idx == depart_idx) {
             // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',0)"></i></td>';
         } else {

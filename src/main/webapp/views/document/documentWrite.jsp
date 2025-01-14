@@ -18,11 +18,11 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 7vh;
+	    margin-top: 6vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
-	    height: 92%;
+        height: 100%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -30,13 +30,25 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: 10px;
+	    top: 78px;
+	    position: absolute;
+	    width: 21%;
+	    display: flex;
+	    margin-left: -10px;
+	    margin-bottom: 10px;
+	    justify-content: space-between;
+	    align-items: baseline;
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:last-child{
+		color: var(--primary-color);
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px;
-	    margin-bottom: 40px;
 	}
 	.docBox{
 		display: flex;	
@@ -49,11 +61,11 @@
 	    margin-right: 20px;
 	}
 	.documentList{
-		border-radius: 9px;
+	    border-radius: 9px;
 	    color: white;
 	    background: var(--secondary-color);
-		text-align: center;
-		width: 130px;
+	    text-align: center;
+	    min-width: 160px;
 	    height: 30px;
 	    margin-top: 10px;
 	}
@@ -182,15 +194,21 @@
 	.modal-box input{
 		all: unset;
 	}
-
+	table:not([border]) td{
+		border: none;
+	}
+	.deleteBtn{
+		display: none;
+	}
    </style>
 </head>
 <body class="bg-theme bg-theme1">
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="maintext">
-			<h3 class="document">결재 문서</h3>
-			<h3 class="text">>&nbsp;&nbsp;결재 문서 생성</h3>
+			<span class="document">결재문서</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span class="text">결재 문서 생성</span>
 		</div>
 		<div class="docBox">
 			<div class="documentListBox">
@@ -216,6 +234,9 @@
 					<tr>
 						<td class="changeBtn"><input type="button" value="문서 등록하기" onclick="saveForm()"/></td>
 					</tr>
+					<tr>
+						<td class="deleteBtn"><input type="button" value="문서 삭제하기" onclick="deleteForm()"/></td>
+					</tr>
 				</table>
 				</form>
 			</div>
@@ -226,15 +247,18 @@
 function changeButtonToUpdate() {
     // 버튼 요소 선택
     var button = document.querySelector(".changeBtn input[type='button']");
-
+	var form_idx = $('#div_editor input[name="form_idx"]');
+	console.log("뭔데뒤질라고",form_idx);
     if (button) {
         // 버튼 텍스트 및 onclick 속성 변경
-        button.value = "문서 수정하기";
-        button.setAttribute("onclick", "updateForm()");
-        console.log("버튼이 '문서 수정하기'로 변경되었습니다.");
+        $(button).val("문서 수정하기").attr("onclick", "updateForm()");
+
+        // 삭제 버튼이 포함된 <tr> 요소 표시
+        $("tr .deleteBtn").css("display", "block");
     } else {
         console.error("버튼을 찾을 수 없습니다.");
     }
+
 }
 function changeFormActionToUpdate() {
     // 폼 요소 선택
@@ -307,9 +331,6 @@ function updateForm() {
         $('form').submit();
     }
 }
-
-// 에디터 초기화
-var editor = new RichTextEditor("#div_editor", config);
 
 
 $.ajax({

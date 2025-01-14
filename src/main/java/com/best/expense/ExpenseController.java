@@ -32,9 +32,9 @@ public class ExpenseController {
 	// 월별 카테고리 지출
 	@GetMapping(value="/categoryList.ajax")
 	@ResponseBody
-	public ResponseEntity<List<Map<String, Object>>> categoryList(String pageName) {
+	public ResponseEntity<List<Map<String, Object>>> categoryList(String ex_date, String pageName) {
 		
-	    List<Map<String, Object>> categoryTotals = expenseService.categoryList(pageName);
+	    List<Map<String, Object>> categoryTotals = expenseService.categoryList(ex_date, pageName);
 
 	    return ResponseEntity.ok(categoryTotals);
 	    

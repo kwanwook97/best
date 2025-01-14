@@ -38,7 +38,7 @@
 		font-size: 32px !important;
 		font-weight: bold !important;
 	}
-	.maintext span:last-child{
+	.maintext span:first-child{
 		color: var(--secondary-color);
 	}
 	.docbox{
@@ -283,7 +283,7 @@
 			    <!-- 글 작성자와 로그인 사용자가 같을 때만 버튼 표시 -->
 			    <c:if test="${info.name == sessionScope.loginName}">
 			        <input type="button" value="수정하기" onclick="location.href='freeUpdate.go?idx=${info.board_idx}'"/>
-			        <input type="button" value="삭제하기" onclick="location.href='freeDelete.go?board_idx=${info.board_idx}'"/>
+			        <input type="button" value="삭제하기" onclick="location.href='freeDelete.do?board_idx=${info.board_idx}'"/>
 			    </c:if>
 			</div>
 		</div>

@@ -1060,6 +1060,7 @@ function searchSent(document,startNumber) {
 		var docDate = doc_date.toISOString().split('T')[0];
 
 		content += '<td>' + docDate + '</td>';
+		content += '<td>' + approvDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		content += '</tr>';
 	}

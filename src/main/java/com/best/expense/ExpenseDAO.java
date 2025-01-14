@@ -12,7 +12,7 @@ public interface ExpenseDAO {
 	int addExpense(Map<String, Object> params);
 	
 	// 월별 카테고리 지출
-	List<Map<String, Object>> categoryList(int form_idx);
+	List<Map<String, Object>> categoryList(int form_idx, String ex_date);
 
 	// 일별 지출
 	int allCount(String ex_date, int cnt, int form_idx);

@@ -15,23 +15,31 @@
   <style>
 	.dashboard-body{
 	    margin-left: 15vw;
-	    margin-top: 10vh;
+	    margin-top: 9vh;
 	    flex-wrap: wrap;
 	    color: var(--primary-color);
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
-	    align-items: baseline;
+	    align-items: flex-start;
 	    justify-content: center;
 	    width: 84%;
 	}
 	.maintext{
-		display: flex;
-		margin-left: -34vw;
+        width: 20%;
+	    display: flex;
+	    margin-left: -10vw;
+	    margin-bottom: 10px;
+	    justify-content: space-between;
+	    align-items: baseline;	
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.docnav{
 	    width: 1190px;
@@ -48,11 +56,27 @@
 		cursor: pointer;
 	    font-size: large;
 	    margin-right: 10px;
-	    color: var(--secondary-color);
 	}
 	.chartOption div:hover{
 		font-weight: bold;
 		color: var(--primary-color);
+	}
+	/* 기본 스타일 */
+	.empOpt{
+		color: var(--primary-color);
+	    font-weight: bold;
+	    border-bottom: 2px solid var(--accent-color);
+	}
+	.busOpt, .salaryOpt {
+	    color: var(--secondary-color);
+	    font-weight: normal;
+	    border: none;
+	}
+	/* 선택된 스타일 */
+	.selectedd {
+	    color: var(--primary-color);
+	    font-weight: bold;
+	    border-bottom: 2px solid var(--accent-color);
 	}
 	.searchbox{
 		display: flex;
@@ -75,35 +99,17 @@
 		background-color: white !important;
 		border-radius: 5px;
 	}
-	.search{
-		position: relative;
-    	display: inline-block;
-	}
-	.search input{
-		border-radius: 10px;
-		padding-left: 10px;
-		border: 1px solid var(--primary-color);
-	}
-	.search i{
-		position: absolute;
-		right: 10px;
-		top: 50%;
-		transform: translateY(-50%);
-		font-size: 18px;
-		pointer-events: none;
-		color: var(--accent-color);
-	}
 	.docbox{
     	display: flex;
    	    flex-direction: column;
-    	justify-content: space-evenly;
         align-items: center;
 		border: 2px solid var(--primary-color);
+	    height: 660px;
 	    width: 1200px;
-	    height: 710px;
 	    border-radius: 10px;
 	}
 	.date-navigation {
+		margin: 47px 0;
 		font-size: 24px;
 		font-weight: bold;
 		text-align: center;
@@ -132,38 +138,44 @@
 		color: #30005A;
 	}
     .container {
-		transform: scale(0.9);
-     	width: 1300px;
-     	height: 680px;
-		display: flex;
-      	border-radius: 8px;
-      	overflow: hidden;
+	    display: flex;
+	    border-radius: 8px;
+	    overflow: hidden;
+	    justify-content: space-between;
     }
     .leftPanel{
-      	padding: 20px;
-      	overflow-y: auto;
+    	margin-left: 20px;
+	    width: 85%;
+	    display: flex;
+	    overflow-y: auto;
     }
     .leftPanel div:first-child{
-    	margin-bottom: 20px;
+    	margin-right: 25px;
+    }
+    h4{
+    	font-size: 20px !important;
+    }
+    table td, th{
+    	font-size: small;
+    	text-align: center !important;
     }
 	.categoryTable{
-
+		width: 31%;
 	}
 	.categoryList{
-
+	
 	}
 	.dailyTable{
-		
+		width: 82%;
+   		margin-top: 30px;
 	}
 	.dailyList{
 
 	}
-    .leftPanel {
-      	width: 600px;
-    }
     .rightPanel {
-   		padding: 5px;	
-		width: 650px;
+		padding: 5px;
+	    width: 400px;
+	    height: 452px;
     }
     table {
 	    width: 100%;
@@ -182,9 +194,20 @@
       	margin: 0 auto;
     }
 	#categoryChart {
-      	max-width: 270%;
-      	max-height: 660px;
-    }
+	    max-width: 85%; /* 부모 요소의 85%로 설정 */
+	    max-height: 500px; /* 최대 높이를 제한 */
+	    width: 85%; /* 차트가 부모 요소의 85%만 차지 */
+	    height: auto; /* 비율 유지 */
+	}
+	#dailyPagination{
+	    margin-top: 5px;
+		display: flex;
+	    padding-left: 0;
+	    list-style: none;
+	    border-radius: .25rem;
+	    align-items: center;
+	    justify-content: center;
+	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
 		background-color: var(--background-color); /* 배경 색상 */
@@ -217,7 +240,7 @@
 	}
 	@media (min-width: 1200px) {
     .container {
-        max-width: 1230px !important;
+        max-width: 1200px !important;
     }
 </style>
 </head>
@@ -225,8 +248,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">지출정산</h3>
-			<h3>>&nbsp;&nbsp;월별현황(전체)</h3>
+			<span class="document">지출정산</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span class="text">월별현황</span>
 		</div>
 		<div class="docnav">
 			<div class="chartOption">
@@ -249,9 +273,10 @@
 			</div>		
 			<div class="container">
 				<div class="leftPanel">
-					<div>
-						<h4>카테고리별 지출금액</h4>
-						<table class="categoryTable">
+					<div  class="categoryTable">
+						<h4>카테고리별</h4>
+						<h4>지출금액</h4>
+						<table>
 							<thead>
 								<tr>
 									<th>카테고리</th>
@@ -262,9 +287,9 @@
 							</tbody>
 						</table>
 					</div>
-					<div>
+					<div class="dailyTable">
 						<h4>날짜별 지출내역</h4>
-						<table class="dailyTable">
+						<table>
 							<thead>
 								<tr>
 									<th>날짜</th>
@@ -277,7 +302,7 @@
 							<tbody id="dailyList">
 							</tbody>
 						</table>
-						<div class="container" id="dailyCont">
+						<div class="containerP" id="dailyCont">
 						    <nav aria-label="Page navigation">
 						        <ul class="pagination" id="dailyPagination"></ul>
 						    </nav>
@@ -314,6 +339,7 @@ $(document).ready(function() {
 	    window.currentMonth = month;
 	    ex_date = year + '-' + String(month).padStart(2, '0') + '-%';
 	    pageCall(1, ex_date, pageName);
+	    categoryList(ex_date, pageName);
 	    console.log("현재 연도:", currentYear);
 	    console.log("현재 월:", currentMonth);
 	}
@@ -339,12 +365,42 @@ $(document).ready(function() {
 	updateDateDisplay();
 	
 	window.changeList = function (name) {
+	    // 모든 옵션 초기화
+	    $('.empOpt, .busOpt, .salaryOpt').removeClass('selectedd').css({
+	        color: 'var(--secondary-color)',
+	        fontWeight: 'normal',
+	        borderBottom: 'none'
+	    });
+
+	    // name에 따라 클래스 이름 설정
+	    var newName = '';
+	    if (name === '일반') {
+	        newName = 'emp';
+	    } else if (name === '버스관리') {
+	        newName = 'bus';
+	    } else if (name === '급여') {
+	        newName = 'salary';
+	    }
+
+	    // 선택된 옵션에 스타일 적용
+	    var $selectedOption = $('.' + newName + 'Opt');
+	    if ($selectedOption.length) {
+	        $selectedOption.addClass('selectedd').css({
+	            color: 'var(--primary-color)',
+	            fontWeight: 'bold',
+	            borderBottom: '2px solid var(--accent-color)'
+	        });
+	    }
+
+	    // 기존 로직 호출
 	    pageName = name;
-	    categoryList(name)
-	    console.log("ex_date" + ex_date);
+	    categoryList(ex_date, pageName);
+	    console.log('ex_date: ' + ex_date);
 	    pageCall(1, ex_date, pageName);
-	    console.log("tq" + pageName);
+	    console.log('pageName: ' + pageName);
 	};
+
+
 	
 	window.addEventListener('resize', function() {
 		lineChart.resize();
@@ -354,15 +410,19 @@ $(document).ready(function() {
 	    console.log("Page loaded. Fetching initial data...");
 	});
 	
-    categoryList(pageName);
+    categoryList(ex_date,pageName);
     
-	function categoryList(pageName){
+	function categoryList(ex_date, pageName){
 		$.ajax({
 			type: 'GET',
 			url: 'categoryList.ajax',
-			data: {pageName: pageName},
+			data: {
+				ex_date: ex_date,
+				pageName: pageName
+			},
 			dataType: 'JSON',
 			success: function(data) {
+				console.log("아~ 존나하기싫어",data);
 				var categoryData = [];
 				data.forEach(function (item) {
 			        categoryData.push({
@@ -419,7 +479,7 @@ $(document).ready(function() {
 	        	pageName: pageName,
 	        	ex_date: ex_date,
 	            page: page,
-	            cnt: 6
+	            cnt: 8
 	        },
 	        dataType: 'JSON',
 	        success: function(data) {
@@ -465,7 +525,7 @@ $(document).ready(function() {
 	        	pageName: pageName,
 	        	ex_date: ex_date,
 	            page: page,
-	            cnt: 6
+	            cnt: 8
 	        },
 	        dataType: 'JSON',
 	        success: function(data) {

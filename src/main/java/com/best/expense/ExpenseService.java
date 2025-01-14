@@ -80,21 +80,21 @@ public class ExpenseService {
 
 	
 	// 월별 카테고리 지출
-	public List<Map<String, Object>> categoryList(String pageName) {
+	public List<Map<String, Object>> categoryList(String ex_date, String pageName) {
 		
 		int form_idx = 0;
 		
 		if(pageName.equals("일반")) {
 			form_idx = 3;
-			return expenseDao.categoryList(form_idx);
+			return expenseDao.categoryList(form_idx,ex_date);
 		}else if(pageName.equals("버스관리")) {
 			form_idx = 4;
-			return expenseDao.categoryList(form_idx);
+			return expenseDao.categoryList(form_idx,ex_date);
 		}else if(pageName.equals("급여")) {
 			form_idx = 5;
-			return expenseDao.categoryList(form_idx);
+			return expenseDao.categoryList(form_idx,ex_date);
 		}else {
-			return expenseDao.categoryList(form_idx);
+			return expenseDao.categoryList(form_idx,ex_date);
 		}
 		
 	}

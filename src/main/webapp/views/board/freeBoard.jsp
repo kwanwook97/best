@@ -15,7 +15,7 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 7vh;
+	    margin-top: 7.5vh;
 	    flex-wrap: nowrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
@@ -27,16 +27,16 @@
 	    justify-content: center;
 	}
 	.maintext{
-        width: 22%;
+		width: 20%;
 	    display: flex;
-	    margin-left: -66vw;
+	    margin-left: -68vw;
 	    margin-bottom: -12px;
 	    justify-content: space-between;
 	    align-items: baseline;	
 	}
 	.maintext i,
 	.maintext span{
-		font-size: 36px !important;
+		font-size: 32px !important;
 		font-weight: bold !important;
 	}
 	.maintext span:first-child{
