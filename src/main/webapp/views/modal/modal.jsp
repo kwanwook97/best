@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <!-- modal CSS -->
   <link rel="stylesheet" href="resources/css/common.css">

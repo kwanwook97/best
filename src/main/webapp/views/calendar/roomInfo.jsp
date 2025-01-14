@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
@@ -489,7 +489,8 @@ function deleteRoom(roomIdx) {
 	        },
 	        dataType: 'json',
 	        success: function(data) {
-	        	modal.showAlert(data.response);
+	        	//modal.showAlert(data.response);
+	        	modal.showAlert("회의실 삭제가 완료되었습니다.");
 	            roomCard();
 	        },
 	        error: function(error) {

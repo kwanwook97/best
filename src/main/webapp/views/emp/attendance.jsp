@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -509,13 +509,13 @@
 					
 					<div class="center h72 bold f16">
 						<div class="w100 m5">
-							<span class="lPurple wr50 workdays">근무일수</span><span class="wl50">13일</span>
+							<span class="lPurple wr50 workdays">근무일수</span><span class="wl50"></span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50 totalOverTime">연장 근무시간</span><span class="wl50">7시간</span>
+							<span class="lPurple wr50 totalOverTime">연장 근무시간</span><span class="wl50"></span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50 totalWorkTime">총 근무시간</span><span class="wl50">103시간</span>
+							<span class="lPurple wr50 totalWorkTime">총 근무시간</span><span class="wl50"></span>
 						</div>
 					</div>
 				</div>
@@ -531,13 +531,13 @@
 					
 					<div class="center h72 bold f16">
 						<div class="w100 m5">
-							<span class="lPurple wr50 lateCount">지각</span><span class="wl50">13회</span>
+							<span class="lPurple wr50 lateCount">지각</span><span class="wl50"></span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50 leaveCount">연차</span><span class="wl50">7회</span>
+							<span class="lPurple wr50 leaveCount">연차</span><span class="wl50"></span>
 						</div>
 						<div class="w100 m5">
-							<span class="lPurple wr50 absentCount">결근</span><span class="wl50">103회</span>
+							<span class="lPurple wr50 absentCount">결근</span><span class="wl50"></span>
 						</div>
 					</div>
 					
@@ -553,7 +553,7 @@
 					
 					<div class="center h72 bold f16">
 						<div class="w100 m5">
-							<span class="lPurple wr50 remainLeave">잔여 연차</span><span class="wl50">12일</span>
+							<span class="lPurple wr50 remainLeave">잔여 연차</span><span class="wl50"></span>
 						</div>
 					</div>
 				</div>
@@ -585,52 +585,52 @@
 			        </thead>
 			        <tbody class="attendanceList">
 			            <tr>
-			                <td>2024-12-17</td>
-			                <td>08:50</td>
-			                <td>18:00</td>
-			                <td>정상</td>
-			                <td>9시간 10분</td>
-			                <td>*</td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
 			            </tr>
 			            <tr>
-			                <td>2024-12-16</td>
-			                <td>08:50</td>
-			                <td>18:00</td>
-			                <td>정상</td>
-			                <td>9시간 10분</td>
-			                <td>*</td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
 			            </tr>
 			            <tr>
-			                <td>2024-12-13</td>
-			                <td>*</td>
-			                <td>*</td>
-			                <td>연차</td>
-			                <td>연차</td>
-			                <td>*</td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
 			            </tr>
 			            <tr>
-			                <td>2024-12-12</td>
-			                <td>09:10</td>
-			                <td>18:00</td>
-			                <td>지각</td>
-			                <td>8시간 50분</td>
-			                <td>*</td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
 			            </tr>
 			            <tr>
-			                <td>2024-12-11</td>
-			                <td>08:58</td>
-			                <td>18:10</td>
-			                <td>정상</td>
-			                <td>9시간 12분</td>
-			                <td>10분</td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
 			            </tr>
 			            <tr>
-			                <td>2024-12-10</td>
-			                <td>08:55</td>
-			                <td>19:00</td>
-			                <td>정상</td>
-			                <td>10시간 05분</td>
-			                <td>1시간 05분</td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
+			                <td></td>
 			            </tr>
 			        </tbody>
 			    </table>
@@ -834,7 +834,43 @@ function updateTime(){
             } else {
                 $(".end-time").next("span").text("퇴근 시간 없음");
             }
-            
+        	/* 변경데이터 */
+            if (response.workdays != null) {
+				$(".workdays").next("span").text(response.workdays + "일");
+			}else{
+				$(".workdays").next("span").text("없음");
+			}
+            if (response.totalOverTime != null) {
+				$(".totalOverTime").next("span").text(response.totalOverTime + "시간");
+			}else{
+				$(".totalOverTime").next("span").text("없음");
+			}
+            if (response.totalWorkTime != null) {
+				$(".totalWorkTime").next("span").text(response.totalWorkTime + "시간");
+			}else{
+				$(".totalWorkTime").next("span").text("없음");
+			}
+            if (response.lateCount != null) {
+				$(".lateCount").next("span").text(response.lateCount + "회");
+			}else{
+				$(".lateCount").next("span").text("없음");
+			}
+            if (response.leaveCount != null) {
+				$(".leaveCount").next("span").text(response.leaveCount + "회");
+			}else{
+				$(".leaveCount").next("span").text("없음");
+			}
+            if (response.absentCount != null) {
+				$(".absentCount").next("span").text(response.absentCount + "회");
+			}else{
+				$(".absentCount").next("span").text("없음");
+			}
+            if (response.remainLeave != null) {
+				$(".remainLeave").next("span").text(response.remainLeave + "일");
+			}else {
+				$(".remainLeave").next("span").text("없음");
+			}
+        	/*변경 데이터*/
             $(".attendanceList").empty(); 
             
             response.list.forEach(function (item) {
@@ -872,41 +908,7 @@ function updateTime(){
 			}
 
             
-            if (response.workdays != null) {
-				$(".workdays").next("span").text(response.workdays + "일");
-			}else{
-				$(".workdays").next("span").text("없음");
-			}
-            if (response.totalOverTime != null) {
-				$(".totalOverTime").next("span").text(response.totalOverTime + "시간");
-			}else{
-				$(".totalOverTime").next("span").text("없음");
-			}
-            if (response.totalWorkTime != null) {
-				$(".totalWorkTime").next("span").text(response.totalWorkTime + "시간");
-			}else{
-				$(".totalWorkTime").next("span").text("없음");
-			}
-            if (response.lateCount != null) {
-				$(".lateCount").next("span").text(response.lateCount + "회");
-			}else{
-				$(".lateCount").next("span").text("없음");
-			}
-            if (response.leaveCount != null) {
-				$(".leaveCount").next("span").text(response.leaveCount + "회");
-			}else{
-				$(".leaveCount").next("span").text("없음");
-			}
-            if (response.absentCount != null) {
-				$(".absentCount").next("span").text(response.absentCount + "회");
-			}else{
-				$(".absentCount").next("span").text("없음");
-			}
-            if (response.remainLeave != null) {
-				$(".remainLeave").next("span").text(response.remainLeave + "일");
-			}else {
-				$(".remainLeave").next("span").text("없음");
-			}
+
            	
             if (response.attendanceHistory) {
 				/* //console.log("수정내역 확인 데이터 "+JSON.stringify(response.attendanceHistory));   */          	

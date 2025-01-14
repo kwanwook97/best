@@ -5,7 +5,7 @@
   <meta charset="utf-8"/>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="resources/css/dashBoard.css" rel="stylesheet"/>
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <script src="/BEST/resources/js/index.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -877,7 +877,10 @@ var specialDays = ${specialDaysJson};
         const eventsForDate = allEvents.filter(function(event) {
             const eventStartDate = event.start.toISOString().split('T')[0]; 
             const eventEndDate = event.end.toISOString().split('T')[0]; 
-            const isInDateRange = clickedDate == eventStartDate && clickedDate <= eventEndDate;
+            let isInDateRange = clickedDate >= eventStartDate && clickedDate <= eventEndDate;
+           if (event.allDay == true &&  clickedDate == eventEndDate) {
+              isInDateRange = false;
+         }
             return isInDateRange;
 
         });
