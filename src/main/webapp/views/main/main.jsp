@@ -772,6 +772,15 @@ var specialDays = ${specialDaysJson};
             }
         },
         initialDate: new Date(),
+        eventDidMount: function(info) {
+            const resizer = info.el.querySelector('.fc-event-resizer');
+            if (resizer) {
+                resizer.style.width = '10px';
+                resizer.style.height = '10px';
+                resizer.style.backgroundColor = '#007bff';
+                resizer.style.cursor = 'se-resize';
+            }
+        },
             events: function(fetchInfo, successCallback, failureCallback) {
             const filter = document.getElementById('visibilityFilter').value;
 
@@ -797,6 +806,8 @@ var specialDays = ${specialDaysJson};
                         }
                         return false;
                     });
+                    //console.log("Filtered Events (JSON):", JSON.stringify(filteredEvents, null, 2));
+                   // console.log("filteredEvents테스트:"+filteredEvents);
                     successCallback(filteredEvents);
                     updateTodoList(new Date());
                 })
@@ -853,7 +864,6 @@ var specialDays = ${specialDaysJson};
     calendar.render();
     const todayDate = new Date(); 
     updateTodoList(todayDate);
-    console.log("투데이:"+todayDate);
     function updateTodoList(date){
         const clickedDate = date.toISOString().split('T')[0];
 
@@ -872,6 +882,7 @@ var specialDays = ${specialDaysJson};
               isInDateRange = false;
          }
             return isInDateRange;
+
         });
 
         // 3. `todolist`에 들어갈 데이터 업데이트
