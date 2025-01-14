@@ -559,7 +559,7 @@
       
       <div class="form-group">
         <label class="la" for="date">예약자:</label>
-        <p class="emp-name">사원 이름 부서</p> 
+        <p class="emp-name">${employee.name}</p> 
       </div>
       
       <div class="form-group">

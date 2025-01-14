@@ -489,7 +489,8 @@ function deleteRoom(roomIdx) {
 	        },
 	        dataType: 'json',
 	        success: function(data) {
-	        	modal.showAlert(data.response);
+	        	//modal.showAlert(data.response);
+	        	modal.showAlert("회의실 삭제가 완료되었습니다.");
 	            roomCard();
 	        },
 	        error: function(error) {
