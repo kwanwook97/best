@@ -317,6 +317,9 @@ select option {
 	width: 10px !important;
 	height: 23px !important;
 }
+.fc-event.fc-event-draggable.fc-event-resizable.fc-event-start.fc-event-end.fc-event-future.fc-daygrid-event.fc-daygrid-dot-event .fc-event-time {
+	color: #30005A;
+}
     
     
   </style>
