@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+   pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
-<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -15,16 +15,16 @@
 </style>
 </head>
 <body class="bg-theme bg-theme1">
-	<sec:authorize access="!hasAuthority('ROLE_ADMIN')">
-		<c:set var="user_rank_idx" value="${sessionScope.employee.rank_idx}" />
-		<jsp:include page="../main/header.jsp"></jsp:include>
-	</sec:authorize>
-	<sec:authorize access="hasAuthority('ROLE_ADMIN')">
-		<jsp:include page="../main/adminHeader.jsp"></jsp:include>
-	</sec:authorize>
-	
-	<jsp:include page="../modal/modal.jsp"></jsp:include>
-	
+   <sec:authorize access="!hasAuthority('ROLE_ADMIN')">
+      <c:set var="user_rank_idx" value="${sessionScope.employee.rank_idx}" />
+      <jsp:include page="../main/header.jsp"></jsp:include>
+   </sec:authorize>
+   <sec:authorize access="hasAuthority('ROLE_ADMIN')">
+      <jsp:include page="../main/adminHeader.jsp"></jsp:include>
+   </sec:authorize>
+   
+   <jsp:include page="../modal/modal.jsp"></jsp:include>
+   
 <!-- 모달창 -->
 <div id="employeeModal" class="modal" tabindex="-1" role="dialog" style="display:none;">
   <div class="modal-dialog" role="document">
@@ -72,29 +72,29 @@
     <!-- 검색 결과 리스트가 동적으로 추가됩니다 -->
 </div>
 
-		
-	
-	
-	<div class="dashboard-body">
-		<div class="textbox">
-			<div class="maintext">
-				<h3 class="document">조직도</h3>
-			</div>
-			<div style="position: relative;">
-		        <input type="text" class="search-bar" placeholder="사원명을 검색하세요.">
-		        <i class="fas fa-search search-icon"></i>
-	        </div>
-		</div>
-		
-		<div class="mainbox">
-			<div class="userbox">
-			<!-- 폴더 계층구조 들어가는 곳 -->
-			</div>
-			<div class="contentbox">
-				<div id="chart_div"></div>
-			</div>
-		</div>
-	</div>
+      
+   
+   
+   <div class="dashboard-body">
+      <div class="textbox">
+         <div class="maintext">
+            <h3 class="document">조직도</h3>
+         </div>
+         <div style="position: relative;">
+              <input type="text" class="search-bar" placeholder="사원명을 검색하세요.">
+              <i class="fas fa-search search-icon"></i>
+           </div>
+      </div>
+      
+      <div class="mainbox">
+         <div class="userbox">
+         <!-- 폴더 계층구조 들어가는 곳 -->
+         </div>
+         <div class="contentbox">
+            <div id="chart_div"></div>
+         </div>
+      </div>
+   </div>
 </body>
 <script>
 /* 전역변수 */
@@ -130,51 +130,51 @@ $(document).ready(function () {
     
     /* Google Charts 초기화 */
     google.charts.load('current', { packages: ["orgchart"] });
-	google.charts.setOnLoadCallback(function () {
-	    console.log("Google Charts 로드 완료");
-	
-	    // 부서, 직급, 직원 데이터를 로드
-	    loadDepartments();
-	    loadRanks();
-	    loadRoutes();
-	    loadEmployees();
-	
-	 	// Google Charts 로드 완료 후 데이터 로드 시작
-	    google.charts.setOnLoadCallback(function () {
-	        console.log("Google Charts 로드 완료");
+   google.charts.setOnLoadCallback(function () {
+       console.log("Google Charts 로드 완료");
+   
+       // 부서, 직급, 직원 데이터를 로드
+       loadDepartments();
+       loadRanks();
+       loadRoutes();
+       loadEmployees();
+   
+       // Google Charts 로드 완료 후 데이터 로드 시작
+       google.charts.setOnLoadCallback(function () {
+           console.log("Google Charts 로드 완료");
 
-	        // 데이터 로드
-	        loadDepartments();
-	        loadRanks();
-	        loadRoutes();
-	        loadEmployees();
+           // 데이터 로드
+           loadDepartments();
+           loadRanks();
+           loadRoutes();
+           loadEmployees();
 
-	        // 모든 데이터 로드 상태 확인 후 조직도 생성
-	        var interval = setInterval(function () {
-	            if (isDepartmentsLoaded && isRanksLoaded && isEmployeesLoaded && isRoutesLoaded) {
-	                clearInterval(interval); // 상태 확인 멈춤
-	                checkAndGenerate(0); // 폴더 및 차트 생성
-	            }
-	        }, 100); // 100ms마다 데이터 로드 상태 확인
-	    });
-	});
+           // 모든 데이터 로드 상태 확인 후 조직도 생성
+           var interval = setInterval(function () {
+               if (isDepartmentsLoaded && isRanksLoaded && isEmployeesLoaded && isRoutesLoaded) {
+                   clearInterval(interval); // 상태 확인 멈춤
+                   checkAndGenerate(0); // 폴더 및 차트 생성
+               }
+           }, 100); // 100ms마다 데이터 로드 상태 확인
+       });
+   });
 
     /* 부서 데이터 로드 함수 */
     function loadDepartments() {
-    	departments = []; // 기존 데이터를 초기화
+       departments = []; // 기존 데이터를 초기화
         $.ajax({
             method: 'POST',
             url: 'orgStruct.ajax',
             dataType: 'JSON',
             data: { table: 'department' },
             success: function (list) {
-            	console.log("부서 데이터 로드 성공:", list);
-            	$.each(list, function(index, item) {
-            	    departments.push({ 
-            	    	id: item.depart_idx, 
-            	    	name: item.depart_name 
-           	    	});
-            	});
+               console.log("부서 데이터 로드 성공:", list);
+               $.each(list, function(index, item) {
+                   departments.push({ 
+                      id: item.depart_idx, 
+                      name: item.depart_name 
+                     });
+               });
 
                 isDepartmentsLoaded = true; // 데이터 로드 상태 플래그 업데이트
                 checkAndGenerate(0); // 데이터 로드 상태 확인
@@ -193,19 +193,19 @@ $(document).ready(function () {
             dataType: 'JSON',
             data: { table: 'rank_emp' },
             success: function (list) {
-            	console.log("직급 데이터 로드 성공:", list);
-            	$.each(list, function(index, item) {
-            		ranks.push({ 
-            	    	id: item.rank_idx, 
-            	    	name: item.rank_name 
-           	    	});
-            	});
-            	
+               console.log("직급 데이터 로드 성공:", list);
+               $.each(list, function(index, item) {
+                  ranks.push({ 
+                      id: item.rank_idx, 
+                      name: item.rank_name 
+                     });
+               });
+               
                 isRanksLoaded = true; // 데이터 로드 상태 플래그 업데이트
                 checkAndGenerate(); // 데이터 로드 상태 확인
             },
             error: function () {
-            	modal.showAlert('직급 데이터를 가져오는 중 오류가 발생했습니다.');
+               modal.showAlert('직급 데이터를 가져오는 중 오류가 발생했습니다.');
             }
         });
     }
@@ -218,19 +218,19 @@ $(document).ready(function () {
             dataType: 'JSON',
             data: { table: 'route' },
             success: function (list) {
-            	console.log("노선 데이터 로드 성공:", list);
-            	$.each(list, function(index, item) {
-            		routes.push({ 
-            	    	id: item.route_idx, 
-            	    	name: item.route_name 
-           	    	});
-            	});
-            	
-            	isRoutesLoaded = true; // 데이터 로드 상태 플래그 업데이트
+               console.log("노선 데이터 로드 성공:", list);
+               $.each(list, function(index, item) {
+                  routes.push({ 
+                      id: item.route_idx, 
+                      name: item.route_name 
+                     });
+               });
+               
+               isRoutesLoaded = true; // 데이터 로드 상태 플래그 업데이트
                 checkAndGenerate(); // 데이터 로드 상태 확인
             },
             error: function () {
-            	modal.showAlert('노선 데이터를 가져오는 중 오류가 발생했습니다.');
+               modal.showAlert('노선 데이터를 가져오는 중 오류가 발생했습니다.');
             }
         });
     }
@@ -238,7 +238,7 @@ $(document).ready(function () {
 
     /* 사원 데이터 로드 함수 */
     function loadEmployees() {
-    	employees = []; // 기존 데이터를 초기화
+       employees = []; // 기존 데이터를 초기화
         $.ajax({
             method: 'POST',
             url: 'orgChart.ajax',
@@ -246,21 +246,21 @@ $(document).ready(function () {
             data: {
             },
             success: function (list) {
-            	console.log("사원 데이터 로드 성공:", list);
-            	// 조직도를 그리기 위한 값 저장.
-            	$.each(list, function(index, item) {
-            		employees.push({ 
-            			id: item.emp_idx,
+               console.log("사원 데이터 로드 성공:", list);
+               // 조직도를 그리기 위한 값 저장.
+               $.each(list, function(index, item) {
+                  employees.push({ 
+                     id: item.emp_idx,
                         name: item.name,
                         rankId: item.rank_idx,
                         rank: item.rank_name,
                         departmentId: item.depart_idx,
                         department: item.depart_name,
                         route_name: item.route_name
-           	    	});
-            		
-            		
-            		// 노드 정보를 nodeInfo 객체에 저장
+                     });
+                  
+                  
+                  // 노드 정보를 nodeInfo 객체에 저장
                     nodeInfo[item.emp_idx] = {
                         name: item.name,
                         phone: item.phone,
@@ -271,14 +271,14 @@ $(document).ready(function () {
                         mobile: item.mobile,
                         photo: item.photo
                     };
-            	});
-            	
+               });
+               
 
                 isEmployeesLoaded = true; // 데이터 로드 상태 플래그 업데이트
                 checkAndGenerate(0); // 데이터 로드 상태 확인
             },
             error: function () {
-            	modal.showAlert('사원 데이터를 가져오는 중 오류가 발생했습니다.');
+               modal.showAlert('사원 데이터를 가져오는 중 오류가 발생했습니다.');
             }
         });
     }
@@ -286,48 +286,48 @@ $(document).ready(function () {
     
     /* 부서별 사원 데이터 로드 함수 */
     function loadTeamEmp(callback) {
-		
-    	// 이미 데이터가 로드된 경우, 다시 호출하지 않도록 차단
+      
+       // 이미 데이터가 로드된 경우, 다시 호출하지 않도록 차단
         if (isteamEmpLoaded) {
             console.log("부서별 사원 데이터는 이미 로드되었습니다.");
             return;
         }
-    	
-    	isteamEmpLoaded = false; // 항상 데이터를 다시 로드
+       
+       isteamEmpLoaded = false; // 항상 데이터를 다시 로드
         
-    	$.ajax({
+       $.ajax({
             method: 'POST',
             url: 'orgChart.ajax',
             dataType: 'JSON',
             data: {
-            	depart_idx: departIdx,
-            	route_name: routeName
+               depart_idx: departIdx,
+               route_name: routeName
             },
             success: function (list) {
-            	console.log("부서별 사원 데이터 로드 성공:", list);
-            	
-            	// 조직도를 그리기 위한 값 저장. 
-            	
-            	teamEmp = []; // 이전 데이터 초기화
-            	
-            	$.each(list, function(index, item) {
-            		teamEmp.push({ 
-            			id: item.emp_idx,
+               console.log("부서별 사원 데이터 로드 성공:", list);
+               
+               // 조직도를 그리기 위한 값 저장. 
+               
+               teamEmp = []; // 이전 데이터 초기화
+               
+               $.each(list, function(index, item) {
+                  teamEmp.push({ 
+                     id: item.emp_idx,
                         name: item.name,
                         rankId: item.rank_idx,
                         rank: item.rank_name,
                         departmentId: item.depart_idx,
                         department: item.depart_name,
                         route_name: item.route_name
-           	    	});
-            		
-            	});
+                     });
+                  
+               });
 
                 isteamEmpLoaded = true; // 데이터 로드 상태 플래그 업데이트
                 checkAndGenerate(1); // 데이터 로드 상태 확인
                 
                 
-             	// 콜백 함수 호출 (존재할 경우)
+                // 콜백 함수 호출 (존재할 경우)
                 if (typeof callback === "function") {
                     console.log("loadTeamEmp 완료 후 콜백 호출");
                     callback();
@@ -335,7 +335,7 @@ $(document).ready(function () {
                 
             },
             error: function () {
-            	modal.showAlert('사원 데이터를 가져오는 중 오류가 발생했습니다.');
+               modal.showAlert('사원 데이터를 가져오는 중 오류가 발생했습니다.');
             }
         });
     }
@@ -343,110 +343,110 @@ $(document).ready(function () {
 
     /* 데이터 로드 상태 확인 함수 */
     function checkAndGenerate(empType) {
-	    var checkEmpType = empType === 0 
-	        ? isDepartmentsLoaded && isRanksLoaded && isEmployeesLoaded && isRoutesLoaded
-	        : isDepartmentsLoaded && isRanksLoaded && isEmployeesLoaded && isteamEmpLoaded && isRoutesLoaded;
-	
-	    if (!checkEmpType) {
-	        console.log("데이터가 아직 로드되지 않았습니다.");
-	        return;
-	    }
-	
-	    if (checkEmpType) {
-	        if (empType === 0) {
-	            console.log("데이터 로드 완료, 폴더 및 차트 생성");
-	            if (!$(".userbox").children().length) {
-	                generateFolders(); // 폴더 생성
-	            }
-	            drawChart(); // 조직도 차트 생성
-	        } else {
-	            drawTeamChart(); // 부서 또는 팀별 조직도 차트 생성
-	        }
-	    }
-	}
+       var checkEmpType = empType === 0 
+           ? isDepartmentsLoaded && isRanksLoaded && isEmployeesLoaded && isRoutesLoaded
+           : isDepartmentsLoaded && isRanksLoaded && isEmployeesLoaded && isteamEmpLoaded && isRoutesLoaded;
+   
+       if (!checkEmpType) {
+           console.log("데이터가 아직 로드되지 않았습니다.");
+           return;
+       }
+   
+       if (checkEmpType) {
+           if (empType === 0) {
+               console.log("데이터 로드 완료, 폴더 및 차트 생성");
+               if (!$(".userbox").children().length) {
+                   generateFolders(); // 폴더 생성
+               }
+               drawChart(); // 조직도 차트 생성
+           } else {
+               drawTeamChart(); // 부서 또는 팀별 조직도 차트 생성
+           }
+       }
+   }
 
 
     
     
     /* 폴더 생성 함수 */
-	function generateFolders() {
-	    var userbox = $(".userbox");
-	    userbox.empty(); // 기존 폴더 초기화
-	
-	    var addedDepartments = new Set(); // 중복 부서 방지
-	    var addedEmployees = new Set();   // 중복 사원 방지
-	
-	    // 부서별 폴더 생성
-	    $.each(departments, function (deptIndex, dept) {
-	        if (addedDepartments.has(dept.id)) return; // 이미 추가된 부서는 건너뜀
-	        addedDepartments.add(dept.id);
-	
-	        var deptFolder = $('<div class="folder">' +
-	            '<span class="folder-icon">📁</span> ' + dept.name +
-	            '<div class="subfolders" style="display:none;"></div>' +
-	            '</div>');
-	
-	        var deptSubfolders = deptFolder.find(".subfolders");
-	
-	        if (dept.id === 4) {
-	            // 기사팀인 경우 버스 팀별로 정리
-	            $.each(routes, function (routeIndex, route) {
-	                var teamFolder = $('<div class="folder">' +
-	                    '<span class="folder-icon">🚍</span> 버스 ' + route.id + '팀' +
-	                    '<div class="subfolders" style="display:none;"></div>' +
-	                    '</div>');
-	
-	                var teamSubfolders = teamFolder.find(".subfolders");
-	
-	                // 팀에 속한 사원 추가
-	                $.each(employees, function (empIndex, emp) {
-	                    if (emp.route_name === route.name && emp.departmentId === 4 && !addedEmployees.has(emp.id)) {
-	                        var empDiv = $('<div class="folder" data-id="' + emp.id + '">' +
-	                            '<span class="folder-icon">👤</span> ' + emp.name +
-	                            '</div>');
-	                        teamSubfolders.append(empDiv);
-	                        addedEmployees.add(emp.id);
-	                    }
-	                });
-	
-	                // 팀에 사원이 있을 경우에만 추가
-	                if (teamSubfolders.children().length > 0) {
-	                    deptSubfolders.append(teamFolder);
-	                }
-	            });
-	        } else {
-	            // 일반 부서의 경우 기존 방식 유지
-	            $.each(ranks, function (rankIndex, rank) {
-	                var rankFolder = $('<div class="folder">' +
-	                    '<span class="folder-icon">📂</span> ' + rank.name +
-	                    '<div class="subfolders" style="display:none;"></div>' +
-	                    '</div>');
-	
-	                // 직급별 사원 추가
-	                $.each(employees, function (empIndex, emp) {
-	                    if (emp.rankId === rank.id && emp.departmentId === dept.id && !addedEmployees.has(emp.id)) {
-	                        var empDiv = $('<div class="folder" data-id="' + emp.id + '">' +
-	                            '<span class="folder-icon">👤</span> ' + emp.name +
-	                            '</div>');
-	                        rankFolder.find(".subfolders").append(empDiv);
-	                        addedEmployees.add(emp.id);
-	                    }
-	                });
-	
-	                // 직급 폴더에 사원이 있을 경우에만 추가
-	                if (rankFolder.find(".subfolders").children().length > 0) {
-	                    deptSubfolders.append(rankFolder);
-	                }
-	            });
-	        }
-	
-	        // 부서 폴더를 사용자 박스에 추가
-	        userbox.append(deptFolder);
-	    });
-	
-	    console.log("폴더 생성 완료");
-	    bindFolderEvents(); // 폴더 이벤트 바인딩
-	}
+   function generateFolders() {
+       var userbox = $(".userbox");
+       userbox.empty(); // 기존 폴더 초기화
+   
+       var addedDepartments = new Set(); // 중복 부서 방지
+       var addedEmployees = new Set();   // 중복 사원 방지
+   
+       // 부서별 폴더 생성
+       $.each(departments, function (deptIndex, dept) {
+           if (addedDepartments.has(dept.id)) return; // 이미 추가된 부서는 건너뜀
+           addedDepartments.add(dept.id);
+   
+           var deptFolder = $('<div class="folder">' +
+               '<span class="folder-icon">📁</span> ' + dept.name +
+               '<div class="subfolders" style="display:none;"></div>' +
+               '</div>');
+   
+           var deptSubfolders = deptFolder.find(".subfolders");
+   
+           if (dept.id === 4) {
+               // 기사팀인 경우 버스 팀별로 정리
+               $.each(routes, function (routeIndex, route) {
+                   var teamFolder = $('<div class="folder">' +
+                       '<span class="folder-icon">🚍</span> 버스 ' + route.id + '팀' +
+                       '<div class="subfolders" style="display:none;"></div>' +
+                       '</div>');
+   
+                   var teamSubfolders = teamFolder.find(".subfolders");
+   
+                   // 팀에 속한 사원 추가
+                   $.each(employees, function (empIndex, emp) {
+                       if (emp.route_name === route.name && emp.departmentId === 4 && !addedEmployees.has(emp.id)) {
+                           var empDiv = $('<div class="folder" data-id="' + emp.id + '">' +
+                               '<span class="folder-icon">👤</span> ' + emp.name +
+                               '</div>');
+                           teamSubfolders.append(empDiv);
+                           addedEmployees.add(emp.id);
+                       }
+                   });
+   
+                   // 팀에 사원이 있을 경우에만 추가
+                   if (teamSubfolders.children().length > 0) {
+                       deptSubfolders.append(teamFolder);
+                   }
+               });
+           } else {
+               // 일반 부서의 경우 기존 방식 유지
+               $.each(ranks, function (rankIndex, rank) {
+                   var rankFolder = $('<div class="folder">' +
+                       '<span class="folder-icon">📂</span> ' + rank.name +
+                       '<div class="subfolders" style="display:none;"></div>' +
+                       '</div>');
+   
+                   // 직급별 사원 추가
+                   $.each(employees, function (empIndex, emp) {
+                       if (emp.rankId === rank.id && emp.departmentId === dept.id && !addedEmployees.has(emp.id)) {
+                           var empDiv = $('<div class="folder" data-id="' + emp.id + '">' +
+                               '<span class="folder-icon">👤</span> ' + emp.name +
+                               '</div>');
+                           rankFolder.find(".subfolders").append(empDiv);
+                           addedEmployees.add(emp.id);
+                       }
+                   });
+   
+                   // 직급 폴더에 사원이 있을 경우에만 추가
+                   if (rankFolder.find(".subfolders").children().length > 0) {
+                       deptSubfolders.append(rankFolder);
+                   }
+               });
+           }
+   
+           // 부서 폴더를 사용자 박스에 추가
+           userbox.append(deptFolder);
+       });
+   
+       console.log("폴더 생성 완료");
+       bindFolderEvents(); // 폴더 이벤트 바인딩
+   }
 
 
 
@@ -484,7 +484,7 @@ $(document).ready(function () {
                     isteamEmpLoaded = false; // 초기화
                     
                     loadTeamEmp(function () {
-                    	var employeeNodeId = 'emp-' + empId; // 사원의 노드 ID 생성
+                       var employeeNodeId = 'emp-' + empId; // 사원의 노드 ID 생성
                         highlightNode(employeeNodeId); // 로드 완료 후 강조
                     });
                     
@@ -504,17 +504,17 @@ $(document).ready(function () {
     
     /* 조직도 차트 생성 함수 */
 /*      function drawChart(){ */
- 	 drawChart = function (){
-    	
-    	$("#backButton").remove(); // 뒤로가기 버튼 제거 (초기 조직도에서는 표시되지 않음)
-    	
-    	
-    	// 초기화: 부서 및 팀 상세 보기 관련 변수들
+     drawChart = function (){
+       
+       $("#backButton").remove(); // 뒤로가기 버튼 제거 (초기 조직도에서는 표시되지 않음)
+       
+       
+       // 초기화: 부서 및 팀 상세 보기 관련 변수들
         departIdx = null; // 부서 idx 초기화
         routeName = '';   // 팀 이름 초기화
         isteamEmpLoaded = false; // 부서별 사원 데이터 로드 상태 초기화
-    	
-    	
+       
+       
         data = new google.visualization.DataTable();
         data.addColumn('string', 'Node ID'); // 노드 ID
         data.addColumn('string', 'Parent Node ID'); // 부모 노드 ID
@@ -522,114 +522,114 @@ $(document).ready(function () {
         
         var rows = [];
 
-	    // 1. 맨처음 노드 => 대표정보 세팅
-	    var ceo = employees[0];
-       	rows.push([
-       		{ 
-	        	v: '1',
-	     		f: '대표<i class="fas fa-id-card"></i><div class="emp">' +ceo.name+ '</div>' 
-     		}, 
-        	'', 
-        	'부서: ' + ceo.department
-   	     ]);
-	    	
-	    	
-       	// 2. 부서정보, 부서장 정보 추가 
-       	$.each(departments, function (deptIndex, dept) {
-       		// 조직도에 노드 생성하기
-    	    var deptNodeId = '';
-    	    var beforeRankNodeId = '';
-    	    var afterRankNodeId = '';
-       		
-    	    // 부서장을 찾기위한 변수
-       		var managerId;           // 부서장 idx를 담을 변수
-        	var managerName = '';    // 부서장 이름을 담을 변수
-        	var managerRankId;       // 부서장 직급을 담을 변수
-        	var managerIndex = 0;       
-        	
-        	// 부서의 최상급자를 찾기위한 변수
-        	var highId = 999;                  
-        	var highName = '';
-        	var highRankId = 999; 
-        	var highIndex = 0; 
-        	
-       		
-       		// 부서정보 추가
-       	    deptNodeId = "dept-" + dept.id;    // 부서idx
-			
-       	    // 팀장정보 찾기 (팀장이 없는경우 해당 부서의 최상급자)
-	        $.each(employees, function (empIndex, emp) {
-	        	
-	        	if (emp.departmentId === dept.id){ // 같은부서인 직원
-	        		
-	        		// 팀장인 경우 부서장으로 세팅
-		        	if(emp.rankId === 3){
-		        		managerId = emp.id;
-			        	managerName = emp.name;	
-			        	managerRankId = emp.rankId;	
-			        	managerIndex = deptIndex;
-		        	}
-	        	
-        			// 부서의 최상급자 찾기 
-        			if(emp.rankId < highRankId){
-	        			highId = emp.id;
-	        			highName = emp.name;	
-	        			highRankId = emp.rankId;		
-	        			highIndex = deptIndex;
-        			}
-	        	}
-	        	
-	        });
-	            
-	        
-	        // 팀장이 없는경우 부서의 최상급자 세팅.
-	        if (!managerId || managerId == 999) {
-	        	managerId = highId;
-	        	managerName = highName;	
-	        	managerRankId = highRankId;	
-	        }
-	        
-	        
-	        // 팀원이 한명도 없는경우
-	        if(!managerId || managerId == 999){
-	        	managerName = '<span style="color: #E9396B;">인원수 0</span>';
-	        }
-	        
-	        
-	        
-	        // 기사팀이 아닌 경우만 아이콘 추가
-	        var iconHtml = dept.id === 4 ? '' : '<i class="bi bi-box-arrow-in-right"></i>';
-	        
-	        // 부서 및 부서장 노드생성.
+       // 1. 맨처음 노드 => 대표정보 세팅
+       var ceo = employees[0];
+          rows.push([
+             { 
+              v: '1',
+              f: '대표<i class="fas fa-id-card"></i><div class="emp">' +ceo.name+ '</div>' 
+           }, 
+           '', 
+           '부서: ' + ceo.department
+           ]);
+          
+          
+          // 2. 부서정보, 부서장 정보 추가 
+          $.each(departments, function (deptIndex, dept) {
+             // 조직도에 노드 생성하기
+           var deptNodeId = '';
+           var beforeRankNodeId = '';
+           var afterRankNodeId = '';
+             
+           // 부서장을 찾기위한 변수
+             var managerId;           // 부서장 idx를 담을 변수
+           var managerName = '';    // 부서장 이름을 담을 변수
+           var managerRankId;       // 부서장 직급을 담을 변수
+           var managerIndex = 0;       
+           
+           // 부서의 최상급자를 찾기위한 변수
+           var highId = 999;                  
+           var highName = '';
+           var highRankId = 999; 
+           var highIndex = 0; 
+           
+             
+             // 부서정보 추가
+              deptNodeId = "dept-" + dept.id;    // 부서idx
+         
+              // 팀장정보 찾기 (팀장이 없는경우 해당 부서의 최상급자)
+           $.each(employees, function (empIndex, emp) {
+              
+              if (emp.departmentId === dept.id){ // 같은부서인 직원
+                 
+                 // 팀장인 경우 부서장으로 세팅
+                 if(emp.rankId === 3){
+                    managerId = emp.id;
+                    managerName = emp.name;   
+                    managerRankId = emp.rankId;   
+                    managerIndex = deptIndex;
+                 }
+              
+                 // 부서의 최상급자 찾기 
+                 if(emp.rankId < highRankId){
+                    highId = emp.id;
+                    highName = emp.name;   
+                    highRankId = emp.rankId;      
+                    highIndex = deptIndex;
+                 }
+              }
+              
+           });
+               
+           
+           // 팀장이 없는경우 부서의 최상급자 세팅.
+           if (!managerId || managerId == 999) {
+              managerId = highId;
+              managerName = highName;   
+              managerRankId = highRankId;   
+           }
+           
+           
+           // 팀원이 한명도 없는경우
+           if(!managerId || managerId == 999){
+              managerName = '<span style="color: #E9396B;">인원수 0</span>';
+           }
+           
+           
+           
+           // 기사팀이 아닌 경우만 아이콘 추가
+           var iconHtml = dept.id === 4 ? '' : '<i class="bi bi-box-arrow-in-right"></i>';
+           
+           // 부서 및 부서장 노드생성.
             rows.push([
                 {
-                	v: deptNodeId,
-                	f: dept.name + iconHtml + '<div class="emp">' +managerName+ '</div>' 
+                   v: deptNodeId,
+                   f: dept.name + iconHtml + '<div class="emp">' +managerName+ '</div>' 
                 },
                 '1',                             // 상위 노드는 '대표'
-    	        '부서: ' + dept.name              // 툴팁 정보
+               '부서: ' + dept.name              // 툴팁 정보
             ]);
 
-	        
-	        // 기사부서인 경우 버스팀 노드 생성.
-	        if(dept.id === 4){
-	        	$.each(routes, function(teamIdx, route){
-	    			
-	        		var teamNodeId = "team-" + route.name;
-	        		var team = '버스 ' + route.id + '팀';
-	        		
-	        		rows.push([
-		                { 
-		                    v: teamNodeId, 
-		                    f: team + '<i class="bi bi-box-arrow-in-right"></i><div class="emp">' + route.name + '</div>'
-		                },
-		                deptNodeId, // 상위 노드는 해당 부서
-		                "팀: " + team  // 툴팁 정보
-		            ]);
-	        	});
-	        } 
-	        
-       	});
+           
+           // 기사부서인 경우 버스팀 노드 생성.
+           if(dept.id === 4){
+              $.each(routes, function(teamIdx, route){
+                
+                 var teamNodeId = "team-" + route.name;
+                 var team = '버스 ' + route.id + '팀';
+                 
+                 rows.push([
+                      { 
+                          v: teamNodeId, 
+                          f: team + '<i class="bi bi-box-arrow-in-right"></i><div class="emp">' + route.name + '</div>'
+                      },
+                      deptNodeId, // 상위 노드는 해당 부서
+                      "팀: " + team  // 툴팁 정보
+                  ]);
+              });
+           } 
+           
+          });
 
         data.addRows(rows);
         console.log("조직도에 추가된 데이터:", data.toJSON());
@@ -638,7 +638,7 @@ $(document).ready(function () {
         // 조직도 그리기
         chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
         chart.draw(data, { 
-        	allowHtml: true,
+           allowHtml: true,
         });
 
         
@@ -693,7 +693,7 @@ drawTeamChart = function () {
 
     var rows = [];
 
- 	// 조직도 데이터 생성
+    // 조직도 데이터 생성
     if (departIdx !== 4) {
         // 부서 상세보기
         var department = departments.find(dept => dept.id === departIdx);
@@ -706,8 +706,8 @@ drawTeamChart = function () {
         var departmentNodeId = "dept-" + department.id;
         rows.push([
             { 
-            	v: departmentNodeId, 
-            	f: "부서<div class='emp'>" +department.name+ "</div>"
+               v: departmentNodeId, 
+               f: "부서<div class='emp'>" +department.name+ "</div>"
             },
             "",
             "부서: " + department.name
@@ -733,8 +733,8 @@ drawTeamChart = function () {
         // 팀 노드 추가
         rows.push([
             { 
-            	v: teamNodeId, 
-            	f: team + "<div class='emp'>" +routeName+ "</div>" 
+               v: teamNodeId, 
+               f: team + "<div class='emp'>" +routeName+ "</div>" 
             },
             "",
             "팀: " + routeName
@@ -760,31 +760,31 @@ drawTeamChart = function () {
     
     chart = new google.visualization.OrgChart(document.getElementById("chart_div"));
     chart.draw(data, { 
-    	allowHtml: true,
+       allowHtml: true,
     });
 
 
- 	// 노드 클릭 이벤트 처리
+    // 노드 클릭 이벤트 처리
     google.visualization.events.addListener(chart, 'select', function () {
-	    var selection = chart.getSelection();
-	    if (selection.length > 0) {
-	        var selectedNode = selection[0];
-	        var nodeId = data.getValue(selectedNode.row, 0);
-	
-	        
-	        // nodeId에서 'emp-' 접두사 제거
-	        if (nodeId.startsWith('emp-')) {
-	            var employeeId = nodeId.replace('emp-', '');
-	
-	            // nodeInfo에서 직원 정보 검색
-	            if (nodeInfo[employeeId]) {
-	                openModal(nodeInfo[employeeId]);
-	            } else {
-	                console.warn("nodeInfo에 직원 정보가 없습니다:", employeeId);
-	            }
-	        }
-	    }
-	});
+       var selection = chart.getSelection();
+       if (selection.length > 0) {
+           var selectedNode = selection[0];
+           var nodeId = data.getValue(selectedNode.row, 0);
+   
+           
+           // nodeId에서 'emp-' 접두사 제거
+           if (nodeId.startsWith('emp-')) {
+               var employeeId = nodeId.replace('emp-', '');
+   
+               // nodeInfo에서 직원 정보 검색
+               if (nodeInfo[employeeId]) {
+                   openModal(nodeInfo[employeeId]);
+               } else {
+                   console.warn("nodeInfo에 직원 정보가 없습니다:", employeeId);
+               }
+           }
+       }
+   });
 
 
     addBackButton();
@@ -800,8 +800,8 @@ function addRankAndEmployeeNodes(rows, groupedByRank, parentId) {
         // 직급 노드 추가
         rows.push([
             { 
-            	v: rankNodeId, 
-            	f: "<div class='rank-node'>" + rank + "</div>" 
+               v: rankNodeId, 
+               f: "<div class='rank-node'>" + rank + "</div>" 
             },
             parentId,
             "직급: " + rank
@@ -820,8 +820,8 @@ function addRankAndEmployeeNodes(rows, groupedByRank, parentId) {
 
                 rows.push([
                     { 
-                    	v: employeeId, 
-                    	f: '<div class="emp-node">' + rank + '<i class="bi bi-box-arrow-in-right"></i><div class="emp">' + employee.name + '</div></div>'
+                       v: employeeId, 
+                       f: '<div class="emp-node">' + rank + '<i class="bi bi-box-arrow-in-right"></i><div class="emp">' + employee.name + '</div></div>'
                     },
                     currentParentGroup[index % currentParentGroup.length],
                     "사원: " + employee.name
@@ -838,27 +838,27 @@ function addRankAndEmployeeNodes(rows, groupedByRank, parentId) {
     
 
     /* 모달 열기 함수 */
-	function openModal(employee) {
-	    $("#modalPhoto").attr("src", "/photo/" + (employee.photo || "default_photo.jpg")); // 사진이 없으면 기본 이미지
-	    $("#modalName").text(employee.name);
-	    $("#modalRank").text(employee.rank);
-	    $("#modalDepartment").text(employee.department);
-	    $("#modalEmail").text(employee.email);
-	    $("#modalPhone").text(employee.phone);
-	    $("#modalMobile").text(employee.mobile);
-	
-	    $("#employeeModal").fadeIn(); // 모달 창 표시
-	}
-	
-	// 모달 닫기 이벤트
-	$(document).on("click", "#employeeModal", function () {
-	    $("#employeeModal").fadeOut(); // 모달 창 닫기
-	});
+   function openModal(employee) {
+       $("#modalPhoto").attr("src", "/photo/" + (employee.photo || "default_photo.jpg")); // 사진이 없으면 기본 이미지
+       $("#modalName").text(employee.name);
+       $("#modalRank").text(employee.rank);
+       $("#modalDepartment").text(employee.department);
+       $("#modalEmail").text(employee.email);
+       $("#modalPhone").text(employee.phone);
+       $("#modalMobile").text(employee.mobile);
+   
+       $("#employeeModal").fadeIn(); // 모달 창 표시
+   }
+   
+   // 모달 닫기 이벤트
+   $(document).on("click", "#employeeModal", function () {
+       $("#employeeModal").fadeOut(); // 모달 창 닫기
+   });
 
     
     
 
-// 뒤로가기 버튼		
+// 뒤로가기 버튼      
 function addBackButton() {
     const contentBox = $(".contentbox");
 
@@ -866,15 +866,15 @@ function addBackButton() {
     if ($("#backButton").length > 0) return;
 
     contentBox.prepend(
-    		'<button class="backBtn" id="backButton">'
-    		+ '<i class="bi bi-arrow-left-square-fill">'
-        	+ '</i>&nbsp;뒤로가기'
-    		+ '</button>'
+          '<button class="backBtn" id="backButton">'
+          + '<i class="bi bi-arrow-left-square-fill">'
+           + '</i>&nbsp;뒤로가기'
+          + '</button>'
     );
 
     // 버튼 클릭 이벤트
     $("#backButton").on("click", function () {
-    	// 초기 조직도 불러오기
+       // 초기 조직도 불러오기
         drawChart();
     });
 
@@ -890,7 +890,7 @@ $('.search-icon').on('click', function () {
   executeSearch(); 
 });
 
-	// 검색창 Enter 이벤트
+   // 검색창 Enter 이벤트
 $('.search-bar').on('keyup', function (e) {
     if (e.key === 'Enter' || e.keyCode === 13) {
         searchKeyword = $(this).val().trim();
@@ -899,7 +899,7 @@ $('.search-bar').on('keyup', function (e) {
     }
 });
 
-	
+   
 function executeSearch() {
     // 검색어로 사원 목록 필터링 후 emp_idx 중복 제거
     const uniqueEmployees = Array.from(new Map(
