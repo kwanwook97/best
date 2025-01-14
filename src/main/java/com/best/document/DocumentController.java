@@ -83,7 +83,7 @@ public class DocumentController {
 	            status = "진행중";
 	            return documentService.inProgressList(page_, cnt_, status, emp_idx, readStatus);
 	        case "완료":
-	        	status = "완료";
+	        	status = "승인";
 	        	return documentService.approvedList(page_, cnt_, status, emp_idx, readStatus);
 	        case "반려":
 	        	status = "반려";

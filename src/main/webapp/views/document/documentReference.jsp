@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
@@ -13,7 +13,7 @@
 		transform: scale(0.9);
 	    margin-left: 22vw;
 	    width: 70vw;
-	    margin-top: 4vh;
+	    margin-top: 6vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
@@ -24,18 +24,27 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: 10px;
+        width: 22%;
+	    display: flex;
+	    margin-left: -46vw;
+	    margin-bottom: 10px;
+	    justify-content: space-between;
+	    align-items: baseline;	
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 36px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px;
-	    margin-bottom: 40px;
 	}
 	.docbox{
-		border: 2px solid var(--primary-color);
+		position: absolute;
+	    top: 108px;
+	    border: 2px solid var(--primary-color);
 	    width: 100%;
-		height: 740px;
+	    min-height: 765px;
 	    border-radius: 10px;
 	}
 	.opt div:nth-child(5){
@@ -95,22 +104,22 @@
 	    width: 4%;
 	}
 	table.receivedTable th:nth-child(2) {
-	    width: 10%;
+	    width: 12%;
 	}
 	table.receivedTable th:nth-child(3) {
-	    width: 12%;
+	    width: 14%;
 	}
 	table.receivedTable th:nth-child(4) {
 	    width: 30%;
 	}
 	table.receivedTable th:nth-child(5) {
-	    width: 8%;
+	    width: 14%;
 	}
 	table.receivedTable th:nth-child(6) {
-	    width: 8%;
+	    width: 10%;
 	}
 	table.receivedTable th:nth-child(7) {
-	    width: 7%;
+	    width: 10%;
 	}
 	table.receivedTable th:nth-child(8) {
 	    width: 7%;
@@ -192,8 +201,9 @@
  <jsp:include page="../main/header.jsp"/>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">결재문서</h3>
-			<h3 class="text">>&nbsp;&nbsp;참조</h3>
+			<span class="document">결재문서</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span class="text">참조</span>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>

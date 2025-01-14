@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
@@ -108,10 +108,10 @@
 	    width: 4%;
 	}
 	table.receivedTable th:nth-child(2) {
-	    width: 12%;
+	    width: 10%;
 	}
 	table.receivedTable th:nth-child(3) {
-	    width: 10%;
+	    width: 14%;
 	}
 	table.receivedTable th:nth-child(4) {
 	    width: 30%;
@@ -139,7 +139,7 @@
 	    width: 12%;
 	}
 	table.sentTable th:nth-child(3) {
-	    width: 10%;
+	    width: 12%;
 	}
 	table.sentTable th:nth-child(4) {
 	    width: 30%;
@@ -151,12 +151,6 @@
 	    width: 10%;
 	}
 	table.sentTable th:nth-child(7) {
-	    width: 10%;
-	}
-	table.sentTable th:nth-child(8) {
-	    width: 10%;
-	}
-	table.sentTable th:nth-child(9) {
 	    width: 10%;
 	}
 	.table2{
@@ -327,7 +321,7 @@ function pageCall(page, readStatus){
         dataType: 'JSON',
         success: function(data) {
         	var startNumber = (page - 1) * cnt + 1;
-            console.log(data);
+            console.log("tlqkf ",data.receivedList);
             if(data.receivedList.length>0){
                 received(data.receivedList,startNumber);
                 
@@ -358,6 +352,7 @@ function pageCall(page, readStatus){
         		$('.receivedList').html(content);
             }
             if(data.sentList.length>0){
+            	console.log("tlqkfffffffffffff ",data.sentList);
 	            // 보낸 문서
 	            sent(data.sentList,startNumber);
 	            // 보낸 문서 페이징

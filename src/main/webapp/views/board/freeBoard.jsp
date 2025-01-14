@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="resources/css/root.css" />
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"></script>
 	<script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
@@ -19,6 +19,7 @@
 	    flex-wrap: nowrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
+	    height: 90%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -40,10 +41,6 @@
 	}
 	.maintext span:first-child{
 		color: var(--secondary-color);
-	}
-	.document{
-		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.docbox{
     	display: flex;
@@ -174,7 +171,7 @@
     }
     .container{
     	position: absolute;
-    	bottom: 46px;
+    	bottom: 39px;
     }
 	.container nav{
 		display:flex;

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="resources/jquery.twbsPagination.js" type="text/javascript"></script>
@@ -108,10 +108,10 @@
 	    width: 4%;
 	}
 	table.receivedTable th:nth-child(2) {
-	    width: 12%;
+	    width: 10%;
 	}
 	table.receivedTable th:nth-child(3) {
-	    width: 10%;
+	    width: 14%;
 	}
 	table.receivedTable th:nth-child(4) {
 	    width: 30%;

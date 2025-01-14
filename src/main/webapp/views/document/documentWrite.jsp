@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="resources/richtexteditor/rte.js"></script>
 	<script type="text/javascript" src='resources/richtexteditor/plugins/all_plugins.js'></script>	
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://kit.fontawesome.com/6282a8ba62.js" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   	
   <style>
