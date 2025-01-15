@@ -16,7 +16,7 @@
   <script src="resources/js/bootstrap.min.js"></script>
   <style>
   .bg-th111{
-    		background-image: url('resources/img/bestbus.webp');
+    		background-image: url('resources/img/busbusbus.webp');
     		 background-size: cover; /* 이미지가 화면 전체를 덮도록 설정 */
    	 		/*background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */ */
     		background-position: center; 
