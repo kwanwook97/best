@@ -26,7 +26,7 @@
 	    margin-top: 13px;
 	    width: 20%;
 	    display: flex;
-	    margin-left: -68vw;
+	    margin-left: -67vw;
 	    margin-bottom: 1px;
 	    justify-content: space-between;
 	    align-items: baseline;
@@ -38,6 +38,7 @@
 	}
 	.maintext span:first-child{
 		color: var(--secondary-color);
+		cursor: pointer;
 	}
 	.boxBox{
 	    display: flex;
@@ -105,7 +106,7 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<span class="document">게시판</span>
+			<span class="document"  onclick="location.href='noticeBoard.go'">게시판</span>
 			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
 			<span>공지 게시판</span>
 		</div>

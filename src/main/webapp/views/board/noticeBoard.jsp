@@ -15,11 +15,11 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 6vh;
+	    margin-top: 8vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
-	    height: 86%;
+        height: 92%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -122,6 +122,20 @@
 		cursor: pointer;
 		color: var(--accent-color);
 	}
+	table.table1 th{
+	    background-color: var(--primary-color);
+	    color: white;
+	    padding-left: 10px;
+        border-top-left-radius: 9px;
+        border-top-right-radius: 9px;
+	}
+	table.table2 th{
+	    background-color: var(--primary-color);
+	    color: white;
+	    padding-left: 10px;
+        border-top-left-radius: 9px;
+        border-top-right-radius: 9px;
+	}
 	td{
 		padding-left: 21px;
 	    font-size: small;
@@ -155,19 +169,19 @@
 	}
 	#importCont{
 	    position: fixed;
-	    top: 22rem;
+        top: 24rem;
 	}
 	.table2{
 		border: 1px solid var(--primary-color);
 	    position: fixed;
-    	top: 23rem;
+    	top: 25.5rem;
 	}
 	.table1 i{
 	    color: var(--accent-color);
 	}
 	#generalCont{
 	    position: fixed;
-        top: 48rem;
+  	  	top: 52.5rem;
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -248,7 +262,6 @@
 		<div class="docnav">
 			<div class="searchbox">
 				<div class="searchCont">
-					
 				</div>
 				<select class="drop">
 				  <option value="subject">제목</option>
@@ -266,6 +279,11 @@
 		<div class="docbox">
 			<!-- 중요 공지 -->
 			<table class="table1 my-table">
+				<thead>
+					<tr>
+						<th colspan="6">중요 공지</th>					
+					</tr>
+				</thead>
 				<tbody class="import">
 				</tbody>
 			</table>
@@ -276,6 +294,11 @@
 			</div>
 			<!-- 일반 공지 -->
 			<table class="table2 my-table">
+				<thead>
+					<tr>
+						<th colspan="6">일반 공지</th>					
+					</tr>
+				</thead>
 				<tbody class="general">
 				</tbody>
 			</table>
