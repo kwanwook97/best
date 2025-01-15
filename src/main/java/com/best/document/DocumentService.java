@@ -39,7 +39,6 @@ public class DocumentService {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired DocumentDAO documentDao;
-    @Value("${upload.path}") private String signPath;
     @Value("${upload.path}") private String bpath;
     @Autowired LeaveDAO leaveDAO;
 	// 전자결재 대기 리스트
@@ -480,7 +479,7 @@ public class DocumentService {
         
         // 이미지 파일을 Base64로 변환
         String sign = (String) employeeDetails.get("sign");
-        Path filePath = Paths.get(signPath + sign);
+        Path filePath = Paths.get(bpath + sign);
         byte[] imageBytes = Files.readAllBytes(filePath);
         String base64Image = Base64.getEncoder().encodeToString(imageBytes);
 
@@ -603,7 +602,7 @@ public class DocumentService {
 	public String getSign(String emp_idx) throws IOException {
 		
         String sign = documentDao.getSign(emp_idx);
-        Path filePath = Paths.get(signPath + sign);
+        Path filePath = Paths.get(bpath + sign);
         byte[] imageBytes = Files.readAllBytes(filePath);
         String base64Image = Base64.getEncoder().encodeToString(imageBytes);
         String signImageUrl = "data:image/png;base64," + base64Image;
