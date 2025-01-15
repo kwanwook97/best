@@ -39,6 +39,17 @@
 	.maintext span:first-child{
 		color: var(--secondary-color);
 	}
+	.badge {
+	    color: white;
+	    background-color: red;
+	    border-radius: 50%;
+	    font-size: 12px;
+	    width: 10px;
+	    height: 10px;
+	    display: inline-block;
+	    text-align: center;
+	    vertical-align: middle;
+	}
 	.docbox{
 		position: absolute;
 	    top: 108px;
@@ -318,6 +329,7 @@ function pageCall(page, readStatus){
         success: function(data) {
         	var startNumber = (page - 1) * cnt + 1;
             console.log(data);
+            
             if(data.receivedList.length>0){
             	// 받은 문서
                 received(data.receivedList,startNumber);

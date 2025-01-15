@@ -13,26 +13,34 @@
   <style>
 	.dashboard-body{
 	    margin-left: 15vw;
-	    margin-top: 7vh;
-	    flex-wrap: wrap;
+	    margin-top: 6vh;
 	    padding: 2vh;
 	    color: var(--primary-color);
 	    height: 92%;
 	    display: flex;
 	    flex-direction: column;
-	    align-content: center;
 	    align-items: center;
-	    justify-content: center;
+	    justify-content: flex-start;
 	}
 	.maintext{
-		display: flex;
-		margin-left: -28vw;
+	    margin-top: 13px;
+	    width: 20%;
+	    display: flex;
+	    margin-left: -68vw;
+	    margin-bottom: 1px;
+	    justify-content: space-between;
+	    align-items: baseline;
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.docbox{
+	    top: 20px;
 	    position: relative;
 	}
 	table{
@@ -49,7 +57,6 @@
 	}
 	table tr:last-child{
    		padding: 20px;
-		position: absolute;
 		height: 490px;
 	}
 	table tr:not(:last-child) td{
@@ -57,6 +64,7 @@
         border-bottom: 1px solid var(--primary-color) !important;
     }
 	table tr:nth-child(3) td{
+	    padding: 15px;
 		overflow: auto;
 		overflow-y: hidden;
 	    max-width: 45vw;
@@ -85,8 +93,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">게시판</h3>
-			<h3>>&nbsp;&nbsp;공지사항</h3>
+			<span class="document">게시판</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span>공지 게시판</span>
 		</div>
 		<div class="docbox">
 			<table>

@@ -15,11 +15,11 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 7vh;
+	    margin-top: 6vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
-	    height: 83%;
+	    height: 86%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -27,24 +27,20 @@
 	    justify-content: center;
 	}
 	.maintext{
-        width: 22%;
+        width: 20%;
 	    display: flex;
-	    margin-left: -66vw;
+	    margin-left: -67vw;
 	    margin-bottom: -12px;
 	    justify-content: space-between;
 	    align-items: baseline;	
 	}
 	.maintext i,
 	.maintext span{
-		font-size: 36px !important;
+		font-size: 32px !important;
 		font-weight: bold !important;
 	}
 	.maintext span:first-child{
 		color: var(--secondary-color);
-	}
-	.document{
-		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.docbox{
     	display: flex;
@@ -155,23 +151,23 @@
 	.table1{
 		border: 2px solid var(--primary-color);
 	    position: fixed;
-    	top: 9rem;
+    	top: 10rem;
 	}
 	#importCont{
 	    position: fixed;
-	    top: 21rem;
+	    top: 22rem;
 	}
 	.table2{
 		border: 1px solid var(--primary-color);
 	    position: fixed;
-    	top: 22rem;
+    	top: 23rem;
 	}
 	.table1 i{
 	    color: var(--accent-color);
 	}
 	#generalCont{
 	    position: fixed;
-        top: 47rem;
+        top: 48rem;
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -351,39 +347,16 @@ function pageCall(page){
     });
 }
 
-// 중요 게시판 글 출력 함수
-/* function PrintImport(notices) {
-	
-    var content = '';
-	
-	for(var item of notices){
-		content += '<tr>';
-		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">'+item.subject+'</td>';
-		content += '<input type="hidden" value="'+ item.emp_idx +'">;
-		content += '<td>'+item.name+'</td>';
-		
-		var date = new Date(item.date);
-		var formattedDate = date.toISOString().split('T')[0];
-		
-		content += '<td>'+formattedDate+'</td>';
-		content += '<td>'+item.bhit+'</td>';
-		content += '</tr>';
-	}
-	$('.import').html(content);
-    
-} */
+
 function PrintImport(notices) {
 	
     var content = '';
 	
     for (var item of notices) {
         content += '<tr>';
-        if (item.emp_idx == emp_idx) {
-            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+        if (item.depart_idx == depart_idx) {
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',1)"></i></td>';
         } else {
-            // 일반 아이콘
             content += '<td><i class="bi bi-megaphone-fill"></i></td>';
         }
         content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
@@ -399,46 +372,17 @@ function PrintImport(notices) {
     }
     $('.import').html(content);
 
-    // 클릭 핸들러 함수
-    function handleIconClick(boardIdx) {
-        alert('아이콘 클릭! 게시글 ID: ' + boardIdx);
-        // 필요한 로직 추가 (예: 페이지 이동, 팝업 등)
-    }
-
 }
 
-// 일반 게시판 글 출력 함수
-/* function PrintGeneral(notices) {
-    
-	var content = '';
-	
-	for(var item of notices){
-		content += '<tr>';
-		content += '<td><i class="bi bi-megaphone-fill"></i></td>';
-		content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">'+item.subject+'</td>';
-		content += '<td>'+item.name+'</td>';
-		
-		var date = new Date(item.date);
-		var formattedDate = date.toISOString().split('T')[0];
-		
-		content += '<td>'+formattedDate+'</td>';
-		content += '<td>'+item.bhit+'</td>';
-		content += '</tr>';
-	}
-	$('.general').html(content);
-} */
 
 function PrintGeneral(notices) {
-	
     var content = '';
 	
     for (var item of notices) {
         content += '<tr>';
-        if (item.emp_idx == emp_idx) {
-            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+        if (depart_idx==2 || depart_idx==3) {
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',0)"></i></td>';
         } else {
-            // 일반 아이콘
             content += '<td><i class="bi bi-megaphone-fill"></i></td>';
         }
         content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
@@ -611,11 +555,9 @@ function  searchImport(notices){
 		console.log("발시 이름 어디갔냐고",notices);
 	    for (var item of notices) {
 	        content += '<tr>';
-	        if (item.emp_idx == emp_idx) {
-	            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+	        if (depart_idx==2 || depart_idx==3){
 	            content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',1)"></i></td>';
 	        } else {
-	            // 일반 아이콘
 	            content += '<td><i class="bi bi-megaphone-fill"></i></td>';
 	        }
 	        content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
@@ -630,12 +572,6 @@ function  searchImport(notices){
 	        content += '</tr>';
 	    }
 	    $('.import').html(content);
-
-	    // 클릭 핸들러 함수
-	    function handleIconClick(boardIdx) {
-	        alert('아이콘 클릭! 게시글 ID: ' + boardIdx);
-	        // 필요한 로직 추가 (예: 페이지 이동, 팝업 등)
-	    }
 
 }
         
@@ -663,14 +599,12 @@ function searchCallGeneral(page){
 function searchGeneral(notices){
 	
     var content = '';
-	
+
     for (var item of notices) {
         content += '<tr>';
-        if (item.emp_idx == emp_idx) {
-            // 글쓴 사람의 경우에만 클릭 가능한 아이콘 추가
+        if (depart_idx==2 || depart_idx==3){
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',0)"></i></td>';
         } else {
-            // 일반 아이콘
             content += '<td><i class="bi bi-megaphone-fill"></i></td>';
         }
         content += '<td onclick="window.location.href=\'noticeDetail.go?idx=' + item.board_idx + '\'">' + item.subject + '</td>';
@@ -686,11 +620,6 @@ function searchGeneral(notices){
     }
     $('.general').html(content);
 
-    // 클릭 핸들러 함수
-    function handleIconClick(boardIdx) {
-        alert('아이콘 클릭! 게시글 ID2: ' + boardIdx);
-        // 필요한 로직 추가 (예: 페이지 이동, 팝업 등)
-    }
 }
         
 function handleIconClick(board_idx, status) {

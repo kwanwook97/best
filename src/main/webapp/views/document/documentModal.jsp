@@ -220,7 +220,6 @@ input.manager, input.today2, input.today3{
 select option{
 	background: white;
 }
-}
 </style>
 </head>
 <body>
@@ -285,7 +284,10 @@ select option{
 </body>
 <script>
 
+
 $(document).ready(function() {
+
+	
     const currentPage = window.location.pathname; // 현재 페이지의 URL 경로를 가져옵니다.
 
     if (currentPage.includes('documentReference.go')) {
@@ -415,8 +417,9 @@ $(document).ready(function() {
        ]
    };
 
-   
+	
 });
+
 
 
 function documentForm(form_idx) {
@@ -1045,7 +1048,7 @@ function searchReceived(document,startNumber) {
 	$('.receivedList').html(content);
 }
 function searchSent(document,startNumber) {
-	
+	console.log("123132",document);
     var content = '';
 	var i = startNumber;
 	for(var item of document){
@@ -1058,8 +1061,11 @@ function searchSent(document,startNumber) {
 		
 		var doc_date = new Date(item.doc_date);
 		var docDate = doc_date.toISOString().split('T')[0];
+		var approv_date = new Date(item.doc_date);
+		var approvDate = approv_date.toISOString().split('T')[0];
 
 		content += '<td>' + docDate + '</td>';
+		content += '<td>' + approvDate + '</td>';
 		content += '<td>' + item.status + '</td>';
 		content += '</tr>';
 	}

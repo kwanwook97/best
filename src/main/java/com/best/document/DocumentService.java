@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -425,7 +427,7 @@ public class DocumentService {
 		
 		if(text.equals("참조")) {
 			success = documentDao.updateReference(doc_read, approv_num);
-		}else {			
+		}else {
 			success = documentDao.updateapprov(doc_read, approv_num);
 		}
 		return success;
@@ -719,8 +721,11 @@ public class DocumentService {
 		documentDao.documentUpdate(param);
 	}
 	
-
 	
+	// 결재문서 삭제하기
+	public void formDelete(int form_idx) {
+		documentDao.formDelete(form_idx);
+	}
 
 
 
@@ -820,6 +825,8 @@ public class DocumentService {
 	    alarm.setDate(new Date());
 	    return alarm;
 	}
+	
+	
 
 
 	

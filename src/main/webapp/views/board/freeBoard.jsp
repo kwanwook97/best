@@ -15,7 +15,7 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 7vh;
+	    margin-top: 7.5vh;
 	    flex-wrap: nowrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
@@ -27,16 +27,16 @@
 	    justify-content: center;
 	}
 	.maintext{
-        width: 22%;
+		width: 20%;
 	    display: flex;
-	    margin-left: -66vw;
+	    margin-left: -67vw;
 	    margin-bottom: -12px;
 	    justify-content: space-between;
 	    align-items: baseline;	
 	}
 	.maintext i,
 	.maintext span{
-		font-size: 36px !important;
+		font-size: 32px !important;
 		font-weight: bold !important;
 	}
 	.maintext span:first-child{
@@ -154,21 +154,21 @@
 	    text-align: center;
 	    font-size: 14px;
 	}
-    table.my-table td:nth-child(1) {
-        width: 1%;
-    }
-    table.my-table td:nth-child(2) {
-        width: 10%;
-    }
-    table.my-table td:nth-child(3) {
-        width: 3%;
-    }
-    table.my-table td:nth-child(4) {
-        width: 2%;
-    }
-    table.my-table td:nth-child(5) {
-        width: 2%;
-    }
+	table.my-table th:nth-child(1) {
+	    width: 7%;
+	}
+	table.my-table th:nth-child(2) {
+	    width: 55%;
+	}
+	table.my-table th:nth-child(3) {
+	    width: 17%;
+	}
+	table.my-table th:nth-child(4) {
+	    width: 11%;
+	}
+	table.my-table th:nth-child(5) {
+	    width: 10%;
+	}
     .container{
     	position: absolute;
     	bottom: 39px;
@@ -260,16 +260,6 @@
 			</div>
 		</div>
 		<div class="docbox">
-<!-- 			<div class="dropBox">
-				<div class="drop">
-				    <select class="drop cntSelector">
-				        <option value="5">5개씩 보기</option>
-				        <option value="10">10개씩 보기</option>
-				        <option value="15" selected>15개씩 보기</option>
-				        <option value="20">20개씩 보기</option>
-				    </select>
-				</div>
-			</div> -->
 			<table class="my-table">
 				<thead>
 					<tr>
@@ -441,6 +431,7 @@ $('input[name="search"]').on('input', function() {
 });
 
 function printSearchList(list, startNumber){
+	console.log("d어ㅣ??",list);
 	var content = '';
     var i = startNumber;
     for (var item of list) {
@@ -484,65 +475,6 @@ $('.editbtn').on('click', function(){
 });
 
 
-var config = {}
-config.editorResizeMode = "none";
-//config.toolbar = "basic";
-
-//data:imgae - 이미지를 base64 형태로 문자열화 한것이다.
-//장점 : 별도의 파일처리 없이 파일을 다룰 수 있다. 사용이 간단하다.
-//단점 : 용량제어가 안되며, 기존파일보다 용량이 커진다. 
-config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로변경 함수, 자바스크립트는 함수를 매개변수로 넘길수있음
-	console.log(file);
-
-	if(file.size>(1*1024*1024)){
-		alert('2MB이상의 파일은 올릴 수 없습니다.');
-		pathReplace('/img/noimage.png');
-	}
-}
-
-var editor = new RichTextEditor("#div_editor", config);
-
-function save() {
-	var content = editor.getHTMLCode(); // 에디터의 HTML 포함 내용 가져오기
-    var textOnly = $('<div>').html(content).text(); // HTML 태그 제거하고 순수 
-    
-    console.log("sdf"+content);
-    console.log("qudㄴ병신"+textOnly);
-    
-    var content = editor.getHTMLCode(); // 에디터 내용 가져오기
-    console.log(content);
-    console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
-
-    // 제목 입력 확인
-    var subject = $('input[name="subject"]').val().trim(); // 제목 필드 값 가져오기
-    if (!subject) {
-        alert("제목을 입력해주세요.");
-        return;
-    }
-
-    // 500자 제한 확인
-    if (content.length > 500) {
-        alert("내용이 500자를 초과할 수 없습니다.");
-        return;
-    }
-
-    // 체크박스 상태에 따라 importance 값 설정
-    if ($('#check').prop('checked')) {
-        $('input[name="importance"]').val('1');
-    } else {
-        $('input[name="importance"]').val('0');
-    }
-
-    // 100MB 초과 확인
-    if (content.length > 100 * 1024 * 1024) {
-        alert("100MB이상 크기는 전송이 불가능 합니다.");
-        return; // 폼 제출 중단
-    }
-
-    // 폼 데이터 설정 및 제출
-    $('input[name="content"]').val(content);
-    $('form').submit();
-}
 
 </script>
 </html>

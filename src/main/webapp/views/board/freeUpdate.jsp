@@ -18,7 +18,7 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 7vh;
+	    margin-top: 5vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
@@ -30,12 +30,20 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: 10px;
+	    width: 21%;
+	    display: flex;
+	    margin-left: -17.5vw;
+	    margin-bottom: 42px;
+	    justify-content: space-between;
+	    align-items: baseline;
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.formBorder{    
 		display: flex;
@@ -80,6 +88,9 @@
 	    -moz-user-select: none;
 	    user-select: none;
 	}
+	#charCount{
+		padding-left: 5px;
+	}
 	#check{
 	    width: 10px;
     	height: 10px;
@@ -112,8 +123,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="maintext">
-			<h3 class="document">자유 게시판</h3>
-			<h3>>&nbsp;&nbsp;게시글 수정</h3>
+			<span class="document">게시판</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span>게시글 수정</span>
 		</div>
 		<div class="formBorder">
 			<form action="freeUpdate.do" method="POST">

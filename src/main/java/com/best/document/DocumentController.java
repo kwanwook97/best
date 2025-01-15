@@ -117,7 +117,7 @@ public class DocumentController {
             status = "진행중";
             return documentService.searchInProgress(page_, cnt_, status, listType, searchType, query, emp_idx);
         case "완료":
-        	status = "완료";
+        	status = "승인";
         	return documentService.searchApproved(page_, cnt_, status, listType, searchType, query, emp_idx);
         case "반려":
         	status = "반려";
@@ -380,4 +380,15 @@ public class DocumentController {
 		documentService.documentUpdate(param);
 		return "redirect:/documentWrite.go";
 	}
+	
+	// 결재문서 삭제하기
+	@PostMapping(value="/formDelete.ajax")
+	public ResponseEntity<String> formDelete(@RequestParam("form_idx") int form_idx) {
+		
+		documentService.formDelete(form_idx);
+        return ResponseEntity.ok("삭제 되었습니다.");
+        
+	}
+
+
 }

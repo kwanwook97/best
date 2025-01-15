@@ -15,23 +15,31 @@
   <style>
 	.dashboard-body{
 	    margin-left: 15vw;
-	    margin-top: 10vh;
+	    margin-top: 9vh;
 	    flex-wrap: wrap;
-	    padding: 2vh;
 	    color: var(--primary-color);
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
-	    align-items: baseline;
+	    align-items: flex-start;
 	    justify-content: center;
+	    width: 84%;
 	}
 	.maintext{
-		display: flex;
-		margin-left: -34vw;
+        width: 20%;
+	    display: flex;
+	    margin-left: -1vw;
+	    margin-bottom: 15px;
+	    justify-content: space-between;
+	    align-items: baseline;	
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
 	}
 	.drop{
 	    font-size: 14px;
@@ -40,14 +48,16 @@
 	    color: var(--primary-color);
 	}
 	.docbox{
-   	    display: flex;
-	    align-items: center;
+	    display: flex;
 	    border: 2px solid var(--primary-color);
-	    width: 1300px;
-	    height: 740px;
+	    width: 1535px;
+	    height: 690px;
 	    border-radius: 10px;
 	    flex-direction: column;
-	    justify-content: center;
+    	justify-content: space-evenly;
+	}
+	#monthlyExpenseTable th{
+		text-align: center !important;
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */
@@ -131,6 +141,7 @@
 	.chart-wrapper {
 	    width: 55%;
 	    padding: 20px;
+	    margin-right: 34px;
 	}
 	table {
 	    transform: scale(0.9);
@@ -166,8 +177,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">지출정산</h3>
-			<h3>>&nbsp;&nbsp;연별현황</h3>
+			<span class="document">지출정산</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span class="text">연별현황</span>
 		</div>
 		<div class="docbox">
 			<div class="date-navigation">
@@ -188,9 +200,10 @@
 	                <thead>
 	                    <tr>
 	                        <th>월</th>
-	                        <th>일반 총 지출 금액 (원)</th>
-	                        <th>버스관리 총 지출 금액 (원)</th>
-	                        <th>급여 총 지출 금액 (원)</th>
+	                        <th>일반 지출</th>
+	                        <th>버스관리 지출</th>
+	                        <th>급여 지출</th>
+	                        <th>월 총 지출</th>
 	                    </tr>
 	                </thead>
 	                <tbody>
@@ -255,13 +268,16 @@ $(document).ready(function () {
 	function updateTable(categorizedData) {
 	    var tableHtml = '';
 	    for (var i = 0; i < 12; i++) {
+	        var total = categorizedData.basic[i] + categorizedData.bus[i] + categorizedData.emp[i]; // 합계 계산
 	        tableHtml += '<tr>' +
 	            '<td>' + (i + 1) + '월</td>' +
 	            '<td>' + categorizedData.basic[i].toLocaleString() + '원</td>' +
 	            '<td>' + categorizedData.bus[i].toLocaleString() + '원</td>' +
 	            '<td>' + categorizedData.emp[i].toLocaleString() + '원</td>' +
+	            '<td>' + total.toLocaleString() + '원</td>' + // 합계를 추가
 	            '</tr>';
 	    }
+
 	    $('#monthlyExpenseTable tbody').html(tableHtml);
 	}
 

@@ -194,7 +194,7 @@ public class BoardController {
 	
 	// 자유 게시판 게시글 삭제하기(리스트)
 	// 자유 게시판 게시글 삭제하기(상세보기)
-	@GetMapping(value="/freeDelete.go")
+	@GetMapping(value="/freeDelete.do")
 	public String freeDelete(String board_idx, RedirectAttributes redirectAttributes) {
         try {
             boardService.freeDelete(board_idx);
@@ -218,6 +218,16 @@ public class BoardController {
 		String searchOption = param.get("searchOption");
 		
 		return boardService.freeSearch(page_, cnt_,searchText,searchOption);
+	}
+
+	
+	// 자유 게시판 댓글 수
+	@GetMapping(value="/commentsCount.ajax")
+	public ResponseEntity<Integer> commentsCount(@RequestParam("board_idx") int board_idx) {
+
+        int count = boardService.commentsCount(board_idx);
+        return ResponseEntity.ok(count);
+	
 	}
 	
 	

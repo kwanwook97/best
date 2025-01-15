@@ -194,25 +194,23 @@ public class BoardService {
 	
 		Map<String, Object> result = new HashMap<>();
 		
-		result.put("freeList", boardDao.freeSearchList(cnt, offset, searchText, searchOption));	
+		List<?> freeLi = boardDao.freeSearchList(cnt, offset, searchText, searchOption);
+		
+		logger.info("어이가없ㄴ: {}",freeLi);
+		result.put("freeList", freeLi);	
         result.put("totalPages", totalPages);
         
         return result;
 	}
 
-	// 자유 게시판 댓글 리스트
-//	public Map<String, Object> commentList(String board_idx, int page, int cnt) {
-//		int offset = (page - 1) * cnt;
-//
-//	    List<CommentDTO> rawComments = boardDao.commentList(board_idx, cnt, offset);
-//
-//	    Map<String, Object> result = new HashMap<>();
-//	    result.put("comments", rawComments);
-//	    result.put("totalPages", boardDao.commentCount(board_idx, cnt)); 
-//
-//	    return result;
-//	}
+	
+	// 자유 게시판 댓글 수
+	public int commentsCount(int board_idx) {
+		return boardDao.commentsCount(board_idx);
+	}
 
+	
+	// 자유 게시판 댓글 리스트
 	public Map<String, Object> commentList(String board_idx, int page, int cnt) {
 	    int offset = (page - 1) * cnt;
 
@@ -241,8 +239,6 @@ public class BoardService {
 
 	    return result;
 	}
-	
-	
 	
 	
 	// 자유 게시판 댓글 작성
@@ -316,5 +312,6 @@ public class BoardService {
 	public void deleteReply(int comment_idx) {
 		boardDao.deleteComment(comment_idx);
 	}
+
 
 }

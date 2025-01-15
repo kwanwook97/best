@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html lang="ko">
 <head>
 	<meta charset="utf-8"/>
@@ -28,7 +29,7 @@
 	.maintext{
 	    width: 20%;
 	    display: flex;
-	    margin-left: -68vw;
+	    margin-left: -67vw;
 	    margin-bottom: 10px;
 	    justify-content: space-between;
 	    align-items: baseline;
@@ -38,7 +39,7 @@
 		font-size: 32px !important;
 		font-weight: bold !important;
 	}
-	.maintext span:last-child{
+	.maintext span:first-child{
 		color: var(--secondary-color);
 	}
 	.docbox{
@@ -52,7 +53,7 @@
 		justify-content: center;
 	}
 	.contentBox{
-		width: 950px;
+		width: 800px;
 		min-height: 640px; 
 	}
 	.doc-header{
@@ -76,7 +77,11 @@
 		color: gray;
 	}
 	.comment-section {
-		margin-top: 30px;
+	    margin-top: 7px;
+	}
+	.comm{
+	    font-size: 17px;
+	    font-weight: bold;
 	}
 	.comment-box textarea {
 		width: 100%;
@@ -89,7 +94,7 @@
 	}
 	.comment-box button {
 		width: 100px;
-		margin-top: 10px;
+		margin-top: 5px;
 		align-self: flex-end;
 		background-color: var(--primary-color);
 		color: white;
@@ -101,18 +106,35 @@
 	    width: 100%;
 		display: flex;
 	    justify-content: center;
-		border: 1px solid var(--primary-color);
 	}
 	.commentBox {
+	  	display: flex;
 	    width: 822px;
-		border-top: 1px solid var(--primary-color);
+	    margin-top: 10px;
+	    flex-direction: column;
+	}
+	#charCount{
+		padding-left: 5px;
+	}
+	.textBox{
+		display: flex;
+	    align-items: flex-end;
+	    justify-content: space-between;
 	}
 	.comment-item {
-		border: 1px solid var(--primary-color);
-		border-radius: 10px;
-		padding: 10px;
-		margin-bottom: 10px;
-		background-color: #f9f9f9;
+        border-bottom: 1px solid var(--primary-color);
+    	padding: 5px 37px;
+	}
+	.comment-item div{
+	    margin-right: 10px;
+	    margin-top: 1px;
+	    transform: scale(0.99);
+	}
+	.empInfoBox{
+		display: flex;
+	}
+	.empInfoBox strong{
+		margin-right: 5px;
 	}
 	.comment-item strong {
 		font-weight: bold;
@@ -124,6 +146,14 @@
 	}
 	.lastBox{
 		display: flex;
+    	justify-content: space-between;
+	}
+	.comBox,
+	.commBox{
+		display: flex;
+	}
+	.commBox div:last-child{
+		margin-left: 5px;
 	}
 	.replyBtn, .updateBtn, .deleteBtn{
 		cursor: pointer;
@@ -137,15 +167,21 @@
 	.deleteBtn:hover{
 		font-weight: bold;
 	}
-	.reply-list{
-		margin-left: 50px;
+	.replyBox{
+   		margin: 5px 36px;
 	}
 	.reply-item{
-		border: 1px solid var(--primary-color);
-		margin-bottom: 10px;
-		border-radius: 10px;
+		padding: 8px 0 8px 36px;
+	    border-bottom: 1px solid var(--primary-color);
+	}
+	.reply-item div{
+		transform: scale(0.9);
 	}
 	.replyLastBox{
+		display: flex;
+	    justify-content: space-between;
+	}
+	.myBtn{
 		display: flex;
 	}
 	table{
@@ -177,9 +213,9 @@
 	    font-size: small;
 	}
 	.gobtn{
-		position: absolute;
-	    right: 50px;
-	    bottom: 0;
+	    position: absolute;
+	    right: 10px;
+	    top: -42px;
 	}
 	input[type="button"]{
 		width: 120px;	
@@ -236,6 +272,49 @@
 		color: var(--background-color) !important;
 		background-color: var(--background-color) !important;
 	}
+	#commentCont{
+   		display: flex;
+	    flex-direction: row;
+	    justify-content: center;
+        margin-top: 7px;
+	}
+	.replyAddBtn{
+	    width: 62px;
+	    margin-top: 10px;
+	    align-self: flex-end;
+	    background-color: var(--primary-color);
+	    color: white;
+	    border: none;
+	    border-radius: 10px;
+	    padding: 5px;
+	    font-size: smaller;
+	    margin-right: 5px;
+	}
+	.replyCan{
+        width: 62px;
+	    margin-top: 10px;
+	    align-self: flex-end;
+	    background-color: var(--accent-color);
+	    color: white;
+	    border: none;
+	    border-radius: 10px;
+	    padding: 5px;
+	    font-size: smaller;
+	}
+	.reArea{
+		width: 400px;
+	    height: 80px;
+	    resize: none;
+	}
+	.replyArea{
+		width: 400px;
+	    height: 75px;
+	    resize: none;
+	    margin-right: 5px;
+	}
+	.comment-content{
+		display: flex;
+	}
    </style>
 </head>
 <body class="bg-theme bg-theme1">
@@ -251,7 +330,7 @@
 				<!-- 게시글 헤더 -->
 				<div class="doc-header">
 					<h3>${info.subject}</h3>
-					<p>작성자: ${info.name}(${info.depart_name}/${info.rank_name}) | 작성일: ${info.date} | 조회수: ${info.bhit}</p>
+					<p>작성자: ${info.name}(${info.depart_name}/${info.rank_name}) | 작성일: ${fn:substringBefore(info.date, " ")} | 조회수: ${info.bhit}</p>
 				</div>
 				<!-- 게시글 내용 -->
 				<div class="doc-content">
@@ -259,7 +338,7 @@
 				</div>
 				<!-- 댓글 섹션 -->
 				<div class="comment-section">
-					<h4>댓글</h4>
+					<span class="comm">💬댓글</span>
 					<!-- 댓글 목록 -->
 					<div class="comment-list">
 						<div class="commentBox">
@@ -273,8 +352,10 @@
 					<!-- 댓글 작성 -->
 					<div class="comment-box">
 						<textarea id="commentInput" placeholder="댓글을 입력하세요. 300자 이내" maxlength="299"></textarea>
-						<p id="charCount">0 / 300</p>
-						<button onclick="addComment()">댓글 작성</button>
+						<div class="textBox">
+							<p id="charCount">0 / 300</p>
+							<button onclick="addComment()">댓글 작성</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -283,7 +364,7 @@
 			    <!-- 글 작성자와 로그인 사용자가 같을 때만 버튼 표시 -->
 			    <c:if test="${info.name == sessionScope.loginName}">
 			        <input type="button" value="수정하기" onclick="location.href='freeUpdate.go?idx=${info.board_idx}'"/>
-			        <input type="button" value="삭제하기" onclick="location.href='freeDelete.go?board_idx=${info.board_idx}'"/>
+			        <input type="button" value="삭제하기" onclick="location.href='freeDelete.do?board_idx=${info.board_idx}'"/>
 			    </c:if>
 			</div>
 		</div>
@@ -299,7 +380,25 @@
 	var showPage = 1;
 
 	loadComments(board_idx, showPage);
+	loadCommentCount(board_idx);
+	
+	function loadCommentCount(board_idx){
+		
+		$.ajax({
+		    url: 'commentsCount.ajax',
+		    type: 'GET',
+		    data: { board_idx: board_idx }, 
+		    success: function(response) {
+		    	console.log("enlwu"+response);
+		    	$('.comm').append('('+response+')');
+		    },
+		    error: function(error) {
+		        console.error('댓글 수 가져오기 실패:', error);
+		    }
+		});
 
+	}	
+	
 	function loadComments(board_idx, page) {
 	    $.ajax({
 	        type: 'GET',
@@ -312,8 +411,8 @@
 	        dataType: 'JSON',
 	        success: function(response) {
 	            console.log("뭐냤삘 ", response.childMap);
-//	            printComment(response);
-	            
+	            printComment(response);
+	        	
 	            $('#commentPagination').twbsPagination('destroy');
 	            if (response.totalPages > 0) {
 	                $('#commentPagination').twbsPagination({
@@ -452,23 +551,26 @@
 	        parentComments.forEach(function (parent) {
 	            commentHtml += 
 	                '<div class="comment-item" id="comment-' + parent.comment_idx + '">' +
-	                	'<div>' +
+	                	'<div class="empInfoBox">' +
 		                    '<strong>' + parent.emp_name+'</strong>' +
 	                		'<div>('+parent.depart_name+'/'+parent.rank_name+')</div>' +
 	                	'</div>' +
 	                    '<input type="hidden" value="' + parent.emp_idx + '">' +
 	                    '<div class="comment-content">' + parent.content + '</div>' +
 	                    '<div class="lastBox">' +
-	                        '<div class="comment-date">' + formatDate(parent.com_date) + '</div>' +
-	                        '<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬 댓글쓰기</div>';
-
+	                    	'<div class="comBox">' +
+		                        '<div class="comment-date">' + formatDate(parent.com_date) + '</div>' +
+	                      		'<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬 댓글쓰기</div>' +
+                      		'</div>';
 	            // 수정/삭제 버튼 추가
 	            if (parent.emp_idx == emp_idx) {
 	                commentHtml +=
+	                	'<div class="commBox">' +
 	                    '<div class="updateBtn" onclick="updateCom(' + parent.comment_idx + ')">✏️ 수정하기</div>' +
-	                    '<div class="deleteBtn" onclick="deleteCom(' + parent.comment_idx + ')">❌ 삭제</div>';
+	                    '<div class="deleteBtn" onclick="deleteCom(' + parent.comment_idx + ')">❌ 삭제</div>' +
+	                    '</div>';
 	            }
-
+								
 	            commentHtml += '</div></div>';
 
 	            // 대댓글 리스트 컨테이너 생성
@@ -484,7 +586,7 @@
 	            replies.forEach(function (reply) {
 	                var replyHtml = 
 	                    '<div class="reply-item" id="reply-' + reply.comment_idx + '">' +
-	                    	'<div>' +
+	                    	'<div class="empInfoBox">' +
 			                    '<strong>' + reply.emp_name+'</strong>' +
 		                		'<div>('+reply.depart_name+'/'+reply.rank_name+')</div>' +
 		                	'</div>' +
@@ -495,8 +597,10 @@
 	                
 	                if (reply.emp_idx == emp_idx) {
 	                    replyHtml +=
-	                        '<div class="updateBtn" onclick="updatReply(' + reply.comment_idx + ')">✏️ 수정하기</div>' +
-	                        '<div class="deleteBtn" onclick="deleteReply(' + reply.comment_idx + ')">❌ 삭제</div>';
+	                    	'<div class="myBtn">' +
+		                        '<div class="updateBtn" onclick="updatReply(' + reply.comment_idx + ')">✏️ 수정하기</div>' +
+		                        '<div class="deleteBtn" onclick="deleteReply(' + reply.comment_idx + ')">❌ 삭제</div>' +
+		                    '</div>';
 	                }
 	                
 	                replyHtml += '</div></div>';
@@ -509,41 +613,8 @@
 	        // 이벤트 재바인딩
 	        bindReplyInputEvents();
 	        highlightMentions();
+
 	    }
-
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-		 // @mention 처리: @로 시작하고 strong 태그의 텍스트와 일치하는 부분 강조
-	    /* $('.commentBox .comment-content').each(function () {
-	        var content = $(this).text();
-
-	        // 모든 strong 태그의 텍스트 가져오기
-	        var authors = $('.commentBox strong').map(function () {
-	            return $(this).text();
-	        }).get();
-
-	        // 매칭된 부분 감싸기
-	        authors.forEach(function (author) {
-	            var regex = new RegExp('@' + author + '(?=\\s|$)', 'g');
-	            content = content.replace(regex, function (match) {
-	                return '<span class="highlight">' + match + '</span>';
-	            });
-	        });
-
-	        $(this).html(content);
-	    });
-
-	    // 스타일 추가 (highlight 클래스)
-	    $('<style>')
-	        .prop('type', 'text/css')
-	        .html('.highlight { color: blue; font-weight: bold; }')
-	        .appendTo('head');
-	 */
 	 
 	 
 	 function highlightMentions() {
@@ -613,11 +684,11 @@
 	        // 새로운 박스 생성
 	        var replyBoxHtml = 
 	            '<div class="replyBox" id="replyBox-' + commentIdx + '">' +
-	                '<textarea id="replyInput-' + commentIdx + '" placeholder="댓글을 입력하세요. 300자 이내" maxlength="299"></textarea>' +
+	                '<textarea class="reArea" id="replyInput-' + commentIdx + '" placeholder="댓글을 입력하세요. 300자 이내" maxlength="299"></textarea>' +
 	                '<p class="replycharCount" id="replycharCount-' + commentIdx + '">0 / 300</p>' +
 	                '<div class="autocomplete" id="autocomplete-' + commentIdx + '"></div>'+
-	                '<button onclick="addReply(' + commentIdx + ')">댓글 작성</button>' +
-	                '<button onclick="toggleReplyBox(' + commentIdx + ')">취소</button>' +
+	                '<button class="replyAddBtn" onclick="addReply(' + commentIdx + ')">댓글 작성</button>' +
+	                '<button class="replyCan" onclick="toggleReplyBox(' + commentIdx + ')">취소</button>' +
 	            '</div>';
 	        
 	        // 해당 댓글 바로 아래 추가
@@ -628,21 +699,7 @@
 	            var inputValue = $(this).val(); // 변수명을 명확히 변경
 	            var length = inputValue.length; // 올바른 변수 사용
 	            $('#replycharCount-' + commentIdx).text(length + " / 300");
-/* 
-	            if (inputValue.endsWith('@')) {
-	                var replyAuthors = getReplyAuthors(commentIdx);
-	                if (replyAuthors.length > 0) {
-	                    var autocompleteList = replyAuthors.map(function (author) {
-	                        return '<div class="autocomplete-item" onclick="selectUser(' + commentIdx + ', \'' + author.name + '\', \'' + author.empIdx + '\')">' + author.name + '</div>';
-	                    }).join('');
-	                    $('#autocomplete-' + commentIdx).html(autocompleteList).show();
-	                } else {
-	                    $('#autocomplete-' + commentIdx).hide();
-	                }
-	            } else {
-	                $('#autocomplete-' + commentIdx).hide();
-	            } 
-	        });*/
+
 	            console.log('입력 값:', inputValue); // 디버깅: 입력 값 확인
 	            if (inputValue.endsWith('@')) {
 	                var replyAuthors = getReplyAuthors(commentIdx);
@@ -894,8 +951,9 @@
 	            content: content
 	        },
 	        success: function(response) {
-	            alert('댓글이 수정되었습니다.');
 	            loadComments(board_idx, 1);
+	            highlightMentions();
+	            alert('댓글이 수정되었습니다.');
 	        },
 	        error: function(error) {
 	            alert('댓글 수정 중 오류가 발생했습니다.');
@@ -925,9 +983,9 @@
 	
 	    // textarea로 대체
 	    var textareaHtml = 
-	        '<textarea id="updateTextarea-' + comment_idx + '" class="update-textarea">' + currentContent + '</textarea>' +
-	        '<button onclick="submitReplyUpdate(' + comment_idx + ')">저장</button>' +
-	        '<button onclick="cancelReplyUpdate(' + comment_idx + ', \'' + currentContent + '\')">취소</button>';
+	        '<textarea class="replyArea" id="updateTextarea-' + comment_idx + '" class="update-textarea">' + currentContent + '</textarea>' +
+	        '<button class="replyAddBtn" onclick="submitReplyUpdate(' + comment_idx + ')">저장</button>' +
+	        '<button class="replyCan" onclick="cancelReplyUpdate(' + comment_idx + ', \'' + currentContent + '\')">취소</button>';
 	    
 	    contentDiv.html(textareaHtml);
 	}
