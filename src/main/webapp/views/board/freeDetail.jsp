@@ -121,14 +121,20 @@
 	    align-items: flex-end;
 	    justify-content: space-between;
 	}
+	.writer{
+	    border-radius: 11px;
+	    background-color: var(--secondary-color);
+	    color: white;
+	    width: 54px;
+	    text-align: center;
+	    transform: scale(0.7) !important;
+	}
 	.comment-item {
         border-bottom: 1px solid var(--primary-color);
     	padding: 5px 37px;
 	}
 	.comment-item div{
-	    margin-right: 10px;
 	    margin-top: 1px;
-	    transform: scale(0.99);
 	}
 	.empInfoBox{
 		display: flex;
@@ -546,15 +552,18 @@
 	        var childMap = response.childMap || {};
 			console.log("sdfsdf",childMap);
 	        var commentHtml = '';
-	        
+	        var infoName = '${info.name}';
 	        // 부모 댓글 렌더링
 	        parentComments.forEach(function (parent) {
 	            commentHtml += 
 	                '<div class="comment-item" id="comment-' + parent.comment_idx + '">' +
 	                	'<div class="empInfoBox">' +
 		                    '<strong>' + parent.emp_name+'</strong>' +
-	                		'<div>('+parent.depart_name+'/'+parent.rank_name+')</div>' +
-	                	'</div>' +
+	                		'<div>('+parent.depart_name+'/'+parent.rank_name+')</div>';
+	                		if(infoName == parent.emp_name){
+	                			commentHtml += '<div class="writer">작성자</div>';
+	                		}
+                		commentHtml += '</div>' +
 	                    '<input type="hidden" value="' + parent.emp_idx + '">' +
 	                    '<div class="comment-content">' + parent.content + '</div>' +
 	                    '<div class="lastBox">' +
@@ -588,8 +597,11 @@
 	                    '<div class="reply-item" id="reply-' + reply.comment_idx + '">' +
 	                    	'<div class="empInfoBox">' +
 			                    '<strong>' + reply.emp_name+'</strong>' +
-		                		'<div>('+reply.depart_name+'/'+reply.rank_name+')</div>' +
-		                	'</div>' +
+		                		'<div>('+reply.depart_name+'/'+reply.rank_name+')</div>';
+			                if(infoName == reply.emp_name){
+			                	replyHtml += '<div class="writer">작성자</div>';
+		            		}
+			                replyHtml += '</div>' +
 	                        '<input type="hidden" id="taggedEmpIdx" value="' + reply.emp_idx + '">' +
 	                        '<div class="comment-content">' + reply.content + '</div>' +
 	                        '<div class="replyLastBox">' +
@@ -928,9 +940,9 @@
 	    }
 
 	    var editHtml = 
-	        '<textarea class="edit-textarea">' + originalContent + '</textarea>' +
-	        '<button class="save-btn" onclick="saveCom(' + comment_idx + ')">저장</button>' +
-	        '<button class="cancel-btn" onclick="cancelEdit(' + comment_idx + ', \'' + originalContent + '\')">취소</button>';
+	        '<textarea class="replyArea">' + originalContent + '</textarea>' +
+	        '<button class="replyAddBtn" onclick="saveCom(' + comment_idx + ')">수정</button>' +
+	        '<button class="replyCan" onclick="cancelEdit(' + comment_idx + ', \'' + originalContent + '\')">취소</button>';
 
 	    contentDiv.html(editHtml);
 	}
@@ -984,7 +996,7 @@
 	    // textarea로 대체
 	    var textareaHtml = 
 	        '<textarea class="replyArea" id="updateTextarea-' + comment_idx + '" class="update-textarea">' + currentContent + '</textarea>' +
-	        '<button class="replyAddBtn" onclick="submitReplyUpdate(' + comment_idx + ')">저장</button>' +
+	        '<button class="replyAddBtn" onclick="submitReplyUpdate(' + comment_idx + ')">수정</button>' +
 	        '<button class="replyCan" onclick="cancelReplyUpdate(' + comment_idx + ', \'' + currentContent + '\')">취소</button>';
 	    
 	    contentDiv.html(textareaHtml);
@@ -1008,6 +1020,8 @@
 	        success: function(response) {
 	            alert('댓글이 수정되었습니다!');
 	            $('#reply-' + comment_idx + ' .comment-content').html(content);
+	            window.location.reload();
+
 	        },
 	        error: function(e) {
 	            alert('댓글 수정 중 오류가 발생했습니다.');
