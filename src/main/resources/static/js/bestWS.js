@@ -2,7 +2,7 @@ loginId = parseInt(loginId);
 
 // 글로벌 WebSocket 연결
 //window.globalSocket = new WebSocket("ws://localhost:8080/BEST/ws");
-window.globalSocket = new WebSocket("ws://150.230.250.80/BEST/ws");
+window.globalSocket = new WebSocket("ws://150.230.250.80/ws");
 
 // WebSocket 연결 성공 시
 globalSocket.onopen = function () {
