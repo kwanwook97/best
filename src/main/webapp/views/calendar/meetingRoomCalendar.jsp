@@ -1042,7 +1042,8 @@ $(document).ready(function () {
 	    // FormData 객체 생성
 	    const formMaterial = new FormData();
 	    let endTime = '';
-		if ($("#end-time").val()== '24:00') {
+	    endTime = $("#end-time").val();
+		if (endTime == '24:00') {
 			endTime = '23:59'
 		}
 	    // 폼 데이터 가져오기 및 FormData에 추가
