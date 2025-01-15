@@ -311,6 +311,9 @@ select option {
 .span-active {
    margin: 0 0 0 1%;
 }
+.fc-event.fc-event-end.fc-event-past.fc-daygrid-event.fc-daygrid-block-event.fc-h-event .fc-event-time{
+	color: white;
+}
    
 
   </style>
@@ -367,13 +370,13 @@ select option {
          <canvas id="cardChart"></canvas>
       </div>
    </div>
-    <div class="dash-calendar" onclick="location.href='calendar.go'">
+    <div class="dash-calendar">
       <select id="visibilityFilter">
           <option value="all">전체</option>
           <option value="private">개인</option>
           <option class="departName" value="public">부서</option>
       </select>
-      <div id="calendar" class="calendar-calendar"></div>
+      <div id="calendar" class="calendar-calendar" onclick="location.href='calendar.go'"></div>
     </div>
     <div class="todoList" onclick="location.href='calendar.go'">
 <!--        <div><span>To Do List!</span></div>
