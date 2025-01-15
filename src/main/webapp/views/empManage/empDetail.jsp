@@ -327,6 +327,12 @@
 		            $.each(list, function (index, item) {
 		                var value = changeName === '부서' ? item.depart_name : item.rank_name;
 		                var idx = changeName === '부서' ? item.depart_idx : item.rank_idx;
+		                
+		             	// '대표' 항목 제외
+		                if (value === '대표') {
+		                    return true; // 다음 반복으로 이동
+		                }
+		                
 		                if(currentVal == value){
 		                	dropdown.append('<option value="' + idx + '" selected>' + value + '</option>');	
 		                }else{
@@ -646,9 +652,9 @@
 	function infoHistoryCheck() {
 	    $.ajax({
 	        type: 'POST',
-	        url: 'infoHistoryCheck.ajax',
+	        url: 'infoHistoryCheck2.ajax',
 	        data: {
-	            "emp_idx": empIdx,
+	            "emp_idx": empIdx
 	        },
 	        dataType: 'json',
 	        success: function(response) {

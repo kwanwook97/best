@@ -381,6 +381,22 @@
 		ORDER BY eh.date DESC
 	</select>
 	
+	<!-- infoHistoryCheck -->
+	<select id="infoHistoryCheck2" resultType="map">
+		SELECT
+			eh.category as category,
+			eh.before_update as before_update,
+			eh.after_update as after_update,
+			DATE_FORMAT(eh.date, '%Y-%m-%d') AS date,
+			e.name as name,
+			eh.emp_manage_idx as emp_manage_idx
+		FROM emp_history eh
+		LEFT JOIN
+			employee e ON eh.emp_manage_idx = e.emp_idx
+		WHERE eh.emp_idx = #{param1}
+		ORDER BY eh.date DESC
+	</select>
+	
 	<!-- 나의 정보 업데이트시 히스토리  -->
 	<insert id="insertEmpHistory" parameterType="map">
 		INSERT INTO emp_history (emp_idx,category,before_update,after_update,emp_manage_idx)

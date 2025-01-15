@@ -226,6 +226,14 @@ public class EmployeeController {
 		return empService.infoHistoryCheck(emp_idx);
 	}
 	
+	@PostMapping(value="/infoHistoryCheck2.ajax")
+	@ResponseBody
+	public Map<String, Object> infoHistoryCheck2(@RequestParam Map<String, Object> params){
+		int emp_idx = Integer.parseInt((String)params.get("emp_idx")); 
+		
+		return empService.infoHistoryCheck2(emp_idx);
+	}
+	
 	
 	// 프로필사진 수정
 	@PostMapping(value = "/profilePhotoUpload.do")
