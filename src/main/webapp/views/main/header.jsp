@@ -839,9 +839,9 @@ function checkButton(){
 
 
 function updateStartTime(){
-   if (ipMsg == '불일치') {
+/*    if (ipMsg == '불일치') {
       alert('ip정보가 불일치 합니다.')
-   }
+   } */
    
     const data = {
             loginId: loginId
