@@ -146,7 +146,18 @@
 		SET remain_leave = remain_leave - #{days}
 		WHERE emp_idx = #{empIdx}
 	</update>
-
+	
+	<!-- 연차 이력 변경시 연차 소진 변경 -->
+	<update id="updateLeaveChange" parameterType="map">
+	    UPDATE leave_emp 
+	    SET remain_leave = remain_leave + 
+	        (DATEDIFF(STR_TO_DATE(#{prevEndDate}, '%Y-%m-%d'), STR_TO_DATE(#{prevStartDate}, '%Y-%m-%d')) - 
+	         DATEDIFF(STR_TO_DATE(#{endDate}, '%Y-%m-%d'), STR_TO_DATE(#{startDate}, '%Y-%m-%d')))
+	    WHERE emp_idx = #{empIdx}
+	    AND remain_leave + 
+	        (DATEDIFF(STR_TO_DATE(#{prevEndDate}, '%Y-%m-%d'), STR_TO_DATE(#{prevStartDate}, '%Y-%m-%d')) - 
+	         DATEDIFF(STR_TO_DATE(#{endDate}, '%Y-%m-%d'), STR_TO_DATE(#{startDate}, '%Y-%m-%d'))) >= 0;
+	</update>
 	
 	
 	

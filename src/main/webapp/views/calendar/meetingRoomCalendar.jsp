@@ -666,7 +666,6 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
         }, */
         weekends: true,
         allDaySlot: false,
-        editable: true,
         selectable: true,
         dateClick: function (info) {
             ////console.log("클릭된 날짜:", info.dateStr);
@@ -814,6 +813,12 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                     // FullCalendar 형식으로 데이터 변환
                     const events = response.map(event => {
                         //console.log("이벤트 데이터 변환: ", event); // 여기서 각 이벤트 데이터를 확인
+                        /* let endTime = new Date(event.end); // event.end를 Date 객체로 변환
+                        if (endTime.getHours() === 23 && endTime.getMinutes() === 59) {
+                            endTime.setHours(24); 
+                            endTime.setMinutes(0);
+                        console.log("이벤트 시간:"+endTime);
+                        } */
                         return {
                             id: event.id,
                             title: event.title,
@@ -856,10 +861,14 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 minute: '2-digit'
             });
 
-            const endTime = arg.event.end.toLocaleTimeString('ko-KR', {
+            let endTime = arg.event.end.toLocaleTimeString('ko-KR', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
+/*             if (endTime === '오후 11:59') {
+            	endTime = '오후 12:00';
+                console.log("끝시간 테스트1:"+endTime);
+            } */
             //console.log("startTime :", startTime);
             //console.log("endTime :", startTime);
             //console.log("extendedProps :", extendedProps);
@@ -996,7 +1005,6 @@ $(document).ready(function () {
 		}else{
 			  $(".sometext").text('');
 			  $endTimeSelect.val("01:00");			  
-
 		}
 		  
 	  });
@@ -1034,13 +1042,16 @@ $(document).ready(function () {
 
 	    // FormData 객체 생성
 	    const formMaterial = new FormData();
-
+	    let endTime = '';
+		if ($("#end-time").val()== '24:00') {
+			endTime = '23:59'
+		}
 	    // 폼 데이터 가져오기 및 FormData에 추가
 	    formMaterial.append("emp_idx", $("#emp_idx").val());
 	    formMaterial.append("room_idx", $("#hidden-room-idx").val());
 	    formMaterial.append("subject", $("#title").val());
 	    formMaterial.append("startTime", $("#start-time").val());
-	    formMaterial.append("endTime", $("#end-time").val());
+	    formMaterial.append("endTime", endTime);
 	    formMaterial.append("date", $("#date").val());
 	    
         // 필수 항목 폼 데이터 유효성 검사

@@ -170,6 +170,8 @@ public class LeaveService {
 	public Map<String, Object> updateLeaveHistory(List<Map<String, Object>> list) {
 		Map<String, Object> response = new HashMap<>();
 		int row = 0 ;
+		int dow = 0;
+		
 		if (list == null) {
 		    response.put("msg", "매개변수 빈필드 오류");
 		}else {
@@ -179,15 +181,23 @@ public class LeaveService {
 			if (prev != null && !prev.isEmpty()) {
 				map.put("prevStartDate", prev.get("prevStartDate"));
 				map.put("prevEndDate", prev.get("prevEndDate"));
+				dow = leaveDAO.updateLeaveChange(map);
+				if (dow == 0) {
+					response.put("msg", "잔여연차부족");
+					return  response;
+				}else {
+					leaveDAO.updateLeaveHistory(map);
+					row += leaveDAO.insertLeaveHistoryLog(map);
+				}
 				
 				
 			}else {
-				return (Map<String, Object>) response.put("msg","변경할 이전 연차가 없습니다?");
+				response.put("msg","변경할 이전 연차가 없습니다?");
+				return  response;
 			}
-				leaveDAO.updateLeaveHistory(map);
-				row += leaveDAO.insertLeaveHistoryLog(map);
+
 			}
-			if (row > 0) {
+			if (row > 0 && dow != 0) {
 				response.put("msg", "성공");
 			}else {
 				response.put("msg", "실패");

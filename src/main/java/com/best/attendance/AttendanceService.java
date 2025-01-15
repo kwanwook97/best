@@ -94,8 +94,10 @@ public class AttendanceService {
         List<Map<String, Object>> filteredList = list.stream()
         	    .filter(name -> {
         	        Date sqlDate = (Date) name.get("date");
+        	        //logger.info("sqlDate:{}",sqlDate);
         	        LocalDate date = sqlDate.toLocalDate();
-        	        return date.getMonthValue() == LocalDate.now().getMonthValue(); 
+        	        //logger.info("date:{}",date);
+        	        return date.getYear() == now.getYear() && date.getMonthValue() == now.getMonthValue();
         	    })
                 .filter(name -> {
                     String status = (String) name.get("status"); 
@@ -124,7 +126,7 @@ public class AttendanceService {
 //        Math.round(Double.parseDouble(totalWorkTime.toString()) * 10) / 10.0
         totalWorkTime = Math.round(totalWorkTime * 10) / 10.0; 
         totalOverTime = Math.round(totalOverTime * 10) / 10.0; 
-        //logger.info("총 근무시간: {}", totalWorkTime);
+        logger.info("총 근무시간: {}", totalWorkTime);
         long lateCount = filteredList.stream()
             .filter(item -> "지각".equals(item.get("status")))
             .count();

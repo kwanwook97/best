@@ -40,4 +40,6 @@ public interface LeaveDAO {
 
 	void updateRemainLeave(Map<String, Object> map);
 
+	int updateLeaveChange(Map<String, Object> map);
+
 }
