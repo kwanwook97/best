@@ -87,11 +87,7 @@ public class BusController {
 		log.info("contrl param:{}",param);
 	    return "redirect:/busDetail";
 	}
-//	@RequestMapping(value="/busManage.go")
-//	public ModelAndView busManageGo() {
-//		ModelAndView mav = new ModelAndView("bus/busManage");
-//		return mav;
-//	}
+
 	@RequestMapping(value="/busManage.go")
 	public String busManage(@RequestParam("bus_idx") String busIdx, Model model) {
 	    int bus_idx = Integer.parseInt(busIdx);
@@ -113,13 +109,6 @@ public class BusController {
 		return "redirect:/busUpdate.go?bus_idx="+Integer.parseInt(param.get("bus_idx"));
 	}
 	
-//	@RequestMapping(value="/busUpdate.do")
-//	public String busUpdate(@RequestParam Map<String, String> param) {
-//		busService.busUpdateDo(param); 
-//		log.info("contrl param:{}",param);
-//	    return "redirect:/busUpdate.go?bus_idx="+Integer.parseInt(param.get("bus_idx"));
-//	}
-//	
 	/* 배차현황 */
 	@RequestMapping(value="/dispatchList.go")
 	public String dispatchList() {
@@ -139,26 +128,26 @@ public class BusController {
     }
 	
 	/* 교대시간 가져오기 */
-	@GetMapping("/shift.ajax")
+	@GetMapping(value="/shift.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> shift() {
 	    return busService.shift();
 	}
 	/*차량번호 가져오기 */
-	@GetMapping("/license.ajax")
+	@GetMapping(value="/license.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> license(@RequestParam("route_name") String routeName) {
 	    return busService.license(routeName);
 	}
 	/* 기사정보 가져오기 */
-	@GetMapping("/driver.ajax")
+	@GetMapping(value="/driver.ajax")
 	@ResponseBody
 	public List<Map<String, Object>> driver(@RequestParam("route_name") String routeName) {
 	    return busService.driver(routeName);
 	}
 	
 	/* 배차현황 리스트 가져오기 & 검색 & 필터링 */
-	@GetMapping("/dispatchList.ajax")
+	@GetMapping(value="/dispatchList.ajax")
 	@ResponseBody
 	public Map<String, Object> dispatchList(@RequestParam(required = false) String date) {
 		Map<String, Object> result = new HashMap<>();
@@ -182,7 +171,7 @@ public class BusController {
 	    return result;
 	}
 	/* 배차현황 등록 */
-	@PostMapping("/dispatchInsert.ajax")
+	@PostMapping(value="/dispatchInsert.ajax")
 	@ResponseBody
 	public Map<String, Object> dispatchInsert(@RequestBody DispatchDTO dispatch) {
 	    Map<String, Object> result = new HashMap<>();
@@ -229,7 +218,7 @@ public class BusController {
 	    return response;
 	}
 	/* 기사 idx 가져오기 */
-	@GetMapping("/getDriverIdx.ajax")
+	@GetMapping(value="/getDriverIdx.ajax")
 	@ResponseBody
 	public Map<String, Object> getDriverIdx(@RequestParam("emp_idx") int empIdx) {
 	    Map<String, Object> response = new HashMap<>();
@@ -243,7 +232,7 @@ public class BusController {
 	    return response;
 	}
 	/* 날짜별로 배차현황 가져오기 */
-	@GetMapping("/getDispatchIdx.ajax")
+	@GetMapping(value="/getDispatchIdx.ajax")
 	@ResponseBody
 	public Map<String, Object> getDispatchIdx(@RequestParam("driver_idx") int driverIdx,
 	                                          @RequestParam("date") String date) {
@@ -258,7 +247,7 @@ public class BusController {
 	    return response;
 	}
 	/* 운행상태 등록 */
-	@PostMapping("/insertDrive.ajax")
+	@PostMapping(value="/insertDrive.ajax")
 	@ResponseBody
 	public Map<String, Object> insertDrive(@RequestParam("dispatch_idx") int dispatchIdx,
 	                                       @RequestParam("start_time") String startTime,
@@ -273,7 +262,7 @@ public class BusController {
 	    return response;
 	}
 	/* 운행상태 시작 변경 */
-	@PostMapping("/updateDriveStatus.ajax")
+	@PostMapping(value="/updateDriveStatus.ajax")
 	@ResponseBody
 	public Map<String, Object> updateDriveStatus(@RequestBody Map<String, Object> requestData) {
 	    Map<String, Object> response = new HashMap<>();
@@ -297,7 +286,7 @@ public class BusController {
 	    return response;
 	}
 	/* 운행상태 종료 변경 */
-	@PostMapping("/stopDriveStatus.ajax")
+	@PostMapping(value="/stopDriveStatus.ajax")
 	@ResponseBody
 	public Map<String, Object> stopDriveStatus(@RequestBody Map<String, Object> requestData) {
 	    Map<String, Object> response = new HashMap<>();

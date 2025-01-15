@@ -217,9 +217,13 @@
 		parameterType="com.best.bus.DispatchDTO"
 		resultType="com.best.bus.DispatchDTO">
 		SELECT * FROM dispatch WHERE bus_idx = #{bus_idx}
-		AND date =
-		#{date}
+		AND date = #{date}
 		AND shift_idx = #{shift_idx};
+	</select>
+	<select id="checkDriverDispatch" parameterType="com.best.bus.DispatchDTO" resultType="int">
+    	SELECT COUNT(*)
+    	FROM dispatch
+    	WHERE driver_idx = #{driver_idx} AND date = #{date}
 	</select>
 	<!-- 배차현황 등록 -->
 	<insert id="dispatchInsert"

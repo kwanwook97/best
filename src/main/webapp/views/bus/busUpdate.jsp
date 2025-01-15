@@ -215,32 +215,7 @@ textarea{
 <body class="bg-theme bg-theme1">
   <form action="busManage.do">
   <div class="body">
-     <!-- <div class="naviPath bold f32 w100 tm2">
-		<span class="lPurple">버스정보</span>
-			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
-		<span class="lPurple">버스관리</span>
-			<i class="fa-solid fa-angle-right" style="color:#30005A;"></i>
-		<span class="purple">버스등록</span>
-		<div class="bus-drive-info">
-				
-		</div>
-	</div> -->
     <div class="content">
-    <%-- <div class="bus-info-subject bold purple"><span>버스 정보</span></div>
-      <div class="bus-info-card">
-       	<div class="bus-details">
-       	<input type="hidden" name="bus_idx" value="${bus.bus_idx}" />
-       		<ul>
-       			<li><strong>노선 번호:</strong> <span>${bus.route_name}</span></li>
-       			<li><strong>차량 번호:</strong> <span>${bus.license_plate}</span></li>
-       			<li><strong>연비:</strong> <span>${bus.fuel_efficiency} km/L</span></li>
-       			<li><strong>구입일:</strong> <span>${bus.buy_date}</span></li>
-       			<li><strong>제조사:</strong> <span>${bus.bus_company}</span></li>
-       			<li><strong>좌석 수:</strong> <span>${bus.seat_number}</span></li>
-       			<li><strong>버스 종류:</strong> <span>${bus.bus_type}</span></li>
-       		</ul>
-        </div>
-       </div> --%>
        <div class="bus-info-subject bold purple"><span>정비 사항</span></div>
        <input type="hidden" name="bus_manage_emp_idx" value="${sessionScope.loginId}"/>
        <input type="hidden" name="bus_idx" value="${bus.bus_idx}" />
