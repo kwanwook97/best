@@ -119,6 +119,7 @@ public class BusService {
 	    bus.setBuy_date(parseLocalDate(buyDateStr));
 	    bus.setBus_conpany(param.get("bus_bus_company"));
 	    bus.setSeat_number(Integer.parseInt(param.get("bus_seat_number")));
+	    bus.setBus_type(param.get("bus_bus_type"));
 	    busDao.busInsert(bus);
 	}
 	public void busManage(Map<String, String> param) {
