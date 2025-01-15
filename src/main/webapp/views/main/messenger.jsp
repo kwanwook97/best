@@ -538,9 +538,6 @@
     background-color: #FFFBF2;
     color: #6C0F6C;
 }
-.fa-circle{
-	color: #1DD20C;
-}
 .emoji-picker {
     z-index: 9999 !important;
 }
@@ -1337,7 +1334,7 @@ function loadChatContent(keyword) {
                      	'<img src="/photo/' + profile.photo + '" alt="프로필 사진" class="custom-image">' +
                      	'<div>' +
                      		'<span>' + empName + '</span>' +
-                     		'<span>' + (profile.state == 1 ? '<i class="fas fa-circle"></i> 근무 중' : '근무 종료') + '</span>' +
+                     		'<span>' + (profile.state == 1 ? '<i class="fas fa-circle" style="color: #1DD20C;"></i> 근무 중' : '<i class="fas fa-circle" style="color: red"></i> 부재 중') + '</span>' +
                      	'</div>' +
                      '</div>' +
                      '<ul>' +
