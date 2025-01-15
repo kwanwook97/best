@@ -18,7 +18,7 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 7vh;
+	    margin-top: 5vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
@@ -30,12 +30,24 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin: 10px;
+	    width: 25%;
+	    display: flex;
+	    margin-left: -17vw;
+	    margin-bottom: 42px;
+	    justify-content: space-between;
+	    align-items: baseline;
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
+		cursor: pointer;
+	}
+	.maintext span:last-child{
+		color: var(--primary-color);
 	}
 	.formBorder{    
 		display: flex;
@@ -110,8 +122,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="maintext">
-			<h3 class="document">자유 게시판</h3>
-			<h3>>&nbsp;&nbsp;게시글 작성</h3>
+			<span class="document" onclick="location.href='freeBoard.go'">자유 게시판</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span>게시글 작성</span>
 		</div>
 		<div class="formBorder">
 			<form action="freeWrite.do" method="POST">

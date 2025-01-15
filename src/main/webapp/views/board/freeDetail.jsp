@@ -30,7 +30,7 @@
 	    width: 20%;
 	    display: flex;
 	    margin-left: -67vw;
-	    margin-bottom: 10px;
+	    margin-bottom: 30px;
 	    justify-content: space-between;
 	    align-items: baseline;
 	}
@@ -41,6 +41,7 @@
 	}
 	.maintext span:first-child{
 		color: var(--secondary-color);
+		cursor: pointer;
 	}
 	.docbox{
 	    position: relative;
@@ -221,7 +222,7 @@
 	.gobtn{
 	    position: absolute;
 	    right: 10px;
-	    top: -42px;
+	    bottom: -40px;
 	}
 	input[type="button"]{
 		width: 120px;	
@@ -327,7 +328,7 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<span class="document">게시판</span>
+			<span class="document" onclick="location.href='freeBoard.go'">게시판</span>
 			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
 			<span>자유 게시판</span>
 		</div>

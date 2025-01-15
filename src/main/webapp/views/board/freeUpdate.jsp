@@ -33,7 +33,7 @@
 	    width: 21%;
 	    display: flex;
 	    margin-left: -17.5vw;
-	    margin-bottom: 42px;
+	    margin-bottom: 34px;
 	    justify-content: space-between;
 	    align-items: baseline;
 	}
@@ -44,6 +44,10 @@
 	}
 	.maintext span:first-child{
 		color: var(--secondary-color);
+		cursor: pointer;
+	}
+	.maintext span:last-child{
+		color: var(--primary-color);
 	}
 	.formBorder{    
 		display: flex;
@@ -123,7 +127,7 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="maintext">
-			<span class="document">게시판</span>
+			<span class="document" onclick="location.href='freeDetail.go?idx=${info.board_idx}'">게시판</span>
 			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
 			<span>게시글 수정</span>
 		</div>
