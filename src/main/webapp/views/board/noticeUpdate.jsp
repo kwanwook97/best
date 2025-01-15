@@ -30,24 +30,37 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: 10px;
+		width: 20%;
+	    display: flex;
+	    margin-left: -17vw;
+	    margin-bottom: 31px;
+	    justify-content: space-between;
+	    align-items: baseline;
 	}
-	.document{
+	.maintext i,
+	.maintext span{
+		font-size: 32px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
 		color: var(--secondary-color);
-		margin-right: 30px !important;
+		cursor: pointer;
+	}
+	.maintext span:last-child{
+		color: var(--primary-color);
 	}
 	.formBorder{    
 		display: flex;
 	    align-items: center;
 	    justify-content: center;
     	width: 950px;
-    	height: 728px;	
+    	height: 710px;	
 	    border: 2px solid var(--primary-color);
 	    border-radius: 10px;
 	}
 	form{
-	    width: 47vw;
+	    height: 671px;
+    	width: 47vw;
 	}
 	table{
 		border-radius: 10px;
@@ -110,8 +123,9 @@
  <jsp:include page="../main/header.jsp"></jsp:include>
  	<div class="dashboard-body">
  		<div class="maintext">
-			<h3 class="document">게시판</h3>
-			<h3>>&nbsp;&nbsp;공지 수정</h3>
+			<span class="document" onclick="location.href='noticeDetail.go?idx=${info.board_idx}'">게시판</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span>공지 수정</span>
 		</div>
 		<div class="formBorder">
 			<form action="noticeUpdate.do" method="POST">
