@@ -6,7 +6,7 @@
   margin-left: 320px;
 }
  body .body {
-    transform: scale(0.56); /* 67%로 축소 */
+    transform: scale(0.55); /* 67%로 축소 */
     transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
     width: 150%; /* 축소에 따른 여백 보정 */
     overflow-x: hidden; /* 가로 스크롤 제거 */

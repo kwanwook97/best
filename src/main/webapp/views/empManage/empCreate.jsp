@@ -358,13 +358,13 @@
             !confirmPw ||
             !ip
         ) {
-            showAlertModal("모든 필드를 채워주세요.");
+            modal.showAlert("모든 필드를 채워주세요.");
             return; // 제출 중단
         }
         
      // 비밀번호와 확인 비밀번호가 일치하지 않는 경우
         if (password !== confirmPw) {
-            showAlertModal("2개의 비밀번호가 서로 일치하지 않습니다.");
+        	modal.showAlert("2개의 비밀번호가 서로 일치하지 않습니다.");
             return; // 제출 중단
         }
         

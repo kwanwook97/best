@@ -171,7 +171,7 @@ var ranks = [];
 	            }
 	            
 	            // 중복 체크
-	            if (isDuplicateRankName(currentName)) {
+	            if (isDuplicateRankName(newName)) {
 	                modal.showAlert("이미 존재하는 직급 이름입니다.");
 	                closeModal('addRankModal');
 	                return;

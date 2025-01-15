@@ -69,7 +69,7 @@
     <if test="status != 999">
         AND ms.status = #{status}
     </if>
-
+    
     <!-- 검색 조건 처리 -->
     <if test="searchKeyword != null and searchKeyword != ''">
         <choose>
@@ -98,9 +98,11 @@
         <choose>
             <when test="table == 'mail_receive'">
                 mr.mail_receive_idx, <!-- mail_receive_idx 포함 -->
+                'mail_receive' AS tableSource, <!-- 메일 출처 -->
             </when>
             <otherwise>
                 NULL AS mail_receive_idx, <!-- 다른 테이블에서는 NULL로 반환 -->
+                'mail_send' AS tableSource, <!-- 메일 출처 -->
             </otherwise>
         </choose>
         ms.mail_send_idx,    
@@ -158,15 +160,24 @@
     SELECT 
         CEIL(COUNT(DISTINCT ms.mail_send_idx) / #{cnt}) AS pages  
     FROM
-        mail_receive mr 
-	INNER JOIN 
-        mail_send ms 
-        ON mr.mail_send_idx = ms.mail_send_idx             
+        <choose>
+            <!-- mail_receive를 기준으로 LEFT JOIN -->
+            <when test="table == 'mail_receive'">
+                mail_receive mr
+                LEFT JOIN mail_send ms 
+                ON mr.mail_send_idx = ms.mail_send_idx
+            </when>
+            <!-- mail_send를 기준으로 LEFT JOIN -->
+            <otherwise>
+                mail_send ms
+                LEFT JOIN mail_receive mr
+                ON ms.mail_send_idx = mr.mail_send_idx
+            </otherwise>
+        </choose>
     <where>
         <include refid="mailWhere"/> <!-- 공통 WHERE 조건 삽입 -->
     </where>
 </select>
-
 
 
 

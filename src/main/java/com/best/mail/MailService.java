@@ -108,23 +108,38 @@ public class MailService {
 		
 		List<Map<String, Object>> list = new ArrayList<>();
 		
+		int totalCnt = 0;
+		
 		// 휴지통 목록인경우 mail_send, mail_receive 테이블을 둘다 뒤져야함. 
 	    if (table.equals("mail_trash")) {
 	        // mail_trash 테이블일 경우, 두 테이블의 데이터를 합산
 	        condition.put("table", "mail_send");
 	        // status 0:임시저장, 1:발송 상관없이 모두 조회하기 위해 임의의 999값세팅
 	        condition.put("status", 999);
-	        totalPages += mailDao.allCount(condition);
+	        
+	        totalPages = mailDao.allCount(condition);
+	        
+	        condition.put("cnt", 1);
+	        totalCnt = mailDao.allCount(condition);
+	        logger.info("총 항목 수: " + totalCnt);
+	        
 	        list.addAll(mailDao.mailList(condition));
+	        
 
 	        condition.put("table", "mail_receive");
-	        totalPages += mailDao.allCount(condition);
 	        list.addAll(mailDao.mailList(condition));
+	        
+	        totalCnt += mailDao.allCount(condition);
+	        logger.info("총 항목 수: " + totalCnt);
 	    } else {
 	        // 일반 테이블 조회
 	        condition.put("table", table);
 	        totalPages = mailDao.allCount(condition);
 	        list.addAll(mailDao.mailList(condition));
+	        
+	        condition.put("cnt", 1);
+	        totalCnt = mailDao.allCount(condition);
+	        logger.info("총 항목 수: " + totalCnt);
 	    }
 
 	    // 결과 데이터 구성
@@ -137,10 +152,9 @@ public class MailService {
 	    
 	    // 조건에 맞는 전체 리스트 개수 가져오기.
 	    // No.를 부여하기위함.
-	    condition.put("cnt", 1);
-	    int totalCnt = mailDao.allCount(condition);
 	    result.put("totalCnt", totalCnt);
 
+	    
 	    return result;
 	}
 
@@ -353,7 +367,7 @@ public class MailService {
 		header.add("content-type", "application/octet-stream");
 		try {
 			String filename = URLEncoder.encode(orifile_name, "UTF-8");
-			header.add("content-Disposition", "attechment;filename=\""+filename+"\"");
+			header.add("Content-Disposition", "attachment; filename=\""+filename+"\"");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}	
