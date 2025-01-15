@@ -39,43 +39,55 @@
 	.maintext span:first-child{
 		color: var(--secondary-color);
 	}
-	.docbox{
-	    top: 20px;
-	    position: relative;
+	.boxBox{
+	    display: flex;
+	    flex-direction: column;
+	    align-items: flex-end;
 	}
-	table{
+	.docbox{
+	    border: 2px solid var(--primary-color);
+	    border-radius: 15px;
+	    margin-top: 10px;
+	}
+	table.noticeTable{
 		width: 45vw;
 		height: 36rem;
 		border-radius: 10px;
 		margin: 33px 48px 55px 48px;
-		border: 2px solid var(--primary-color);
 		border-collapse: separate !important;
         border-spacing: 0;
 	}
-	table tr{
+	table.noticeTable .trOne td{
 		height: 35px;
+        font-size: 21px;
+    	font-weight: bold;
 	}
-	table tr:last-child{
+	table.noticeTable .trTwo{
+   		display: flex;
+    	height: 42px;
+	}
+	table.noticeTable .trTwo td{
+	    height: 20px;
+    	font-size: medium;
+	}
+	table.noticeTable .trTwo td:last-child {
+		color: #454545;
+	    transform: scale(0.85);
+   	    margin-left: -13px;
+	}
+	table.noticeTable .trThr{
    		padding: 20px;
 		height: 490px;
 	}
-	table tr:not(:last-child) td{
-		padding-left: 20px;
-        border-bottom: 1px solid var(--primary-color) !important;
-    }
-	table tr:nth-child(3) td{
+	table.noticeTable .trThr td{
 	    padding: 15px;
 		overflow: auto;
 		overflow-y: hidden;
 	    max-width: 45vw;
+	    border-top: 1px solid var(--primary-color);
     }
-	td{
-	    font-size: small;
-	}
 	.gobtn{
-		position: absolute;
-	    right: 50px;
-	    bottom: 0;
+        padding: 10px 1px 10px 0;
 	}
 	input[type="button"]{
 		width: 120px;	
@@ -97,24 +109,27 @@
 			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
 			<span>공지 게시판</span>
 		</div>
-		<div class="docbox">
-			<table>
-				<tbody>
-					<tr>
-						<td>제목 : ${info.subject}</td>
-					</tr>
-					<tr>
-						<td>작성자 : ${info.name} (${info.depart_name}/${info.rank_name})</td>
-						<input type="hidden" value="${info.emp_idx}"/>
-					</tr>
-					<tr>
-						<td>${info.content}</td>
-					</tr>
-				</tbody>
-			</table>
+		<div class="boxBox">
+			<div class="docbox">
+				<table class="noticeTable">
+					<tbody>
+						<tr class="trOne">
+							<td>제목 : ${info.subject}</td>
+						</tr>
+						<tr class="trTwo">
+							<td>작성자 : ${info.name} (${info.depart_name}/${info.rank_name})</td>
+							<input type="hidden" value="${info.emp_idx}"/>
+							<td>${info.date} | 👀${info.bhit}</td>
+						</tr>
+						<tr class="trThr">
+							<td>${info.content}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 			<div class="gobtn">
-				<input type="button" value="리스트" onclick="location.href='noticeBoard.go'"/>
-				<c:if test="${sessionScope.employee.depart_idx == 2 || sessionScope.employee.depart_idx == 3}">
+				<input type="button" value="☰ 목록" onclick="location.href='noticeBoard.go'"/>
+				<c:if test="${sessionScope.employee.depart_idx == 2 || sessionScope.employee.depart_idx == 3 || sessionScope.employee.depart_idx == 6}">
 					<input type="button" value="수정하기" onclick="location.href='noticeUpdate.go?idx=${info.board_idx}'"/>
 					<input type="button" value="삭제하기" onclick="location.href='noticeDelete.do?idx=${info.board_idx}'"/>
 				</c:if> 
