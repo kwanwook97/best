@@ -258,7 +258,7 @@
 					<input type="text" name="search" class="searchInp">
 					<i class="fas fa-search"></i>
 				</div>
-				<c:if test="${sessionScope.employee.depart_idx == 2 || sessionScope.employee.depart_idx == 3}">
+				<c:if test="${sessionScope.employee.depart_idx == 1 || sessionScope.employee.depart_idx == 2 || sessionScope.employee.depart_idx == 3}">
 				    <button class="editbtn"><i class="far fa-edit"></i>작성</button>
 				</c:if>
 			</div>
