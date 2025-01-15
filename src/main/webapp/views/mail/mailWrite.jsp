@@ -479,7 +479,6 @@ function sendMail(status) {
     }
 
     if ($('input[name="subject"]').val().trim() === "") {
-        let confirmResult = confirm("제목이 지정되지 않았습니다. 제목 없이 메일을 보내시겠습니까?");
         modal.showAlert("제목을 입력해 주세요.");
         return;
     }

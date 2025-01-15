@@ -526,6 +526,21 @@ public class EmployeeService {
 		
 	}
 	
+	public Map<String, Object> infoHistoryCheck2(int emp_idx) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<Map<String, Object>> list = empDAO.infoHistoryCheck2(emp_idx);
+		
+		if (list.size() > 0 && list != null) {
+			map.put("msg", "성공");
+			map.put("list", list);
+		}else {
+			map.put("msg", "실패");
+		}
+		
+		return map;
+		
+	}
+	
 	// 프로필 사진 업데이트
 	@Transactional
 	public int updateProfilePhoto(String empIdx, MultipartFile photoFile) {
