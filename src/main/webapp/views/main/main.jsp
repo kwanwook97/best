@@ -7,7 +7,7 @@
   <link href="resources/css/dashBoard.css" rel="stylesheet"/>
   <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
-  <script src="/BEST/resources/js/index.global.js"></script>
+  <script src="resources/js/index.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
 #newMessageIndicator2 {
