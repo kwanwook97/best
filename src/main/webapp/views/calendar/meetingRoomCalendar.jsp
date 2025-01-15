@@ -819,11 +819,17 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                             endTime.setMinutes(0);
                         console.log("이벤트 시간:"+endTime);
                         } */
+                        const startTime = new Date(event.start);
+                        startTime.setHours(startTime.getHours() - 9); // 9시간 빼기
+
+                        const endTime = new Date(event.end);
+                        endTime.setHours(endTime.getHours() - 9); // 9시간 빼기
+
                         return {
                             id: event.id,
                             title: event.title,
-                            start: event.start,
-                            end: event.end,
+                            start: startTime.toISOString(), // ISO 형식으로 변환
+                            end: endTime.toISOString(),   // ISO 형식으로 변환
                             extendedProps: {
                                 room_idx: event.room_idx,
                                 room_name: event.room_name,
@@ -861,7 +867,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 minute: '2-digit'
             });
 
-            let endTime = arg.event.end.toLocaleTimeString('ko-KR', {
+            const endTime = arg.event.end.toLocaleTimeString('ko-KR', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
