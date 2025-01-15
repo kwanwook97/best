@@ -650,7 +650,6 @@
 	        },
 	        dataType: 'json',
 	        success: function(response) {
-	            console.log("테스트:" + JSON.stringify(response, null, 2));
 	            $('.addTbody').empty();
 	            if (response.msg === '성공') {
 	                let fixedList = Array.from({ length: 7 }, (_, i) => response.list[i] || {

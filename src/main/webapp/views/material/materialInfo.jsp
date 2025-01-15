@@ -564,20 +564,22 @@ function pageCall(page) {
         dataType: 'JSON',
         success: function(data) {
             //console.log('AJAX 데이터:', data);
-
             if (data.list && data.list.length) {
                 drawList(data.list);
 
-                if (!paginationBoolean) {
+                if (!paginationBoolean || data.totalPages !== $('.pagination').data('totalPages')) {
+                    $('.pagination').twbsPagination('destroy'); 
                     $('#pagination').twbsPagination({
                         startPage: data.currentPage, 
                         totalPages: data.totalPages, 
                         visiblePages: 5, 
                         onPageClick: function(evt, page) {
+                        	console.log("page:"+page);
                             pageCall(page); 
                         }
                     });
                     paginationBoolean = true; 
+                    $('.pagination').data('totalPages', data.totalPages);
                 }
             } else {
                 noList();
@@ -653,8 +655,9 @@ function saveMaterialInfo() {
         	if (data.msg == '저장 성공') {
 	            modal.showAlert("기자재가 등록되었습니다!");
 	            closeModal();
-	        	pageCall(1);
-			}
+	            paginationBoolean = false;
+                pageCall(1); 
+            }
         },
         error: function(error) {
             console.error('저장 실패:', error);
@@ -738,8 +741,9 @@ function delMaterial(){
         success: function(data) {
         	if (data.msg == '삭제 성공') {
 	            closeDelAlertModal();
-	        	pageCall(1);
-			}
+	            paginationBoolean = false;
+                pageCall(1); 
+            }
         },
         error: function(error) {
             console.error('저장 실패:', error);

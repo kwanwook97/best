@@ -20,6 +20,7 @@ public class MaterialService {
 		
 		List<Map<String, Object>> list = materialDAO.materialList(limit,offset);
 		int  totalPages = materialDAO.getTotalPages(limit,offset);
+		logger.info("겟로거:{}",totalPages);
 	    Map<String, Object> response = new HashMap<>();
 	    response.put("totalPages", totalPages);
 	    response.put("currentPage", page);
