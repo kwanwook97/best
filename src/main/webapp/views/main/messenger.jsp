@@ -1446,7 +1446,8 @@ function loadChatContent(keyword) {
 	            console.log("이전 WebSocket 세션이 종료되었습니다.");
 	        }
 			
-	        window.socket = new WebSocket("ws://localhost:8080/BEST/main/messenger?chat_idx=" + chatIdx);
+	        //window.socket = new WebSocket("ws://localhost:8080/BEST/main/messenger?chat_idx=" + chatIdx);
+	        window.socket = new WebSocket("ws://150.230.250.80/main/messenger?chat_idx=" + chatIdx);
 
 	        socket.onopen = function() {
 	            $.ajax({
