@@ -430,8 +430,8 @@
 }
 
 .custom-image {
-	width: 30px; /* 이미지 크기 */
-	height: 30px;
+	width: 40px; /* 이미지 크기 */
+	height: 40px;
 	border-radius: 5px; /* 이미지 둥글게 */
 	margin-right: 10px; /* 텍스트와의 간격 */
 }
@@ -457,7 +457,7 @@
 	border-radius: 50%;
 	background-color: #30005A;
 	width: 20px;
-    left: 120px;
+    left: 150px;
     height: 20px;
     text-align: center;
 }
@@ -1234,7 +1234,7 @@ function loadFriendList(keyword) {
 	                    var myProfileItem =
 	                        '<div class="image-header-wrapper member-item my-profile" data-emp-idx="' + myProfile.emp_idx + '">' +
 	                            '<img src="/photo/' + myProfile.photo + '" alt="프로필 사진" class="custom-image">' +
-	                            '<span class="custom-label">' + myProfile.name + ' / </span>' +
+	                            '<span class="custom-label">' + myProfile.name + ' / ' + myProfile.rank_name + '</span>' +
 	                            '<div class="mySelf"><span>나</span></div>' +
 	                        '</div>';
 	                    chatContainer.innerHTML += myProfileItem;
@@ -1910,9 +1910,9 @@ function loadChatContent(keyword) {
                     // 로그인한 사용자 표시
                     if (myProfile) {
                         const myProfileElement = 
-                        	'<div class="image-header-wrapper my-profile" data-emp-idx="' + myProfile.emp_idx + '">' +
+                        	'<div class="image-header-wrapper member-item my-profile" data-emp-idx="' + myProfile.emp_idx + '">' +
                             	'<img src="/photo/' + myProfile.photo + '" alt="프로필 사진" class="custom-image">' +
-                           		'<span class="custom-label">' + myProfile.name + ' / </span>' +
+                           		'<span class="custom-label">' + myProfile.name + ' / ' + myProfile.rank_name + '</span>' +
                             	'<div class="mySelf"><span>나</span></div>' +
                         	'</div>';
                         memberListContainer.append(myProfileElement);

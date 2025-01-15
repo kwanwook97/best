@@ -122,27 +122,27 @@ $(document).ready(function() {
                                 <tbody style="border-right: 1px solid #8B6AA7;">
                                     <tr>
                                         <td><strong>운행거리</strong></td>
-                                        <td><span class="purple">${bus.distance ? bus.distance + ' km' : "정비내용이 없습니다."}</span></td>
+                                        <td><span class="purple">${bus.distance ? bus.distance + ' km' : "정비내용 없음"}</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>점검 일</strong></td>
-                                        <td><span class="purple">${bus.inspect_date || "정비내용이 없습니다."}</span></td>
+                                        <td><span class="purple">${bus.inspect_date || "정비내용 없음"}</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>다음 점검일</strong></td>
-                                        <td><span class="purple">${bus.next_inspect_date || "정비내용이 없습니다."}</span></td>
+                                        <td><span class="purple">${bus.next_inspect_date || "정비내용 없음"}</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>담당 정비사</strong></td>
-                                        <td><span class="purple">${bus.name || "정비내용이 없습니다."}</span></td>
+                                        <td><span class="purple">${bus.name || "정비내용 없음"}</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>정비 비용</strong></td>
-                                        <td><span class="purple">${bus.amount ? bus.amount + ' 원' : "정비내용이 없습니다."}</span></td>
+                                        <td><span class="purple">${bus.amount ? bus.amount + ' 원' : "정비내용 없음"}</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>버스 상태</strong></td>
-                                        <td><span class="purple">${bus.status || "정비내용이 없습니다."}</span></td>
+                                        <td><span class="purple">${bus.status || "정비내용 없음"}</span></td>
                                     </tr>
                                 </tbody>
                             </table>
