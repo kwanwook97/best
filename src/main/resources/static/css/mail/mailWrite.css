@@ -7,9 +7,9 @@
 }
 
 .dashboard-body {
-	margin-left: 15%;
+	margin-left: 13%;
 	width: 83vw;
-	margin-top: 7vh;
+	margin-top: 10vh;
 	flex-wrap: wrap;
 	padding: 2vh;
 	height: 100%;
@@ -20,8 +20,14 @@
 }
 
 .maintext {
-	display: flex;
-	margin-left: 10px;
+	font-size: 32px;
+	font-weight: bold;
+	margin-bottom: 20px;
+	width: auto;
+	gap: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .mail {
@@ -353,4 +359,12 @@ autoComplete div:hover {
 .mailForm td:not(:first-child) {
 	width: 90%; /* 입력 필드가 들어갈 두 번째 열 */
 	background-color: #FFFBF2;
+}
+
+.lPurple {
+	color: #8B6AA7; /* 연보라색 */
+}
+
+.cPurple {
+	color: #30005A; /* 진보라색 */
 }

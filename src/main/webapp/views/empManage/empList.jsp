@@ -38,7 +38,9 @@
   <div class="body">
     <!-- 페이지 제목 -->
     <div class="naviPath">
-      <span class="lPurple">사원관리</span> <span class="cPurple">&gt; 사원목록</span>
+      <span class="lPurple">사원관리</span>
+      <i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+      <span class="cPurple">사원목록</span>
     </div>
 
     <!-- 검색 필터 및 검색창 -->
