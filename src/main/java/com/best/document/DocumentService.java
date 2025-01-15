@@ -438,10 +438,6 @@ public class DocumentService {
 		String htmlContent = documentDao.getDocument(doc_idx);
 		String doc_number = documentDao.getDocNumer(doc_idx);
 		
-		logger.info("idx : "+doc_idx);
-		logger.info("번호 : "+ doc_number);
-		logger.info("idx : "+htmlContent);
-		
 		return htmlContent
 				.replace("${doc_idx}", doc_idx)
 				.replaceFirst(
@@ -464,14 +460,12 @@ public class DocumentService {
     public String getForm(String form_idx, String emp_idx) throws IOException {
         // 양식 내용 가져오기
         String htmlContent = documentDao.getForm(form_idx);
-        logger.info("시발아 :"+htmlContent);
         // 오늘 날짜
         LocalDate todayDate = LocalDate.now();
         String todayDateString = todayDate.toString();
 
         // 직원 정보 가져오기
         Map<String, Object> employeeDetails = documentDao.getEmpDetails(emp_idx);
-        logger.info("기안자 정보: {}",employeeDetails);
         String parent =  String.valueOf(employeeDetails.get("parent_emp_idx"));
         Map<String, Object> parentDetails = documentDao.getEmpDetails(parent);
         String parentDepart = (String) parentDetails.get("depart_name");
@@ -512,7 +506,6 @@ public class DocumentService {
 
 	    // Step 1: 오늘 날짜 포맷팅
 	    String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd"));
-	    logger.info("오늘 날짜: " + today);
 
 	    // Step 2: 오늘 날짜의 마지막 시퀀스 가져오기 (트랜잭션 내에서 FOR UPDATE로 락)
 	    Integer lastSeq = documentDao.getLastSequenceForDate(today);
@@ -522,8 +515,6 @@ public class DocumentService {
 
 	    // Step 4: 문서 번호 생성
 	    String docNumber = today + "-" + String.format("%04d", newSeq);
-	    logger.info("생성된 문서번호: " + docNumber);
-
 	    
     	// Step 5: DocumentDTO 생성 및 값 설정
     	DocumentDTO docDTO = new DocumentDTO();
@@ -623,7 +614,6 @@ public class DocumentService {
 		        "(<td\\s+class=\"todayDate1\"[^>]*>)(</td>)",
 		        "$1" + approvDate + "$2"
 		    );
-		logger.info("뭔데 : "+ doc_content);
 		
 		documentDao.documentStatus(doc_idx, doc_content);
 
@@ -646,8 +636,6 @@ public class DocumentService {
                 "(<td\\s+class=\"todayDate3\"[^>]*>)(</td>)",
                 "$1" + approvDate + "$2"
             );
-
-            logger.info("Updated doc_content: {}", doc_content);
 
             documentDao.documentStatusT(doc_idx, doc_content);
 

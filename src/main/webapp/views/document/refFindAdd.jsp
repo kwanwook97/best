@@ -407,13 +407,11 @@ $(document).ready(function () {
     var selectedEmployees = [];  // 선택된 사원정보 쌓기.
     
     $(document).on("click", ".xBtn", function () {
-        var parentDiv = $(this).closest(".refEmp"); // .xBtn의 가장 가까운 부모 요소 .refEmp
-        var empIdx = parentDiv.data("emp-idx"); // 해당 요소의 emp_idx 가져오기
-        console.log("ㅇㄴㄹㄴㅁㅇㄹ" + parentDiv + "/" + empIdx);
+        var parentDiv = $(this).closest(".refEmp");
+        var empIdx = parentDiv.data("emp-idx");
 
         // selectedEmployees 배열에서 제거
         selectedEmployees = selectedEmployees.filter(emp => emp.emp_idx !== empIdx);
-        console.log("제거 후 사원 목록:", selectedEmployees);
 
         // DOM에서 요소 제거
         parentDiv.remove();
@@ -562,7 +560,6 @@ $(document).ready(function () {
             return;
         }
         var employee = employees.find(emp => emp.name.includes(searchKeyword));
-        console.log("이름도 붙여놔",employee);
         if (employee) {
         	selectedEmployee = employee;	
             showEmployeeModal2(employee); // 검색된 사원 정보 표시
@@ -573,7 +570,6 @@ $(document).ready(function () {
 
     // 사원 상세 정보 모달 표시
     function showEmployeeModal2(employee) {
-    console.log("이름도 붙여놔 dfsfdf",employee);
        window.selectedEmployee = employee; // 선택된 사원 정보를 저장
         $("#modalPhotoR").attr("src", "/photo/" + (employee.photo || "default_photo.jpg"));
         $("#modalNameR").text(employee.name);
@@ -611,7 +607,6 @@ $(document).ready(function () {
     $("#addEmployeeButtonR").on("click", function () {
  
        if (selectedEmployee) {
-          console.log("추가된 사원 정보:", selectedEmployee);
           window.selectedEmployee = selectedEmployee;
            // 배열에 이미 존재하는지 확인
            var isDuplicate = selectedEmployees.some(emp => emp.emp_idx === selectedEmployee.emp_idx);
@@ -619,10 +614,8 @@ $(document).ready(function () {
            if (!isDuplicate) {
                // 중복이 아니면 추가
                selectedEmployees.push(selectedEmployee);
-               console.log("현재까지 추가된 사원목록:", selectedEmployees);
                var managerName = selectedEmployee.name;
                var managerIdx = selectedEmployee.emp_idx;
-               console.log("이름 : "+managerName +" / 아이디 : "+managerIdx);
                var index = $('.refEmps .refEmp').length + 1;
                
 				// 컨테이너 내부의 .refEmp 개수 확인
@@ -663,25 +656,11 @@ function refOpenUserBoxModal() {
     $("*").css("pointer-events", "auto");
 }
 
-/* function openEmployeeModal(employee) {
-    // 직원 정보를 받아와 모달에 데이터를 세팅
-    $("#modalPhoto").attr("src", "/photo/" + (employee.photo || "default_photo.jpg"));
-    $("#modalName").text(employee.name);
-    $("#modalRank").text(employee.rank_name);
-    $("#modalDepartment").text(employee.depart_name);
-    $("#modalEmail").text(employee.email);
-    $("#modalPhone").text(employee.phone);
-    $("#modalMobile").text(employee.mobile);
-
-    $("#employeeModal2").css("display", "flex").hide().fadeIn();
-} */
 
 
 $("#addUserBoxModalRe").on("click", function () {
 		var managerName = selectedEmployee.name;
-		console.log("이름 :"+managerName);
 		var managerIdx = selectedEmployee.emp_idx;
-		console.log("번호 :"+managerIdx);
 		
  		var refNames = [];
 	    

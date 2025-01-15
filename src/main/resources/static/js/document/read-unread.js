@@ -3,7 +3,6 @@ $(document).on('click', '.update', function() {
     var icon = $(this).find('i');
     var doc_read = icon.hasClass('fa-envelope') ? 1 : 0;
     var approv_num = $(this).data('approv-num');
-    console.log(text);
     
     $.ajax({
         url: 'updateRead.ajax',
@@ -58,7 +57,6 @@ $('#status').change(function() {
         totalPages: totalPages,  // 필터링된 데이터에 맞는 페이지 수
         visiblePages: 5,
         onPageClick: function(evt, page) {
-            console.log("page", page);
             receivedPageCall(page);
         }
     });

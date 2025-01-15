@@ -160,7 +160,6 @@ public class DocumentController {
 		if(approv_num != null) {
 			documentService.updateRead(text, 1, approv_num);
 		}
-		logger.info("바꾸고 난거: "+Detail);
 		return Detail;		
 	}
 	// 임시저장 삭제
@@ -214,7 +213,6 @@ public class DocumentController {
 	        HttpSession session) {
 		Map<String, String> response = new HashMap<String, String>();
 		
-		logger.info("컨텐츠: "+doc_content);
 		String empIdx = (String) session.getAttribute("loginId");
 		int emp_idx = Integer.parseInt(empIdx);
 
@@ -225,7 +223,6 @@ public class DocumentController {
 			int parentManager = result.get("parentManager");
 		    int manager = result.get("manager");
 		    
-	    	logger.info("팀장, 그위에 팀장 : "+parentManager +" / "+manager);
 	    	int docIdx = documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "상신");
 	 
 	    	if(docIdx > 0) {				
@@ -238,7 +235,6 @@ public class DocumentController {
 	    	
 		} else if ("임시저장".equals(action)) {
 			
-			logger.info("doc cont : {}", doc_content);
 			documentService.formSave(form_idx, doc_subject, doc_content, emp_idx, "임시저장");
 			response.put("message", "임시저장 완료");
 			
@@ -282,13 +278,9 @@ public class DocumentController {
 	public ResponseEntity<Map<String, String>> saveSign(String sign, HttpSession session){
 		Map<String, String> response = new HashMap<String, String>();
 		Object loginId = session.getAttribute("loginId");
-	    logger.info("Class: {}, Value: {}", loginId.getClass().getName(), loginId);
 
 		String loginName = (String) session.getAttribute("loginName");
 		String emp_idx = (String) session.getAttribute("loginId");
-		logger.info("로그인 : "+loginName);
-		logger.info("로그인 : "+emp_idx);
-		logger.info("사인 : "+sign);
 		
 		int row = documentService.saveSign(sign, emp_idx);
 		if(row>0) {
@@ -344,11 +336,6 @@ public class DocumentController {
 	            } else if ("2".equals(approv_order)) {
 	                documentService.approveStatusT(doc_idx, approv_order, doc_content);
 	                leaveService.addLeaveHistory(doc_idx);
-	                logger.info("one :{}",one);
-	                logger.info("two :{}",two);
-	                logger.info("three :{}",three);
-	                logger.info("four :{}",four);
-	                logger.info("five :{}",five);
 	                expenseService.addExpense(one, two, three, four, five, doc_idx, form_idx);
 	            }
 	        } else if ("제출".equals(actionType)) {

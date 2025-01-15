@@ -53,7 +53,7 @@
 		width: 45vw;
 		height: 36rem;
 		border-radius: 10px;
-		margin: 33px 48px 55px 48px;
+		margin: 33px 48px;
 		border-collapse: separate !important;
         border-spacing: 0;
 	}

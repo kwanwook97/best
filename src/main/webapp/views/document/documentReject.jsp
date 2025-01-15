@@ -309,7 +309,7 @@ var cnt = 6;
 pageCall(showPage, readStatus);
 
 function pageCall(page, readStatus){
-    console.log('pageCall');
+	
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
@@ -322,7 +322,6 @@ function pageCall(page, readStatus){
         dataType: 'JSON',
         success: function(data) {
         	var startNumber = (page - 1) * cnt + 1;
-            console.log(data);
             
             if(data.receivedList.length>0){
                 received(data.receivedList,startNumber);
@@ -387,7 +386,6 @@ function received(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -419,7 +417,6 @@ function sent(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';

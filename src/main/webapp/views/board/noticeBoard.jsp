@@ -294,13 +294,9 @@ var showPage = 1; // 기본으로 보여줄 페이지
 var emp_idx = "${sessionScope.loginId}";
 var depart_idx = "${sessionScope.employee.depart_idx}";
 
-console.log("시발련아"+depart_idx);
-
 pageCall(showPage);
 
 function pageCall(page){
-    console.log('pageCall');
-
     $.ajax({
         type: 'GET',
         url: 'noticeList.ajax',
@@ -310,8 +306,6 @@ function pageCall(page){
         },
         dataType: 'JSON',
         success: function(data) {
-            console.log(data);
-
             // 중요 공지
             PrintImport(data.importantNotices);
         	// 일반 공지
@@ -323,9 +317,9 @@ function pageCall(page){
                 totalPages: data.importTotalPages,
                 visiblePages: 5,
                 onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCallImportant(page);  // 중요 게시판 페이지 정보 받아서 수행
+                    console.log("evt", evt);
+                    console.log("page", page);
+                    pageCallImportant(page);
                 }
             });
 
@@ -335,9 +329,9 @@ function pageCall(page){
                 totalPages: data.generalTotalPages,
                 visiblePages: 5,
                 onPageClick: function(evt, page){
-                    console.log("evt", evt);  // 클릭 이벤트
-                    console.log("page", page);  // 클릭한 페이지 번호
-                    pageCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
+                    console.log("evt", evt);
+                    console.log("page", page);
+                    pageCallGeneral(page);
                 }
             });
         },
@@ -466,7 +460,6 @@ $('.searchInp').keydown(function(event) {
                 },
                 dataType: 'JSON',
                 success: function(data) {
-                    console.log(data);
                     if (data.importantNotices.length === 0) {
                         $('.searchCont').append('<div class="Msg">중요 공지 없음</div>');
                     }
@@ -503,9 +496,9 @@ $('.searchInp').keydown(function(event) {
                             next: '<i class="fas fa-angle-right"></i>',
                             last: '<i class="fas fa-angle-double-right"></i>',
                             onPageClick: function(evt, page) {
-                                console.log("evt", evt);  // 클릭 이벤트
-                                console.log("page", page);  // 클릭한 페이지 번호
-                                searchCallGeneral(page);  // 일반 게시판 페이지 정보 받아서 수행
+                                console.log("evt", evt);
+                                console.log("page", page); 
+                                searchCallGeneral(page);
                             }
                         });
                     }
@@ -541,7 +534,6 @@ function searchCallImportant(page){
         },
         dataType: 'JSON',
         success: function(data) {
-            console.log(data);
             searchImport(data.importantNotices);
         },
         error: function(e) {
@@ -552,7 +544,6 @@ function searchCallImportant(page){
 
 function  searchImport(notices){
 	 var content = '';
-		console.log("발시 이름 어디갔냐고",notices);
 	    for (var item of notices) {
 	        content += '<tr>';
 	        if (depart_idx==2 || depart_idx==3){
@@ -587,7 +578,6 @@ function searchCallGeneral(page){
         },
         dataType: 'JSON',
         success: function(data) {
-            console.log(data);
             searchGeneral(data.generalNotices);
         },
         error: function(e) {

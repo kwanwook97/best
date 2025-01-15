@@ -288,15 +288,15 @@ select option{
 $(document).ready(function() {
 
 	
-    const currentPage = window.location.pathname; // 현재 페이지의 URL 경로를 가져옵니다.
+    const currentPage = window.location.pathname;
 
     if (currentPage.includes('documentReference.go')) {
-        $('.listSelect').show(); // listSelect를 보이게 설정
-        $('.listSelect').empty(); // 기존 옵션 제거
-        $('.listSelect').append('<option class="listOpt" value="received">받은문서</option>'); // 받은문서 옵션만 추가
+        $('.listSelect').show();
+        $('.listSelect').empty();
+        $('.listSelect').append('<option class="listOpt" value="received">받은문서</option>');
     } else if (currentPage.includes('documentDraft.go')) {
-        $('.listSelect').hide(); // listSelect를 숨김
-        $('.listSelect').empty(); // 기존 옵션 제거
+        $('.listSelect').hide();
+        $('.listSelect').empty();
         $('.listSelect').append('<option class="listOpt" value="save">받은문서</option>');
         $('.searchbox').css("width", "32%");
     }
@@ -327,11 +327,10 @@ $(document).ready(function() {
 
 	// 화살표 뒤로가기
 	$(".far.fa-arrow-alt-circle-left").click(function() {
-		$("#customModal").fadeOut(); // 뒤로가기 기능 실행
+		$("#customModal").fadeOut();
 	});
 	
    var inputValue = $('input[data-index="1"]').val();
-   console.log(inputValue);  // 해당 input의 value를 콘솔에 출력
    
    // 결재양식 검색
    $(".modal-input").on("keyup", function(event) {
@@ -346,7 +345,7 @@ $(document).ready(function() {
 
    // 엔터 키로 검색
    $('input[name="query"]').on('keypress', function(e) {
-       if (e.which === 13) { // Enter key
+       if (e.which === 13) {
     	   searchList();   
        }
    });
@@ -357,13 +356,13 @@ $(document).ready(function() {
 
 // 임시저장일 때 searchSelect 설정
    function setSearchOptionsForTempSave() {
-       $('.searchSelect').empty(); // 기존 옵션 제거
+       $('.searchSelect').empty();
 
        // 임시저장에 대한 고정 옵션
        const tempSaveOptions = [
            { value: 'subject', text: '제목' },
            { value: 'docNum', text: '문서번호' },
-           { value: 'type', text: '분류' } // 기안자(emp) 제외
+           { value: 'type', text: '분류' }
        ];
 
        // 옵션 추가
@@ -394,11 +393,9 @@ $(document).ready(function() {
    // 페이지 로드 시 초기화
    $(document).ready(function () {
        if (text === '임시저장') {
-           console.log("임시저장 상태: searchSelect 옵션을 임시저장에 맞게 설정합니다.");
-           setSearchOptionsForTempSave(); // 임시저장 전용 옵션 설정
+           setSearchOptionsForTempSave();
        } else {
-           console.log("일반 상태: listSelect와 연동하여 searchSelect 옵션 설정.");
-           $('.listSelect').trigger('change'); // listSelect 변경 이벤트 트리거
+           $('.listSelect').trigger('change');
        }
    });
 
@@ -429,7 +426,6 @@ function documentForm(form_idx) {
         data: { form_idx: form_idx },
         dataType: 'text',
         success: function(response) {
-        	console.log("Response HTML: ", response);
          	$("#customModal").fadeOut();
             openModal(response, form_idx);
         },
@@ -440,7 +436,7 @@ function documentForm(form_idx) {
 }
 //모달 열기
 function openModal(content, form_idx) {
-    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+    var modalId = 'modal-' + new Date().getTime();
 	var modalClass = '';
 
     // 모달 HTML 생성
@@ -458,10 +454,8 @@ function openModal(content, form_idx) {
         '  </div>' +
         '</div>';
 
-    // body에 추가
     $('body').append(modalHtml);
 
-    // 모달 표시
     $('#' + modalId).show();
 
     // 닫기 버튼 이벤트 등록 (이벤트 위임)
@@ -479,7 +473,7 @@ function openModal(content, form_idx) {
    	var dd = String(today.getDate()).padStart(2, '0');
    	var mm = String(today.getMonth() + 1).padStart(2, '0');
    	var yyyy = today.getFullYear();
-   	today = yyyy + '-' + mm + '-' + dd;  // 예: 2024-12-22
+   	today = yyyy + '-' + mm + '-' + dd;
    
    	// .ipt_editor_date 클래스의 input 요소에 min 속성 설정
    	$('.ipt_editor_date').attr('min', today);
@@ -488,7 +482,6 @@ function openModal(content, form_idx) {
    	$('.ipt_editor_date').change(function() {
    		var selectedDate = $(this).val(); 
        
-       	// 선택된 날짜가 오늘 이전이라면
        	if (selectedDate < today) {
            	alert('지난 날짜는 선택할 수 없습니다.');
            	$(this).val(today);
@@ -517,21 +510,13 @@ function btnAction(actionType) {
 	if (actionType === '기안' && !isApprovalLineAdded || actionType === '기안수정' && !isApprovalLineAdded) {
         alert('결재선을 추가해주세요!');
     } else {
-		console.log(actionType);
 		var doc_idx = $('input[name="doc_idx"]').val();
-		console.log("문서번호 "+doc_idx);
 		var form_idx = $('input[name="form_idx"]').val();
-		console.log("폼idx "+form_idx);
 		var doc_subject = $('input[name="doc_subject"]').val();
-		console.log("제목 :"+ doc_subject);
 		var textareaValue = $('.modal-content:last-child textarea').val();
-		console.log("본문", textareaValue);
 		var updatedHtml = $('.modal-content:last-child').html();
-		console.log("html : ", updatedHtml);
 	    var start_date = $('input[name="start_date"]').val();
-	    console.log("연차 시작", start_date);
 	    var end_date = $('input[name="end_date"]').val();
-	    console.log("연차 끝", end_date);
 	   
         var managerName = $('.managerName').html();
         var managerName1 = $('.manager').val();
@@ -542,7 +527,6 @@ function btnAction(actionType) {
 	        var managerIdx = $(this).data('emp-idx');
 	        managerIds.push(managerIdx);
 	    });
-	    console.log("아니!!!!!!!!!!!!!!!!!!"+ managerIds);
 	    
 	    var values = [];
 	    $('input[data-index], select[data-index]').each(function() {
@@ -552,7 +536,6 @@ function btnAction(actionType) {
 	            values.push($(this).val());
 	        }
 	    });
-	    console.log("잘 쳐 나오라고",values);
 	    
 	    
 	    if(actionType == '수정기안' || actionType == '수정'){
@@ -566,7 +549,7 @@ function btnAction(actionType) {
 	    	updatedHtml = updatedHtml.replace(
 	    	    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
 	    	    function(match) {
-	    	        // 기존 내용이 있을 경우, 그 내용을 덮어씁니다
+	    	        // 기존 내용이 있을 경우 내용 덮어쓰기
 	    	        return match.replace(/<textarea[^>]*>(.*?)<\/textarea>/, '<textarea>' + textareaValue + '</textarea>');
 	    	    }
 	    	);
@@ -576,8 +559,7 @@ function btnAction(actionType) {
 			    /<input([^>]*\bname=["']doc_subject["'][^>]*)>/i,
 			    '<input$1 value="' + doc_subject + '">'
 			);
-			console.log("After Replace: ", updatedHtml);
-			// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경합니다
+			// HTML에서 <textarea> 부분을 찾아서 그 안의 값을 textareaValue로 변경
 			updatedHtml = updatedHtml.replace(
 			    /<textarea[^>]*>.*?<\/textarea>/,  // 기존 textarea 태그와 그 안의 내용을 찾아냄
 			    '<textarea>' + textareaValue + '</textarea>'  // textarea 값을 새로 덮어씌움
@@ -588,7 +570,6 @@ function btnAction(actionType) {
 		$('.modal-content:last-child').html(updatedHtml);
 		var doc_content = $('.modal-content:last-child .content').html();
 	
-		console.log("최최종 : "+doc_content);	
 		var data = {
 			doc_idx: doc_idx,
 		    form_idx: form_idx,
@@ -603,7 +584,6 @@ function btnAction(actionType) {
 		switch (form_idx) {
 		    case '1':
 		    	if(actionType == '수정기안' || actionType == '수정'){
-		    		console.log("이거 누름");
 		    		// start_date 값 삽입
 		    		updatedHtml = updatedHtml.replace(
 					    /(<input[^>]*\bname=["']start_date["'][^>]*)\s*value=["'][^"']*["']/i,
@@ -656,20 +636,16 @@ function btnAction(actionType) {
 		    		for (var i = 0; i < values.length; i++) {
 		    		    var value = values[i];
 		    		    var dataIndex = i + 1;
-		    		    console.log('Processing value:', value);
-		    		    console.log('Initial updatedHtml:', updatedHtml);
 
 		    		 	// 정규식으로 찾기 (태그 내용 무시)
 						var specificSelectTag1 = updatedHtml.match(
 						    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>', 'g')
 						);
-						console.log('Specific select tag for data-index="2" (no content):', specificSelectTag1);
 						
 						// 정규식으로 찾기 (태그 내용 포함)
 						var specificSelectTag2 = updatedHtml.match(
 						    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>(.*?)<\/select>', 'g')
 						);
-						console.log('Specific select tag for data-index="2" (with content):', specificSelectTag2);
 						
 						// 대체 로직으로 찾기
 						var allSelectTags = updatedHtml.match(/<select[^>]*>/g);
@@ -677,7 +653,6 @@ function btnAction(actionType) {
 						
 						if (allSelectTags) {
 						    specificSelectTag3 = allSelectTags.find(tag => tag.includes('data-index="2"'));
-						    console.log('Specific select tag for data-index="2" using alternative logic:', specificSelectTag3);
 						}
 
 
@@ -686,7 +661,6 @@ function btnAction(actionType) {
 		    		    if (allSelectTags) {
 		    		        for (var tag of allSelectTags) {
 		    		            if (tag.includes('data-index="2"')) {
-		    		                console.log('Matched specific select tag using alternative logic:', tag);
 		    		            }
 		    		        }
 		    		    }
@@ -695,25 +669,19 @@ function btnAction(actionType) {
 		    		    var specificSelectTag1 = updatedHtml.match(
 		    		    	    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>', 'g')
 		    		    	);
-		    		    	console.log('Specific select tag for data-index="2" (no content):', specificSelectTag1);
 		    		    	
 		    		    // 태그내용 있음
 	    		    	var specificSelectTag2 = updatedHtml.match(
 	    		    		    new RegExp('<select[^>]*\\bdata-index=["\']2["\'][^>]*>([\\s\\S]*?)<\\/select>', 'g')
 	    		    		);
-	    		    		console.log('Specific select tag for data-index="2" (with content):', specificSelectTag2);
 		    		    
 		    		    // 정규식 확인
 		    		    var regex = new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>(.*?)<\/select>', 'g');
-		    		    console.log('Testing regex for data-index=' + dataIndex, regex.test(updatedHtml));
-
 		    		    
 		    		    // select 태그 처리
 		    		    updatedHtml = updatedHtml.replace(
 						    new RegExp('<select([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>([\\s\\S]*?)<\\/select>', 'g'),
 						    function (match, group1, group2) {
-						        console.log('Processing select with data-index=' + dataIndex);
-						        console.log('Value to match:', value);
 						
 						        // 선택된 option 값을 찾기
 						        var selectedText = ''; // 선택된 옵션 텍스트 저장
@@ -726,12 +694,9 @@ function btnAction(actionType) {
 						                return optionMatch;
 						            }
 						        );
-						
-						        console.log('Selected option text:', selectedText);
-						
+												
 						        // input 태그로 변환
 						        var inputTag = '<input' + group1 + ' value="' + selectedText + '">';
-						        console.log('Generated input tag:', inputTag);
 						
 						        return inputTag;
 						    }
@@ -742,7 +707,6 @@ function btnAction(actionType) {
 		    		    updatedHtml = updatedHtml.replace(
 		    		        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'])([^>]*)>', 'g'),
 		    		        function (match, group1, group2) {
-		    		            console.log('Processing input with data-index=' + dataIndex);
 		    		            if (/value=["\'].*?["\']/.test(group2)) {
 		    		                group2 = group2.replace(/value=["\'].*?["\']/, 'value="' + value + '"');
 		    		            } else {
@@ -755,7 +719,6 @@ function btnAction(actionType) {
 		    		
 		    		$('.modal-content:last-child').html(updatedHtml);
 		    		var doc_content = $('.modal-content:last-child .content').html();
-		    		console.log("최종 수정된 HTML: " + doc_content);
 
 		    	}else{
 			        // 동적으로 추가된 input 값들을 updatedHtml에 반영
@@ -763,15 +726,12 @@ function btnAction(actionType) {
 					    var value = values[i];  // values 배열에서 값 가져오기
 					    var dataIndex = i + 1;  // data-index 값은 1부터 시작한다고 가정
 					
-					    console.log('Data-Index: ' + dataIndex + ', Value: ' + value);  // 값 확인
-					
 					    // updatedHtml에서 해당 input 값을 수정
 					    updatedHtml = updatedHtml.replace(
 					        new RegExp('<input([^>]*data-index=["\']' + dataIndex + '["\'][^>]*)>', 'g'),
 					        '<input$1 value="' + value + '">'
 					    );
 					}
-					console.log("9999"+doc_content);
 			        // 수정된 HTML을 다시 modal-content에 적용
 			        $('.modal-content:last-child').html(updatedHtml);
 			        var doc_content = $('.modal-content:last-child .content').html();
@@ -789,12 +749,10 @@ function btnAction(actionType) {
 			    $(this).attr('readonly', true);
 			});
 			data.doc_content = $('.modal-content:last-child .content').html();
-			console.log("Ajax 전송 데이터:", data.doc_content);
 		}else{			
 			// 마지막으로 doc_content를 업데이트된 HTML에서 추출하여 data 객체에 저장
 			var doc_content = $('.modal-content:last-child .content').html();
 			data.doc_content = doc_content;  
-			console.log("최종"+ doc_content);
 		}
 		
  		$.ajax({
@@ -895,8 +853,8 @@ function searchList() {
 	var page = 1;
     var query = $('input[name="query"]').val().trim();
     var searchType = $('.searchSelect').val();
-    console.log(searchType);
     var listType = $('.listSelect').val();
+    
     if (query === "") {
         alert("검색어를 입력하세요.");
         return;
@@ -907,7 +865,6 @@ function searchList() {
 		var cnt = 6;
 	}
     
-    console.log("eㅜㅇ"+listType);
 	$.ajax({
         type: 'POST',
         url: 'searchList.ajax',
@@ -933,8 +890,8 @@ function searchList() {
 		                totalPages: data.receivedTotalPages,
 		                visiblePages: 5,
 		                onPageClick: function(evt, page){
-		                    console.log("evt", evt);  // 클릭 이벤트
-		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    console.log("evt", evt);
+		                    console.log("page", page);
 		                    searchReceivedPageCall(page, query, searchType, listType);
 		                }
 		            });
@@ -956,8 +913,8 @@ function searchList() {
 		                totalPages: data.sentTotalPages,
 		                visiblePages: 5,
 		                onPageClick: function(evt, page){
-		                    console.log("evt", evt);  // 클릭 이벤트
-		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    console.log("evt", evt);
+		                    console.log("page", page);
 		                    searchSentPageCall(page, query, searchType, listType);
 		                }
 		            });
@@ -979,8 +936,8 @@ function searchList() {
 		                totalPages: data.sentTotalPages,
 		                visiblePages: 5,
 		                onPageClick: function(evt, page){
-		                    console.log("evt", evt);  // 클릭 이벤트
-		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    console.log("evt", evt);
+		                    console.log("page", page);
 		                    searchDraftPageCall(page, query, searchType, listType);
 		                }
 		            });
@@ -1000,8 +957,8 @@ function searchList() {
 		                totalPages: data.receivedTotalPages,
 		                visiblePages: 5,
 		                onPageClick: function(evt, page){
-		                    console.log("evt", evt);  // 클릭 이벤트
-		                    console.log("page", page);  // 클릭한 페이지 번호
+		                    console.log("evt", evt);
+		                    console.log("page", page);
 		                    searchReceivedPageCall(page, query, searchType, listType);
 		                }
 		            });
@@ -1024,7 +981,6 @@ function searchReceived(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -1048,11 +1004,9 @@ function searchReceived(document,startNumber) {
 	$('.receivedList').html(content);
 }
 function searchSent(document,startNumber) {
-	console.log("123132",document);
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -1077,7 +1031,6 @@ function searchDraft(document,startNumber){
 	 var content = '';
 		var i = startNumber;
 		for(var item of document){
-			console.log(item.form_subject)
 			content += '<tr>';
 			content += '<td>' + i++ + '</td>';
 			content += '<td>' + item.doc_number + '</td>';
@@ -1101,14 +1054,12 @@ function searchDraft(document,startNumber){
 		
 		$('.delete').click(function() {
 	        var doc_idx = $(this).data('doc-idx');
-	        console.log(doc_idx);
 	        $.ajax({
 	            type: 'POST',
 	            url: 'documentDelete.ajax',
 	            data: { doc_idx: doc_idx },
 	            success: function(response) {
 	                if (response.success) {
-	                    console.log('삭제');
 	                    pageCall(showPage);
 	                } else {
 	                	console.log('삭제 실패');
@@ -1217,22 +1168,21 @@ $('input[name="query"]').on('input', function() {
     
 // 읽음 읽지 않음 필터링
 function filterReceivedList() {
-    var status = $('#status').val(); // 선택된 값 가져오기
-    console.log('Selected Status:', status);
+    var status = $('#status').val();
 
     // Ajax 요청
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
         data: {
-            status: status, // 필터 조건
-            page: '1',        // 첫 페이지로 초기화
-            cnt: '6'          // 페이지당 게시물 수
+            status: status,
+            page: '1',
+            cnt: '6'
         },
         dataType: 'JSON',
         success: function(data) {
             if (data.receivedList && data.receivedList.length > 0) {
-                received(data.receivedList); // 리스트 갱신
+                received(data.receivedList);
             } else {
                 $('.receivedList').html('<tr><td colspan="8">조건에 맞는 문서가 없습니다.</td></tr>');
             }

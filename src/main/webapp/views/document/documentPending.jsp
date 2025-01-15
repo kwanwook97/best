@@ -158,22 +158,22 @@
 	    position: fixed;
 	  	width: 100%;
 	}
-	table.sentTable th:nth-child(1) {
+	table.sentTable td:nth-child(1) {
 	    width: 4%;
 	}
-	table.sentTable th:nth-child(2) {
+	table.sentTable td:nth-child(2) {
 	    width: 12%;
 	}
-	table.sentTable th:nth-child(3) {
+	table.sentTable td:nth-child(3) {
 	    width: 10%;
 	}
-	table.sentTable th:nth-child(4) {
+	table.sentTable td:nth-child(4) {
 	    width: 30%;
 	}
-	table.sentTable th:nth-child(5) {
+	table.sentTable td:nth-child(5) {
 	    width: 10%;
 	}
-	table.sentTable th:nth-child(6) {
+	table.sentTable td:nth-child(6) {
 	    width: 10%;
 	}
 	.table2{
@@ -324,14 +324,12 @@ var emp_name = "${sessionScope.loginName}";
 
 var showPage = 1;
 var text = "대기";
-console.log("시발"+text);
 var readStatus = "all";
 pageCall(showPage, readStatus);
 var receivedData = []; 
 var cnt = 6;
 
 function pageCall(page, readStatus){
-    console.log('pageCall');
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
@@ -344,7 +342,6 @@ function pageCall(page, readStatus){
         dataType: 'JSON',
         success: function(data) {
         	var startNumber = (page - 1) * cnt + 1;
-            console.log("dhkqk",data.receivedList);
             
             if(data.receivedList.length>0){
             	receivedData = data.receivedList;
@@ -409,7 +406,6 @@ function received(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -439,7 +435,6 @@ function sent(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -534,7 +529,6 @@ var doc_content;
 
 function signAdd(td){
     var tableClass = $(td).closest('table').attr('class');
-    console.log("테이블 뭔데;" +tableClass);
     var nameText;
     
     // table이 signBox이면 name을 가져오고, signBox2이면 manager 값을 가져옵니다.
@@ -543,7 +537,7 @@ function signAdd(td){
     } else if (tableClass === 'signBox2') {
         nameText = $(td).closest('tr').siblings().find('input[class="manager"]').val();
     }
-	console.log("이름 뭔데;" +nameText);
+    
 	if(nameText !== emp_name || nameText == null){
 		alert("권한이 없습니다.");
 	}else{
@@ -554,7 +548,6 @@ function signAdd(td){
             dataType: 'json',
             success: function(response) {
                 if ($(td).closest('table').hasClass('signBox')) {
-                	console.log("1실행");
                 	var signBox = $('table.signBox td.sign');
                     
                     // 이미 서명이 있는지 확인
@@ -577,14 +570,12 @@ function signAdd(td){
                            	);
                             $('.modal-content:last-child').html(updatedHtml);
                             doc_content = $('.modal-content:last-child').html();
-                            console.log("tq~~"+doc_content);
                         }else{
                             alert("서명을 등록해 주세요");
                         }
                    }
                 } else if ($(td).closest('table').hasClass('signBox2')) {
                 	var signBox2 = $('table.signBox2 td.signTwo');
-                	console.log("2실행");
                     // 이미 서명이 있는지 확인
                     if (signBox2.find('img').length > 0) {
                     	empSign = false;
@@ -625,17 +616,11 @@ function docAction(actionType) {
 	if (actionType === '승인') {	
 		if(empSign=== true){
 	        var nameText = $('table.signBox td[class="name"]').text();
-	        console.log("첫번째 "+nameText);
 	        var manager = $('input[class="manager"]').val();
-	        console.log("두번째 "+manager);
 			var doc_idx = $('input[name="doc_idx"]').val();
 			var form_idx = $('input[name="form_idx"]').val();
-			console.log("문서번호 "+doc_idx);
-			console.log("수정됐냐?"+doc_content);
-			console.log("폼폼 "+$('input[name="doc_idx"]').val());
 			
 			var approv_order = (manager === emp_name) ? 2 : 1;
-			console.log("야 "+approv_order);
 			
 			var data = {
 				doc_idx: doc_idx,
@@ -724,9 +709,6 @@ function docAction(actionType) {
 
 		var remark = $('textarea[name="remark"]').val();
 		var doc_idx = $('input[name="doc_idx"]').val();
-		console.log("사유 "+remark);
-		console.log("내 번호 "+emp_idx);
-		console.log("문서번호"+doc_idx);
 		
 		var updatedHtml = $('.modal-content:last-child').html();
 		updatedHtml = updatedHtml.replace(
@@ -738,8 +720,7 @@ function docAction(actionType) {
 		
         $('.modal-content:last-child').html(updatedHtml);
         doc_content = $('.modal-content:last-child').html();
-        
-        console.log("바뀌어라 "+doc_content);
+       
 		$.ajax({
             type: 'POST',
             url: 'approveDoc.ajax',

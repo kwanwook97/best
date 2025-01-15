@@ -85,7 +85,6 @@ public class BoardService {
 	
 	// 공지 수정
 	public void noticeUpdate(Map<String, String> param) {
-		logger.info("imporrr: {}",param.get("importance"));
 		boardDao.noticeUpdate(param);
 	}
 	
@@ -119,7 +118,6 @@ public class BoardService {
         result.put("importTotalPages", importTotalPages);
         result.put("generalTotalPages", generalTotalPages);
         
-        logger.info("dk ㄴㅇㅁ시럼 쳐 나와라: {}", importantNotices);
 		return result;
 	}
 
@@ -196,10 +194,6 @@ public class BoardService {
 		
 		List<?> freeLi = boardDao.freeSearchList(cnt, offset, searchText, searchOption);
 		
-		logger.info("어이가없ㄴ: {}",freeLi);
-		result.put("freeList", freeLi);	
-        result.put("totalPages", totalPages);
-        
         return result;
 	}
 
