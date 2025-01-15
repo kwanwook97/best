@@ -188,7 +188,7 @@ $(document).ready(function () {
                     var myProfileItem =
                         '<div class="image-label-wrapper my-profile member-item" data-emp-idx="' + myProfile.emp_idx + '">' +
                         '<img src="/photo/' + myProfile.photo + '" alt="프로필 사진" class="custom-image">' +
-                        '<span class="custom-label">' + myProfile.name + ' / </span>' +
+                        '<span class="custom-label">' + myProfile.name + ' / ' + myProfile.rank_name + '</span>' +
                         '<div class="mySelf"><span>나</span></div>' + 
                         '</div>';
                     memberListWrapper.append(myProfileItem);
