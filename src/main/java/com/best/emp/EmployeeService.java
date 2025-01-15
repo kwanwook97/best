@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -35,7 +36,7 @@ import com.best.attendance.AttendanceDAO;
 public class EmployeeService {
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
-
+	@Value("${upload.path}") private String bpath;
 	@Autowired EmployeeDAO empDAO;
 	@Autowired AttendanceDAO attendanceDAO;
 	
@@ -256,7 +257,7 @@ public class EmployeeService {
 		
 		// 3. 파일삭제 성공시 서버에 있는 파일도 삭제
 		if(row > 0) {
-			File file = new File("C:/upload/" + newFileName);
+			File file = new File(bpath + newFileName);
 			if(file.exists()) {
 				boolean success = file.delete();
 				logger.info("파일삭제 여부 : " + success);
@@ -298,7 +299,7 @@ public class EmployeeService {
 				// 1. 바이트 추출
 				byte[] arr = file.getBytes();
 				// 2. 저장경로 지정
-				Path path = Paths.get("C:/upload/" + newFileName);
+				Path path = Paths.get(bpath + newFileName);
 				// 3. 파일쓰기
 				Files.write(path, arr);
 				
@@ -325,7 +326,7 @@ public class EmployeeService {
 		String new_filename = empDAO.getNewFileName(fileName);
 		
 		//body
-		Resource res = new FileSystemResource("C:/upload/"+new_filename);
+		Resource res = new FileSystemResource(bpath+new_filename);
 		
 		//header
 		HttpHeaders header = new HttpHeaders();		
@@ -397,7 +398,7 @@ public class EmployeeService {
 			    try {
 			        /* 파일저장 */
 			        byte[] arr = photo.getBytes();
-			        Path path = Paths.get("C:/upload/" + photoName);
+			        Path path = Paths.get(bpath + photoName);
 			        Files.write(path, arr);
 			    } catch (IOException e) {
 			        e.printStackTrace();
@@ -536,7 +537,7 @@ public class EmployeeService {
 	    try {
 	        // 새 파일 저장
 	        String newFileName = UUID.randomUUID().toString() + photoFile.getOriginalFilename();
-	        Path newFilePath = Paths.get("C:/upload/" + newFileName);
+	        Path newFilePath = Paths.get(bpath + newFileName);
 	        Files.write(newFilePath, photoFile.getBytes());
 
 	        // DB 업데이트
@@ -544,7 +545,7 @@ public class EmployeeService {
 
 	        // 기존 파일 삭제
 	        if (oldFileName != null && !oldFileName.isEmpty()) {
-	            File oldFile = new File("C:/upload/" + oldFileName);
+	            File oldFile = new File(bpath + oldFileName);
 	            if (oldFile.exists()) {
 	                oldFile.delete();
 	            }

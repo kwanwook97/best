@@ -378,6 +378,11 @@ $(document).ready(function () {
    
        // 부서별 폴더 생성
        $.each(departments, function (deptIndex, dept) {
+           // "대표" 부서는 제외
+           if (dept.name === "대표") {
+               return; // 현재 루프를 건너뜁니다.
+           }    	   
+    	   
            if (addedDepartments.has(dept.id)) return; // 이미 추가된 부서는 건너뜀
            addedDepartments.add(dept.id);
    
@@ -536,6 +541,11 @@ $(document).ready(function () {
           
           // 2. 부서정보, 부서장 정보 추가 
           $.each(departments, function (deptIndex, dept) {
+      	   // "대표" 부서는 제외
+      	   if (dept.name === "대표") {
+      	       return; // 현재 루프를 건너뜁니다.
+      	   }        	  
+        	  
              // 조직도에 노드 생성하기
            var deptNodeId = '';
            var beforeRankNodeId = '';
@@ -548,9 +558,9 @@ $(document).ready(function () {
            var managerIndex = 0;       
            
            // 부서의 최상급자를 찾기위한 변수
-           var highId = 999;                  
+           var highId = 9999;                  
            var highName = '';
-           var highRankId = 999; 
+           var highRankId = 9999; 
            var highIndex = 0; 
            
              
@@ -583,7 +593,7 @@ $(document).ready(function () {
                
            
            // 팀장이 없는경우 부서의 최상급자 세팅.
-           if (!managerId || managerId == 999) {
+           if (!managerId || managerId == 9999) {
               managerId = highId;
               managerName = highName;   
               managerRankId = highRankId;   
@@ -591,7 +601,7 @@ $(document).ready(function () {
            
            
            // 팀원이 한명도 없는경우
-           if(!managerId || managerId == 999){
+           if(!managerId || managerId == 9999){
               managerName = '<span style="color: #E9396B;">인원수 0</span>';
            }
            
