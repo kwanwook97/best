@@ -7,20 +7,26 @@
 }
 
 body .body {
-   transform: scale(0.56); /* 67%로 축소 */
-   transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
-   width: 150%; /* 축소에 따른 여백 보정 */
-   overflow-x: hidden; /* 가로 스크롤 제거 */
-   position: absolute;
-   top: 1px;
-   left: -37px;
-   height: 187%;
- }
+	transform: scale(0.55);
+	transform-origin: top left; /* 화면의 왼쪽 상단을 기준으로 축소 */
+	width: 150%; /* 축소에 따른 여백 보정 */
+	overflow: hidden; /* 스크롤바 제거 */
+	position: absolute;
+	top: -33px;
+	left: -28px;
+	height: 187%;
+}
 
+/* 페이지 제목 */
 .naviPath {
-  font-size: 49px;
-  font-weight: bold;
-  margin-bottom: 20px;
+	font-size: 62px;
+	font-weight: bold;
+	margin-bottom: 20px;
+	width: auto;
+	gap: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 
@@ -40,7 +46,8 @@ body .body {
   border: none;
   border-radius: 8px !important;
   width: 10%;
-  height: auto;
+  height: 58px;
+  font-size: 28px;
 }
 
 .registerBtn:hover {
@@ -63,13 +70,11 @@ body .body {
   border-radius: 10px;
   padding: 20px;
   display: grid;
-  grid-template-rows: 5fr 5fr;
-  gap: 20px;
 }
 
 .top-section {
   display: grid;
-  grid-template-columns: 22% 77%;
+  grid-template-columns: 28% 70%;
   gap: 1%;
 }
 
@@ -80,7 +85,7 @@ body .body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 90%;
   
 }
 
@@ -106,8 +111,7 @@ body .body {
 }
 
 .personal-info tr {
-  display: table-row;
-  height: calc(100% / 8);
+  height: 10px;
 }
 
 .personal-info colgroup col:nth-child(1),
@@ -126,6 +130,7 @@ body .body {
   padding: 8px;
   text-align: left;
   vertical-align: middle;
+  font-size: 32px;
 }
 
 .personal-info th {
@@ -192,7 +197,7 @@ body .body {
 
 
 th, td {
-  font-size: 20px;
+  font-size: 28px !important;
   font-weight: bold;
 }
 
@@ -232,7 +237,7 @@ select {
     color: #30005A; /* 글자색: 진한 보라색 */
     border: 1px solid #8B6AA7; /* 테두리색: 연한 보라색 */
     padding: 5px;
-    font-size: 18px;
+    font-size: 28px !important;
 }
 
 /* 옵션 스타일 */
@@ -271,7 +276,7 @@ td textarea, td input{
   box-sizing: border-box; /* padding과 border를 포함한 크기 계산 */
   resize: none !important; /* 크기 조절 비활성화 */
   border: none; /* 테두리 제거 */
-  font-size: 20px; /* 폰트 크기 조절 */
+  font-size: 28px !important; /* 폰트 크기 조절 */
   color: #30005A;
 }
 
@@ -280,7 +285,7 @@ td textarea, td input{
   width: 30%;
   display: inline-block; /* 같은 행에 표시 */
   margin-right: 20px; /* 라벨 간격 */
-  font-size: 18px; /* 폰트 크기 */
+  font-size: 28px !important; /* 폰트 크기 */
   color: #30005A; /* 글자 색상 */
   vertical-align: middle; /* 세로 중앙 정렬 */
 }
@@ -296,15 +301,21 @@ input[type="radio"] {
   vertical-align: middle; /* 세로 중앙 정렬 */
 }
 
+tr{
+	height: 10px !important;
+}
 
 .input_field {
   width: 100%;
   height: 100%;
   padding: 8px;
   color: #30005A; /* 글자색: 진한 보라색 */
-  font-size: 18px;
+  font-size: 28px !important;
   border: none;
   background-color: transparent;
   /* border: 2px solid #8B6AA7;
   box-sizing: border-box; */
+}
+.input_field::placeholder{
+	font-size: 28px;
 }

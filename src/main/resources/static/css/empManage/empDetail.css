@@ -11,19 +11,25 @@
     width: 150%; /* 축소에 따른 여백 보정 */
     overflow-x: hidden; /* 가로 스크롤 제거 */
     position: absolute;
-    top: 1px;
-    left: -37px;
+    top: -33px;
+	left: -28px;
     height: 187%;
   }
 
 .naviPath {
-  font-size: 48px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  	font-size: 62px;
+	font-weight: bold;
+	margin-bottom: 44px;
+	width: auto;
+	gap: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .lPurple {
   color: #8B6AA7;
+  cursor: pointer;
 }
 
 .cPurple {

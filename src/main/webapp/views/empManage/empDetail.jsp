@@ -61,7 +61,11 @@
   
   <div class="body">
     <div class="naviPath">
-      <span class="lPurple">사원관리</span> <span class="cPurple">&gt; 사원상세</span>
+      <span class="lPurple" onclick="location.href='empList.go'">사원관리</span>
+      <i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+      <span class="lPurple">사원목록</span>
+      <i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+      <span class="cPurple">사원상세</span>
     </div>
     <div class="content">
       <div class="top-section">

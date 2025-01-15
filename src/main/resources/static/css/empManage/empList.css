@@ -22,17 +22,23 @@ body .body {
 	width: 150%; /* 축소에 따른 여백 보정 */
 	overflow: hidden; /* 스크롤바 제거 */
 	position: absolute;
-	top: 1px;
-	left: -37px;
+	top: -33px;
+	left: -28px;
 	height: 187%;
 }
 
 /* 페이지 제목 */
 .naviPath {
-	font-size: 48px;
+	font-size: 62px;
 	font-weight: bold;
 	margin-bottom: 20px;
+	width: auto;
+	gap: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
+
 
 .naviPath .lPurple {
 	color: #8B6AA7; /* 연보라색 */

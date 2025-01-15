@@ -28,8 +28,9 @@
  <c:set var="empIdx" value="${sessionScope.loginId}" />
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="mail">메일함</h3>
-			<h3>>&nbsp;&nbsp;메일작성</h3>
+			<span class="lPurple">메일함</span>
+      			<i class="fa-solid fa-angle-right" style="color:#8B6AA7;"></i>
+    		<span class="cPurple">메일작성</span>
 		</div>
 		<div class="mailbox">
 			<form action="mailWrite.do" method="POST" enctype="multipart/form-data">
