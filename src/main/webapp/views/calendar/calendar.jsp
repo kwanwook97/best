@@ -611,17 +611,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         }, 
         select: function (arg) {
+        	console.log("arg:"+JSON.stringify(arg));
         	const filterValue = document.getElementById("visibilityFilter").value;
         	if (filterValue === "all") {
-                if (userDepartment === 2 || userDepartment === 3) {
+                if (userDepartment === 2 || userDepartment === 3 || userRank <= 2 ) {
                     $("#todoModal").css("display", "flex").hide().fadeIn();
+                }else{
+                    modal.showAlert('일정 등록 권한이 없습니다.');
+                    return calendar.unselect(); 
                 }
-                if (userRank <= 2 ) {
+            }else if (filterValue == 'public') {
                     $("#todoModal").css("display", "flex").hide().fadeIn();
-				}
-        	}else{
-                $("#todoModal").css("display", "flex").hide().fadeIn();
-        	}
+            }else {
+                    $("#todoModal").css("display", "flex").hide().fadeIn();
+            }
+        	
             $('#saveTodo').off('click').on('click', function () {
                 const inputValue = $('#todoInput').val();
                 if (inputValue.trim() === "") {

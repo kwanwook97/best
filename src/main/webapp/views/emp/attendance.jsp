@@ -960,7 +960,7 @@ function enableEditMode() {
 
 function saveEditedData() {
     const updatedList = [];
-    
+    let isValid = true;
     $(".attendanceList tr").each(function () {
         if ($(this).find(".rowCheckbox").is(":checked")) {
                     const attendIdx = $(this).find("td").eq(0).data("attend-idx");
@@ -969,11 +969,16 @@ function saveEditedData() {
                     const end_time = $(this).find("td").eq(2).find("input").val();
                     /* const status = $(this).find("td").eq(3).find("input").val(); */
                     const content = $("#reasonInput").val();
-            		
+            		console.log("사유:"+content);
                     if (!content) {
                         modal.showAlert("변경 사유가 비어있습니다. 입력해 주세요.");
-                        return false;
+                        isValid = false; 
+                        return false; 
                     }
+/*                     if (content == "" || content == null || content == undefined) {
+                        modal.showAlert("변경 사유가 비어있습니다. 입력해 주세요.");
+                        return false;
+                    } */
                     
                     const row = {
                             attendIdx: attendIdx,
@@ -988,6 +993,10 @@ function saveEditedData() {
                 updatedList.push(row); 
         }
     });
+    if (!isValid) {
+        return;
+    }
+    
     hideReasonModal()
     $("#saveChanges").remove();
 
@@ -1300,7 +1309,6 @@ function showReasonLeaveModal() {
             const leaveUpdateIdx = $(this).find("td").eq(0).data("leave-update-idx");
             const startDate = $(this).find("td").eq(0).find("input[type='date']").val();
             const endDate = $(this).find("td").eq(1).find("input").val();
-
             if (!startDate) {
                 modal.showAlert("시작 날짜가 비어있습니다. 입력해 주세요.");
                 hasError = true;
@@ -1329,16 +1337,17 @@ function showReasonLeaveModal() {
 /* 리즌 모달 사용후 저장확인로직 */
 function saveLeaveHistoryEditedData() {
     const updatedList = [];
-    
+    let hasError = false;
     $(".leaveHistory tr").each(function () {
         if ($(this).find(".dowCheckbox").is(":checked")) {
 		            const leaveUpdateIdx = $(this).find("td").eq(0).data("leave-update-idx");
 		            const startDate = $(this).find("td").eq(0).find("input[type='date']").val();
 		            const endDate = $(this).find("td").eq(1).find("input").val();
                     const content = $("#reasonInputLeaveHistory").val();
-                    
+                    console.log("사유:"+content);
                     if (!content) {
                         modal.showAlert("변경 사유가 비어있습니다. 입력해 주세요.");
+                        hasError = true;
                         return false;
                     }
                     
@@ -1347,12 +1356,17 @@ function saveLeaveHistoryEditedData() {
                     		startDate: startDate,
                     		endDate: endDate,
                             loginId: loginId,
-                            content: content
+                            content: content,
+                            empIdx: empIdx
                         };
 
                 updatedList.push(row); 
         }
     });
+    if (hasError) {
+        return;
+    }
+    
     hideLeaveHistoryReasonModal();
     $("#saveLeave").remove();
 
@@ -1368,9 +1382,11 @@ function saveLeaveHistoryEditedData() {
             //console.log("response:", response);
             if (response.msg == "성공") {
                 updateTime();
-			}else{
+			}else if (response.msg == "실패") {
 				modal.showAlert(response.msg);
-			}
+			}else if (response.msg == "잔여연차부족") {
+				modal.showAlert("잔여 연차가 부족합니다 다시 수정해 주세요!");
+			} 
 
         },
         error: function (xhr, status, error) {
