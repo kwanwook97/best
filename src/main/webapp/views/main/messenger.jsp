@@ -829,8 +829,41 @@ search {
 	font-size: 20px;
 }
 
-#noticeContent::placeholder {
+#noticeContent::placeholder,
+#searchBar::placeholder {
     color: #8B6AA7 !important;
+}
+
+.search-bar-container {
+    display: none; /* 처음에는 숨김 */
+    position: relative;
+}
+#searchBar{
+    height: 31px;
+    width: 96%;
+    margin: 0px !important;
+    border-radius: 10px;
+    padding: 5px;
+}
+.search-bar-container .search-icon{
+    right: 17px !important;
+    top: 50% !important;
+}
+/* 애니메이션 효과 */
+.search-bar-container.active {
+    display: block; /* 보이기 */
+    animation: slideDown 0.3s ease-in-out; /* 슬라이드 애니메이션 */
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px); /* 위에서 아래로 이동 */
+        opacity: 0; /* 투명 */
+    }
+    to {
+        transform: translateY(0); /* 원래 위치 */
+        opacity: 1; /* 불투명 */
+    }
 }
   </style>
 </head>
@@ -850,7 +883,7 @@ search {
 			</div>
 			<div class="modal-icon2">
    				<div>
-       				<i class="fas fa-search"></i>
+       				<i class="fas fa-search" id="searchBar-icon"></i>
    				</div>
    				<div class="start-chat-button" onclick="openMemberModal('createChat');">
        				<i class="fas fa-comment-medical"></i>
@@ -858,6 +891,10 @@ search {
   			</div>
             <span class="close-modal" onclick="window.close();">&times;</span>
         </div>
+        	<div class="search-bar-container">
+    			<input type="text" id="searchBar" name="keyword" class="search-bar" placeholder="검색어를 입력하세요.">
+    			<i class="fas fa-search search-icon"></i>
+			</div>
         <div class="header-modal-body">
             <div id="chatContainer"></div>
         </div>
@@ -1011,9 +1048,9 @@ function updateHeaderTitle(title) {
 
     // 타이틀에 따라 로드할 함수 호출
     if (title === "사원") {
-        loadFriendList();
+        loadFriendList(null);
     } else if (title === "채팅") {
-        loadChatContent();
+        loadChatContent(null);
     }
 }
 
@@ -1148,16 +1185,37 @@ window.updateChatList = function (messageDataList) {
 };
 
 
+$(document).on('click', '.fa-search', function() {
+    listSearch();
+});
+
+$(document).on("keypress", "#searchBar", function (e) {
+    if (e.which === 13) {
+    	listSearch();
+    }
+});
+
+function listSearch() {
+    var keyword = $("#searchBar").val().trim(); // 검색어 가져오기
+
+    // 현재 타이틀 확인
+    var currentTitle = $("#modalHeaderTitle").text();
+
+    if (currentTitle === "사원") {
+        loadFriendList(keyword); // 사원 리스트 검색
+    } else if (currentTitle === "채팅") {
+        loadChatContent(keyword); // 채팅 리스트 검색
+    }
+}
 
 
-
-function loadFriendList() {
+function loadFriendList(keyword) {
 	    const chatContainer = document.getElementById("chatContainer");
 	    // 기존 AJAX 요청 사용
 	    $.ajax({
 	        type: "GET",
 	        url: "chatList.ajax", // 기존 AJAX 요청 URL
-	        data: { emp_idx: loginId, keyword: "" }, // 모든 사용자 리스트 요청
+	        data: { emp_idx: loginId, keyword : keyword || '' }, // 모든 사용자 리스트 요청
 	        success: function (response) {
 	            chatContainer.innerHTML = ""; // 기존 내용을 초기화
 
@@ -1177,7 +1235,7 @@ function loadFriendList() {
 	                // 로그인한 사용자 정보를 상단에 추가
 	                if (myProfile) {
 	                    var myProfileItem =
-	                        '<div class="image-header-wrapper my-profile" data-emp-idx="' + myProfile.emp_idx + '">' +
+	                        '<div class="image-header-wrapper member-item my-profile" data-emp-idx="' + myProfile.emp_idx + '">' +
 	                            '<img src="/photo/' + myProfile.photo + '" alt="프로필 사진" class="custom-image">' +
 	                            '<span class="custom-label">' + myProfile.name + ' / </span>' +
 	                            '<div class="mySelf"><span>나</span></div>' +
@@ -1204,7 +1262,7 @@ function loadFriendList() {
 	                    openProfileModal(empIdx, empName);
 	                });
 	            } else {
-	                chatContainer.innerHTML = "<p>등록된 사용자가 없습니다.</p>";
+	                chatContainer.innerHTML = "<p style='color:#FFFBF2; font-weight: bold;'>등록된 사용자가 없습니다.</p>";
 	            }
 	        },
 	        error: function () {
@@ -1215,20 +1273,20 @@ function loadFriendList() {
 
 
 
-function loadChatContent() {
+function loadChatContent(keyword) {
     const chatContainer = $("#chatContainer");
     chatContainer.empty(); // 기존 내용을 초기화
 
     $.ajax({
         type: "GET",
         url: "chatList.ajax",
-        data: { emp_idx: loginId }, // 로그인한 사용자의 emp_idx
+        data: { emp_idx: loginId, keyword : keyword || '' }, // 로그인한 사용자의 emp_idx
         success: function (response) {
             if (response.chatList && response.chatList.length > 0) {
                 // 데이터를 updateChatList로 전달
                 window.updateChatList(response.chatList);
             } else {
-                chatContainer.html("<p>참여 중인 대화방이 없습니다.</p>");
+                chatContainer.html("<p style='color:#FFFBF2; font-weight: bold;'>참여 중인 대화방이 없습니다.</p>");
             }
         },
         error: function () {
@@ -1244,6 +1302,10 @@ function loadChatContent() {
 	    $("#" + modalId).fadeIn(200, function () {
 	        if (callback && typeof callback === "function") {
 	            callback();
+	        }
+	        if (modalId === "chatModalTemplate") {
+	            $(".search-bar-container").removeClass("active"); // 검색바 닫기
+	            $("#searchBar").val(""); // 검색 입력값 초기화
 	        }
 	    });
 	}
@@ -2132,7 +2194,16 @@ function loadChatContent() {
     }
     
     
-    
+    $(document).on("click", "#searchBar-icon", function () {
+        const searchBarContainer = $(".search-bar-container");
+
+        // 활성화 토글
+        if (searchBarContainer.hasClass("active")) {
+            searchBarContainer.removeClass("active"); // 숨김
+        } else {
+            searchBarContainer.addClass("active"); // 보이기
+        }
+    });
     
     
 
