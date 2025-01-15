@@ -720,7 +720,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     const addNineHours = (utcTime) => {
                         const date = new Date(utcTime);
-                        date.setHours(date.getHours() + 9);
+                        //date.setHours(date.getHours() + 9);
                         return date.toISOString();
                     };
                     const filteredEvents = data.map(event => ({
@@ -829,8 +829,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 dateTime.className = 'date-time';
                 const eventTime = event.allDay
                 ? 'All Day' // 하루 종일 이벤트
-                : formatTimeWithOffset(event.start, -9) + 
-                  ' ~ ' + (event.end ? formatTimeWithOffset(event.end, -9) : 'End');
+                		/* 종원 배포시 변경 시간 오류 */
+                //: formatTimeWithOffset(event.start, -9) + 
+                : formatTimeWithOffset(event.start, 0) + 
+                  //' ~ ' + (event.end ? formatTimeWithOffset(event.end, -9) : 'End');
+                  ' ~ ' + (event.end ? formatTimeWithOffset(event.end, 0) : 'End');
 
                 function formatTimeWithOffset(date, offsetHours) {
                     const adjustedDate = new Date(date.getTime());
@@ -882,7 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(data => {
                         const addNineHours = (utcTime) => {
                             const date = new Date(utcTime);
-                            date.setHours(date.getHours() + 9);
+                            //date.setHours(date.getHours() + 9);
                             return date.toISOString();
                         };
 
