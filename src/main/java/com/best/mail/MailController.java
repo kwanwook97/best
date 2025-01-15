@@ -1,12 +1,17 @@
 package com.best.mail;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -90,6 +95,33 @@ public class MailController {
 		
 		return "mail/mailForward";
 	}
+	
+	// 기존에 저장된 파일 가져오기
+	@RequestMapping(value = "/mailGetFile.do", produces = "application/octet-stream")
+	@ResponseBody
+	public ResponseEntity<Resource> getMailFile(@RequestParam String newfile_name, @RequestParam String file_name) {
+	    String filePath = "C:/upload/" + newfile_name;
+	    Resource res = new FileSystemResource(filePath);
+
+	    if (!res.exists()) {
+	        System.err.println("파일이 존재하지 않습니다: " + filePath);
+	        throw new RuntimeException("파일을 찾을 수 없습니다: " + newfile_name);
+	    }
+
+	    HttpHeaders header = new HttpHeaders();
+	    header.add("Content-Type", "application/octet-stream");
+	    try {
+	        String encodedFileName = URLEncoder.encode(file_name, "UTF-8").replace("+", "%20");
+	        header.add("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"");
+	    } catch (UnsupportedEncodingException e) {
+	        e.printStackTrace();
+	    }
+
+	    System.out.println("파일 로드 성공: " + filePath);
+	    return new ResponseEntity<>(res, header, HttpStatus.OK);
+	}
+
+	
 	
 	// 임시저장메일 불러오기
 	@RequestMapping(value = "/mailReWrite.go")

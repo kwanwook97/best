@@ -88,7 +88,6 @@ $(document).ready(function () {
       // 보낸 사람인지 확인
       if (senderDto.sender_idx === emp_idx) {
     	// 보낸 사람이면 "전달" 및 "답장하기" 버튼 숨김
-        $('.forward-btn').hide();
         $('.reply-btn').hide();  
     	  
         // 보낸 사람의 starIcon 생성

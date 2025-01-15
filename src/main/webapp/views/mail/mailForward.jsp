@@ -376,6 +376,7 @@ autoComplete div:hover {
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
   <jsp:include page="../modal/findAdd.jsp"></jsp:include>
+  <jsp:include page="../modal/modal.jsp"></jsp:include>
   <c:set var="empIdx" value="${sessionScope.loginId}" />
   <div class="dashboard-body">
     <div class="maintext">
@@ -408,7 +409,7 @@ autoComplete div:hover {
 	                <div id="subject-container">
 	                    <input type="text" name="subject" id="subject" placeholder="제목을 입력하세요! 50자 이내 작성" maxlength="50" />
 	                    <div class="chkArea">
-	                        <input type="hidden" name="special_flag" id="hidden_special_flag" />
+	                        <input type="hidden" name="special_flag" id="hidden_special_flag" value="0">
 	                        <input type="checkbox" id="mailType" value="1" onclick="setSpecialFlag(this);" />
 	                        <span class="specialChk">&nbsp;&nbsp;중요!</span>
 	                    </div>
@@ -496,7 +497,7 @@ autoComplete div:hover {
 <script>
 /* 전역 변수 */
 var receiverList = []; // 수신자 및 참조자 데이터를 담을 배열
-var emp_idx = "${empIdx}"; // 작성자 사번
+var emp_idx = ${empIdx}; // 작성자 사번
 var filesArr = []; // 첨부파일 데이터를 담을 배열
 var mailIdx = '${param.idx}'; // 메일 인덱스
 
@@ -513,7 +514,7 @@ $(document).ready(function () {
     config.file_upload_handler = function (file, pathReplace) {
         console.log(file);
         if (file.size > 1 * 1024 * 1024) {
-            alert('2MB 이상의 파일은 올릴 수 없습니다.');
+            modal.showAlert('2MB 이상의 파일은 올릴 수 없습니다.');
             pathReplace('/img/noimage.png');
         }
     };
@@ -572,13 +573,27 @@ function loadForwardData() {
             });
 
             // 첨부파일 유지
-            fileList.forEach(function (file) {
-                filesArr.push({
-                    name: file.file_name,
-                    newfile_name: file.newfile_name
-                });
-            });
-            renderFileList();
+            if (fileList.length > 0) {
+			    var dataTransfer = new DataTransfer();
+			
+			    var promises = fileList.map(function (file) {
+			        return loadFile(file.newfile_name, file.file_name).then(function (loadedFile) {
+			            if (loadedFile) {
+			                dataTransfer.items.add(loadedFile);
+			            }
+			        });
+			    });
+			
+			    Promise.all(promises)
+			    .then(function () {
+			        document.getElementById("upfile").files = dataTransfer.files;
+			        filesArr = Array.from(dataTransfer.files);
+			        renderFileList();
+			    })
+			    .catch(function (error) {
+			        console.error("파일 처리 중 오류 발생:", error);
+			    });
+			}
         },
         error: function (error) {
             console.error("포워딩 데이터 로드 중 오류 발생:", error);
@@ -615,8 +630,8 @@ function findAdd(type) {
 $("#receiver-input").on("keyup", function (e) {
     const inputVal = $(this).val().trim();
     
-    // 최소 2글자 이상 입력된 경우에만 검색 수행
-    if (inputVal.length >= 2) {
+    // 최소 1글자 이상 입력된 경우에만 검색 수행
+    if (inputVal.length >= 1) {
         empInfo(inputVal, 0, "receiver-list"); // 수신자 검색
     } else {
         $("#autocomplete-list0").hide(); // 글자수가 부족하면 자동완성 숨김
@@ -626,13 +641,25 @@ $("#receiver-input").on("keyup", function (e) {
 $("#refer-input").on("keyup", function (e) {
     const inputVal = $(this).val().trim();
     
-    // 최소 2글자 이상 입력된 경우에만 검색 수행
-    if (inputVal.length >= 2) {
+    // 최소 1글자 이상 입력된 경우에만 검색 수행
+    if (inputVal.length >= 1) {
         empInfo(inputVal, 1, "refer-list"); // 참조자 검색
     } else {
         $("#autocomplete-list1").hide(); // 글자수가 부족하면 자동완성 숨김
     }
 });
+
+//작성자란 및 참조란에서 Enter 키 기본 동작 방지
+$("#receiver-input, #refer-input").on("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault(); // 기본 동작(폼 제출) 방지
+    }
+});
+
+$("#receiver-input, #refer-input").on("blur", function () {
+    $(this).val(""); // 입력 필드 초기화
+});
+
 
 //수신자 및 참조자 추가 핸들러
 function addReceiverOrReferHandler(input, listContainerId, type) {
@@ -646,21 +673,21 @@ function addReceiverOrReferHandler(input, listContainerId, type) {
 
     // 입력값 유효성 검사
     if (inputVal === "") {
-        alert("이름 또는 이메일을 입력하세요.");
+        modal.showAlert("이름 또는 이메일을 입력하세요.");
         return;
     }
 
-    // 중복 확인 (receiverList에서 검사)
-        // 중복 확인 (기존 receiverList 배열에서 중복 검사)
-    var isDuplicate = receiverList.some(function (item) {
-        return (
-            item.name === inputVal || item.email === inputVal
-        );
-    });
+    // 중복 파일 방지 확인
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var isDuplicate = filesArr.some(function (existingFile) {
+            return existingFile.name === file.name && existingFile.size === file.size;
+        });
 
-    if (isDuplicate) {
-        alert("이미 추가된 항목입니다.");
-        return;
+        if (isDuplicate) {
+             modal.showAlert("이미 추가된 파일입니다: " + file.name);
+            return; // 중복된 파일이 있으면 추가 중단
+        }
     }
 
     // 입력값 처리
@@ -721,16 +748,40 @@ function updateHiddenField() {
 /* 첨부파일 목록 렌더링 */
 function renderFileList() {
     var fileListDiv = $("#file-list").empty();
-    filesArr.forEach(function (file, index) {
+    filesArr.forEach((file, index) => {
         var fileDiv = $("<div>").addClass("filebox").attr("id", "file" + index);
         var fileContent = $("<span>").addClass("file-content").text(file.name);
-        var fileLink = $("<a>")
-            .attr("href", "mailAttachDown.do?newfile_name=" + encodeURIComponent(file.newfile_name) + "&file_name=" + encodeURIComponent(file.name))
-            .text(" 다운로드")
-            .attr("target", "_blank");
-        fileDiv.append(fileContent).append(fileLink);
+        var deleteBtn = $("<i>").addClass("far fa-minus-square delete-icon")
+            .on("click", function () {
+                deleteFile(index);
+            });
+
+        fileDiv.append(fileContent).append(deleteBtn);
         fileListDiv.append(fileDiv);
     });
+}
+
+
+// 파일 선택 이벤트 리스너
+$("#upfile").on("change", function () {
+	const dataTransfer = new DataTransfer();
+
+    // filesArr의 모든 파일을 DataTransfer 객체에 추가
+    filesArr.forEach(file => dataTransfer.items.add(file));
+
+    // input 태그 파일 업데이트
+    this.files = dataTransfer.files;
+
+    // UI에 파일 목록 렌더링
+    renderFileList();
+});
+
+
+//파일 삭제
+function deleteFile(index) {
+    filesArr.splice(index, 1); // 배열에서 파일 제거
+    renderFileList(); // UI 업데이트
+    updateFileInput(); // file input 업데이트
 }
 
 //메일 '전송'시 실행하는 함수
@@ -740,7 +791,7 @@ function sendMail(status) {
 
     // 에디터 내용이 100MB 이상인 경우 처리
     if (content.length > 100 * 1024 * 1024) {
-        alert("100MB 이상의 크기는 전송이 불가능합니다.");
+        modal.showAlert("100MB 이상의 크기는 전송이 불가능합니다.");
         return;
     }
 
@@ -749,13 +800,12 @@ function sendMail(status) {
 
     // 필수 항목 검증
     if (receiverList.length === 0) {
-        alert("받는 사람 주소를 입력해 주세요.");
+        modal.showAlert("받는 사람 주소를 입력해 주세요.");
         return;
     }
 
     if ($('input[name="subject"]').val().trim() === "") {
-        let confirmResult = confirm("제목이 지정되지 않았습니다. 제목 없이 메일을 보내시겠습니까?");
-        alert("제목을 입력해 주세요.");
+        modal.showAlert("제목을 입력해 주세요.");
         return;
     }
 
@@ -811,7 +861,13 @@ function empInfo(inputVal, type, listContainerId) {
 
                         receiverList.push(newEntry);
                         addReceiverOrRefer(newEntry, listContainerId); // UI 업데이트
-                        $("#receiver-input").val(""); // 입력값 초기화
+
+                     	// 입력값 초기화
+                        if(type == 0){  // 받는사람
+                        	$("#receiver-input").val(""); 
+                        }else if(type == 1){ // 참조자
+                        	$("#refer-input").val(""); 
+                        }
                         $list.hide();
                         return;
                     }
@@ -830,7 +886,13 @@ function empInfo(inputVal, type, listContainerId) {
                             };
                             receiverList.push(newEntry);
                             addReceiverOrRefer(newEntry, listContainerId); // UI 업데이트
-                            $("#receiver-input").val(''); // 입력값 초기화
+
+                         	// 입력값 초기화
+                            if(type == 0){  // 받는사람
+                            	$("#receiver-input").val(""); 
+                            }else if(type == 1){ // 참조자
+                            	$("#refer-input").val(""); 
+                            }
                             $list.hide(); // 목록 숨기기
                         });
                         $list.append($option);
@@ -843,7 +905,7 @@ function empInfo(inputVal, type, listContainerId) {
                     $("#" + listContainerId + "_idx").val(item.emp_idx);
                 }
             } else {
-                /* alert("해당 사원을 찾을 수 없습니다."); */
+                /* modal.showAlert("해당 사원을 찾을 수 없습니다."); */
             }
         },
         error: function (e) {
@@ -856,30 +918,108 @@ function empInfo(inputVal, type, listContainerId) {
 
 /* 첨부파일 추가 */
 function addFile() {
-    var maxFileCnt = 5;
-    var remainFileCnt = maxFileCnt - filesArr.length;
-    var files = $('#upfile')[0].files;
+    var maxFileCnt = 5; // 첨부파일 최대 개수
+    var maxFileSize = 50 * 1024 * 1024; // 50MB
+    var attFileCnt = filesArr.length; // 현재 첨부파일 개수
+    var remainFileCnt = maxFileCnt - attFileCnt; // 추가 가능 파일 수
+    var files = $('#upfile')[0].files; // 새로 추가된 파일들
 
-    let duplicateFiles = Array.from(files).filter(file =>
-        filesArr.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)
+    // 중복 파일 방지 확인 (불러온 파일 포함)
+    let duplicateFiles = Array.from(files).filter(newFile =>
+        filesArr.some(existingFile =>
+            existingFile.name === newFile.name &&
+            existingFile.size === newFile.size
+        )
     );
 
     if (duplicateFiles.length > 0) {
-        alert("이미 추가된 파일이 있습니다.");
-        return;
+        modal.showAlert('이미 추가된 파일이 있습니다: ' + duplicateFiles.map(file => file.name).join(', '));
+        return false; // 중복 방지
+    }
+    
+    // 파일 크기 확인 및 제한 초과 처리
+    let invalidFiles = Array.from(files).filter(file => file.size > maxFileSize);
+    if (invalidFiles.length > 0) {
+        modal.showAlert("첨부파일 크기는 최대 50MB까지 가능합니다: " + invalidFiles.map(file => file.name).join(", "));
+        return; // 크기 초과 파일이 있으면 추가 중단
     }
 
+    // 파일 개수 초과 확인
     if (files.length > remainFileCnt) {
-        alert("첨부파일은 최대 " + maxFileCnt + "개까지 가능합니다.");
-        return;
+    	modal.showAlert('첨부파일은 최대 ' + maxFileCnt + '개까지 첨부 가능합니다.');
+        return false;
     }
 
+    // 새로운 파일을 filesArr에 추가
     filesArr = filesArr.concat(Array.from(files));
+
+ 	
+    // input[type="file"]에 업데이트
+    updateFileInput();
+
+ 	// UI에 첨부파일 리스트 뿌려주기
     renderFileList();
+
+}
+
+
+//새로운 파일을 filesArr에 추가
+function updateFileInput() {
+    const dataTransfer = new DataTransfer();
+
+    // filesArr의 모든 파일을 DataTransfer 객체에 추가
+    filesArr.forEach(file => dataTransfer.items.add(file));
+
+    // input[type="file"]의 파일 리스트를 업데이트
+    $('#upfile')[0].files = dataTransfer.files;
+
+    console.log('Updated file input:', dataTransfer.files);
 }
 
 /* 이메일 형식 검증 */
 function validateEmail(email) {
     return email.includes("@");
 }
+
+//체크박스 상태에 따라 hidden input 값을 업데이트
+function setSpecialFlag(checkbox) {
+    if (checkbox.checked) {
+        $("#hidden_special_flag").val("1");
+    } else {
+        $("#hidden_special_flag").val("0");
+    }
+}
+
+
+//서버에서 기존에 저장했던 실제 파일 가져오기
+function loadFile(newFileName, fileName) {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: 'mailGetFile.do',
+            method: "GET",
+            xhrFields: {
+                responseType: "blob" // Blob 형태로 응답 받기
+            },
+            data: {
+                'newfile_name': newFileName,
+                'file_name': fileName
+            },
+            success: function(blob, textStatus, jqXHR) {
+                try {
+                    var contentType = jqXHR.getResponseHeader('Content-Type');
+                    var file = new File([blob], fileName, { type: contentType });
+                    resolve(file);
+                } catch (error) {
+                    reject("파일 처리 중 오류 발생: " + error.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                reject("파일 로드 실패: " + textStatus + ", " + errorThrown);
+            }
+        });
+    });
+}
+
+
+
 </script>

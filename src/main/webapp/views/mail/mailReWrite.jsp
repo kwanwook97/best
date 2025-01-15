@@ -377,6 +377,7 @@ autoComplete div:hover {
 <body class="bg-theme bg-theme1">
   <jsp:include page="../main/header.jsp"></jsp:include>
   <jsp:include page="../modal/findAdd.jsp"></jsp:include>
+  <jsp:include page="../modal/modal.jsp"></jsp:include>
   <c:set var="empIdx" value="${sessionScope.loginId}" />
   <div class="dashboard-body">
     <div class="maintext">
@@ -409,7 +410,7 @@ autoComplete div:hover {
 	                <div id="subject-container">
 	                    <input type="text" name="subject" id="subject" placeholder="제목을 입력하세요! 50자 이내 작성" maxlength="50" />
 	                    <div class="chkArea">
-	                        <input type="hidden" name="special_flag" id="hidden_special_flag" />
+	                        <input type="hidden" name="special_flag" id="hidden_special_flag" value="0">
 	                        <input type="checkbox" id="mailType" value="1" onclick="setSpecialFlag(this);" />
 	                        <span class="specialChk">&nbsp;&nbsp;중요!</span>
 	                    </div>
@@ -500,7 +501,7 @@ autoComplete div:hover {
 <script>
 /* 전역 변수 */
 var receiverList = []; // 수신자 및 참조자 데이터를 담을 배열
-var emp_idx = "${empIdx}"; // 작성자 사번
+var emp_idx = ${empIdx}; // 작성자 사번
 var filesArr = []; // 첨부파일 데이터를 담을 배열
 var mailIdx = '${param.idx}'; // 메일 인덱스
 
@@ -522,7 +523,7 @@ $(document).ready(function () {
     config.file_upload_handler = function (file, pathReplace) {
         console.log(file);
         if (file.size > 1 * 1024 * 1024) {
-            alert('2MB 이상의 파일은 올릴 수 없습니다.');
+            modal.showAlert('2MB 이상의 파일은 올릴 수 없습니다.');
             pathReplace('/img/noimage.png');
         }
     };
@@ -566,8 +567,8 @@ function findAdd(type) {
 $("#receiver-input").on("keyup", function (e) {
     const inputVal = $(this).val().trim();
     
-    // 최소 2글자 이상 입력된 경우에만 검색 수행
-    if (inputVal.length >= 2) {
+    // 최소 1글자 이상 입력된 경우에만 검색 수행
+    if (inputVal.length >= 1) {
         empInfo(inputVal, 0, "receiver-list"); // 수신자 검색
     } else {
         $("#autocomplete-list0").hide(); // 글자수가 부족하면 자동완성 숨김
@@ -577,13 +578,25 @@ $("#receiver-input").on("keyup", function (e) {
 $("#refer-input").on("keyup", function (e) {
     const inputVal = $(this).val().trim();
     
-    // 최소 2글자 이상 입력된 경우에만 검색 수행
-    if (inputVal.length >= 2) {
+    // 최소 1글자 이상 입력된 경우에만 검색 수행
+    if (inputVal.length >= 1) {
         empInfo(inputVal, 1, "refer-list"); // 참조자 검색
     } else {
         $("#autocomplete-list1").hide(); // 글자수가 부족하면 자동완성 숨김
     }
 });
+
+//작성자란 및 참조란에서 Enter 키 기본 동작 방지
+$("#receiver-input, #refer-input").on("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault(); // 기본 동작(폼 제출) 방지
+    }
+});
+
+$("#receiver-input, #refer-input").on("blur", function () {
+    $(this).val(""); // 입력 필드 초기화
+});
+
 
 //수신자 및 참조자 추가 핸들러
 function addReceiverOrReferHandler(input, listContainerId, type) {
@@ -597,7 +610,7 @@ function addReceiverOrReferHandler(input, listContainerId, type) {
 
     // 입력값 유효성 검사
     if (inputVal === "") {
-        alert("이름 또는 이메일을 입력하세요.");
+        modal.showAlert("이름 또는 이메일을 입력하세요.");
         return;
     }
 
@@ -610,7 +623,7 @@ function addReceiverOrReferHandler(input, listContainerId, type) {
     });
 
     if (isDuplicate) {
-        alert("이미 추가된 항목입니다.");
+        modal.showAlert("이미 추가된 항목입니다.");
         return; // 중복 시 추가 중단
     }
 
@@ -686,7 +699,13 @@ function empInfo(inputVal, type, listContainerId) {
 
                         receiverList.push(newEntry);
                         addReceiverOrRefer(newEntry, listContainerId); // UI 업데이트
-                        $("#receiver-input").val(""); // 입력값 초기화
+                        
+                     	// 입력값 초기화
+                        if(type == 0){  // 받는사람
+                        	$("#receiver-input").val(""); 
+                        }else if(type == 1){ // 참조자
+                        	$("#refer-input").val(""); 
+                        }
                         $list.hide();
                         return;
                     }
@@ -705,7 +724,13 @@ function empInfo(inputVal, type, listContainerId) {
                             };
                             receiverList.push(newEntry);
                             addReceiverOrRefer(newEntry, listContainerId);
-                            $("#receiver-input").val('');
+
+                         	// 입력값 초기화
+                            if(type == 0){  // 받는사람
+                            	$("#receiver-input").val(""); 
+                            }else if(type == 1){ // 참조자
+                            	$("#refer-input").val(""); 
+                            }
                             $list.hide();
                         });
                         $list.append($option);
@@ -718,7 +743,7 @@ function empInfo(inputVal, type, listContainerId) {
                     $("#" + listContainerId + "_idx").val(item.emp_idx);
                 }
             } else {
-                /* alert("해당 사원을 찾을 수 없습니다."); */
+                /* modal.showAlert("해당 사원을 찾을 수 없습니다."); */
             }
         },
         error: function (e) {
@@ -898,16 +923,11 @@ function updateHiddenField() {
 
 
 
-/* 첨부파일 초기화 */
-function resetFileList() {
-    filesArr = [];
-    renderFileList();
-}
 
 /* 첨부파일 목록 렌더링 */
 function renderFileList() {
     var fileListDiv = $("#file-list").empty();
-    filesArr.forEach((file, i) => {
+    formData.getAll('files').forEach((file, i) => {
         var $fileDiv = $("<div>").addClass("filebox").attr("id", "file" + i);
         var $fileContent = $("<span>").addClass("file-content").text(file.name);
         var $deleteBtn = $("<i>").addClass("far fa-minus-square delete-icon").on("click", function () {
@@ -933,7 +953,7 @@ function sendMail(status) {
 
     // 에디터 내용이 100MB 이상인 경우 처리
     if (content.length > 100 * 1024 * 1024) {
-        alert("100MB 이상의 크기는 전송이 불가능합니다.");
+        modal.showAlert("100MB 이상의 크기는 전송이 불가능합니다.");
         return;
     }
 
@@ -942,13 +962,12 @@ function sendMail(status) {
 
     // 필수 항목 검증
     if (receiverList.length === 1) {
-        alert("받는 사람 주소를 입력해 주세요.");
+        modal.showAlert("받는 사람 주소를 입력해 주세요.");
         return;
     }
 
     if ($('input[name="subject"]').val().trim() === "") {
-        let confirmResult = confirm("제목이 지정되지 않았습니다. 제목 없이 메일을 보내시겠습니까?");
-        alert("제목을 입력해 주세요.");
+        modal.showAlert("제목을 입력해 주세요.");
         return;
     }
 
@@ -971,25 +990,50 @@ function validateEmail(email) {
 /* 첨부파일 추가 */
 function addFile() {
     var maxFileCnt = 5;
+    var maxFileSize = 50 * 1024 * 1024; // 50MB
     var remainFileCnt = maxFileCnt - filesArr.length;
     var files = $('#upfile')[0].files;
 
-    let duplicateFiles = Array.from(files).filter(file =>
-        filesArr.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)
-    );
+    // 중복 파일 방지 확인
+    let duplicateFiles = Array.from(files).filter(file => 
+	    filesArr.some(existingFile => 
+	        existingFile.name === file.name && 
+	        existingFile.size === file.size &&
+	        existingFile.lastModified === file.lastModified // 추가
+	    )
+	);
+
 
     if (duplicateFiles.length > 0) {
-        alert("이미 추가된 파일이 있습니다.");
+    	modal.showAlert("이미 추가된 파일이 있습니다.");
         return;
+    }
+    
+    // 파일 크기 확인 및 제한 초과 처리
+    let invalidFiles = Array.from(files).filter(file => file.size > maxFileSize);
+    if (invalidFiles.length > 0) {
+        modal.showAlert("첨부파일 크기는 최대 50MB까지 가능합니다: " + invalidFiles.map(file => file.name).join(", "));
+        return; // 크기 초과 파일이 있으면 추가 중단
     }
 
     if (files.length > remainFileCnt) {
-        alert("첨부파일은 최대 " + maxFileCnt + "개까지 가능합니다.");
+    	modal.showAlert("첨부파일은 최대 " + maxFileCnt + "개까지 가능합니다.");
         return;
     }
 
     filesArr = filesArr.concat(Array.from(files));
     renderFileList();
+    
+    $('#upfile').val(""); // 파일 선택 필드 초기화
+}
+
+//체크박스 상태에 따라 hidden input 값을 업데이트
+function setSpecialFlag(checkbox) {
+    if (checkbox.checked) {
+        $("#hidden_special_flag").val("1");
+    } else {
+        $("#hidden_special_flag").val("0");
+    }
 }
 </script>
 </html>
