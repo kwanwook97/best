@@ -15,6 +15,7 @@
 </head>
 <body class="bg-theme bg-theme1">
   <c:set var="emp_idx" value="${param.emp_idx}" />
+  <c:set var="emp_name" value="${sessionScope.employee.name}" />
 
   <sec:authorize access="!hasAuthority('ROLE_ADMIN')">
   	<jsp:include page="../main/header.jsp"></jsp:include>
@@ -269,7 +270,8 @@
 <script>
 	/* 전역변수 */
 	var col = '';              // 변경할 컬럼
-	var empIdx = '${emp_idx}'; // 사번
+	var empIdx = '${emp_idx}';   // 사번
+	var empName = '${emp_name}'; // 사원명
 	var currentVal = '';    // 현재 값
 	var newVal = '';        // 변경 값
 	var newText = '';        // 변경 값(부서, 직급 Text)
@@ -344,12 +346,12 @@
 			});	    	
 	    }else{
 	    	// 모달에 input태그 삽입
-	    	var inputTag = $('<input type="text" id="new" class="input_field" value="' +currentVal+ '"/>');
+	    	var inputTag = $('<input type="text" id="new" class="input_field" value=""/>');
 	        $('#newVal').html(inputTag); // 변경할 값 부분을 교체
 	    }
 	    	
 	    // 모달 타이틀과 현재 값 설정
-	    showChangeModal(changeName + ' 변경', currentVal, '담당자입니다.(sessionId로 교체 예정)');
+	    showChangeModal(changeName + ' 변경', currentVal, empName);
 	});
 	
 	// 2. 직원정보 값 변경
