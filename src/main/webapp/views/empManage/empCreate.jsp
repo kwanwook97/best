@@ -228,6 +228,12 @@
 	            $.each(list, function (index, item) {
 	                var value = item.rank_name;
 	                var idx = item.rank_idx;
+	                
+	             	// '대표' 항목 제외
+	                if (value === '대표') {
+	                    return true; // 다음 반복으로 이동
+	                }
+	                
 	                // 직급 기본값은 사원
 	                if(idx == 8){
 	                	dropdown.append('<option value="' + idx + '" selected>' + value + '</option>');	
