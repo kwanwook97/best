@@ -6,7 +6,7 @@
   <script src="https://kit.fontawesome.com/0e9db4cdc9.js" crossorigin="anonymous"></script>
   <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/BEST/resources/js/index.global.js"></script>
+  <script src="resources/js/index.global.js"></script>
   <style>
   :root{
       --primary-color: #30005A;
