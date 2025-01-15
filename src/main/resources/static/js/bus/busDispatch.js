@@ -368,7 +368,8 @@ $(".updatebtn").on("click", function (e) {
 
             if (response.success) {
                 alert("수정이 완료되었습니다!");
-                loadDispatchList(date); // 수정된 날짜로 리스트 갱신
+                const selectedRouteName = $("#routeSelect").val(); // 현재 선택된 노선 가져오기
+            	loadDispatchList(date, selectedRouteName);
             } else {
                 alert(response.message || "수정에 실패했습니다.");
             }

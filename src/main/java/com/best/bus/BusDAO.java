@@ -63,6 +63,8 @@ public interface BusDAO {
 
 	int updateDriveEndStatus(Integer dispatchIdx, Date endTime, String status);
 
+	int checkDriverDispatch(DispatchDTO dispatch);
+
 
 
 
