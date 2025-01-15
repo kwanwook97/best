@@ -366,12 +366,11 @@ function pageCall(page){
 
 
 function PrintImport(notices) {
-	
     var content = '';
 	
     for (var item of notices) {
         content += '<tr>';
-        if (item.depart_idx == depart_idx) {
+        if (depart_idx == 2 || depart_idx == 3 || depart_idx == 6) {
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',1)"></i></td>';
         } else {
             content += '<td><i class="bi bi-megaphone-fill"></i></td>';
@@ -397,7 +396,7 @@ function PrintGeneral(notices) {
 	
     for (var item of notices) {
         content += '<tr>';
-        if (depart_idx==2 || depart_idx==3) {
+        if (depart_idx == 2 || depart_idx == 3 || depart_idx == 6) {
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',0)"></i></td>';
         } else {
             content += '<td><i class="bi bi-megaphone-fill"></i></td>';
@@ -566,10 +565,11 @@ function searchCallImportant(page){
 }
 
 function  searchImport(notices){
+	
 	 var content = '';
 	    for (var item of notices) {
 	        content += '<tr>';
-	        if (depart_idx==2 || depart_idx==3){
+	        if (depart_idx == 2 || depart_idx == 3 || depart_idx == 6){
 	            content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',1)"></i></td>';
 	        } else {
 	            content += '<td><i class="bi bi-megaphone-fill"></i></td>';
@@ -615,7 +615,7 @@ function searchGeneral(notices){
 
     for (var item of notices) {
         content += '<tr>';
-        if (depart_idx==2 || depart_idx==3){
+        if (depart_idx == 2 || depart_idx == 3 || depart_idx == 6){
             content += '<td><i class="bi bi-megaphone-fill" style="cursor: pointer;" onclick="handleIconClick(' + item.board_idx + ',0)"></i></td>';
         } else {
             content += '<td><i class="bi bi-megaphone-fill"></i></td>';
