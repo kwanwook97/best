@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +39,7 @@ public class MailService {
 	
 	@Autowired MailDAO mailDao;
 	@Autowired AlarmService alarmService;
+	@Value("${upload.path}") private String bpath;
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	
@@ -280,7 +282,7 @@ public class MailService {
 	                String newFileName = UUID.randomUUID().toString() + ext;
 
 	                byte[] arr = file.getBytes();
-	                Path path = Paths.get("C:/upload/" + newFileName);
+	                Path path = Paths.get(bpath + newFileName);
 	                Files.write(path, arr);
 
 	                Map<String, Object> condition = new HashMap<>();
@@ -360,7 +362,7 @@ public class MailService {
 	// 첨부파일 다운로드
 	public ResponseEntity<Resource> download(String newfile_name, String orifile_name) {
 		//body
-		Resource res = new FileSystemResource("C:/upload/"+newfile_name);
+		Resource res = new FileSystemResource(bpath+newfile_name);
 		
 		//header
 		HttpHeaders header = new HttpHeaders();		

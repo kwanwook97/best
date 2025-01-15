@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MailController {
 
 	@Autowired MailService mailService;
+	@Value("${upload.path}") private String bpath;
 	
 	@RequestMapping(value = "/mail.go")
 	public String mail() {
@@ -100,7 +102,7 @@ public class MailController {
 	@RequestMapping(value = "/mailGetFile.do", produces = "application/octet-stream")
 	@ResponseBody
 	public ResponseEntity<Resource> getMailFile(@RequestParam String newfile_name, @RequestParam String file_name) {
-	    String filePath = "C:/upload/" + newfile_name;
+	    String filePath = bpath + newfile_name;
 	    Resource res = new FileSystemResource(filePath);
 
 	    if (!res.exists()) {
