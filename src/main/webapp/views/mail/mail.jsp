@@ -102,7 +102,7 @@
 	
 	
 	/* 페이지네이션 관련 전역변수 */
-	var empIdx = "${empIdx}"; // 사번
+	var empIdx = ${empIdx}; // 사번
 	var delete_flag = 0; // 0: 정상, 1: 휴지통, 2: 완전삭제
 	var mailFilter = 0; // 0: 필터X, 1: 중요필터, 2:읽음필터 
 	var special_flag = 0; // 중요여부
@@ -348,19 +348,18 @@
 	            if ($(pagination).data("twbs-pagination")) {
 	                $(pagination).twbsPagination('destroy');
 	            }
-				$(pagination).twbsPagination({
-					startPage: showPage,          //현재 보여지는 페이지
-					totalPages: data.totalPages,  // 최대 페이지 수
-					visiblePages : 5,             // 보여줄 페이지의 수
-					initiateStartPageClick: false, // 첫 번째 클릭 방지
-					
-					onPageClick:function(evt, page){
-						if (page !== showPage) {
-	                        showPage = page; // 전역변수 업데이트
-	                        pageCall(page); // 페이지 재호출
+	            $(pagination).twbsPagination({
+	                startPage: showPage,
+	                totalPages: data.totalPages, // 최대 페이지 수
+	                visiblePages: 5,
+	                initiateStartPageClick: false,
+	                onPageClick: function (evt, page) {
+	                    if (page !== showPage) {
+	                        showPage = page;
+	                        pageCall(page);
 	                    }
-					}
-				});
+	                }
+	            });
 				
 				searchKeyword = '';    // 검색 값 초기화
 	        },
@@ -422,6 +421,7 @@
 	    	// 페이지네이션에 따른 시작 번호 계산
 	    	var startIdx = totalCnt - (showPage - 1) * 12; // 12는 페이지당 항목 수 (cnt)
 	    	
+	    	
 	        $.each(data, function (idx, item) {
 	            var content = '';
 	
@@ -441,15 +441,25 @@
 
 	            
 	            // 메일 작성자인지 수신자인지 여부에 따라 테이블 선택.
-	            if(item.sender_idx === empIdx){ // 내가 메일작성자인 경우  
-	            	mailIdx = item.mail_send_idx
-	            	mailIdxType = 'mail_send_idx';
-	            	specialFlag = item.send_special_flag;
-	            }else{
-	            	mailIdx = item.mail_receive_idx
-	            	mailIdxType = 'mail_receive_idx';
-	            	specialFlag = item.receive_special_flag;
+	            if (table === 'mail_receive') { 
+	                mailIdx = item.mail_receive_idx;
+	                mailIdxType = 'mail_receive_idx';
+	                specialFlag = item.receive_special_flag;
+	            } else if (table === 'mail_send' || table === 'draft') {
+	                mailIdx = item.mail_send_idx;
+	                mailIdxType = 'mail_send_idx';
+	                specialFlag = item.send_special_flag;
+	            }else if (table === 'mail_trash'){
+	            	mailIdxType = item.tableSource === 'mail_receive' ? 'mail_receive_idx' : 'mail_send_idx';
+	            	if(mailIdxType === 'mail_receive_idx'){
+	            		mailIdx = item.mail_receive_idx;	
+	            	}else{
+	            		mailIdx = item.mail_send_idx;
+	            	}
 	            }
+	            
+	            
+	            
 	            
 	         	// 중요 아이콘 (받은 메일함 또는 보낸 메일함에서만 표시)
 	            var specialIcon = '';
@@ -497,7 +507,7 @@
 	            
 	         	// 삭제 아이콘 (휴지통인 경우 완전 삭제 아이콘으로 표시)
 	            var deleteIcon = '<i class="fas fa-trash-alt" onclick="updateDeleteStatus(\'' + mailIdxType + '\', ' + mailIdx + ', ' +deleteFlag+ ')"></i>';
-	            if (table === 'mail_trash') {
+	            if (showTrashColumn) {
 	            	deleteFlag = 2; // 완전삭제
 	                deleteIcon = '<i class="bi bi-x-circle-fill text-danger" title="완전 삭제" style="cursor: pointer;" onclick="updateDeleteStatus(\'' 
 	                    + mailIdxType + '\', ' 
@@ -589,6 +599,10 @@
 	function updateSpecialStatus(mailIdxType, mailIdx, specialFlag) {
 	    // 반대로 변경할 상태 결정
 	    var newSpecialFlag = specialFlag === 0 ? 1 : 0;
+	    
+	    console.log('mailIdxType:', mailIdxType);
+	    console.log('mailIdx:', mailIdx);
+	    console.log('special_flag:', newSpecialFlag);
 	
 	    // AJAX 요청으로 상태 업데이트
 	    $.ajax({
@@ -619,6 +633,8 @@
 	        }
 	    });
 	}
+	
+	
 
 	
 	

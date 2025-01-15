@@ -364,7 +364,7 @@
         
      // 비밀번호와 확인 비밀번호가 일치하지 않는 경우
         if (password !== confirmPw) {
-            modal.showAlert("2개의 비밀번호가 서로 일치하지 않습니다.");
+        	modal.showAlert("2개의 비밀번호가 서로 일치하지 않습니다.");
             return; // 제출 중단
         }
         
