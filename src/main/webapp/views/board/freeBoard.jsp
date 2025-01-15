@@ -290,9 +290,6 @@ pageCall(page);
 
 //페이지 호출 함수
 function pageCall(page) {
-    console.log('pageCall');
-    console.log("itemsPerPage: " + itemsPerPage);
-
     $.ajax({
         type: 'GET',
         url: 'freeBoardList.ajax',
@@ -331,7 +328,6 @@ function pageCall(page) {
 
 // 리스트 출력 함수
 function printList(list, startNumber) {
-	console.log("뿌리기", list);
     var content = '';
     var i = startNumber; // 시작 번호 설정
     for (var item of list) {
@@ -388,7 +384,6 @@ $('.searchInp').keydown(function(event) {
                 },
                 dataType: 'JSON',
                 success: function(data) {
-                	console.log("tq",data.freeList);
                 	var startNumber = (page - 1) * itemsPerPage + 1;
                 	if(data.freeList.length>0){
 	                	printSearchList(data.freeList, startNumber);
@@ -431,7 +426,6 @@ $('input[name="search"]').on('input', function() {
 });
 
 function printSearchList(list, startNumber){
-	console.log("d어ㅣ??",list);
 	var content = '';
     var i = startNumber;
     for (var item of list) {

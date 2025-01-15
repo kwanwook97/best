@@ -93,7 +93,6 @@
 #employeeModal {
     display: none;
     position: fixed; /* 뷰포트를 기준으로 중앙 정렬 */
-    top: 50%; /* 화면의 세로 중앙 */
     left: 50%; /* 화면의 가로 중앙 */
     transform: translate(-50%, -50%); /* 정확히 중앙으로 이동 */
     z-index: 999; /* 최상위 레이어 */
@@ -560,7 +559,7 @@ $(document).ready(function () {
     $("#addEmployeeButton").on("click", function () {
 		if(!click){
 	       if (selectedEmployee) {
-	          console.log("추가된 사원 정보:", selectedEmployee);
+	    	   
 	          window.selectedEmployee = selectedEmployee;
 	           // 배열에 이미 존재하는지 확인
 	           var isDuplicate = selectedEmployees.some(emp => emp.emp_idx === selectedEmployee.emp_idx);
@@ -568,7 +567,6 @@ $(document).ready(function () {
 	           if (!isDuplicate) {
 	               // 중복이 아니면 추가
 	               selectedEmployees.push(selectedEmployee);
-	               console.log("현재까지 추가된 사원목록:", selectedEmployees);
 	               var signBox = $('.signBox');
 	               var managerName1 = selectedEmployee.name;
 	               var managerRank = selectedEmployee.rank_name;
@@ -610,7 +608,6 @@ $(document).ready(function () {
 			$('.signBox2').remove();
 			selectedEmployees = [];
 			if (selectedEmployee) {
-		          console.log("추가된 사원 정보:", selectedEmployee);
 		          window.selectedEmployee = selectedEmployee;
 		           // 배열에 이미 존재하는지 확인
 		           var isDuplicate = selectedEmployees.some(emp => emp.emp_idx === selectedEmployee.emp_idx);
@@ -618,7 +615,6 @@ $(document).ready(function () {
 		           if (!isDuplicate) {
 		               // 중복이 아니면 추가
 		               selectedEmployees.push(selectedEmployee);
-		               console.log("현재까지 추가된 사원목록:", selectedEmployees);
 		               var signBox = $('.signBox');
 		               var managerName1 = selectedEmployee.name;
 		               var managerRank = selectedEmployee.rank_name;

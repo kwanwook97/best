@@ -127,11 +127,11 @@
 		justify-content: center;
 	}
 	.pagination .page-link {
-		color: var(--primary-color); /* 글자 색상 */
-		background-color: var(--background-color); /* 배경 색상 */
-		border: var(--background-color) !important; /* 테두리 */
-		font-family: 'Arial', sans-serif; /* 폰트 */
-		font-size: 16px; /* 글자 크기 */
+		color: var(--primary-color);
+		background-color: var(--background-color);
+		border: var(--background-color) !important;
+		font-family: 'Arial', sans-serif;
+		font-size: 16px;
 		box-shadow: none !important;
 	}
 	/* 호버 시 스타일 */
@@ -149,7 +149,7 @@
 	/* 클릭 시 생기는 테두리 제거 */
 	.pagination .page-link:focus {
 	  outline: none;
-	  box-shadow: none; /* 부가적인 그림자 효과도 제거 */
+	  box-shadow: none;
 	}
 	/* 비활성화된 페이지 스타일 */
 	.pagination .disabled .page-link {
@@ -192,36 +192,34 @@
  	</div>
 </body>
 <script>
-var showPage = 1; // 기본으로 보여줄 페이지
+var showPage = 1;
 var text = "임시저장";
 var cnt = 15;
 pageCall(showPage);
 
 function pageCall(page){
-    console.log('pageCall');
 
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
         data: {
         	'text': text,
-            'page': page,  // 몇 페이지 보여줄지
-            'cnt': 15       // 페이지당 보여줄 게시물 수
+            'page': page,
+            'cnt': 15
         },
         dataType: 'JSON',
         success: function(data) {
         	var startNumber = (page - 1) * cnt + 1;
-            console.log(data);
             if(data.sentList.length>0){
             	Print(data.sentList,startNumber);
-	            // 페이징
+	            
 	            $('#Pagination').twbsPagination({
 	                startPage: 1,
 	                totalPages: data.sentTotalPages,
 	                visiblePages: 5,
 	                onPageClick: function(evt, page){
-	                    console.log("evt", evt);  // 클릭 이벤트
-	                    console.log("page", page);  // 클릭한 페이지 번호
+	                    console.log("evt", evt);
+	                    console.log("page", page);
 	                    pageCall(page);
 	                }
 	            });
@@ -244,7 +242,6 @@ function Print(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -268,14 +265,12 @@ function Print(document,startNumber) {
 	
 	$('.delete').click(function() {
         var doc_idx = $(this).data('doc-idx');
-        console.log(doc_idx);
         $.ajax({
             type: 'POST',
             url: 'documentDelete.ajax',
             data: { doc_idx: doc_idx },
             success: function(response) {
                 if (response.success) {
-                    console.log('삭제');
                     pageCall(showPage);
                 } else {
                 	console.log('삭제 실패');
@@ -290,14 +285,12 @@ function Print(document,startNumber) {
 
 // 임시저장 상세보기
 function draftDetail(doc_idx) {
-	console.log("누른거 idx : ",doc_idx);
     $.ajax({
         type: 'GET',
         url: 'draftDetail.ajax',
         data: { doc_idx: doc_idx },
         dataType: 'text',
         success: function(response) {
-        	console.log("Response HTML: ", response);  // 서버에서 받은 HTML 확인
         	open(response); 
         },
         error: function(xhr, status, error) {
@@ -308,7 +301,7 @@ function draftDetail(doc_idx) {
 
 //모달 열기
 function open(content) {
-    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+    var modalId = 'modal-' + new Date().getTime();
     // 모달 HTML 생성
     var Html = 
         '<div id="' + modalId + '" class="modal" style="display: none;">' +
@@ -324,10 +317,8 @@ function open(content) {
         '  </div>' +
         '</div>';
 
-    // body에 추가
     $('body').append(Html);
 
-    // 모달 표시
     $('#' + modalId).show();
 
     // 닫기 버튼 이벤트 등록 (이벤트 위임)
@@ -337,29 +328,6 @@ function open(content) {
     });
 }
 
-/* function updateBtn() {
-    var doc_idx = $('input[name="doc_idx"]').val(); 
-    var doc_subject = $('input[name="doc_subject"]').val();
-    var textareaValue = $('.modal-content:last-child textarea').val();
-    var updatedHtml = $('.modal-content:last-child').html();
-    var start_date = $('input[name="start_date"]').val();
-    var end_date = $('input[name="end_date"]').val();
-    
-    // 동적으로 추가된 input 값들을 values 배열에 저장
-    var values = [];
-    $('input[data-index]').each(function() {
-        values.push($(this).val());    
-    });
-
-    // HTML 수정
-    updatedHtml = updatedHtml.replace(
-        /<input([^>]*name=["']doc_subject["'][^>]*)>/,
-        '<input$1 value="' + doc_subject + '">'
-    );
-    updatedHtml = updatedHtml.replace(
-        /<textarea[^>]*>.*?<\/textarea>/,
-        '<textarea>' + textareaValue + '</textarea>'
-    );
     $('.modal-content:last-child').html(updatedHtml);
 
     var doc_content = $('.modal-content:last-child .content').html();
@@ -413,8 +381,8 @@ function open(content) {
             }
         }
     });
-}
- */
+
+
 
 </script>
 </html>

@@ -152,8 +152,7 @@ config.editorResizeMode = "none";
 //data:imgae - 이미지를 base64 형태로 문자열화 한것이다.
 //장점 : 별도의 파일처리 없이 파일을 다룰 수 있다. 사용이 간단하다.
 //단점 : 용량제어가 안되며, 기존파일보다 용량이 커진다. 
-config.file_upload_handler = function(file,pathReplace){ // 파일객체, 경로변경 함수, 자바스크립트는 함수를 매개변수로 넘길수있음
-	console.log(file);
+config.file_upload_handler = function(file,pathReplace){
 
 	if(file.size>(1*1024*1024)){
 		alert('2MB이상의 파일은 올릴 수 없습니다.');
@@ -209,8 +208,6 @@ observeEditorChanges();
 
 function save() {
     var content = editor.getHTMLCode();
-    console.log(content);
-    console.log("전체 문서의 크기 :" + (content.length / 1024 / 1024) + "MB");
 
     // 제목 입력 확인
     var subject = $('input[name="subject"]').val().trim(); // 제목 필드 값 가져오기

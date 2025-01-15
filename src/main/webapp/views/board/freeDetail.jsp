@@ -395,7 +395,6 @@
 		    type: 'GET',
 		    data: { board_idx: board_idx }, 
 		    success: function(response) {
-		    	console.log("enlwu"+response);
 		    	$('.comm').append('('+response+')');
 		    },
 		    error: function(error) {
@@ -416,7 +415,6 @@
 	        },
 	        dataType: 'JSON',
 	        success: function(response) {
-	            console.log("뭐냤삘 ", response.childMap);
 	            printComment(response);
 	        	
 	            $('#commentPagination').twbsPagination('destroy');
@@ -550,7 +548,6 @@
 	    function printComment(response) {
 	        var parentComments = response.parentComments || [];
 	        var childMap = response.childMap || {};
-			console.log("sdfsdf",childMap);
 	        var commentHtml = '';
 	        var infoName = '${info.name}';
 	        // 부모 댓글 렌더링
@@ -712,11 +709,8 @@
 	            var length = inputValue.length; // 올바른 변수 사용
 	            $('#replycharCount-' + commentIdx).text(length + " / 300");
 
-	            console.log('입력 값:', inputValue); // 디버깅: 입력 값 확인
 	            if (inputValue.endsWith('@')) {
 	                var replyAuthors = getReplyAuthors(commentIdx);
-	                console.log('대댓글 작성자 목록:'+ commentIdx); // 디버깅: 작성자 목록 확인
-	                console.log('대댓글 작성자 목록:', replyAuthors); // 디버깅: 작성자 목록 확인
 
 	                if (replyAuthors.length > 0) {
 	                    var autocompleteList = replyAuthors.map(function (author) {
@@ -724,7 +718,6 @@
 	                    }).join('');
 	                    $('#autocomplete-' + commentIdx).html(autocompleteList).show();
 	                } else {
-	                    console.warn('대댓글 작성자가 없습니다.');
 	                    $('#autocomplete-' + commentIdx).hide();
 	                }
 	            } else {
@@ -740,25 +733,18 @@
 	    var authors = [];
 	    var loggedInEmpIdx = emp_idx;
 	
-	    console.log('현재 로그인한 사용자 ID:', loggedInEmpIdx); // 디버깅: 로그인 사용자 확인
-	
 	    // 대댓글 리스트 확인
 	    var replyItems = $('#replies-' + commentIdx + ' .reply-item');
-	    console.log('대댓글 리스트 (reply-items):', replyItems);
 	
 	    replyItems.each(function () {
 	        var replyAuthor = $(this).find('strong').text(); // 대댓글 작성자 이름
 	        var replyEmpIdx = $(this).find('input[type="hidden"]').val(); // 대댓글 작성자 ID
-	
-	        // 디버깅: 각 대댓글 작성자 정보 확인
-	        console.log('대댓글 작성자:', replyAuthor, 'ID:', replyEmpIdx);
 	
 	        if (replyEmpIdx !== loggedInEmpIdx && !authors.some(a => a.empIdx === replyEmpIdx)) {
 	            authors.push({ name: replyAuthor, empIdx: replyEmpIdx });
 	        }
 	    });
 	
-	    console.log("Authors for comment " + commentIdx + ":", authors); // 최종 작성자 목록 확인
 	    return authors;
 	}
 

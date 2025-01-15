@@ -200,11 +200,11 @@
 		justify-content: center;
 	}
 	.pagination .page-link {
-		color: var(--primary-color); /* 글자 색상 */
-		background-color: var(--background-color); /* 배경 색상 */
-		border: var(--background-color) !important; /* 테두리 */
-		font-family: 'Arial', sans-serif; /* 폰트 */
-		font-size: 16px; /* 글자 크기 */
+		color: var(--primary-color);
+		background-color: var(--background-color);
+		border: var(--background-color) !important;
+		font-family: 'Arial', sans-serif;
+		font-size: 16px;
 		box-shadow: none !important;
 	}
 	/* 호버 시 스타일 */
@@ -222,7 +222,7 @@
 	/* 클릭 시 생기는 테두리 제거 */
 	.pagination .page-link:focus {
 	  outline: none;
-	  box-shadow: none; /* 부가적인 그림자 효과도 제거 */
+	  box-shadow: none;
 	}
 	/* 비활성화된 페이지 스타일 */
 	.pagination .disabled .page-link {
@@ -315,7 +315,6 @@ var cnt = 6;
 
 pageCall(showPage, readStatus);
 function pageCall(page, readStatus){
-    console.log('pageCall');
     $.ajax({
         type: 'GET',
         url: 'documentList.ajax',
@@ -328,7 +327,6 @@ function pageCall(page, readStatus){
         dataType: 'JSON',
         success: function(data) {
         	var startNumber = (page - 1) * cnt + 1;
-            console.log(data);
             
             if(data.receivedList.length>0){
             	// 받은 문서
@@ -393,7 +391,6 @@ function received(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -423,7 +420,6 @@ function sent(document,startNumber) {
     var content = '';
 	var i = startNumber;
 	for(var item of document){
-		console.log(item.form_subject)
 		content += '<tr>';
 		content += '<td>' + i++ + '</td>';
 		content += '<td>' + item.doc_number + '</td>';
@@ -485,7 +481,7 @@ function sentPageCall(page) {
 }
 //모달 열기
 function receivedOpen(content) {
-    var modalId = 'modal-' + new Date().getTime(); // 유니크한 ID 생성
+    var modalId = 'modal-' + new Date().getTime();
     // 모달 HTML 생성
     var Html = 
         '<div id="' + modalId + '" class="modal" style="display: none;">' +
@@ -497,10 +493,8 @@ function receivedOpen(content) {
         '  </div>' +
         '</div>';
         
-    // body에 추가
     $('body').append(Html);
 
-    // 모달 표시
     $('#' + modalId).show();
 
     // 닫기 버튼 이벤트 등록 (이벤트 위임)

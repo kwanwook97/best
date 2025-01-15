@@ -341,8 +341,6 @@ $(document).ready(function() {
 	    $('#dailyPagination').twbsPagination('destroy');
 	    pageCall(1, ex_date, pageName);
 	    categoryList(ex_date, pageName);
-	    console.log("현재 연도:", currentYear);
-	    console.log("현재 월:", currentMonth);
 	}
 
 	// 다음 달로 이동
@@ -397,9 +395,7 @@ $(document).ready(function() {
 	    pageName = name;
 	    $('#dailyPagination').twbsPagination('destroy');
 	    categoryList(ex_date, pageName);
-	    console.log('ex_date: ' + ex_date);
 	    pageCall(1, ex_date, pageName);
-	    console.log('pageName: ' + pageName);
 	};
 
 
@@ -414,64 +410,7 @@ $(document).ready(function() {
 	
     categoryList(ex_date,pageName);
     
- /* 	function categoryList(ex_date, pageName){
-		$.ajax({
-			type: 'GET',
-			url: 'categoryList.ajax',
-			data: {
-				ex_date: ex_date,
-				pageName: pageName
-			},
-			dataType: 'JSON',
-			success: function(data) {
-				console.log("아~ 존나하기싫어",data);
-				var categoryData = [];
-				data.forEach(function (item) {
-			        categoryData.push({
-			            category: item.category,
-			            amount: item.amount
-			        });
-			    });
-			    // 카테고리별 지출 금액 테이블 생성
-			    var categoryTable = '';
-			    $.each(categoryData, function(index, item) {
-			      categoryTable += '<tr><td>' + item.category + '</td><td>' + item.amount.toLocaleString() + '원</td></tr>';
-			    });
-			    $('#categoryList').html(categoryTable);
-			    
-			    if (categoryChart) {
-	                // 기존 차트 데이터 갱신
-	                categoryChart.data.labels = categoryData.map(function (item) { return item.category; });
-	                categoryChart.data.datasets[0].data = categoryData.map(function (item) { return item.amount; });
-	                categoryChart.update();
-	            } else {
-	                // 새 차트 생성
-	                var ctxCategory = document.getElementById('categoryChart').getContext('2d');
-	                categoryChart = new Chart(ctxCategory, {
-	                    type: 'pie',
-	                    data: {
-	                        labels: categoryData.map(function (item) { return item.category; }),
-	                        datasets: [{
-	                            data: categoryData.map(function (item) { return item.amount; }),
-	                            backgroundColor: ['#30005A', '#44196A', '#59327A', '#6E4C8B', '#82669C', '#977FAC', '#AC99BD', '#C0B2CD', '#D5CCDE', '#EAE5EE'],
-	                        }]
-	                    },
-	                    options: {
-	                        responsive: true,
-	                        maintainAspectRatio: false,
-	                        plugins: {
-	                            legend: {
-	                                position: 'bottom',
-	                            }
-	                        }
-	                    }
-	                });
-	            }
-	        },error: function(e) {
-			    console.log("오류 발생", e);
-			}
-		});
-	}  */
+
 	function categoryList(ex_date, pageName) {
 	    let defaultCategories = [];
 	    
@@ -522,7 +461,6 @@ $(document).ready(function() {
 	        },
 	        dataType: 'JSON',
 	        success: function (data) {
-	            console.log("데이터 가져옴:", data);
 
 	            // 데이터 가공: 기본 카테고리와 합침
 	            const categoryData = defaultCategories.map(category => {
@@ -591,7 +529,6 @@ $(document).ready(function() {
 	        },
 	        dataType: 'JSON',
 	        success: function(data) {
-	            console.log("값 ",data.dailyList);
 	            dailyList(data.dailyList);
 	            
 	            $('#dailyPagination').twbsPagination({
@@ -612,7 +549,6 @@ $(document).ready(function() {
 	}
 
 	function dailyList(list){
-		console.log("왜지랄잉ㄴ댜",list);
 
 		var content = '';
 		for(var item of list){

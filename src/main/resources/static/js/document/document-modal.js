@@ -6,7 +6,7 @@ $(document).ready(function () {
 
   	// 화살표 뒤로가기
   	$(".far.fa-arrow-alt-circle-left").click(function() {
-		$("#customModal").fadeOut();  // 뒤로가기 기능 실행
+		$("#customModal").fadeOut();
   	});
   
   
@@ -20,12 +20,11 @@ $(document).ready(function () {
     url: '/getFormTemplate', // 서버 URL
     data: { formType: formType }, // 서버로 전달할 데이터 (formType)
     dataType: 'json', // 응답 데이터 형식
-    success: function(data) { // 요청 성공 시 실행되는 콜백 함수
-      console.log(data); // 서버에서 받은 데이터 출력 (응답에 맞게 처리)
-      displayFormInModal(data); // 응답 받은 데이터를 모달에 표시하는 함수 호출
+    success: function(data) {
+      displayFormInModal(data);
     },
-    error: function(xhr, status, error) { // 요청 실패 시 실행되는 콜백 함수
-      console.log('Error: ' + error); // 오류 메시지 출력
+    error: function(xhr, status, error) {
+      console.log('Error: ' + error);
     }
   });
 });
