@@ -29,7 +29,7 @@
 	.maintext{
 		width: 20%;
 	    display: flex;
-	    margin-left: -68vw;
+	    margin-left: -67vw;
 	    margin-bottom: -12px;
 	    justify-content: space-between;
 	    align-items: baseline;	
@@ -154,21 +154,21 @@
 	    text-align: center;
 	    font-size: 14px;
 	}
-    table.my-table td:nth-child(1) {
-        width: 1%;
-    }
-    table.my-table td:nth-child(2) {
-        width: 10%;
-    }
-    table.my-table td:nth-child(3) {
-        width: 3%;
-    }
-    table.my-table td:nth-child(4) {
-        width: 2%;
-    }
-    table.my-table td:nth-child(5) {
-        width: 2%;
-    }
+	table.my-table th:nth-child(1) {
+	    width: 7%;
+	}
+	table.my-table th:nth-child(2) {
+	    width: 55%;
+	}
+	table.my-table th:nth-child(3) {
+	    width: 17%;
+	}
+	table.my-table th:nth-child(4) {
+	    width: 11%;
+	}
+	table.my-table th:nth-child(5) {
+	    width: 10%;
+	}
     .container{
     	position: absolute;
     	bottom: 39px;
@@ -260,16 +260,6 @@
 			</div>
 		</div>
 		<div class="docbox">
-<!-- 			<div class="dropBox">
-				<div class="drop">
-				    <select class="drop cntSelector">
-				        <option value="5">5개씩 보기</option>
-				        <option value="10">10개씩 보기</option>
-				        <option value="15" selected>15개씩 보기</option>
-				        <option value="20">20개씩 보기</option>
-				    </select>
-				</div>
-			</div> -->
 			<table class="my-table">
 				<thead>
 					<tr>

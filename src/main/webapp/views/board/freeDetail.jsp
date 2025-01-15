@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html lang="ko">
 <head>
 	<meta charset="utf-8"/>
@@ -28,7 +29,7 @@
 	.maintext{
 	    width: 20%;
 	    display: flex;
-	    margin-left: -68vw;
+	    margin-left: -67vw;
 	    margin-bottom: 10px;
 	    justify-content: space-between;
 	    align-items: baseline;
@@ -52,6 +53,7 @@
 		justify-content: center;
 	}
 	.contentBox{
+		width: 800px;
 		min-height: 640px; 
 	}
 	.doc-header{
@@ -92,7 +94,7 @@
 	}
 	.comment-box button {
 		width: 100px;
-		margin-top: 10px;
+		margin-top: 5px;
 		align-self: flex-end;
 		background-color: var(--primary-color);
 		color: white;
@@ -111,13 +113,22 @@
 	    margin-top: 10px;
 	    flex-direction: column;
 	}
+	#charCount{
+		padding-left: 5px;
+	}
+	.textBox{
+		display: flex;
+	    align-items: flex-end;
+	    justify-content: space-between;
+	}
 	.comment-item {
         border-bottom: 1px solid var(--primary-color);
     	padding: 5px 37px;
 	}
 	.comment-item div{
+	    margin-right: 10px;
 	    margin-top: 1px;
-		transform: scale(0.99);
+	    transform: scale(0.99);
 	}
 	.empInfoBox{
 		display: flex;
@@ -136,6 +147,13 @@
 	.lastBox{
 		display: flex;
     	justify-content: space-between;
+	}
+	.comBox,
+	.commBox{
+		display: flex;
+	}
+	.commBox div:last-child{
+		margin-left: 5px;
 	}
 	.replyBtn, .updateBtn, .deleteBtn{
 		cursor: pointer;
@@ -312,7 +330,7 @@
 				<!-- 게시글 헤더 -->
 				<div class="doc-header">
 					<h3>${info.subject}</h3>
-					<p>작성자: ${info.name}(${info.depart_name}/${info.rank_name}) | 작성일: ${info.date} | 조회수: ${info.bhit}</p>
+					<p>작성자: ${info.name}(${info.depart_name}/${info.rank_name}) | 작성일: ${fn:substringBefore(info.date, " ")} | 조회수: ${info.bhit}</p>
 				</div>
 				<!-- 게시글 내용 -->
 				<div class="doc-content">
@@ -334,8 +352,10 @@
 					<!-- 댓글 작성 -->
 					<div class="comment-box">
 						<textarea id="commentInput" placeholder="댓글을 입력하세요. 300자 이내" maxlength="299"></textarea>
-						<p id="charCount">0 / 300</p>
-						<button onclick="addComment()">댓글 작성</button>
+						<div class="textBox">
+							<p id="charCount">0 / 300</p>
+							<button onclick="addComment()">댓글 작성</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -538,16 +558,19 @@
 	                    '<input type="hidden" value="' + parent.emp_idx + '">' +
 	                    '<div class="comment-content">' + parent.content + '</div>' +
 	                    '<div class="lastBox">' +
-	                        '<div class="comment-date">' + formatDate(parent.com_date) + '</div>' +
-	                        '<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬 댓글쓰기</div>';
-
+	                    	'<div class="comBox">' +
+		                        '<div class="comment-date">' + formatDate(parent.com_date) + '</div>' +
+	                      		'<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬 댓글쓰기</div>' +
+                      		'</div>';
 	            // 수정/삭제 버튼 추가
 	            if (parent.emp_idx == emp_idx) {
 	                commentHtml +=
+	                	'<div class="commBox">' +
 	                    '<div class="updateBtn" onclick="updateCom(' + parent.comment_idx + ')">✏️ 수정하기</div>' +
-	                    '<div class="deleteBtn" onclick="deleteCom(' + parent.comment_idx + ')">❌ 삭제</div>';
+	                    '<div class="deleteBtn" onclick="deleteCom(' + parent.comment_idx + ')">❌ 삭제</div>' +
+	                    '</div>';
 	            }
-
+								
 	            commentHtml += '</div></div>';
 
 	            // 대댓글 리스트 컨테이너 생성

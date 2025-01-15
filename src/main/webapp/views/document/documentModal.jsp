@@ -220,7 +220,6 @@ input.manager, input.today2, input.today3{
 select option{
 	background: white;
 }
-}
 </style>
 </head>
 <body>
@@ -285,7 +284,10 @@ select option{
 </body>
 <script>
 
+
 $(document).ready(function() {
+
+	
     const currentPage = window.location.pathname; // 현재 페이지의 URL 경로를 가져옵니다.
 
     if (currentPage.includes('documentReference.go')) {
@@ -415,8 +417,9 @@ $(document).ready(function() {
        ]
    };
 
-   
+	
 });
+
 
 
 function documentForm(form_idx) {

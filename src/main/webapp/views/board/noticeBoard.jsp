@@ -15,11 +15,11 @@
 	.dashboard-body{
 	    margin-left: 15vw;
 	    width: 85vw;
-	    margin-top: 7vh;
+	    margin-top: 6vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    color: var(--primary-color);
-	    height: 83%;
+	    height: 86%;
 	    display: flex;
 	    flex-direction: column;
 	    align-content: center;
@@ -29,7 +29,7 @@
 	.maintext{
         width: 20%;
 	    display: flex;
-	    margin-left: -68vw;
+	    margin-left: -67vw;
 	    margin-bottom: -12px;
 	    justify-content: space-between;
 	    align-items: baseline;	
@@ -151,23 +151,23 @@
 	.table1{
 		border: 2px solid var(--primary-color);
 	    position: fixed;
-    	top: 9rem;
+    	top: 10rem;
 	}
 	#importCont{
 	    position: fixed;
-	    top: 21rem;
+	    top: 22rem;
 	}
 	.table2{
 		border: 1px solid var(--primary-color);
 	    position: fixed;
-    	top: 22rem;
+    	top: 23rem;
 	}
 	.table1 i{
 	    color: var(--accent-color);
 	}
 	#generalCont{
 	    position: fixed;
-        top: 47rem;
+        top: 48rem;
 	}
 	.pagination .page-link {
 		color: var(--primary-color); /* 글자 색상 */

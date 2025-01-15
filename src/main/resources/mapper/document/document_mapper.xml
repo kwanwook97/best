@@ -7,17 +7,17 @@
 <!-- ************************************ 대기 ************************************ -->
     <!-- 전자결재 대기 토탈 페이지 -->
 	<select id="pendingCount" resultType="int">
-		SELECT CEIL(COUNT(doc_idx) / #{cnt}) AS pages
+		SELECT CEIL(COUNT(a.doc_idx) / #{cnt}) AS pages
 		FROM approv a
-		WHERE emp_idx = #{emp_idx}
+		WHERE a.emp_idx = #{emp_idx}
 	  	AND (
-		      (status = '상신' AND approv_order = 1)
+		      (a.status = '상신' AND a.approv_order = 1)
 		      OR
-		      (status = '상신' AND approv_order = 2
-		          AND doc_idx IN (
-		              SELECT doc_idx
-		              FROM approv
-		              WHERE status = '승인' AND approv_order = 1
+		      (a.status = '상신' AND a.approv_order = 2
+		          AND a.doc_idx IN (
+		              SELECT p.doc_idx
+		              FROM approv p
+		              WHERE p.status = '승인' AND p.approv_order = 1
 		          )
 		      )
 	  	)
@@ -179,12 +179,12 @@
 		    WHERE emp_idx = #{emp_idx}
 		      AND approv_order = 1 
 		      AND status = '승인'
+		      <if test="readStatus != 'all'">
+			    AND doc_read = #{readStatus}
+			  </if>
 		) 
 		AND a.approv_order = 2 
 		AND a.status = '상신'
-  	  	<if test="readStatus != 'all'">
-		    AND a.doc_read = #{readStatus}
-		</if>
    	</select>
     <!-- 전자결재 진행중 리스트 -->
    	<select id="inProgressList" resultType="map">
@@ -790,6 +790,12 @@
     <update id="updateapprov" parameterType="Integer">
     	UPDATE approv SET doc_read = #{doc_read} WHERE approv_num = #{approv_num}
     </update>
+    <update id="updateReject" parameterType="Integer">
+    	UPDATE approv
+	    SET doc_read = #{doc_read}
+	    WHERE doc_idx = (SELECT doc_idx FROM approv WHERE approv_num = #{approv_num})
+      	AND approv_num != #{approv_num}
+    </update>
     
    
     <!-- 결재 임시저장, 기안 -->
@@ -950,6 +956,10 @@
 		DELETE FROM form WHERE form_idx = #{form_idx}
 	</delete>
 	
+
+ 
+    
+    
 <select id="getApproverDetails" resultType="map">
     SELECT 
         d.emp_idx AS writerEmpIdx,

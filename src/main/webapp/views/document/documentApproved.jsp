@@ -322,6 +322,7 @@ function pageCall(page, readStatus){
         success: function(data) {
         	var startNumber = (page - 1) * cnt + 1;
             console.log("tlqkf ",data.receivedList);
+
             if(data.receivedList.length>0){
                 received(data.receivedList,startNumber);
                 

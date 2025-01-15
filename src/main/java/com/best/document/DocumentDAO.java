@@ -59,7 +59,6 @@ public interface DocumentDAO {
 	boolean updateReference(int doc_read, int ref_idx);
 	boolean updateapprov(int doc_read, int approv_num);
 	
-	
 	// 전자결재 임시저장
 	int formSave(DocumentDTO docDTO);
 	// 전자결재 임시저장 상세보기
@@ -137,6 +136,15 @@ public interface DocumentDAO {
 	
 	// 결재 문서 삭제하기
 	int formDelete(int form_idx);
+	
+	// 안읽은 문서 체크
+	int getPendingUnreadCount(String emp_idx);
+	int getInProgressUnreadCount(String emp_idx);
+	int getApprovedUnreadCount(String emp_idx);
+	int getRejectedUnreadCount(String emp_idx);
+	int getReferenceUnreadCount(String emp_idx);
+	int getDraftUnreadCount(String emp_idx);
+
 
 
 

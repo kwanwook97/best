@@ -338,6 +338,7 @@ $(document).ready(function() {
 	    window.currentYear = year;
 	    window.currentMonth = month;
 	    ex_date = year + '-' + String(month).padStart(2, '0') + '-%';
+	    $('#dailyPagination').twbsPagination('destroy');
 	    pageCall(1, ex_date, pageName);
 	    categoryList(ex_date, pageName);
 	    console.log("현재 연도:", currentYear);
@@ -394,6 +395,7 @@ $(document).ready(function() {
 
 	    // 기존 로직 호출
 	    pageName = name;
+	    $('#dailyPagination').twbsPagination('destroy');
 	    categoryList(ex_date, pageName);
 	    console.log('ex_date: ' + ex_date);
 	    pageCall(1, ex_date, pageName);
@@ -589,7 +591,7 @@ $(document).ready(function() {
 	        },
 	        dataType: 'JSON',
 	        success: function(data) {
-	            console.log("값 ",data);
+	            console.log("값 ",data.dailyList);
 	            dailyList(data.dailyList);
 	            
 	            $('#dailyPagination').twbsPagination({
@@ -610,6 +612,8 @@ $(document).ready(function() {
 	}
 
 	function dailyList(list){
+		console.log("왜지랄잉ㄴ댜",list);
+
 		var content = '';
 		for(var item of list){
 			content += '<tr>' +
