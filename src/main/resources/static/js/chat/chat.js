@@ -159,7 +159,8 @@ $(document).ready(function() {
 
 
     if (chatIdx) {
-        window.socket = new WebSocket("ws://localhost:8080/BEST/chat/chat?chat_idx=" + chatIdx);
+        // window.socket = new WebSocket("ws://localhost:8080/BEST/chat/chat?chat_idx=" + chatIdx);
+        window.socket = new WebSocket("ws://150.230.250.80/chat/chat?chat_idx=" + chatIdx);
 
         socket.onopen = function() {
             $.ajax({

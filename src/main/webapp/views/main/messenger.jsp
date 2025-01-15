@@ -2202,6 +2202,18 @@ function loadChatContent(keyword) {
         }
     });
     
+    $(document).ready(function () {
+        $(document).on("keydown", function (event) {
+            if (event.key === "Escape") { // ESC 키 확인
+                $("[id*='Modal']:visible").each(function () {
+                    const modalId = $(this).attr("id");
+                    closeModal(modalId); // 모달 닫기
+                });
+            }
+        });
+    });
+
+    
     
 
 

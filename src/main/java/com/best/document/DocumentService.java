@@ -40,6 +40,7 @@ public class DocumentService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired DocumentDAO documentDao;
     @Value("${upload.path}") private String signPath;
+    @Value("${upload.path}") private String bpath;
     @Autowired LeaveDAO leaveDAO;
 	// 전자결재 대기 리스트
 	public Map<String, Object> pendingList(int page, int cnt, String status, String emp_idx, String readStatus) {
@@ -580,7 +581,7 @@ public class DocumentService {
 	        String empSign = "emp_" + emp_idx +".png";
 
 			// 파일 저장 경로
-			Path path = Paths.get("C:/upload/" + empSign);
+			Path path = Paths.get(bpath + empSign);
 			
 			Files.write(path, imageBytes);
 			
