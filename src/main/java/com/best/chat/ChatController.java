@@ -207,27 +207,6 @@ public class ChatController {
 	    return result;
 	}
 
-//	@PostMapping(value = "/createChat.do")
-//	@ResponseBody
-//	public Map<String, Object> createChat(@RequestBody Map<String, Object> requestData, HttpSession session) {
-//		Map<String, Object> result = new HashMap<>();
-//		try {
-//			String chat_subject = (String) requestData.get("chat_subject");
-//			List<Integer> emp_idx_list = (List<Integer>) requestData.get("emp_idx_list");
-//
-//			Integer login_emp_idx = Integer.parseInt((String) session.getAttribute("loginId"));
-//
-//			// 대화방 생성
-//			int chat_idx = chatService.createChat(chat_subject, login_emp_idx, emp_idx_list);
-//
-//			result.put("success", true);
-//			result.put("chatIdx", chat_idx);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			result.put("success", false);
-//		}
-//		return result;
-//	}
 
 	/* 방 나가기 */
 	@PostMapping(value="/leaveChat.ajax")
