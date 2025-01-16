@@ -343,23 +343,32 @@
 				
 				listPrint(data.list, table, data.totalCnt);
 				
-				// 페이징 플러그인 처리
-	    		// 기존 페이지네이션 초기화 (이미 초기화된 경우에만 destroy 호출)
-	            if ($(pagination).data("twbs-pagination")) {
-	                $(pagination).twbsPagination('destroy');
-	            }
-	            $(pagination).twbsPagination({
-	                startPage: showPage,
-	                totalPages: data.totalPages, // 최대 페이지 수
-	                visiblePages: 5,
-	                initiateStartPageClick: false,
-	                onPageClick: function (evt, page) {
-	                    if (page !== showPage) {
-	                        showPage = page;
-	                        pageCall(page);
-	                    }
-	                }
-	            });
+				
+				if (data.totalPages === 0) {
+				    // totalPages가 0인 경우, 페이지네이션을 숨기고 '데이터 없음' 메시지를 표시
+				    $(pagination).empty(); // 페이지네이션 초기화
+				    $('.no-data-row').show(); // 데이터 없음 메시지 표시
+				} else {
+				    $('.no-data-row').hide(); // 데이터 없음 메시지 숨김
+					
+					// 페이징 플러그인 처리
+		    		// 기존 페이지네이션 초기화 (이미 초기화된 경우에만 destroy 호출)
+		            if ($(pagination).data("twbs-pagination")) {
+		                $(pagination).twbsPagination('destroy');
+		            }
+		            $(pagination).twbsPagination({
+		                startPage: showPage,
+		                totalPages: data.totalPages, // 최대 페이지 수
+		                visiblePages: 5,
+		                initiateStartPageClick: false,
+		                onPageClick: function (evt, page) {
+		                    if (page !== showPage) {
+		                        showPage = page;
+		                        pageCall(page);
+		                    }
+		                }
+		            });
+				}
 				
 				searchKeyword = '';    // 검색 값 초기화
 	        },
@@ -426,6 +435,10 @@
 	            var content = '';
 	
 	            var date = new Date(item.date);
+	            
+	         	// 9시간 빼기 (밀리초 단위로 계산)  - 배포환경에서 +9시간 되는 문제 해결
+	            date.setTime(date.getTime() - 9 * 60 * 60 * 1000);
+	            
 	            var year = date.getFullYear();
 	            var month = ('0' + (date.getMonth() + 1)).slice(-2);
 	            var day = ('0' + date.getDate()).slice(-2);
