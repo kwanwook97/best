@@ -913,7 +913,7 @@ function formatTime(date) {
                     .then(data => {
                         const addNineHours = (utcTime) => {
                             const date = new Date(utcTime);
-                            //date.setHours(date.getHours() + 9);
+                            date.setHours(date.getHours() + 9);
                             return date.toISOString();
                         };
 
