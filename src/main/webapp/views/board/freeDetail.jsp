@@ -134,6 +134,9 @@
         border-bottom: 1px solid var(--primary-color);
     	padding: 5px 37px;
 	}
+	.comment-item div:first-child{
+        margin-right: 10px;
+	}
 	.comment-item div{
 	    margin-top: 1px;
 	}
@@ -567,7 +570,7 @@
 	                    '<div class="lastBox">' +
 	                    	'<div class="comBox">' +
 		                        '<div class="comment-date">' + formatDate(parent.com_date) + '</div>' +
-	                      		'<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬 댓글쓰기</div>' +
+	                      		'<div class="replyBtn" onclick="toggleReplyBox(' + parent.comment_idx + ')"> 💬댓글쓰기</div>' +
                       		'</div>';
 	            // 수정/삭제 버튼 추가
 	            if (parent.emp_idx == emp_idx) {
