@@ -9,6 +9,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="resources/js/index.global.js"></script>
   
+  
   <style>
   :root{
       --primary-color: #30005A;
@@ -672,18 +673,24 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
 
             // 캘린더의 모든 이벤트 가져오기
             const events = calendar.getEvents();
-            ////console.log("캘린더에 로드된 이벤트:", events);
+            //console.log("캘린더에 로드된 이벤트:", events);
 
             if (events.length === 0) {
-                console.error("캘린더에 로드된 이벤트가 없습니다.");
+                //console.error("캘린더에 로드된 이벤트가 없습니다.");
             }
 
             // 클릭된 날짜의 이벤트 필터링
             const filteredEvents = events.filter(event => {
-                const eventDate = new Date(event.start.getTime() + 9 * 60 * 60 * 1000) // 9시간 더하기
+                //const eventDate = new Date(event.start.getTime() + 9 * 60 * 60 * 1000) // 9시간 더하기
+               /*  const eventDate = new Date(event.start.getTime()) 
                     .toISOString()
                     .split('T')[0]; // ISO 형식으로 변환 후 날짜 부분만 추출
-                return eventDate === info.dateStr; // 클릭된 날짜와 비교
+                return eventDate === info.dateStr;  */// 클릭된 날짜와 비교
+                /* 배포 */
+	        const eventDate = event.start.toISOString().split('T')[0]; // ISO 형식으로 변환 후 날짜만 비교
+	        //console.log("eventDate:",eventDate);
+	        return eventDate === info.dateStr;
+                /* 배포 */
             });
 
             ////console.log("해당 날짜의 이벤트:", filteredEvents);
@@ -699,7 +706,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
 
                 // 각 열을 나타내는 div 생성 및 추가
                 const timeDiv = document.createElement('div');
-                timeDiv.textContent = event.start.toLocaleTimeString('ko-KR', { 
+/*                 timeDiv.textContent = event.start.toLocaleTimeString('ko-KR', { 
                     hour: '2-digit', 
                     minute: '2-digit', 
                     hour12: false // 24시간 형식
@@ -708,7 +715,17 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                     hour: '2-digit', 
                     minute: '2-digit', 
                     hour12: false // 24시간 형식
-                });
+                }); */
+                
+                /* 배포시 */
+				// 시간 부분만 직접 추출 (ISO 형식 사용)
+				const startTime = event.start.toISOString().split('T')[1].slice(0, 5); // HH:MM
+				const endTime = event.end.toISOString().split('T')[1].slice(0, 5); // HH:MM
+				
+				// 시간 문자열 연결
+				timeDiv.textContent = startTime + ' ~ ' + endTime;
+
+                /* 배포시 */
                 row.appendChild(timeDiv);
 
                 const roomDiv = document.createElement('div');
@@ -739,8 +756,10 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                     detailTable.innerHTML = 
                         '<tr>' +
                             '<th>시간</th>' +
-                            '<td>' + event.start.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + 
-                            ' ~ ' + event.end.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + '</td>' +
+                            //'<td>' + event.start.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + 
+                            '<td>' + startTime + 
+                            ' ~ ' + endTime + '</td>' +
+                            //' ~ ' + event.end.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }) + '</td>' +
                         '</tr>' +
                         '<tr>' +
                             '<th>회의실</th>' +
@@ -809,7 +828,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 },
                 success: function(response) {
                     //console.log("서버 응답 데이터: ", response);
-
+						//console.log('전체 이벤트 데이터:', response);
                     // FullCalendar 형식으로 데이터 변환
                     const events = response.map(event => {
                         //console.log("이벤트 데이터 변환: ", event); // 여기서 각 이벤트 데이터를 확인
@@ -819,17 +838,20 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                             endTime.setMinutes(0);
                         console.log("이벤트 시간:"+endTime);
                         } */
-                        const startTime = new Date(event.start);
-                        startTime.setHours(startTime.getHours() - 9); // 9시간 빼기
+                        /* 배포시  */
+                        const startTime = event.start;
+                        //console.log("startTime:"+startTime);
+                        //startTime.setHours(startTime.getHours(),-9).toISOString(); // 9시간 빼기
 
-                        const endTime = new Date(event.end);
-                        endTime.setHours(endTime.getHours() - 9); // 9시간 빼기
-
+                        const endTime = event.end;
+                        //console.log("endTime:"+endTime);
+                        //endTime.setHours(endTime.getHours(),-9).toISOString(); // 9시간 빼기
+						/* 배포시에 만  */
                         return {
                             id: event.id,
                             title: event.title,
-                            start: startTime.toISOString(), // ISO 형식으로 변환
-                            end: endTime.toISOString(),   // ISO 형식으로 변환
+                            start: startTime, // ISO 형식으로 변환
+                            end: endTime,   // ISO 형식으로 변환
                             extendedProps: {
                                 room_idx: event.room_idx,
                                 room_name: event.room_name,
@@ -843,7 +865,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                             }
                         };
                     });
-
+					
                     //console.log("변환된 이벤트 목록: ", events); // 변환된 배열 전체를 확인
                     successCallback(events); // FullCalendar에 전달
                 },
@@ -862,7 +884,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
             const extendedProps = arg.event._def.extendedProps;
 
             // 시간 포맷 설정
-            const startTime = arg.event.start.toLocaleTimeString('ko-KR', {
+/*             const startTime = arg.event.start.toLocaleTimeString('ko-KR', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
@@ -870,7 +892,12 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
             const endTime = arg.event.end.toLocaleTimeString('ko-KR', {
                 hour: '2-digit',
                 minute: '2-digit'
-            });
+            }); */
+            
+            /* 배포시 */
+		    const startTime = arg.event.start.toISOString().split('T')[1].slice(0, 5); // HH:MM
+		    const endTime = arg.event.end.toISOString().split('T')[1].slice(0, 5); // HH:MM
+            /* 배포시 */
 /*             if (endTime === '오후 11:59') {
             	endTime = '오후 12:00';
                 console.log("끝시간 테스트1:"+endTime);
@@ -899,16 +926,6 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
             const viewType = info.view.type;
             const day = info.date.getDay();
 
-/*             const specialDays = {
-                    '2024-01-01': '신정',
-                    '2024-02-10': '설날',
-                    '2024-02-11': '설날 연휴',
-                    '2024-02-12': '설날 연휴',
-                    '2024-03-01': '삼일절',
-                    '2024-05-05': '어린이날',
-                    '2024-05-15': '스승의 날',
-                    '2024-12-25': '크리스마스'
-                }; */
             
             // 특별한 날이 있는 경우
             if (specialDays[formattedDate]) {
@@ -917,7 +934,7 @@ document.addEventListener('DOMContentLoaded', function loadEvt() {
                 const dayNumberElement = info.el.querySelector('.fc-daygrid-day-events');
                 if (dayNumberElement) {
                     const label = document.createElement('span');
-                    label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
+                   // label.textContent = ' (' + specialDays[formattedDate] + ')'; // 문자열 연결 방식
                     label.style.color = '#D32F2F'; // 텍스트 색상
                     label.style.fontSize = '0.8em'; // 텍스트 크기
                     dayNumberElement.appendChild(label);
@@ -1032,6 +1049,7 @@ $(document).ready(function () {
 	  $form.on("submit", function (e) {
 	    const startTime = $startTimeSelect.val();
 	    const endTime = $endTimeSelect.val();
+	    
 
 	    if (endTime <= startTime) {
 	      e.preventDefault(); // 폼 제출 방지
@@ -1049,7 +1067,8 @@ $(document).ready(function () {
 	    // FormData 객체 생성
 	    const formMaterial = new FormData();
 	    let endTime = '';
-		if ($("#end-time").val()== '24:00') {
+	    endTime = $("#end-time").val();
+		if (endTime == '24:00') {
 			endTime = '23:59'
 		}
 	    // 폼 데이터 가져오기 및 FormData에 추가

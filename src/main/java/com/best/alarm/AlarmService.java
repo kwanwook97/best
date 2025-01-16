@@ -1,5 +1,6 @@
 package com.best.alarm;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class AlarmService {
 	        alarm.setType("mail");
 	        alarm.setContent("<i class=\"bi bi-send\"></i> " + sender.getSender_name() + "님 으로부터 새로운 메일이 도착했습니다.");
 	        alarm.setDate(new Date());
+	        alarm.setSource_idx(sender.getMail_send_idx());
 
 	        // 알림 저장
 	        alarmDAO.insertAlarm(alarm);
@@ -80,89 +82,112 @@ public class AlarmService {
 	        );
 	    }
 	}
-
-    
-    /* 결재건 alarmDTO 저장 */
+	
+	
+    /* 알림 삽입 및 브로드캐스트 */
     public void sendAlarms(List<AlarmDTO> alarms) {
         for (AlarmDTO alarm : alarms) {
-            // 알림 저장
             alarmDAO.insertAlarm(alarm);
 
             // WebSocket 브로드캐스트
             GlobalWebsocketHandler.broadcastNewMail(
                 alarm.getEmp_idx(),
                 alarm.getContent(),
-                alarm.getType() // type 전달
+                alarm.getType()
             );
         }
     }
+
     
-    /* 회의실, 캘린더, 기자재 데이터 가져오기 */
+    /* 회의실, 캘린더, 기자재 알림 처리 */
     public void sendUpcomingEventAlarms() {
-        // 회의실 예약 일정 가져오기
+        // 회의실 예약 일정 가져오기 및 처리
         List<Map<String, Object>> upcomingRoomEvents = alarmDAO.getUpcomingEvents();
-        // 일반 캘린더 일정 가져오기
+        List<AlarmDTO> roomAlarms = createEventAlarms(upcomingRoomEvents, "reserve");
+
+        // 일반 캘린더 일정 가져오기 및 처리
         List<Map<String, Object>> upcomingCalendarEvents = alarmDAO.getUpcomingCalendarEvents();
-        // 기자재 대여 일정 가져오기
+        List<AlarmDTO> calendarAlarms = createEventAlarms(upcomingCalendarEvents, "calendar");
+
+        // 기자재 대여 일정 가져오기 및 처리
         List<Map<String, Object>> upcomingBorrowEvents = alarmDAO.getUpcomingBorrowEvents();
+        List<AlarmDTO> borrowAlarms = createEventAlarms(upcomingBorrowEvents, "borrow");
 
-        // 회의실 예약 일정 알림 처리
-        sendEventAlarms(upcomingRoomEvents, "reserve");
+        // 모든 알림 삽입 및 브로드캐스트
+        List<AlarmDTO> allAlarms = new ArrayList<>();
+        allAlarms.addAll(roomAlarms);
+        allAlarms.addAll(calendarAlarms);
+        allAlarms.addAll(borrowAlarms);
 
-        // 일반 캘린더 일정 알림 처리
-        sendEventAlarms(upcomingCalendarEvents, "calendar");
-
-        // 기자재 대여 일정 알림 처리
-        sendEventAlarms(upcomingBorrowEvents, "borrow");
+        sendAlarms(allAlarms);
     }
 
-    /* 회의실, 캘린더, 기자재 알림 브로드캐스트 */
-    private void sendEventAlarms(List<Map<String, Object>> events, String eventType) {
+    /* 공통된 알림 생성 로직 */
+    private List<AlarmDTO> createEventAlarms(List<Map<String, Object>> events, String eventType) {
+        List<AlarmDTO> alarms = new ArrayList<>();
         for (Map<String, Object> event : events) {
             int empIdx = (int) event.get("employeeId");
             String subject = (String) event.get("subject");
-            String visibility = (String) event.get("visibility"); // visibility 가져오기
+            int sourceIdx;
 
-            // visibility에 따라 접두사 결정
-            String prefix = "";
-            if ("calendar".equals(eventType.toLowerCase())) { // calendar일 때만 prefix 추가
-                switch (visibility.toLowerCase()) {
-                    case "all":
-                        prefix = "[전체] ";
-                        break;
-                    case "private":
-                        prefix = "[개인] ";
-                        break;
-                    case "public":
-                        prefix = "[부서] ";
-                        break;
-                }
-            }
-
-            // 알림 생성 및 저장
-            String content = null;
+            // 이벤트 종류에 따라 sourceIdx 설정
             switch (eventType.toLowerCase()) {
                 case "reserve":
-                    content = "<i class=\"bi bi-calendar-range\"></i> 회의실 예약 " + subject + " 10분 전입니다. <i class=\"bi bi-alarm\"></i>";
+                    sourceIdx = (int) event.get("reserveId"); // 회의실 예약 ID
                     break;
                 case "calendar":
-                    content = "<i class=\"fa-regular fa-calendar-check\"></i>  "+ prefix + subject + " 10분 전입니다. <i class=\"bi bi-alarm\"></i>";
+                    sourceIdx = (int) event.get("scheduleId"); // 캘린더 일정 ID
                     break;
                 case "borrow":
-                    content = "<i class=\"bi bi-box\"></i> 대여하신 " + subject + " 반납 시간 10분 지났습니다. <i class=\"bi bi-alarm\"></i>";
+                    sourceIdx = (int) event.get("borrowId"); // 기자재 대여 ID
                     break;
+                default:
+                    throw new IllegalArgumentException("지원되지 않는 이벤트 타입: " + eventType);
             }
-            AlarmDTO alarm = new AlarmDTO();
-            alarm.setEmp_idx(empIdx);
-            alarm.setType(eventType.toLowerCase());
-            alarm.setContent(content);
-            alarm.setDate(new Date());
-            alarmDAO.insertAlarm(alarm);
 
-            // WebSocket 브로드캐스트
-            GlobalWebsocketHandler.broadcastNewMail(empIdx, content, eventType.toLowerCase());
+            String content = "";
+            if ("calendar".equals(eventType.toLowerCase())) {
+                String visibility = (String) event.get("visibility");
+                String prefix = getVisibilityPrefix(visibility);
+                content = "<i class=\"fa-regular fa-calendar-check\"></i> " + prefix + subject + " 10분 전입니다. <i class=\"bi bi-alarm\"></i>";
+            } else if ("reserve".equals(eventType.toLowerCase())) {
+                content = "<i class=\"bi bi-calendar-range\"></i> 회의실 예약 " + subject + " 10분 전입니다. <i class=\"bi bi-alarm\"></i>";
+            } else if ("borrow".equals(eventType.toLowerCase())) {
+                content = "<i class=\"bi bi-box\"></i> 대여하신 " + subject + " 반납 시간 10분 지났습니다. <i class=\"bi bi-alarm\"></i>";
+            }
+
+            alarms.add(createAlarm(empIdx, eventType.toLowerCase(), content, sourceIdx));
+        }
+        return alarms;
+    }
+
+
+
+    /* visibility prefix 생성 */
+    private String getVisibilityPrefix(String visibility) {
+        if (visibility == null) return "";
+        switch (visibility.toLowerCase()) {
+            case "all":
+                return "[전체] ";
+            case "private":
+                return "[개인] ";
+            case "public":
+                return "[부서] ";
+            default:
+                return "";
         }
     }
+
+    /* AlarmDTO 생성 로직 */
+    private AlarmDTO createAlarm(int empIdx, String type, String content, int sourceIdx) {
+        AlarmDTO alarm = new AlarmDTO();
+        alarm.setEmp_idx(empIdx);
+        alarm.setType(type);
+        alarm.setContent(content);
+        alarm.setSource_idx(sourceIdx); // source_idx 추가
+        return alarm;
+    }
+
 
     /* 알림 읽음 처리 */
     public void updateAlarmFlag(int alarm_idx, int flag) {

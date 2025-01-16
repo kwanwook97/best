@@ -785,7 +785,7 @@ function loadBorrowList(filters) {
         dataType: 'json',
         success: function(response) {
             if (response.data && response.data.length > 0) {
-                //console.log("서버 응답 데이터:", response.data);
+                console.log("서버 응답 데이터:", response.data);
                 renderBorrowList(response.data);
                 if (!paginationInitialized || filters.returnStatus !== previousFilters?.returnStatus) {
                     initializePagination(response.totalPages, response.currentPage, filters);
@@ -826,7 +826,7 @@ function initializePagination(totalPages, currentPage, filters) {
 
 
 
-
+/* 배포시 */
 function renderBorrowList(data) {
     const tbody = document.getElementById("borrowTableBody");
     tbody.innerHTML = ""; // 기존 데이터를 초기화
@@ -875,6 +875,56 @@ function renderBorrowList(data) {
 
 }
 
+
+/* 배포시 */
+/* function renderBorrowList(data) {
+    const tbody = document.getElementById("borrowTableBody");
+    tbody.innerHTML = ""; // 기존 데이터를 초기화
+	
+
+    data.forEach(item => {
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            return year + '-' + month + '-' + day + ' ' + hours + ':00';
+        }
+
+        // 시작 날짜와 종료 시간 포맷팅
+        const formattedStart = formatDate(item.start_datetime);
+        const endTime = new Date(item.end_datetime).getHours().toString().padStart(2, '0') + ':00';
+        //console.log(formattedStart);
+        //console.log(endTime);
+
+        // 버튼 동적 생성
+        let buttonContent = '';
+        if (item.flag == 0) {
+            buttonContent = 
+                '<button class="btn-normal" onclick="confirmReturn(' + item.borrow_idx + ')">반납</button>'
+        } else {
+            buttonContent = '<span>반납완료</span>';
+        }
+
+        // 동적으로 행(row) 생성
+        const row = document.createElement("tr");
+        
+        row.innerHTML = 
+            '<td>' + item.name + '<br> (' + item.depart_name + ') <br>(' + item.rank_name + ') <br>(' + item.emp_idx + ')</td>' +
+            '<td>' + item.room_name + '</td>' +
+            '<td>' + formattedStart.split(' ')[0] + ' ' + formattedStart.split(' ')[1] + ' - ' + endTime + '</td>' +
+            '<td>' + item.material_with_quantity + '</td>' +
+            '<td>' + (item.flag == 0 ? '미반납' : item.confirmation_datetime) + '</td>' +
+            '<td>' + (item.flag == 0 ? '미반납' : '반납완료') + '</td>' +
+            '<td>' + (item.flag == 0 ? '미반납' : item.handler_name + '<br> (' + item.handler_depart_name + ') <br>(' + item.handler_rank_name + ') <br>(' + item.handler_emp_idx + ')') + '</td>' +
+            '<td>' + buttonContent + '</td>';
+
+        tbody.appendChild(row);
+    });
+
+} */
+
 function noListData(){
     const tbody = document.getElementById("borrowTableBody");
     tbody.innerHTML = ""; // 기존 데이터를 초기화
@@ -892,7 +942,7 @@ function confirmReturn(borrowIdx){
 	        url: 'confirmReturn.ajax',
 	        data: {
 	        	"borrowIdx":borrowIdx,
-	        	"loginId":3
+	        	"loginId":loginId
 	        },
 	        dataType: 'json',
 	        success: function(data) {

@@ -41,7 +41,6 @@ public class CalendarService {
 	@Autowired private CalendarDAO calendarDAO;
 	@Value("${upload.path}") private String bpath;
 	Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired private RestTemplate restTemplate;
 
 	private final String key = "TCuRmWq%2FaFsNLdJwyz%2BHkWCAMRVUPiYN0ucu6JUybxixygOPOMtXjAyPJPuYzVPPuUBUVtd9mDibVPXIy1xjpg%3D%3D";
 	private final String url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService";
