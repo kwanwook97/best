@@ -10,8 +10,15 @@ public class AlarmDTO {
 	private Boolean flag; // 상태 플래그
 	private String type; // 템플릿 유형
 	private String content; // 템플릿 내용
+	private int source_idx;
 	
 	
+	public int getSource_idx() {
+		return source_idx;
+	}
+	public void setSource_idx(int source_idx) {
+		this.source_idx = source_idx;
+	}
 	public String getType() {
 		return type;
 	}

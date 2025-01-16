@@ -47,11 +47,15 @@
 
 	<!-- 알림 저장 -->
 	<insert id="insertAlarm" parameterType="com.best.alarm.AlarmDTO">
-		INSERT INTO alarm
-		(emp_idx, type, content, date)
-		VALUES (#{emp_idx}, #{type}, #{content},
-		#{date})
-	</insert>
+    INSERT INTO alarm (emp_idx, type, content, date, source_idx)
+    SELECT #{emp_idx}, #{type}, #{content}, NOW(), #{source_idx}
+    WHERE NOT EXISTS (
+        SELECT 1 FROM alarm 
+        WHERE source_idx = #{source_idx} 
+          AND emp_idx = #{emp_idx} 
+          AND type = #{type}
+    )
+</insert>
 
 	<!-- 결제 알림선 -->
 	<select id="getApproverDetails" resultType="map">
@@ -72,53 +76,64 @@
 
 	<!-- 회의실 예약 10분 전 알림 -->
 	<select id="getUpcomingEvents" resultType="map">
-		SELECT
-		r.reserve_idx AS
-		reserveId,
-		r.start_datetime AS startTime,
-		e.emp_idx AS employeeId,
-		r.subject AS subject
-		FROM reserve r
-		JOIN employee e ON r.emp_idx =
-		e.emp_idx
-		WHERE TIMESTAMPDIFF(MINUTE, NOW(), r.start_datetime) = 10
-	</select>
+    SELECT 
+        r.reserve_idx AS reserveId,
+        r.start_datetime AS startTime,
+        e.emp_idx AS employeeId,
+        r.subject AS subject
+    FROM reserve r
+    JOIN employee e ON r.emp_idx = e.emp_idx
+    WHERE TIMESTAMPDIFF(MINUTE, NOW(), r.start_datetime) BETWEEN 9 AND 10
+      AND NOT EXISTS (
+          SELECT 1 FROM alarm 
+          WHERE source_idx = r.reserve_idx
+            AND type = 'reserve'
+      )
+</select>
 
 	<!-- 10분 전 캘린더 일정 가져오기 -->
-	<select id="getUpcomingCalendarEvents" resultType="map">
-		SELECT
-		s.schedule_idx AS scheduleId,
-		s.start_datetime AS startTime,
-		s.subject AS subject,
-		s.emp_idx AS employeeId,
-		s.visibility AS visibility -- visibility 추가
-		FROM schedule s
-		WHERE TIMESTAMPDIFF(MINUTE, NOW(), s.start_datetime) = 10
-	</select>
+<select id="getUpcomingCalendarEvents" resultType="map">
+    SELECT
+        s.schedule_idx AS scheduleId,
+        s.start_datetime AS startTime,
+        s.subject AS subject,
+        s.emp_idx AS employeeId,
+        s.visibility AS visibility
+    FROM schedule s
+    WHERE TIMESTAMPDIFF(MINUTE, NOW(), s.start_datetime) BETWEEN 9 AND 10
+      AND NOT EXISTS (
+          SELECT 1 FROM alarm 
+          WHERE source_idx = s.schedule_idx
+            AND type = 'calendar'
+      )
+</select>
+
 
 	<!-- 기자재 반납 10분 후 알림 -->
-	<select id="getUpcomingBorrowEvents" resultType="map">
-		SELECT
-		b.borrow_idx AS borrowId,
-		b.end_datetime AS endTime,
-		e.emp_idx AS
-		employeeId,
-		CONCAT(m.material_name, ' ', b.quantity, '개') AS subject
-		FROM borrow b
-		JOIN employee e ON b.emp_idx = e.emp_idx
-		JOIN material m
-		ON b.material_idx = m.material_idx
-		WHERE b.flag = 0
-		AND
-		TIMESTAMPDIFF(MINUTE, NOW(), b.end_datetime) = -10
-	</select>
+<select id="getUpcomingBorrowEvents" resultType="map">
+    SELECT
+        b.borrow_idx AS borrowId,
+        b.end_datetime AS endTime,
+        e.emp_idx AS employeeId,
+        CONCAT(m.material_name, ' ', b.quantity, '개') AS subject
+    FROM borrow b
+    JOIN employee e ON b.emp_idx = e.emp_idx
+    JOIN material m ON b.material_idx = m.material_idx
+    WHERE b.flag = 0
+      AND TIMESTAMPDIFF(MINUTE, NOW(), b.end_datetime) BETWEEN -10 AND -9
+      AND NOT EXISTS (
+          SELECT 1 FROM alarm 
+          WHERE source_idx = b.borrow_idx
+            AND type = 'borrow'
+      )
+</select>
+
 
 	<!-- 알림 읽음 처리 -->
 	<update id="updateAlarmFlag">
 		UPDATE alarm
 		SET flag = #{flag}
-		WHERE alarm_idx =
-		#{alarm_idx}
+		WHERE alarm_idx = #{alarm_idx}
 	</update>
 
 	<!-- 안읽은 알림 있을경우 브로드캐스트 -->

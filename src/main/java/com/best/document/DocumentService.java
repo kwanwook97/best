@@ -759,42 +759,42 @@ public class DocumentService {
         case "상신":
             message = "<i class=\"bi bi-file-arrow-up\"></i> " + writerName+ "님의 " + formName + " 문서가 도착했습니다.";
             if (firstApproverEmpIdx > 0) {
-                alarms.add(createAlarm(firstApproverEmpIdx, message));
+                alarms.add(createAlarm(firstApproverEmpIdx, message, docIdx));
             }
             // 참조자 알림 추가
             for (int referenceEmpIdx : referenceEmpIds) {
-                alarms.add(createAlarm(referenceEmpIdx, "<i class=\"bi bi-file-arrow-up\"></i> " + writerName+ "님의 " + formName + " 문서가 도착했습니다."));
+                alarms.add(createAlarm(referenceEmpIdx, "<i class=\"bi bi-file-arrow-up\"></i> " + writerName+ "님의 " + formName + " 문서가 도착했습니다.", docIdx));
             }
             break;
 
         case "반려":
             message = "<i class=\"bi bi-file-earmark-break\"></i> " + firstApproverName + " 님이 기안하신 " + formName + "(을)를 반려하였습니다.";
-            alarms.add(createAlarm(writerEmpIdx, message)); // 기안자
+            alarms.add(createAlarm(writerEmpIdx, message, docIdx)); // 기안자
 
             if (firstApproverEmpIdx > 0) {
-                alarms.add(createAlarm(firstApproverEmpIdx, "<i class=\"bi bi-file-earmark-break\"></i> " + secondApproverName + "님이 승인하신 " + formName + "(을)를 반려하였습니다.")); // 1차 결재자
+                alarms.add(createAlarm(firstApproverEmpIdx, "<i class=\"bi bi-file-earmark-break\"></i> " + secondApproverName + "님이 승인하신 " + formName + "(을)를 반려하였습니다.", docIdx)); // 1차 결재자
             }
             // 참조자 알림 추가
             for (int referenceEmpIdx : referenceEmpIds) {
-                alarms.add(createAlarm(referenceEmpIdx, "<i class=\"bi bi-file-earmark-break\"></i> " + writerName+ "님의 " + formName + " 문서가 반려되었습니다."));
+                alarms.add(createAlarm(referenceEmpIdx, "<i class=\"bi bi-file-earmark-break\"></i> " + writerName+ "님의 " + formName + " 문서가 반려되었습니다.", docIdx));
             }
             break;
 
         case "승인":
             if (approvOrder == 1) {
                 message = "<i class=\"bi bi-file-earmark-check\"></i> " + firstApproverName + "님이 기안하신 " + formName + "(을)를 승인하셨습니다.";
-                alarms.add(createAlarm(writerEmpIdx, message)); // 기안자
+                alarms.add(createAlarm(writerEmpIdx, message, docIdx)); // 기안자
                 if (secondApproverEmpIdx > 0) {
-                    alarms.add(createAlarm(secondApproverEmpIdx, "<i class=\"bi bi-file-arrow-up\"></i> " + writerName + "님의 " + formName + " 문서가 도착했습니다.")); // 2차 결재자
+                    alarms.add(createAlarm(secondApproverEmpIdx, "<i class=\"bi bi-file-arrow-up\"></i> " + writerName + "님의 " + formName + " 문서가 도착했습니다.", docIdx)); // 2차 결재자
                 }
             } else if (approvOrder == 2) {
                 message = "<i class=\"bi bi-file-earmark-check\"></i> " + secondApproverName + "님이 기안하신 " + formName + "(을)를 최종 승인하셨습니다.";
-                alarms.add(createAlarm(writerEmpIdx, message)); // 기안자
+                alarms.add(createAlarm(writerEmpIdx, message, docIdx)); // 기안자
                 if (firstApproverEmpIdx > 0) {
-                    alarms.add(createAlarm(firstApproverEmpIdx, "<i class=\"bi bi-file-earmark-check\"></i> " + secondApproverName + "님이 승인하신 " + formName + "(을)를 최종 승인하셨습니다.")); // 1차 결재자
+                    alarms.add(createAlarm(firstApproverEmpIdx, "<i class=\"bi bi-file-earmark-check\"></i> " + secondApproverName + "님이 승인하신 " + formName + "(을)를 최종 승인하셨습니다.", docIdx)); // 1차 결재자
                 }
                 for (int referenceEmpIdx : referenceEmpIds) {
-                    alarms.add(createAlarm(referenceEmpIdx, "<i class=\"bi bi-file-earmark-check\"></i> " + writerName+ "님의 " + formName + " 문서가 승인되었습니다."));
+                    alarms.add(createAlarm(referenceEmpIdx, "<i class=\"bi bi-file-earmark-check\"></i> " + writerName+ "님의 " + formName + " 문서가 승인되었습니다.", docIdx));
                 }
             }
             break;
@@ -805,11 +805,12 @@ public class DocumentService {
 	}
 
 
-	private AlarmDTO createAlarm(int empIdx, String content) {
+	private AlarmDTO createAlarm(int empIdx, String content, int sourceIdx) {
 	    AlarmDTO alarm = new AlarmDTO();
 	    alarm.setEmp_idx(empIdx);
 	    alarm.setType("document");
 	    alarm.setContent(content);
+	    alarm.setSource_idx(sourceIdx); // 문서 ID 추가
 	    alarm.setDate(new Date());
 	    return alarm;
 	}
