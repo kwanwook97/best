@@ -158,6 +158,24 @@
 	    position: fixed;
 	  	width: 100%;
 	}
+	table.sentTable th:nth-child(1) {
+	    width: 4%;
+	}
+	table.sentTable th:nth-child(2) {
+	    width: 12%;
+	}
+	table.sentTable th:nth-child(3) {
+	    width: 10%;
+	}
+	table.sentTable th:nth-child(4) {
+	    width: 30%;
+	}
+	table.sentTable th:nth-child(5) {
+	    width: 10%;
+	}
+	table.sentTable th:nth-child(6) {
+	    width: 10%;
+	}
 	table.sentTable td:nth-child(1) {
 	    width: 4%;
 	}
@@ -450,7 +468,6 @@ function sent(document,startNumber) {
 	}
 	$('.sentList').html(content);
 }
-
 
 // 받은 문서
 function receivedPageCall(page, readStatus) {

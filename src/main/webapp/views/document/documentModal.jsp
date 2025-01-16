@@ -1003,28 +1003,73 @@ function searchReceived(document,startNumber) {
 	}
 	$('.receivedList').html(content);
 }
-function searchSent(document,startNumber) {
-    var content = '';
-	var i = startNumber;
-	for(var item of document){
-		content += '<tr>';
-		content += '<td>' + i++ + '</td>';
-		content += '<td>' + item.doc_number + '</td>';
-		content += '<td>' + item.form_subject + '</td>';
-		content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
-		
-		var doc_date = new Date(item.doc_date);
-		var docDate = doc_date.toISOString().split('T')[0];
-		var approv_date = new Date(item.doc_date);
-		var approvDate = approv_date.toISOString().split('T')[0];
 
-		content += '<td>' + docDate + '</td>';
-		content += '<td>' + approvDate + '</td>';
-		content += '<td>' + item.status + '</td>';
-		content += '</tr>';
-	}
-	$('.sentList').html(content);
+/* function searchSent(document, startNumber) {
+    var content = '';
+    var i = startNumber;
+
+    // 중복 제거용 Map 선언 (중복 키에 대한 마지막 데이터를 유지)
+    var uniqueDocs = new Map();
+
+    for (var item of document) {
+        uniqueDocs.set(item.doc_number, item); // 중복된 doc_number는 덮어쓰기됨
+    }
+
+    // 중복 제거된 데이터를 순회하며 테이블 작성
+    for (var [docNumber, item] of uniqueDocs) {
+        content += '<tr>';
+        content += '<td>' + i++ + '</td>';
+        content += '<td>' + item.doc_number + '</td>';
+        content += '<td>' + item.form_subject + '</td>';
+        content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+        
+        var doc_date = new Date(item.doc_date);
+        var docDate = doc_date.toISOString().split('T')[0];
+        var approv_date = new Date(item.doc_date);
+        var approvDate = approv_date.toISOString().split('T')[0];
+
+        content += '<td>' + docDate + '</td>';
+        content += '<td>' + approvDate + '</td>';
+        content += '<td>' + item.status + '</td>';
+        content += '</tr>';
+    }
+    $('.sentList').html(content);
+} */
+function searchSent(document, startNumber) {
+    var content = '';
+    var i = startNumber;
+
+    // 중복 제거용 Map 선언 (중복 키에 대한 마지막 데이터를 유지)
+    var uniqueDocs = new Map();
+
+    for (var item of document) {
+        uniqueDocs.set(item.doc_number, item); // 중복된 doc_number는 덮어쓰기됨
+    }
+
+    // 중복 제거된 데이터를 순회하며 테이블 작성
+    for (var [docNumber, item] of uniqueDocs) {
+        content += '<tr>';
+        content += '<td>' + i++ + '</td>';
+        content += '<td>' + item.doc_number + '</td>';
+        content += '<td>' + item.form_subject + '</td>';
+        content += '<td onclick="draftDetail(' + item.doc_idx + ')">' + item.doc_subject + '</td>';
+        
+        var doc_date = new Date(item.doc_date);
+        var docDate = doc_date.toISOString().split('T')[0];
+        content += '<td>' + docDate + '</td>';
+        // text가 "완료" 또는 "반려"일 경우에만 approvDate 출력 (아니면 아예 td 생성 안 함)
+        if (text === "완료" || text === "반려") {
+            var approv_date = new Date(item.approv_date);
+            var approvDate = approv_date.toISOString().split('T')[0];
+            content += '<td>' + approvDate + '</td>';
+        }
+
+        content += '<td>' + item.status + '</td>';
+        content += '</tr>';
+    }
+    $('.sentList').html(content);
 }
+
 
 // 임시저장
 function searchDraft(document,startNumber){

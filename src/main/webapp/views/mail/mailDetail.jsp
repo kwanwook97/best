@@ -103,7 +103,7 @@ $(document).ready(function () {
       } else {
         // 받는 사람의 starIcon 생성
         $.each(receiverList, function (index, receiver) {
-          if (receiver.receiver_idx === 1) { // 현재 로그인된 사용자가 받는 사람인지 확인
+          if (receiver.receiver_idx === emp_idx) { // 현재 로그인된 사용자가 받는 사람인지 확인
             var starIcon = $('<i>').addClass(receiver.special_flag === 1 ? 'bi bi-star-fill' : 'bi bi-star')
               .attr('title', receiver.special_flag === 1 ? '중요' : '일반')
               .css({ cursor: 'pointer', marginLeft: '10px', color: 'var(--accent-color)' })

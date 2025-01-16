@@ -138,14 +138,9 @@
 	    width: 40%;
 	    padding: 20px;
 	}
-	.chart-wrapper {
-	    width: 55%;
-	    padding: 20px;
-	    margin-right: 34px;
-	}
 	table {
 	    transform: scale(0.9);
-	    width: 598px;
+	    width: 660px;
 	    border-collapse: collapse;
 	}
 	th, td {
@@ -159,8 +154,9 @@
 	    width: 100%;  /* 차트가 컨테이너를 꽉 채우도록 설정 */
 	}
 	.chart-wrapper {
-	    width: 100%;  /* 부모 컨테이너 크기에 맞춰 차트 크기 조정 */
-	    padding: 20px;
+	    width: 90%;
+  		padding: 0 42px;
+	    margin-right: 34px;
 	}
 	#stackedChart {
 	    width: 100% !important;  /* 차트가 100% 너비를 차지하도록 설정 */
