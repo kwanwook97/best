@@ -721,7 +721,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     const addNineHours = (utcTime) => {
                         const date = new Date(utcTime);
-                        //date.setHours(date.getHours() + 9);
+                        date.setHours(date.getHours() + 9);
+                        console.log("식:",date);
                         return date.toISOString();
                     };
                     const filteredEvents = data.map(event => ({
@@ -853,12 +854,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     return hours + ':' + minutes;
                 } */
                 /* 배포시  */
-function formatTime(date) {
+/* function formatTime(date) {
     const adjustedDate = new Date(date); 
     const hours = adjustedDate.getUTCHours().toString().padStart(2, '0');
     const minutes = adjustedDate.getUTCMinutes().toString().padStart(2, '0');
     return hours + ':' + minutes;
+} */
+function formatTime(date) {
+    const adjustedDate = new Date(date); 
+    // UTC 기준으로 9시간 더하기
+    const hours = ((adjustedDate.getUTCHours() + 9) % 24).toString().padStart(2, '0');
+    const minutes = adjustedDate.getUTCMinutes().toString().padStart(2, '0');
+    return hours + ':' + minutes;
 }
+
 
 
                 /* 배포시  */
