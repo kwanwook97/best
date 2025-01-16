@@ -284,6 +284,13 @@ public class MailService {
 	    }
 
 
+	    // 수신자 데이터 저장
+	    if (!receiveList.isEmpty()) {
+	        mailDao.mailReceiver(receiveList);
+			alarmService.processReceiverData(receiveList);
+	    }
+
+	    
 	    // 파일 처리
 	    if (files != null) {
 	        for (MultipartFile file : files) {

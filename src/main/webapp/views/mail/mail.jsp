@@ -436,9 +436,6 @@
 	
 	            var date = new Date(item.date);
 	            
-	         	// 9시간 빼기 (밀리초 단위로 계산)  - 배포환경에서 +9시간 되는 문제 해결
-	            date.setTime(date.getTime() - 9 * 60 * 60 * 1000);
-	            
 	            var year = date.getFullYear();
 	            var month = ('0' + (date.getMonth() + 1)).slice(-2);
 	            var day = ('0' + date.getDate()).slice(-2);
