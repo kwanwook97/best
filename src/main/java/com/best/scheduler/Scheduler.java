@@ -68,10 +68,21 @@ public class Scheduler {
 	}
 	
 
-    // 1분마다 실행
-	@Scheduled(cron = "0 * * * * ?")
-    public void checkForUpcomingEvents() {
-        alarmService.sendUpcomingEventAlarms();
+    // 1분마다 실행 스케쥴 알림
+    private boolean isRunning = false; // 중복 실행 방지 플래그
+
+    @Scheduled(cron = "0 * * * * ?")
+    public synchronized void checkForUpcomingEvents() {
+        if (isRunning) {
+            return; // 실행 중이면 종료
+        }
+        isRunning = true; // 실행 플래그 설정
+
+        try {
+            alarmService.sendUpcomingEventAlarms();
+        } finally {
+            isRunning = false; // 실행 플래그 해제
+        }
     }
 	
 	// 결재 승인시 연차 소진로직 테스트용
