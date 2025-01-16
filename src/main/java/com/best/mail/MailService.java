@@ -239,37 +239,50 @@ public class MailService {
 	@Transactional
 	private void processReceiversAndFiles(int mailSendIdx, Map<String, Object> map, MultipartFile[] files, int specialFlag) {
 	    // 수신자 데이터 처리
-	    List<Map<String, String>> receiverData = new ArrayList<>();
 	    String receiverDataJson = (String) map.get("receiver_data");
-	    if (receiverDataJson != null && !receiverDataJson.isEmpty()) {
-	        try {
-	            ObjectMapper objectMapper = new ObjectMapper();
-	            receiverData = objectMapper.readValue(
-	                receiverDataJson, new TypeReference<List<Map<String, String>>>() {}
-	            );
-	        } catch (Exception e) {
-	            logger.error("JSON 파싱 중 오류 발생: ", e);
-	            throw new RuntimeException("receiver_data 처리 중 문제가 발생했습니다.");
-	        }
+	    if (receiverDataJson == null || receiverDataJson.isEmpty()) {
+	        throw new IllegalArgumentException("receiver_data가 비어있습니다.");
 	    }
+	    // JSON 파싱
+	    List<Map<String, Object>> receiverData = new ArrayList<>();
+	    try {
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        receiverData = objectMapper.readValue(
+	            receiverDataJson, new TypeReference<List<Map<String, Object>>>() {}
+	        );
+	    } catch (Exception e) {
+	        logger.error("JSON 파싱 중 오류 발생: {}", receiverDataJson, e);
+	        throw new RuntimeException("receiver_data 처리 중 문제가 발생했습니다.", e);
+	    }
+	    
+	    // JSON 데이터가 비어있는 경우 처리
+	    if (receiverData.isEmpty()) {
+	        throw new IllegalArgumentException("receiver_data에 유효한 데이터가 없습니다.");
+	    }
+	    
 
 	    List<MailReceiveDTO> receiveList = new ArrayList<>();
-	    for (Map<String, String> item : receiverData) {
+	    for (Map<String, Object> item : receiverData) {
+	        if (!item.containsKey("name") || !item.containsKey("email") || !item.containsKey("emp_idx")) {
+	            throw new IllegalArgumentException("JSON 데이터에 필요한 키가 없습니다: " + item);
+	        }
+	        // 값 가져오기
+	        String name = (String) item.get("name");
+	        String email = (String) item.get("email");
+	        int empIdx = Integer.parseInt(item.get("emp_idx").toString());
+	        int type = item.containsKey("type") ? Integer.parseInt(item.get("type").toString()) : 0;
+
+	        // DTO 설정
 	        MailReceiveDTO receiveDto = new MailReceiveDTO();
 	        receiveDto.setMail_send_idx(mailSendIdx);
-	        receiveDto.setReceiver_idx(Integer.parseInt(item.get("emp_idx")));
-	        receiveDto.setReceiver_email(item.get("email"));
-	        receiveDto.setReceiver_name(item.get("name"));
-	        receiveDto.setReceiver_type(Integer.parseInt(item.get("type")));
+	        receiveDto.setReceiver_idx(empIdx);
+	        receiveDto.setReceiver_email(email);
+	        receiveDto.setReceiver_name(name);
+	        receiveDto.setReceiver_type(type);
 	        receiveDto.setSpecial_flag(specialFlag);
 	        receiveList.add(receiveDto);
 	    }
 
-	    // 수신자 데이터 저장
-	    if (!receiveList.isEmpty()) {
-	        mailDao.mailReceiver(receiveList);
-	        alarmService.processReceiverData(receiveList);
-	    }
 
 	    // 파일 처리
 	    if (files != null) {
