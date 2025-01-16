@@ -347,7 +347,7 @@ input[readonly] {
 			</div>
 			<div class="bus-insert-btn">
 				<button class="editbtn" onclick="busUpdate(this)">
-					<i class="far fa-edit"></i>&nbsp;수정
+					<i class="far fa-edit"></i>&nbsp;등록
 				</button>
 			</div>
 			</div>
