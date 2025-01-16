@@ -152,35 +152,67 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+const chatParticipants = {}; // 참여자 목록 캐시
+
+// 대화방 참여자 목록 가져오기
+function fetchChatParticipants(chatIdx) {
+    if (!chatParticipants[chatIdx]) {
+        $.ajax({
+            type: "GET",
+            url: "chatParticipants.ajax",
+            data: { chat_idx: chatIdx },
+            dataType: "json",
+            async: false, // 캐싱을 위한 동기 처리 (필요 시)
+            success: function (participants) {
+                chatParticipants[chatIdx] = participants.map(participant => participant.emp_idx);
+            },
+            error: function (xhr, status, error) {
+                console.error("참여자 목록 가져오기 실패: ", error);
+            }
+        });
+    }
+}
+
+
+
 /* 우측 하단 알림 메시지 */
 function showNotification(photo, name, message, chatIdx, rank_name) {
-    const notification = $("#notification");
+    // 대화방 참여자 목록 가져오기
+    if (!chatParticipants[chatIdx]) {
+        fetchChatParticipants(chatIdx); // 참여자 목록이 없으면 로드
+    }
 
-    // 알림 메시지 설정
-    const notificationContent =
-        '<div class="notification-profile">' +
-            '<img src="/photo/' + photo + '" alt="프로필 사진" class="custom-image">' +
-            '<div class="notifi-profile">' +
-                '<div>' + name + ' / ' + rank_name + '</div>' +
-                '<div>' + message + '</div>' +
-            '</div>' +
-        '</div>';
+    // 참여자인 경우에만 알림 표시
+    if (chatParticipants[chatIdx]?.includes(loginId)) {
+        const notification = $("#notification");
 
-    notification.html(notificationContent);
+        // 알림 메시지 설정
+        const notificationContent =
+            '<div class="notification-profile">' +
+                '<img src="/photo/' + photo + '" alt="프로필 사진" class="custom-image">' +
+                '<div class="notifi-profile">' +
+                    '<div>' + name + ' / ' + rank_name + '</div>' +
+                    '<div>' + message + '</div>' +
+                '</div>' +
+            '</div>';
 
-    // 알림 클릭 시 채팅방으로 이동
-    notification.off("click").on("click", function () {
-        redirectToChat(chatIdx);
-    });
+        notification.html(notificationContent);
 
-    // 알림 표시
-    notification.addClass("show");
+        // 알림 클릭 시 채팅방으로 이동
+        notification.off("click").on("click", function () {
+            redirectToChat(chatIdx);
+        });
 
-    // 일정 시간 후 알림 숨김
-    setTimeout(() => {
-        notification.removeClass("show");
-    }, 5000); // 5초 후 숨김
+        // 알림 표시
+        notification.addClass("show");
+
+        // 일정 시간 후 알림 숨김
+        setTimeout(() => {
+            notification.removeClass("show");
+        }, 5000); // 5초 후 숨김
+    }
 }
+
 
 /* 헤더 드롭 다운 */
 document.addEventListener("DOMContentLoaded", function () {
@@ -211,28 +243,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* 헤더 메시지 알림 */
 function updateMessageDropdown(photo, name, message, chatIdx, rank_name) {
-    const messageDropdown = $(".messageDropdown");
+    // 대화방 참여자 목록 가져오기
+    if (!chatParticipants[chatIdx]) {
+        fetchChatParticipants(chatIdx); // 참여자 목록이 없으면 로드
+    }
 
-    // 메시지 항목 생성
-    const messageItem =
-    	'<div class="dropdown-item" onclick="redirectToChat(' + chatIdx + ')">' +
-            '<div class="notification-profile">' +
-                '<img src="/photo/' + photo + '" alt="프로필 사진" class="custom-image">' +
-                '<div class="notifi-profile">' +
-                    '<div>' + name + ' / ' + rank_name + '</div>' +
-                    '<div>' + message + '</div>' +
+    // 참여자인 경우에만 드롭다운 업데이트
+    if (chatParticipants[chatIdx]?.includes(loginId)) {
+        const messageDropdown = $(".messageDropdown");
+
+        const messageItem =
+            '<div class="dropdown-item" onclick="redirectToChat(' + chatIdx + ')">' +
+                '<div class="notification-profile">' +
+                    '<img src="/photo/' + photo + '" alt="프로필 사진" class="custom-image">' +
+                    '<div class="notifi-profile">' +
+                        '<div>' + name + ' / ' + rank_name + '</div>' +
+                        '<div>' + message + '</div>' +
+                    '</div>' +
                 '</div>' +
-            '</div>' +
-        '</div>'; // 닫는 태그가 정상적으로 닫혔는지 확인
+            '</div>';
 
-    // 메시지 항목을 드롭다운에 추가
-    messageDropdown.prepend(messageItem);
+        messageDropdown.prepend(messageItem);
 
-    // 최대 5개의 메시지만 유지
-    if (messageDropdown.children().length > 5) {
-        messageDropdown.children().last().remove();
+        // 최대 5개의 메시지만 유지
+        if (messageDropdown.children().length > 5) {
+            messageDropdown.children().last().remove();
+        }
     }
 }
+
+
+
 /* 알림 메시지 채팅방 이동 */
 function redirectToChat(chatIdx) {
     if (chatIdx) {
