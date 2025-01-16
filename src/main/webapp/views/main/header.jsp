@@ -657,9 +657,6 @@ function showMailNotification(content, type) {
             case 'mail':
                 redirectUrl = 'mail.go';
                 break;
-            case 'document':
-                redirectUrl = 'documentPending.go';
-                break;
             case 'calendar':
                 redirectUrl = 'calendar.go';
                 break;
@@ -740,7 +737,6 @@ $(document).ready(function () {
         let redirectUrl = '';
         switch (itemType) {
             case 'mail': redirectUrl = 'mail.go'; break;
-            case 'document': redirectUrl = 'documentPending.go'; break;
             case 'calendar': redirectUrl = 'calendar.go'; break;
             case 'reserve': redirectUrl = 'myReserve.go'; break;
             case 'borrow': redirectUrl = 'material.go'; break;

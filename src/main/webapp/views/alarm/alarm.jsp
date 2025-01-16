@@ -290,8 +290,6 @@ $(document).ready(function () {
                 const typeAction =
                     alarm.type === "mail"
                         ? "mail.go"
-                        : alarm.type === "document"
-                        ? "documentPending.go"
                         : alarm.type === "calendar"
                         ? "calendar.go"
                         : alarm.type === "reserve"
