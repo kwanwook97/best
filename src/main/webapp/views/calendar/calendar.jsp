@@ -456,7 +456,8 @@ document.addEventListener('DOMContentLoaded', function() {
         selectMirror: true,
         editable: true, // 드래그 및 수정 가능
         navLinkDayClick: function(date, jsEvent) {
-        	updateTodoList(date);
+            updateTodoList(date); 
+			//console.log("일자:"+date);
         },
         // 이벤트 드래그 후 업데이트
         eventDrop: function(info) {
@@ -795,7 +796,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const todayDate = new Date(); 
     updateTodoList(todayDate);
     function updateTodoList(date){
-        const clickedDate = date.toISOString().split('T')[0];
+        //const clickedDate = date.toISOString().split('T')[0];
+	    //const clcl= new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString(); 
+	    //console.log("테스트:"+clcl);
+	    const clickedDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split('T')[0]; 
 
         const subjectBox = document.querySelector('#todo-subject-box h2');
         if (subjectBox) {
@@ -804,7 +808,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const visibilityFilter = document.getElementById('visibilityFilter').value; 
         const allEvents = calendar.getEvents();
         const eventsForDate = allEvents.filter(function(event) {
+        	//console.log('Event Data:', event);
             const eventStartDate = event.start.toISOString().split('T')[0]; 
+            //console.log('eventStartDate:'+eventStartDate);
+            //console.log('event.start', event.start.toISOString());
             const eventEndDate = event.end.toISOString().split('T')[0]; 
             let isInDateRange = clickedDate >= eventStartDate && clickedDate <= eventEndDate;
         	if (event.allDay == true &&  clickedDate == eventEndDate) {
@@ -831,11 +838,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 ? 'All Day' // 하루 종일 이벤트
                 		/* 종원 배포시 변경 시간 오류 */
                 //: formatTimeWithOffset(event.start, -9) + 
-                : formatTimeWithOffset(event.start, 0) + 
-                  //' ~ ' + (event.end ? formatTimeWithOffset(event.end, -9) : 'End');
-                  ' ~ ' + (event.end ? formatTimeWithOffset(event.end, 0) : 'End');
-
-                function formatTimeWithOffset(date, offsetHours) {
+                 //' ~ ' + (event.end ? formatTimeWithOffset(event.end, -9) : 'End');
+                /* 배포시 */
+                : formatTime(event.start) + 
+                  ' ~ ' + (event.end ? formatTime(event.end) : 'End');
+                /* 배포시 */
+/*                 function formatTimeWithOffset(date, offsetHours) {
                     const adjustedDate = new Date(date.getTime());
                     
                     adjustedDate.setHours(adjustedDate.getHours() + offsetHours);
@@ -843,7 +851,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     const hours = adjustedDate.getHours().toString().padStart(2, '0');
                     const minutes = adjustedDate.getMinutes().toString().padStart(2, '0');
                     return hours + ':' + minutes;
-                }
+                } */
+                /* 배포시  */
+function formatTime(date) {
+    const adjustedDate = new Date(date); 
+    const hours = adjustedDate.getUTCHours().toString().padStart(2, '0');
+    const minutes = adjustedDate.getUTCMinutes().toString().padStart(2, '0');
+    return hours + ':' + minutes;
+}
+
+
+                /* 배포시  */
+                
 
                 dateTime.textContent = eventTime;
 
