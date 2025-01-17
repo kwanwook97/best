@@ -209,7 +209,7 @@
  		<div class="maintext">
 			<span class="document">결재문서</span>
 			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
-			<span class="text">결재 문서 등록</span>
+			<span class="text">결재 양식 등록</span>
 		</div>
 		<div class="docBox">
 			<div class="documentListBox">

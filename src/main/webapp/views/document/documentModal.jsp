@@ -332,12 +332,12 @@ $(document).ready(function() {
 	
    var inputValue = $('input[data-index="1"]').val();
    
-   // 결재양식 검색
+  	// 결재양식 검색
    $(".modal-input").on("keyup", function(event) {
        var query = $(this).val();
        searchForm(query);
    });
-   
+
    // 리스트 검색
    $('.listIcon').on('click', function() {
        searchList();   
@@ -1117,7 +1117,7 @@ function searchDraft(document,startNumber){
 	    });
 }
 //받은 문서
-function searchReceivedPageCall(age, query, searchType, listType) {
+function searchReceivedPageCall(page, query, searchType, listType) {
 	if(text=='참조' || text=='임시저장'){
 		var cnt = 15;
 	}else{

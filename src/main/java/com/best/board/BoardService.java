@@ -193,6 +193,8 @@ public class BoardService {
 		Map<String, Object> result = new HashMap<>();
 		
 		List<?> freeLi = boardDao.freeSearchList(cnt, offset, searchText, searchOption);
+		result.put("totalPages", totalPages);
+        result.put("freeList", freeLi);
 		
         return result;
 	}

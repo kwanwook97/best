@@ -74,7 +74,7 @@
 	table.myTable{
 		border-collapse: separate !important;
         border-spacing: 0;
-	    width: 90%;
+	    width: 92%;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
 		margin: 0 48px 15px 48px;
