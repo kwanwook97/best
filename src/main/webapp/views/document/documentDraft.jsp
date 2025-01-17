@@ -12,7 +12,7 @@
 		transform: scale(0.9);
 	    margin-left: 22vw;
         width: 70vw;
-	    margin-top: 4vh;
+	    margin-top: 2vh;
 	    flex-wrap: wrap;
 	    padding: 2vh;
 	    display: flex;
@@ -22,13 +22,20 @@
 	    justify-content: center;
 	}
 	.maintext{
-		display: flex;
-		margin-left: 10px;
-	}
-	.document{
-		color: var(--secondary-color);
-		margin-right: 30px;
+	    width: 27%;
+	    display: flex	;
+	    margin-left: -12vw;
 	    margin-bottom: 40px;
+	    justify-content: space-between;
+	    align-items: baseline;
+	}
+	.maintext i,
+	.maintext span{
+		font-size: 36px !important;
+		font-weight: bold !important;
+	}
+	.maintext span:first-child{
+		color: var(--secondary-color);
 	}
 	.docbox{
 		border: 2px solid var(--primary-color);
@@ -52,7 +59,7 @@
 	table.myTable{
 		border-collapse: separate !important;
         border-spacing: 0;
-		width: -webkit-fill-available;
+		width: 92%;
 		border: 1px solid var(--primary-color);
 		border-radius: 10px;
 		margin: 0 48px 15px 48px;
@@ -162,8 +169,9 @@
  <jsp:include page="../main/header.jsp"/>
  	<div class="dashboard-body">
 		<div class="maintext">
-			<h3 class="document">결재문서</h3>
-			<h3>>&nbsp;&nbsp;임시저장</h3>
+			<span class="document">결재문서</span>
+			<i class="fa-solid fa-angle-right" style="color: #8B6AA7;"></i>
+			<span class="text">임시저장</span>
 		</div>
 		<div class="docbox">
 			<jsp:include page="documentModal.jsp"/>
