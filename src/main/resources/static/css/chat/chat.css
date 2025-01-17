@@ -13,7 +13,14 @@
 	margin-left: 300px;
 	margin-right: 100%;
 }
-
+.btn-secondary {
+    color: #E9396B !important;
+    font-size: 20px;
+}
+.btn-secondary:hover {
+    color: #EF7597 !important;
+    background-color: #FFF5E2 !important;
+}
 .messenger-container {
 	display: flex;
 	height: 79vh;

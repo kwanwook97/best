@@ -334,13 +334,25 @@ function closeModal(modalId) {
     $("#" + modalId).fadeOut(); // fadeOut으로 모달 숨김
 }
 
-$(document).on("click", function (e) {
-    $(".modal").each(function () {
-        if ($(e.target).is(this)) {
-            closeModal($(this).attr("id"));
+$(document).ready(function () {
+    // ESC 키로 모든 모달 닫기
+    $(document).on("keydown", function (e) {
+        if (e.key === "Escape") {
+            $(".modal").each(function () {
+                if ($(this).is(":visible")) {
+                    closeModal($(this).attr("id")); // 모달 닫기 함수 호출
+                }
+            });
         }
     });
+
+    // 기존 모달 닫기 기능 유지 (닫기 버튼 클릭만 허용)
+    $(".close-modal").on("click", function () {
+        var modalId = $(this).closest(".modal").attr("id");
+        closeModal(modalId);
+    });
 });
+
 
 
 
