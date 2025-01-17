@@ -55,6 +55,11 @@
     .resetPW{
 		color: #FFFBF2 !important;
 	}
+	
+	.form-group{
+	    display: flex;
+    	flex-direction: column;
+	}
   </style>
 </head>
 
@@ -122,8 +127,8 @@
 			  </div>
 			 </div>
 			 <div class="form-group col-6 text-right">
-			  <a href="#" class="resetPW" data-toggle="modal" data-target="#resetPasswordModal">Reset Password</a>
-			  <a href="#" class="resetPW" data-toggle="modal" data-target="#changePasswordModal">Change Password</a>
+			  <a href="#" class="resetPW" data-toggle="modal" data-target="#resetPasswordModal">비밀번호 찾기</a>
+			  <a href="#" class="resetPW" data-toggle="modal" data-target="#changePasswordModal">비밀번호 변경</a>
 			 </div>
 			</div>
 			 <button type="submit" class="btn btn-light btn-block">Sign In</button>

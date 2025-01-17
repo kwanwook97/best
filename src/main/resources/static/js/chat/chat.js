@@ -428,6 +428,34 @@ $(document).ready(function() {
             });
         }
         
+        function createChat(chat_subject, emp_idx_list) {
+    	$.ajax({
+        	type: "POST",
+        	url: "createChat.do",
+        	contentType: "application/json; charset=UTF-8",
+        	data: JSON.stringify({
+            	chat_subject: chat_subject,
+            	emp_idx_list: emp_idx_list
+        	}),
+        	success: function (response) {
+            	if (response.success) {
+                	if (response.existing) {
+                    // 기존 대화방으로 이동
+                    	location.href = "chat.go?chat_idx=" + response.chatIdx;
+                	} else {
+                    	// 새로 생성된 대화방으로 이동
+                    	location.href = "chat.go?chat_idx=" + response.chatIdx;
+                	}
+            	} else {
+                	alert("대화방 생성에 실패했습니다. 다시 시도해주세요.");
+            	}
+        	},
+        	error: function () {
+           	 	alert("서버와 통신 중 문제가 발생했습니다.");
+        	}
+    	});
+	}
+        
         $(document).ready(function () {
             function updateChatNotice(noticeContent) {
                 const chatNoticeDiv = $(".chat-notice");
@@ -630,13 +658,25 @@ function closeModal(modalId) {
     $("#" + modalId).fadeOut(); // fadeOut으로 모달 숨김
 }
 
-$(document).on("click", function (e) {
-    $(".modal").each(function () {
-        if ($(e.target).is(this)) {
-            closeModal($(this).attr("id"));
+$(document).ready(function () {
+    // ESC 키로 모든 모달 닫기
+    $(document).on("keydown", function (e) {
+        if (e.key === "Escape") {
+            $(".modal").each(function () {
+                if ($(this).is(":visible")) {
+                    closeModal($(this).attr("id")); // 모달 닫기 함수 호출
+                }
+            });
         }
     });
+
+    // 기존 모달 닫기 기능 유지 (닫기 버튼 클릭만 허용)
+    $(".close-modal").on("click", function () {
+        var modalId = $(this).closest(".modal").attr("id");
+        closeModal(modalId);
+    });
 });
+
 
 
 // 기존 코드에서 openModal 및 closeModal 사용
@@ -651,14 +691,17 @@ $(document).ready(function () {
         var modalId = $(this).closest(".modal").attr("id");
         closeModal(modalId);
     });
-
-    $(document).on("click", function (e) {
-        $(".modal").each(function () {
-            if ($(e.target).is(this)) {
-                closeModal($(this).attr("id"));
-            }
-        });
+    
+    $(document).on("keydown", function (e) {
+        if (e.key === "Escape") {
+            $(".modal").each(function () {
+                if ($(this).is(":visible")) {
+                    closeModal($(this).attr("id")); // 모달 닫기 함수 호출
+                }
+            });
+        }
     });
+    
 });
 
 // 서치 아이콘 클릭 이벤트

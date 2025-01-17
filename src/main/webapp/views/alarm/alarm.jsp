@@ -166,6 +166,14 @@ td{
 		color: #E9396B;
 		-webkit-text-stroke: 0.5px #E9396B;
 	}
+	tr a {
+    	color: inherit; /* 부모 요소의 색상을 상속 */
+    	text-decoration: none; /* 링크 밑줄 제거 */
+	}
+
+	tr[style*="color: #8B6AA7;"] a {
+    	color: #8B6AA7; /* 링크 색상을 부모 요소와 동일하게 설정 */
+	}
 </style>
 </head>
 <body class="bg-theme bg-theme1">

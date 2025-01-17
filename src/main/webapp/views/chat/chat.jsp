@@ -88,6 +88,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close-modal" onclick="closeModal('profileModal');">&times;</button>
+            <button type="button" class="btn-secondary" id="profileChat"><i class="fas fa-comment-alt"></i></button>
         </div>
         <div class="modal-body">
         

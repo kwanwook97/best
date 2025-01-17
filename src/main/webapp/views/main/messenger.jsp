@@ -1729,7 +1729,12 @@ function loadChatContent(keyword) {
                 // 대화방 생성
                 confirmButton.on("click", function () {
                     const chatSubject = $("#chatSubject").val().trim();
-                    const selectedMembers = getSelectedMembers();
+                    let selectedMembers = [];
+
+                    // 체크된 체크박스의 emp_idx 값을 수집
+                    $("input[name='member']:checked").each(function () {
+                        selectedMembers.push(parseInt($(this).val())); // emp_idx를 숫자로 변환
+                    });
 
                     if (!chatSubject && selectedMembers.length === 0) {
                         alert("대화방 제목 또는 멤버를 선택하세요.");
