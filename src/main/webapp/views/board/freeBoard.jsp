@@ -399,7 +399,7 @@ $('.searchInp').keydown(function(event) {
 	                        }
 	                    });
                 	}else{
-                		var content = '<tr>';
+                		var content = '<tr class="searchTextA">';
     	        		content += '<td colspan="5"> 검색결과가 없습니다. </td>';
     	        		content += '</tr>';
     	        		$('.freeBoard').html(content);

@@ -539,7 +539,10 @@ $('.searchInp').keydown(function(event) {
 $('input[name="search"]').on('input', function() {
     var query = $(this).val().trim();
 
+    // 입력값이 비었을 경우
     if (query === "") {
+        $('.searchCont .Msg').remove();
+
         pageCall(1);
     }
 });
