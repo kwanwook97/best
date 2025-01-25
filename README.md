@@ -19,7 +19,7 @@ BEST사이트는 직원들의 업무 스케줄 관리, 기사님의 버스 노�
 
 ## 🖼️ 구현 화면
 
-<img src="https://github.com/user-attachments/assets/6f6f16b0-dbdc-41ec-8339-4ab10cef553d" alt="best" width="800" height="400">
+<img src="https://github.com/user-attachments/assets/6f6f16b0-dbdc-41ec-8339-4ab10cef553d" alt="best" width="800" height="600">
 
 <!--
 ## 📂 프로젝트 상세 정보
