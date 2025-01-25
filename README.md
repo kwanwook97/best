@@ -5,18 +5,19 @@ BEST사이트는 직원들의 업무 스케줄 관리, 기사님의 버스 노�
 ---
 
 ## 🛠️ 기술 스택
-<img src="https://github.com/user-attachments/assets/a8c00d5d-c330-4902-a486-e9aec4028fe1" alt="image" width="400">
+
+<img src="https://github.com/user-attachments/assets/a972a677-1913-4068-8f15-c8176885c7211" alt="image" width="400">
+
 
 ---
 ## 📊 ERD (Entity-Relationship Diagram)
 
-<img src="https://github.com/user-attachments/assets/2053ac52-0cc4-46c9-9182-03e2203d47a5" alt="image" width="400">
+<img src="https://github.com/user-attachments/assets/c133a521-e7f7-478d-b023-251b4059f618" alt="image" width="400">
+
 
 ---
 
 ## 📂 프로젝트 상세 정보
 
 프로젝트에 대한 자세한 내용은 아래 링크에서 확인하세요:  
-👉 [포트폴리오 확인하기]([https://www.canva.com/design/DAGcplpMzWM/RpfGAANtxtJfby_qk12vrg/edit](https://www.canva.com/design/DAGckKYPaIU/U0aZ60MlHmluXfoyXsDBfQ/edit))
-
-
+👉 [포트폴리오 확인하기](https://www.canva.com/design/DAGckKYPaIU/U0aZ60MlHmluXfoyXsDBfQ/edit)
