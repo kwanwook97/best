@@ -20,7 +20,7 @@ BEST사이트는 직원들의 업무 스케줄 관리, 기사님의 버스 노�
 ## 🖼️ 구현 화면
 
 1. 로그인  
-![로그인 화면](https://github.com/user-attachments/assets/71fdd5e0-fcbf-4040-8fd9-5097aad7efee)
+![1-2-ezgif com-optimize](https://github.com/user-attachments/assets/b934dd4b-0456-4d39-afde-94f7677a8526)
 
 2. 메일  
 ![2-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/0e3e376f-e574-4aac-a014-cdc9363c44fa)
