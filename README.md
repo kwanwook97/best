@@ -23,13 +23,14 @@ BEST사이트는 직원들의 업무 스케줄 관리, 기사님의 버스 노�
 ![로그인 화면](https://github.com/user-attachments/assets/71fdd5e0-fcbf-4040-8fd9-5097aad7efee)
 
 2. 메일  
-![메일 화면](https://github.com/user-attachments/assets/6775ba44-70a8-4c81-a6ae-0b17dddd32c8)
+![2-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/0e3e376f-e574-4aac-a014-cdc9363c44fa)
 
 3. 조직도  
-![조직도 화면](https://github.com/user-attachments/assets/9bf92bd8-58d4-4d51-8256-c2779b884000)
+![3-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/e2038620-d5b2-4c3e-afc4-154f7a8a3274)
 
 4. 권한관리  
-![권한관리 화면](https://github.com/user-attachments/assets/934c2d8a-e85a-4fff-ab39-db08d4f5bcda)
+![4-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/134a4359-db92-40d2-8e43-c2aa59858c9d)
+
 
 
 
